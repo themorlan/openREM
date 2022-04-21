@@ -88,35 +88,21 @@ class ImportNMImage(ImportTest):
                             "scan_progression_direction": None,
                             "petseriescorrection_set": {
                                 "all": {
-                                    lambda x: x[0]: {
-                                        "corrected_image": "NORM"
-                                    },
-                                    lambda x: x[1]: {
-                                        "corrected_image": "DTIM"
-                                    },
-                                    lambda x: x[2]: {
-                                        "corrected_image": "ATTN"
-                                    },
-                                    lambda x: x[3]: {
-                                        "corrected_image": "SCAT"
-                                    },
-                                    lambda x: x[4]: {
-                                        "corrected_image": "DECY"
-                                    },
-                                    lambda x: x[5]: {
-                                        "corrected_image": "RAN"
-                                    }
+                                    lambda x: x[0]: {"corrected_image": "NORM"},
+                                    lambda x: x[1]: {"corrected_image": "DTIM"},
+                                    lambda x: x[2]: {"corrected_image": "ATTN"},
+                                    lambda x: x[3]: {"corrected_image": "SCAT"},
+                                    lambda x: x[4]: {"corrected_image": "DECY"},
+                                    lambda x: x[5]: {"corrected_image": "RAN"},
                                 }
                             },
                             "petseriestype_set": {
                                 "all": {
-                                    lambda x: x[0]: {
-                                        "series_type": "WHOLE BODY"
-                                    },
+                                    lambda x: x[0]: {"series_type": "WHOLE BODY"},
                                 }
-                            }
+                            },
                         }
-                    }
+                    },
                 }
             },
         }
@@ -177,26 +163,18 @@ class ImportNMImage(ImportTest):
                             "scan_progression_direction": None,
                             "petseriescorrection_set": {
                                 "all": {
-                                    lambda x: x[0]: {
-                                        "corrected_image": "DECY"
-                                    },
-                                    "last": {
-                                        "corrected_image": "NORM"
-                                    }
+                                    lambda x: x[0]: {"corrected_image": "DECY"},
+                                    "last": {"corrected_image": "NORM"},
                                 }
                             },
                             "petseriestype_set": {
-                                "first": {
-                                    "series_type": "STATIC"
-                                },
-                                "last": {
-                                    "series_type": "IMAGE"
-                                }
-                            }
+                                "first": {"series_type": "STATIC"},
+                                "last": {"series_type": "IMAGE"},
+                            },
                         }
-                    }
+                    },
                 }
-            }
+            },
         }
 
         study = GeneralStudyModuleAttr.objects.get()
@@ -236,19 +214,15 @@ class ImportNMImage(ImportTest):
                             "energy_window_upper_limit": Decimal(585),
                             "scan_progression_direction": None,
                             "petseriescorrection_set": {
-                                "first": {
-                                    "corrected_image": "NORM"
-                                },
+                                "first": {"corrected_image": "NORM"},
                             },
                             "petseriestype_set": {
                                 "all": {
-                                    lambda x: x[0]: {
-                                        "series_type": "WHOLE BODY"
-                                    },
+                                    lambda x: x[0]: {"series_type": "WHOLE BODY"},
                                 }
-                            }
+                            },
                         }
-                    }
+                    },
                 }
             }
         }
@@ -264,7 +238,7 @@ class ImportNMImage(ImportTest):
         nm_image(img_loc)
 
         logger_mock.warning.assert_called()  # Dates are set differently, therefore logger warns
-        
+
         study = GeneralStudyModuleAttr.objects.get()
         self._check_values(study, self._get_pet_simens_rrdsr_one_img_combined())
 
@@ -347,7 +321,7 @@ class ImportNMImage(ImportTest):
         nm_image(self._get_dcm_file("test_files/NM-PetIm-Siemens-2.dcm"))
         nm_image(self._get_dcm_file("test_files/NM-PetIm-Siemens-3.dcm"))
 
-        logger_mock.info.assert_called() #3 will not be loaded the second time, because it's already imported
+        logger_mock.info.assert_called()  # 3 will not be loaded the second time, because it's already imported
 
         study = GeneralStudyModuleAttr.objects.get()
         expected = {
@@ -379,12 +353,8 @@ class ImportNMImage(ImportTest):
                                 "energy_window_lower_limit": Decimal(435),
                                 "energy_window_upper_limit": Decimal(585),
                                 "scan_progression_direction": None,
-                                "petseriescorrection_set": {
-                                    "count": 6
-                                },
-                                "petseriestype_set": {
-                                    "count": 2
-                                }
+                                "petseriescorrection_set": {"count": 6},
+                                "petseriestype_set": {"count": 2},
                             },
                             lambda x: x[1]: {
                                 "series_datetime": datetime(2022, 2, 24, 11, 56),
@@ -393,23 +363,15 @@ class ImportNMImage(ImportTest):
                                 "energy_window_lower_limit": Decimal(435),
                                 "energy_window_upper_limit": Decimal(585),
                                 "scan_progression_direction": None,
-                                "petseriescorrection_set": {
-                                    "count": 6
-                                },
-                                "petseriestype_set": {
-                                    "count": 2
-                                }
+                                "petseriescorrection_set": {"count": 6},
+                                "petseriestype_set": {"count": 2},
                             },
                             lambda x: x[2]: {
-                                "petseriescorrection_set": {
-                                    "count": 4
-                                },
-                                "petseriestype_set": {
-                                    "count": 2
-                                }
+                                "petseriescorrection_set": {"count": 4},
+                                "petseriestype_set": {"count": 2},
                             },
-                        }
-                    }
+                        },
+                    },
                 }
             },
         }

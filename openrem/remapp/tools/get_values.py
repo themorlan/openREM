@@ -169,6 +169,7 @@ def test_numeric_value(string_number):
     except (ValueError, TypeError):
         return None
 
+
 def to_decimal_value(string_number):
     """
     Tests if string can be converted to a float. If yes returns it
@@ -180,6 +181,7 @@ def to_decimal_value(string_number):
         return None
     else:
         return Decimal(string_number)
+
 
 def list_to_string(dicom_value):
     """

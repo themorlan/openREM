@@ -60,7 +60,7 @@ from remapp.models import (
     PETSeriesType,
     RadiopharmaceuticalAdministrationEventData,
     RadiopharmaceuticalRadiationDose,
-    DicomDeleteSettings
+    DicomDeleteSettings,
 )
 
 from ..tools.dcmdatetime import get_date, get_date_time, get_time
@@ -247,7 +247,11 @@ def _isotope(study, dataset):
         conversion_func = to_decimal_value
     else:
         # Convert to MBq from Bq
-        conversion_func = lambda x: None if to_decimal_value(x) is None else to_decimal_value(x) / 10**6
+        conversion_func = (
+            lambda x: None
+            if to_decimal_value(x) is None
+            else to_decimal_value(x) / 10**6
+        )
     _try_set_value(
         radio,
         "administered_activity",
@@ -279,72 +283,62 @@ def _isotope(study, dataset):
 
 def _pet_series(study, dataset):
     radiodose = study.radiopharmaceuticalradiationdose_set.get()
-    if "SeriesInstanceUID" in dataset: # Check if already imported
+    if "SeriesInstanceUID" in dataset:  # Check if already imported
         uid = dataset.SeriesInstanceUID
         if radiodose.petseries_set.filter(series_uid__exact=uid).count() > 0:
-            logger.info(f"PET Series {uid} was already loaded to database."
-                "Will not import again.")
+            logger.info(
+                f"PET Series {uid} was already loaded to database."
+                "Will not import again."
+            )
             return
     else:
         uid = None
-    ser = PETSeries.objects.create(
-        radiopharmaceutical_radiation_dose=radiodose
-    )
+    ser = PETSeries.objects.create(radiopharmaceutical_radiation_dose=radiodose)
     ser.series_uid = uid
     tmp_time = get_time("SeriesTime", dataset)
     tmp_date = get_date("SeriesDate", dataset)
     if tmp_date and tmp_time:
         ser.series_datetime = datetime.combine(tmp_date.date(), tmp_time.time())
     ser.number_of_rr_intervalls = test_numeric_value(
-        get_value_num(0x541004, dataset) # Number of R-R Intervalls
+        get_value_num(0x541004, dataset)  # Number of R-R Intervalls
     )
     ser.number_of_time_slots = test_numeric_value(
-    get_value_num(
-        0x540061, dataset # Number of time slots
-    ))
-    ser.number_of_time_slices = test_numeric_value(get_value_num(
-        0x540101, dataset # Number of time slices
-    ))
-    ser.number_of_slices = test_numeric_value(get_value_num(
-        0x540081, dataset # Number of slices
-    ))
-    ser.reconstruction_method = get_value_kw(
-        "ReconstructionMethod", dataset
+        get_value_num(0x540061, dataset)  # Number of time slots
     )
-    ser.coincidence_window_width = test_numeric_value(get_value_kw( # In ns
-        "CoincidenceWindowWidth", dataset
-    ))
-    energy_window_range = get_value_kw(
-        "EnergyWindowRangeSequence", dataset
+    ser.number_of_time_slices = test_numeric_value(
+        get_value_num(0x540101, dataset)  # Number of time slices
     )
+    ser.number_of_slices = test_numeric_value(
+        get_value_num(0x540081, dataset)  # Number of slices
+    )
+    ser.reconstruction_method = get_value_kw("ReconstructionMethod", dataset)
+    ser.coincidence_window_width = test_numeric_value(
+        get_value_kw("CoincidenceWindowWidth", dataset)  # In ns
+    )
+    energy_window_range = get_value_kw("EnergyWindowRangeSequence", dataset)
     if energy_window_range:
-        ser.energy_window_lower_limit = test_numeric_value(get_value_kw( # In KeV
-            "EnergyWindowLowerLimit", energy_window_range[0]
-        ))
-        ser.energy_window_upper_limit = test_numeric_value(get_value_kw( # In KeV
-            "EnergyWindowUpperLimit", energy_window_range[0]
-        ))
-    ser.scan_progression_direction = get_value_kw(
-        "ScanProgressionDirection", dataset 
-    )
+        ser.energy_window_lower_limit = test_numeric_value(
+            get_value_kw("EnergyWindowLowerLimit", energy_window_range[0])  # In KeV
+        )
+        ser.energy_window_upper_limit = test_numeric_value(
+            get_value_kw("EnergyWindowUpperLimit", energy_window_range[0])  # In KeV
+        )
+    ser.scan_progression_direction = get_value_kw("ScanProgressionDirection", dataset)
     ser.save()
 
     ser_type = get_value_kw("SeriesType", dataset)
     if ser_type:
         for x in ser_type:
-            s = PETSeriesType.objects.create(
-                pet_series=ser
-            )
+            s = PETSeriesType.objects.create(pet_series=ser)
             s.series_type = x
             s.save()
     corr_type = get_value_kw("CorrectedImage", dataset)
     if corr_type:
         for x in corr_type:
-            s = PETSeriesCorrection.objects.create(
-                pet_series=ser
-            )
+            s = PETSeriesCorrection.objects.create(pet_series=ser)
             s.corrected_image = x
             s.save()
+
 
 def _record_object_imported(dataset, study):
     """Saves that this object has been imported."""
@@ -352,11 +346,13 @@ def _record_object_imported(dataset, study):
     o.sop_instance_uid = dataset.SOPInstanceUID
     o.save()
 
+
 def _nm_specific_imports(study, dataset, is_nm_img):
     _record_object_imported(dataset, study)
     _isotope(study, dataset)
     if not is_nm_img:
         _pet_series(study, dataset)
+
 
 def _nm2db(dataset):
     """Saves the dataset to the db."""
@@ -423,6 +419,7 @@ def nm_image(file: str):
         os.remove(file)
 
     return 0
+
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:

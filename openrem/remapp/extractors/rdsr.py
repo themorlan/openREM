@@ -199,18 +199,22 @@ def _get_existing_event_uids(study):
 
     return existing_event_uids
 
-def _update_recorded_objects(g, dataset, existing_sop_instance_uids = None):
+
+def _update_recorded_objects(g, dataset, existing_sop_instance_uids=None):
     new_sop_instance_uid = dataset.SOPInstanceUID
     record_sop_instance_uid(g, new_sop_instance_uid)
     if existing_sop_instance_uids is not None:
         for sop_instance_uid in existing_sop_instance_uids:
             record_sop_instance_uid(g, sop_instance_uid)
 
-def _handle_study_already_existing(dataset, ):
+
+def _handle_study_already_existing(
+    dataset,
+):
     """
     This function checks wheter there is already a study with the same instance uid as dataset.
-    
-    If yes it checks the data in the dataset and the existing study 
+
+    If yes it checks the data in the dataset and the existing study
     returning different strategies for continuing the import:
 
     If dataset was imported already: Abort the import
@@ -224,9 +228,9 @@ def _handle_study_already_existing(dataset, ):
 
     :return: A dict with possible keys {status, existing_sop_instance_uids, study}, where
         :status: One of 'abort', 'continue' (Create the study and maybe save old instance uids to it),
-            'drop_old_continue' (Delete old and reimport), 
+            'drop_old_continue' (Delete old and reimport),
             'retry' (Wait then call this function again, there are partially imported studies), append_rrdsr'
-        :existing_sop_instance_uids: The sop instance uids of all files imported for this study. For e.g. 
+        :existing_sop_instance_uids: The sop instance uids of all files imported for this study. For e.g.
             drop_old_continue status this should be saved onto the new study entry. (See _update_recorded_objects)
         :study: The study that was used to make the decision what to do next.
             Only added for status='append_rrdsr' or status='drop_old_continue' at the moment
@@ -248,7 +252,10 @@ def _handle_study_already_existing(dataset, ):
                 "Import match on Study Instance UID {0} and object SOP Instance UID {1}. "
                 "Will not import.".format(study_uid, new_sop_instance_uid)
             )
-            return {"status": "abort", "existing_sop_instance_uids": existing_sop_instance_uids}
+            return {
+                "status": "abort",
+                "existing_sop_instance_uids": existing_sop_instance_uids,
+            }
         # Either we've not seen it before, or it wasn't recorded when we did.
         # Next find the event UIDs in the RDSR being imported
         new_event_uids = set()
@@ -294,7 +301,10 @@ def _handle_study_already_existing(dataset, ):
                 record_sop_instance_uid(
                     existing_study_uid_match[study_index], new_sop_instance_uid
                 )
-                return {"status": "abort", "existing_sop_instance_uids": existing_sop_instance_uids}
+                return {
+                    "status": "abort",
+                    "existing_sop_instance_uids": existing_sop_instance_uids,
+                }
             elif new_event_uids.issubset(uid_list):
                 # New RDSR has the same but fewer events than existing one
                 logger.debug(
@@ -304,52 +314,75 @@ def _handle_study_already_existing(dataset, ):
                 record_sop_instance_uid(
                     existing_study_uid_match[study_index], new_sop_instance_uid
                 )
-                return {"status": "abort", "existing_sop_instance_uids": existing_sop_instance_uids}
+                return {
+                    "status": "abort",
+                    "existing_sop_instance_uids": existing_sop_instance_uids,
+                }
             elif uid_list.issubset(new_event_uids):
                 # New RDSR has the existing events and more
                 # Check existing one had finished importing
                 # uid_list == None can happen if we only imported NM Images previously
                 try:
-                    existing_study_uid_match[
-                        study_index
-                    ].patientmoduleattr_set.get()
+                    existing_study_uid_match[study_index].patientmoduleattr_set.get()
                     # probably had, so
 
                     logger.debug(
                         "Import match on StudyInstUID {0}. Existing events are subset of new events. Will"
                         " import.".format(study_uid)
                     )
-                    return {"status": "drop_old_continue", "existing_sop_instance_uids": existing_sop_instance_uids,
-                        "study": existing_study_uid_match[study_index]}
+                    return {
+                        "status": "drop_old_continue",
+                        "existing_sop_instance_uids": existing_sop_instance_uids,
+                        "study": existing_study_uid_match[study_index],
+                    }
                 except ObjectDoesNotExist:
-                    return {"status": "retry", "existing_sop_instance_uids": existing_sop_instance_uids}
-            elif None in uid_list: 
+                    return {
+                        "status": "retry",
+                        "existing_sop_instance_uids": existing_sop_instance_uids,
+                    }
+            elif None in uid_list:
                 # This happens for NM studies where only images have been imported so far
                 # because they add a RadiopharmaceuticalAdministrationEventData Object without UID.
                 try:
                     existing_study_uid_match[study_index].patientmoduleattr_set.get()
-                    logger.debug(f"Import match on StudyInstUID {study_uid}. There is already a NM study for"
+                    logger.debug(
+                        f"Import match on StudyInstUID {study_uid}. There is already a NM study for"
                         "which only Images where imported so far. Will delete the "
                         "RadiopharmaceuticalAdministrationEventData and RadiopharmaceuticalRadioationDose"
-                        "and reimport, but keep the PET_Series data if present.")
+                        "and reimport, but keep the PET_Series data if present."
+                    )
                     study = existing_study_uid_match[study_index]
-                    if study.modality_type == "NM" and (dataset.SOPClassUID
+                    if study.modality_type == "NM" and (
+                        dataset.SOPClassUID
                         == "1.2.840.10008.5.1.4.1.1.88.68"  # Radiopharmaceutical Radiation Dose SR
                         and dataset.ConceptNameCodeSequence[0].CodeValue
                         == "113500"  # Radiopharmaceutical Radiation Dose Report
                     ):
                         tmp = study.radiopharmaceuticalradiationdose_set.first()
                         if tmp is not None:
-                            tmp = tmp.radiopharmaceuticaladministrationeventdata_set.first()
+                            tmp = (
+                                tmp.radiopharmaceuticaladministrationeventdata_set.first()
+                            )
                             if tmp is not None:
-                                if tmp.radiopharmaceutical_administration_event_uid is None:
-                                    return {"status": "append_rrdsr", 
+                                if (
+                                    tmp.radiopharmaceutical_administration_event_uid
+                                    is None
+                                ):
+                                    return {
+                                        "status": "append_rrdsr",
                                         "existing_sop_instance_uids": existing_sop_instance_uids,
-                                        "study": study}
+                                        "study": study,
+                                    }
                 except ObjectDoesNotExist:
-                    return {"status": "retry", "existing_sop_instance_uids": existing_sop_instance_uids}
+                    return {
+                        "status": "retry",
+                        "existing_sop_instance_uids": existing_sop_instance_uids,
+                    }
 
-    return {"status": "continue", "existing_sop_instance_uids": existing_sop_instance_uids}
+    return {
+        "status": "continue",
+        "existing_sop_instance_uids": existing_sop_instance_uids,
+    }
 
 
 def _rdsr2db(dataset):
@@ -379,8 +412,12 @@ def _rdsr2db(dataset):
             _update_recorded_objects(existing["study"], dataset)
             _rdsr_rrdsr_contents(dataset, existing["study"])
             radios = existing["study"].radiopharmaceuticalradiationdose_set.all()
-            if radios[0].radiopharmaceuticaladministrationeventdata_set.get(
-                ).radiopharmaceutical_administration_event_uid is None:
+            if (
+                radios[0]
+                .radiopharmaceuticaladministrationeventdata_set.get()
+                .radiopharmaceutical_administration_event_uid
+                is None
+            ):
                 radio_old, radio_new = (radios[0], radios[1])
             else:
                 radio_new, radio_old = (radios[0], radios[1])
@@ -390,7 +427,7 @@ def _rdsr2db(dataset):
         elif existing["status"] == "drop_old_continue":
             existing["study"].delete()
         elif existing["status"] == "continue":
-            pass # We are allowed to proceed importing
+            pass  # We are allowed to proceed importing
 
     g = GeneralStudyModuleAttr.objects.create()
     if not g:  # Allows import to be aborted if no template found

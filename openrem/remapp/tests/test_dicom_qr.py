@@ -1374,8 +1374,7 @@ class PruneSeriesResponseNM(TestCase):
         self.assertEqual(series.count(), 3)
         for serie in series.all():
             self.assertIn(serie.modality, ["SR", "PT", "NM"])
-        
-    
+
     @patch("remapp.netdicom.qrscu._query_images", _fake_image_query)
     def test_prune_ser_resp_pt_image(self):
         """
