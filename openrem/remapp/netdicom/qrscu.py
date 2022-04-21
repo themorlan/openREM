@@ -8,7 +8,7 @@ Specialised QR routine to get just the objects that might be useful for dose rel
 modality
 
 The qrscu routine does basically act using c-find queries to the remote PACS/DICOM node. It progressively asks
-for information about studies, then series, then images storing the (high level) info acquired about them 
+for information about studies, then series, then images storing the (high level) info acquired about them
 in the database as a DicomQuery object.
 On each level data that we are not interested in for some reason (studies that are duplicates; series that are
 excluded by our filters; and so on) are removed from the DicomQuery object.
