@@ -7,12 +7,12 @@ Query/Retrieve SCU AE
 Specialised QR routine to get just the objects that might be useful for dose related metrics from a remote PACS or
 modality
 
-The qrscu routine does basically act using c-find queries to the remote PACS/DICOM node. It progressively asks 
-for information about studies, then series, then images storing the (high level) info acquired about them in the database,
-as a DicomQuery object. 
-On each level data that we are not interested in for some reason (studies that are duplicates; series that are 
+The qrscu routine does basically act using c-find queries to the remote PACS/DICOM node. It progressively asks
+for information about studies, then series, then images storing the (high level) info acquired about them 
+in the database as a DicomQuery object.
+On each level data that we are not interested in for some reason (studies that are duplicates; series that are
 excluded by our filters; and so on) are removed from the DicomQuery object.
-The movescu routing in the end initiates a c-move of all the objects that were not deleted from the query, such that 
+The movescu routing in the end initiates a c-move of all the objects that were not deleted from the query, such that
 those objects are sent to the local DICOM node (e.g. Orthanc). The local dicom node has to be configured such that it
 uses the openrem extractor scripts on receive of DICOM files.
 """

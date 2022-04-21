@@ -208,6 +208,28 @@ def _update_recorded_objects(g, dataset, existing_sop_instance_uids=None):
             record_sop_instance_uid(g, sop_instance_uid)
 
 
+def _get_dataset_event_uids(dataset):
+    """
+    Collect the uids from all events that can be in a dataset
+    and that we care about
+    """
+    new_event_uids = set()
+    for content in dataset.ContentSequence:
+        if content.ValueType and content.ValueType == "CONTAINER":
+            if content.ConceptNameCodeSequence[0].CodeMeaning in (
+                "CT Acquisition",
+                "Irradiation Event X-Ray Data",
+                "Radiopharmaceutical Administration",
+            ):
+                for item in content.ContentSequence:
+                    if item.ConceptNameCodeSequence[0].CodeMeaning in (
+                        "Irradiation Event UID",
+                        "Radiopharmaceutical Administration Event UID",
+                    ):
+                        new_event_uids.add("{0}".format(item.UID))
+    return new_event_uids
+
+
 def _handle_study_already_existing(
     dataset,
 ):
@@ -258,20 +280,7 @@ def _handle_study_already_existing(
             }
         # Either we've not seen it before, or it wasn't recorded when we did.
         # Next find the event UIDs in the RDSR being imported
-        new_event_uids = set()
-        for content in dataset.ContentSequence:
-            if content.ValueType and content.ValueType == "CONTAINER":
-                if content.ConceptNameCodeSequence[0].CodeMeaning in (
-                    "CT Acquisition",
-                    "Irradiation Event X-Ray Data",
-                    "Radiopharmaceutical Administration",
-                ):
-                    for item in content.ContentSequence:
-                        if item.ConceptNameCodeSequence[0].CodeMeaning in (
-                            "Irradiation Event UID",
-                            "Radiopharmaceutical Administration Event UID",
-                        ):
-                            new_event_uids.add("{0}".format(item.UID))
+        new_event_uids = _get_dataset_event_uids(dataset)
         logger.debug(
             "Import match on StudyInstUID {0}. New RDSR event UIDs {1}".format(
                 study_uid, new_event_uids

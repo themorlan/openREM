@@ -28,7 +28,6 @@
 ..  moduleauthor:: Ed McDonagh
 
 """
-from builtins import str
 from decimal import Decimal  # pylint: disable=redefined-builtin
 from pydicom import charset
 from pydicom.charset import default_encoding

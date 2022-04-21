@@ -34,15 +34,14 @@
 ..  moduleauthor:: Jannis Widmer
 """
 from datetime import datetime
-from decimal import Decimal
 import logging
 import os
 import sys
 
 from celery import shared_task
 import django
-import pydicom
 from django.db.models import Q, ObjectDoesNotExist
+import pydicom
 
 # setup django/OpenREM.
 basepath = os.path.dirname(__file__)
