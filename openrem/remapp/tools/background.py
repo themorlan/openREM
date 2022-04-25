@@ -6,14 +6,29 @@ from multiprocessing import Process
 from django import db
 from remapp.models import BackgroundTask
 import os
+import sys
+import traceback
 import time
 import signal
 
 def _run(fun, task_type, *args, **kwargs):
+    """
+    This helper manages the background process. (Create BackgroundTask object,
+    actually call the function, handle Exceptions)
+    """
+
     b = BackgroundTask.objects.create(pid = os.getpid(), task_type=task_type)
     b.save()
-    fun(*args, **kwargs)
-    BackgroundTask.objects.filter(pid__exact=os.getpid()).update(complete=True)
+    try:
+        fun(*args, **kwargs)
+    except Exception: # Literally anything could happen here
+        err_msg =  traceback.format_exc()
+        BackgroundTask.objects.filter(pid__exact=os.getpid()).update(
+            complete=True, completed_successfull=False, status=err_msg)
+        return
+
+    BackgroundTask.objects.filter(pid__exact=os.getpid()).update(
+        complete=True, completed_successfull=True)
 
 def run_in_background(fun, task_type, *args, **kwargs):
     """
@@ -59,5 +74,14 @@ def terminate_background(task: BackgroundTask):
         os.kill(task.pid, signal.SIGTERM)
     else:
         os.kill(task.pid, signal.SIGTERM)
+    task.completed_successfull = False
     task.complete=True
     task.save()
+
+def get_current_task():
+    """
+    Call inside a background process to get the associated BackgroundTask object.
+    If this is not executed in a background Task None will be returned.
+    """
+    task_id = os.getpid()
+    return BackgroundTask.objects.filter(pid__exact=task_id).first()

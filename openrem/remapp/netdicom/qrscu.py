@@ -52,6 +52,7 @@ from remapp.models import (  # pylint: disable=wrong-import-order, wrong-import-
     DicomStoreSCP,
     GeneralStudyModuleAttr,
 )
+from remapp.tools.background import get_current_task, run_in_background
 
 _config.LOG_RESPONSE_IDENTIFIERS = False
 _config.LOG_HANDLER_LEVEL = "none"
@@ -1235,7 +1236,6 @@ def _remove_duplicates_in_study_response(query, initial_count):
         )
         return initial_count
 
-from django.db import transaction
 
 def qrscu(
     qr_scp_pk=None,
@@ -1324,10 +1324,10 @@ def qrscu(
         )
     )
     #celery_task_uuid = qrscu.request.id
-    celery_task_uuid = None
-    if celery_task_uuid is None:
-        celery_task_uuid = uuid.uuid4()
-    logger.debug(f"Celery task UUID is {celery_task_uuid}")
+    task = get_current_task()
+    if task is None:
+        raise NotImplementedError("This currently can only be called as a background task")
+    logger.debug(f"task id is {task.pid}")
 
     # Currently, if called from qrscu_script modalities will either be a list of modalities or it will be "SR".
     # Web interface hasn't changed, so will be a list of modalities and or the inc_sr flag
@@ -1368,7 +1368,6 @@ def qrscu(
 
     query = DicomQuery.objects.create()
     query.query_id = query_id
-    query.query_uuid = celery_task_uuid
     query.complete = False
     query.store_scp_fk = DicomStoreSCP.objects.get(pk=store_scp_pk)
     query.qr_scp_fk = qr_scp
@@ -1410,12 +1409,8 @@ def qrscu(
 
     if assoc.is_established:
 
-        try:
-            celery_task_uuid_8 = celery_task_uuid.hex[:8]
-        except AttributeError:
-            celery_task_uuid_8 = celery_task_uuid[:8]
         logger.info(
-            f"{query_id_8} Celery {celery_task_uuid_8} "
+            f"{query_id_8} "
             f"DICOM FindSCU: {query_summary_1} \n    {query_summary_2} \n    {query_summary_3}"
         )
         d = Dataset()
@@ -2331,7 +2326,9 @@ def qrscu_script():
     args = parser.parse_args()
     processed_args = _process_args(args, parser)
     sys.exit(
-        qrscu.delay(
+        run_in_background(
+            qrscu,
+            "query",
             qr_scp_pk=processed_args["qr_id"],
             store_scp_pk=processed_args["store_id"],
             move=True,
@@ -2345,7 +2342,7 @@ def qrscu_script():
             filters=processed_args["filters"],
             get_toshiba_images=processed_args["get_toshiba"],
             get_empty_sr=processed_args["get_empty_sr"],
-        )
+        ).pid
     )
 
 

@@ -375,7 +375,6 @@ class DicomQuery(models.Model):
     move_warning_sub_ops = models.IntegerField(default=0)
     move_complete = models.BooleanField(default=False)
     move_summary = models.TextField(blank=True)
-    query_uuid = models.UUIDField(null=True)
     move_uuid = models.UUIDField(null=True)
 
 
@@ -2823,4 +2822,5 @@ class BackgroundTask(models.Model):
     pid = models.IntegerField(primary_key=True)
     task_type = models.TextField()
     status = models.TextField(blank=True, null=True)
+    completed_successfull = models.BooleanField(default=False)
     complete = models.BooleanField(default=False)
