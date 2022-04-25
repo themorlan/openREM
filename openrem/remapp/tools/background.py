@@ -2,31 +2,44 @@
 Implements helpers to run and manage sub processes
 """
 
-from multiprocessing import Process
-from django import db
-from django.db.models import Q
-
-from remapp.models import BackgroundTask
 import os
 import traceback
 import time
 import signal
-import uuid as uuidgen
+import sys
+import uuid
+from multiprocessing import Process
 
-def _run(fun, task_type, uuid, *args, **kwargs):
+import django
+from django import db
+from django.db.models import Q
+
+# Setup django. This is required on windows, because process is created via spawn and 
+# django will not be initialized anymore then (On Linux this will only be executed once)
+basepath = os.path.dirname(__file__) 
+projectpath = os.path.abspath(os.path.join(basepath, "..", ".."))
+if projectpath not in sys.path:
+    sys.path.insert(1, projectpath)
+os.environ["DJANGO_SETTINGS_MODULE"] = "openremproject.settings"
+django.setup()
+
+from remapp.models import BackgroundTask
+
+def _run(fun, task_type, taskuuid, *args, **kwargs):
     """
     This helper manages the background process. (Create BackgroundTask object,
     actually call the function, handle Exceptions)
     """
 
     b = BackgroundTask.objects.create(
+        uuid=taskuuid,
         pid = os.getpid(),
-        task_type=task_type,
-        uuid=uuid)
+        task_type=task_type
+    )
     b.save()
     try:
         fun(*args, **kwargs)
-    except Exception: # Literally anything could happen here
+    except: # Literally anything could happen here
         err_msg =  traceback.format_exc()
         BackgroundTask.objects.filter(pid__exact=os.getpid()).update(
             complete=True, completed_successfull=False, status=err_msg)
@@ -59,11 +72,13 @@ def run_in_background(fun, task_type, *args, **kwargs):
     # On linux connection gets copied which leads to problems.
     # Close them so a new one is created for each process
     db.connections.close_all()
-
-    uuid = str(uuidgen.uuid4())
-    p = Process(target=_run,
-    args=(fun, uuid, task_type, *args),
-    kwargs=kwargs)
+    
+    taskuuid = str(uuid.uuid4())
+    p = Process(
+        target=_run,
+        args=(fun, task_type, taskuuid, *args),
+        kwargs=kwargs
+    )
 
     p.start()
     while True: # Wait until the Task object exists or process returns
@@ -75,7 +90,7 @@ def run_in_background(fun, task_type, *args, **kwargs):
             time.sleep(0.2)
         else:
             break
-    return _get_task_via_uuid(uuid)
+    return _get_task_via_uuid(taskuuid)
 
 def terminate_background(task: BackgroundTask):
     """
