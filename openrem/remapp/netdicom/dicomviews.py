@@ -351,7 +351,11 @@ def r_start(request):
     query_id = data.get("queryID")
     resp["queryID"] = query_id
 
-    movescu.delay(query_id)
+    run_in_background(
+        movescu,
+        "move",
+        query_id,
+        )
 
     return HttpResponse(json.dumps(resp), content_type="application/json")
 

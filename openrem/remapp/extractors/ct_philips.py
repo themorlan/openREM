@@ -33,7 +33,6 @@ import logging
 import os
 import sys
 
-from celery import shared_task
 from decimal import Decimal
 import django
 from django.db.models import Max, Min, ObjectDoesNotExist
@@ -363,7 +362,6 @@ def _philips_ct2db(dataset):
     patient_module_attributes(dataset, g)
 
 
-@shared_task(name="remapp.extractors.ct_philips.ct_philips")
 def ct_philips(philips_file):
     """Extract radiation dose structured report related data from Philips CT dose report images
 

@@ -29,8 +29,8 @@
 """
 import datetime
 import logging
+from os import getpid
 
-from celery import shared_task
 from django.core.exceptions import ObjectDoesNotExist
 
 from .export_common import (
@@ -224,7 +224,6 @@ def _dx_get_series_data(s):
     return series_data
 
 
-@shared_task
 def exportDX2excel(filterdict, pid=False, name=None, patid=None, user=None):
     """Export filtered DX database data to a single-sheet CSV file.
 
@@ -240,7 +239,7 @@ def exportDX2excel(filterdict, pid=False, name=None, patid=None, user=None):
 
     datestamp = datetime.datetime.now()
     tsk = create_export_task(
-        celery_uuid=exportDX2excel.request.id,
+        id=getpid(),
         modality="DX",
         export_type="CSV export",
         date_stamp=datestamp,
@@ -334,7 +333,6 @@ def exportDX2excel(filterdict, pid=False, name=None, patid=None, user=None):
     tsk.save()
 
 
-@shared_task
 def dxxlsx(filterdict, pid=False, name=None, patid=None, user=None):
     """Export filtered DX and CR database data to multi-sheet Microsoft XSLX files.
 
@@ -350,7 +348,7 @@ def dxxlsx(filterdict, pid=False, name=None, patid=None, user=None):
 
     datestamp = datetime.datetime.now()
     tsk = create_export_task(
-        celery_uuid=dxxlsx.request.id,
+        id=getpid(),
         modality="DX",
         export_type="XLSX export",
         date_stamp=datestamp,
@@ -498,7 +496,6 @@ def dxxlsx(filterdict, pid=False, name=None, patid=None, user=None):
     write_export(tsk, xlsxfilename, tmpxlsx, datestamp)
 
 
-@shared_task
 def dx_phe_2019(filterdict, user=None, projection=True, bespoke=False):
     """Export filtered DX database data in the format for the 2019 Public Health England DX dose survey
 
@@ -514,7 +511,7 @@ def dx_phe_2019(filterdict, user=None, projection=True, bespoke=False):
 
     datestamp = datetime.datetime.now()
     tsk = create_export_task(
-        celery_uuid=dx_phe_2019.request.id,
+        id=getpid(),
         modality="DX",
         export_type="PHE DX 2019 export",
         date_stamp=datestamp,

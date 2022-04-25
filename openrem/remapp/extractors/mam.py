@@ -44,8 +44,6 @@ if projectpath not in sys.path:
 os.environ["DJANGO_SETTINGS_MODULE"] = "openremproject.settings"
 django.setup()
 
-from celery import shared_task
-
 from .extract_common import (  # pylint: disable=wrong-import-order, wrong-import-position
     patient_module_attributes,
 )
@@ -618,7 +616,6 @@ def _mammo2db(dataset):
                         )
 
 
-@shared_task(name="remapp.extractors.mam.mam")
 def mam(mg_file):
     """Extract radiation dose structured report related data from mammography images
 

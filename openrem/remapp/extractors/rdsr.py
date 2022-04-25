@@ -37,7 +37,6 @@ import sys
 from time import sleep
 
 from django.conf import settings
-from celery import shared_task
 from defusedxml.ElementTree import fromstring, ParseError
 import django
 from django.db.models import Avg, Sum, ObjectDoesNotExist
@@ -2371,7 +2370,7 @@ def _rdsr2db(dataset):
         "calc_on_import", flat=True
     )[0]
     if g.modality_type == "RF" and enable_skin_dose_maps and calc_on_import:
-        make_skin_map.delay(g.pk)
+        make_skin_map(g.pk)
 
     # Calculate summed total DAP and dose at RP for studies that have this study's patient ID, going back week_delta
     # weeks in time from this study date. Only do this if activated in the fluoro alert settings (check whether
@@ -2515,7 +2514,6 @@ def _fix_toshiba_vhp(dataset):
                                     )
 
 
-@shared_task(name="remapp.extractors.rdsr.rdsr")
 def rdsr(rdsr_file):
     """Extract radiation dose related data from DICOM Radiation SR objects.
 

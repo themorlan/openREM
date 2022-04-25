@@ -30,13 +30,12 @@
 import datetime
 import logging
 
-from celery import shared_task
 from django.core.exceptions import ObjectDoesNotExist
+from os import getpid
 
 logger = logging.getLogger(__name__)
 
 
-@shared_task
 def mg_csv_nhsbsp(filterdict, user=None):
     """Export filtered mammography database data to a NHSBSP formatted single-sheet CSV file.
 
@@ -57,7 +56,7 @@ def mg_csv_nhsbsp(filterdict, user=None):
 
     datestamp = datetime.datetime.now()
     tsk = create_export_task(
-        celery_uuid=mg_csv_nhsbsp.request.id,
+        id=getpid(),
         modality="MG",
         export_type="NHSBSP CSV export",
         date_stamp=datestamp,

@@ -36,7 +36,6 @@ import logging
 import traceback
 
 import django
-from celery import shared_task
 
 from .rdsr import rdsr
 from openrem.openremproject.settings import (
@@ -1707,7 +1706,6 @@ def _update_dicom_rdsr(
     return 1
 
 
-@shared_task(name="remapp.extractors.ct_toshiba.ct_toshiba")
 def ct_toshiba(folder_name):
     """Function to create radiation dose structured reports from a folder of dose images.
 

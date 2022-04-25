@@ -30,8 +30,8 @@
 
 import datetime
 import logging
+from os import getpid
 
-from celery import shared_task
 from django.core.exceptions import ObjectDoesNotExist
 
 from .export_common import (
@@ -182,7 +182,6 @@ def _mg_get_series_data(event):
     return series_data
 
 
-@shared_task
 def exportMG2excel(filterdict, pid=False, name=None, patid=None, user=None, xlsx=False):
     """Export filtered mammography database data to a single-sheet CSV file or a multi sheet xlsx file.
 
@@ -204,7 +203,7 @@ def exportMG2excel(filterdict, pid=False, name=None, patid=None, user=None, xlsx
     else:
         export_type = "CSV export"
     tsk = create_export_task(
-        celery_uuid=exportMG2excel.request.id,
+        id=getpid(),
         modality="MG",
         export_type=export_type,
         date_stamp=datestamp,

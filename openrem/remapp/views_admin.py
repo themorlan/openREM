@@ -102,6 +102,7 @@ from .tools.populate_summary import (
     populate_summary_dx,
     populate_summary_rf,
 )
+from remapp.tools.background import run_in_background
 from .tools.send_high_dose_alert_emails import send_rf_high_dose_alert_email
 from .version import __version__, __docs_version__
 
@@ -2574,34 +2575,38 @@ def populate_summary(request):
         except ObjectDoesNotExist:
             task_ct = SummaryFields.objects.create(modality_type="CT")
         if not task_ct.complete:
-            populate_summary_ct.delay()
+            run_in_background(
+                populate_summary_ct,
+                "populate_summary_ct",
+            )
         try:
             task_mg = SummaryFields.objects.get(modality_type__exact="MG")
         except ObjectDoesNotExist:
             task_mg = SummaryFields.objects.create(modality_type="MG")
         if not task_mg.complete:
-            populate_summary_mg.delay()
+            run_in_background(
+                populate_summary_mg,
+                "populate_summary_mg",
+            )
         try:
             task_dx = SummaryFields.objects.get(modality_type__exact="DX")
         except ObjectDoesNotExist:
             task_dx = SummaryFields.objects.create(modality_type="DX")
         if not task_dx.complete:
-            populate_summary_dx.delay()
+            run_in_background(
+                populate_summary_dx,
+                "populate_summary_dx",
+            )
         try:
             task_rf = SummaryFields.objects.get(modality_type__exact="RF")
         except ObjectDoesNotExist:
             task_rf = SummaryFields.objects.create(modality_type="RF")
         if not task_rf.complete:
-            populate_summary_rf.delay()
+            run_in_background(
+                populate_summary_rf,
+                "populate_summary_rf",
+            )
 
-        # task = SummaryFields.get_solo()
-        # if task.complete:
-        #     messages.error(u"Populating summary fields already complete!")
-        #     return redirect(reverse_lazy('home'))
-        # task.status_message = u"Starting migration to populate summary fields"
-        # messages.info = u"Starting migration to populate summary fields"
-        # task.save()
-        # populate_summary.delay()
         return redirect(reverse_lazy("home"))
 
 

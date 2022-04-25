@@ -798,7 +798,7 @@ class SizeUpload(models.Model):
 class Exports(models.Model):
     """Table to hold the export status and filenames"""
 
-    task_id = models.TextField()
+    task_id = models.IntegerField(primary_key=True)
     filename = models.FileField(upload_to="exports/%Y/%m/%d", null=True)
     export_summary = models.TextField(blank=True, null=True)
     status = models.TextField(blank=True, null=True)

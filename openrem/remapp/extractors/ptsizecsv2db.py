@@ -36,7 +36,6 @@ import os
 import sys
 import uuid
 
-from celery import shared_task
 import django
 from django import db
 from django.core.exceptions import ObjectDoesNotExist
@@ -184,7 +183,6 @@ def _ptsizeinsert(size_upload=None, size_dict=None):
     db.reset_queries()
 
 
-@shared_task
 def websizeimport(csv_pk=None):
     """Task to import patient size data from the OpenREM web interface.
 

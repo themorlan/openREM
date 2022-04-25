@@ -17,7 +17,6 @@ import sys
 import uuid
 
 
-from celery import shared_task
 import django
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.translation import gettext as _
@@ -1323,7 +1322,7 @@ def qrscu(
             query_id,
         )
     )
-    #celery_task_uuid = qrscu.request.id
+    
     task = get_current_task()
     if task is None:
         raise NotImplementedError("This currently can only be called as a background task")
@@ -1735,7 +1734,7 @@ def qrscu(
         )
 
         if move:
-            movescu.delay(str(query.query_id))
+            movescu(str(query.query_id))
 
     else:
         if assoc.is_rejected:
@@ -1892,13 +1891,10 @@ def _move_if_established(ae, assoc, d, study_no, series_no, query, remote):
     return False, msg
 
 
-@shared_task(
-    name="remapp.netdicom.qrscu.movescu"
-)  # (name='remapp.netdicom.qrscu.movescu', queue='qr')
 def movescu(query_id):
     """
     C-Move request element of query-retrieve service class user
-    :param query_id: UUID of query in the DicomQuery table
+    :param query_id: ID of query in the DicomQuery table
     :return: None
     """
     # debug_logger()
@@ -1913,12 +1909,9 @@ def movescu(query_id):
         return 0
     query.move_complete = False
     query.failed = False
-    query.move_uuid = movescu.request.id
     query.save()
     qr_scp = query.qr_scp_fk
     store_scp = query.store_scp_fk
-
-    logger.debug(f"movescu uuid is {movescu.request.id}")
 
     ae = AE()
     ae.add_requested_context(StudyRootQueryRetrieveInformationModelMove)
@@ -2344,21 +2337,3 @@ def qrscu_script():
             get_empty_sr=processed_args["get_empty_sr"],
         ).pid
     )
-
-
-# if __name__ == "__main__":
-#     parser = _create_parser()
-#     args = parser.parse_args()
-#     processed_args = _process_args(args, parser)
-#     sys.exit(
-#         qrscu.delay(qr_scp_pk=processed_args['qr_id'],
-#                     store_scp_pk=processed_args['store_id'],
-#                     move=True,
-#                     modalities=processed_args['modalities'],
-#                     remove_duplicates=processed_args['remove_duplicates'],
-#                     date_from=processed_args['dfrom'],
-#                     date_until=processed_args['duntil'],
-#                     filters=processed_args['filters'],
-#                     get_toshiba_images=processed_args['get_toshiba']
-#                     )
-#     )
