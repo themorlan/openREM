@@ -148,7 +148,7 @@ def ctxlsx1(request, name=None, pat_id=None):
             pid["include_pat_id"],
             request.user.id,
         )
-        logger.debug("Export CT to XLSX job is {0}".format(job.pid))
+        logger.debug("Export CT to XLSX job is {0}".format(job.uuid))
 
     return redirect(reverse_lazy("export"))
 
@@ -169,7 +169,7 @@ def ct_xlsx_phe2019(request):
             request.GET,
             request.user.id
         )
-        logger.debug("Export CT to XLSX job is {0}".format(job.pid))
+        logger.debug("Export CT to XLSX job is {0}".format(job.uuid))
     return redirect(reverse_lazy("export"))
 
 
@@ -228,7 +228,7 @@ def dxxlsx1(request, name=None, pat_id=None):
             pid["include_pat_id"],
             request.user.id,
         )
-        logger.debug("Export DX to XLSX job is {0}".format(job.pid))
+        logger.debug("Export DX to XLSX job is {0}".format(job.uuid))
 
     return redirect(reverse_lazy("export"))
 
@@ -279,7 +279,7 @@ def dx_xlsx_phe2019(request, export_type=None):
                     request.user.id,
                     projection=True
                 )
-                logger.debug("Export PHE 2019 DX survey format job is {0}".format(job.pid))
+                logger.debug("Export PHE 2019 DX survey format job is {0}".format(job.uuid))
                 return redirect(reverse_lazy("export"))
             elif "exam" in export_type:
                 if max_events > 6:
@@ -311,7 +311,7 @@ def dx_xlsx_phe2019(request, export_type=None):
                     projection=False,
                     bespoke=bespoke,
                 )
-                logger.debug("Export PHE 2019 DX survey format job is {0}".format(job.pid))
+                logger.debug("Export PHE 2019 DX survey format job is {0}".format(job.uuid))
                 return redirect(reverse_lazy("export"))
         else:
             messages.error(request, "Malformed export URL {0}".format(type))
@@ -355,7 +355,7 @@ def flcsv1(request, name=None, pat_id=None):
             pid["include_pat_id"],
             request.user.id,
         )
-        logger.debug("Export Fluoro to CSV job is {0}".format(job.pid))
+        logger.debug("Export Fluoro to CSV job is {0}".format(job.uuid))
 
     return redirect(reverse_lazy("export"))
 
@@ -385,7 +385,7 @@ def rfxlsx1(request, name=None, pat_id=None):
             pid["include_pat_id"],
             request.user.id,
         )
-        logger.debug("Export Fluoro to XLSX job is {0}".format(job.pid))
+        logger.debug("Export Fluoro to XLSX job is {0}".format(job.uuid))
 
     return redirect(reverse_lazy("export"))
 
@@ -410,7 +410,7 @@ def rfopenskin(request, pk):
             "export_rf",
             export.pk
         )
-        logger.debug("Export Fluoro to openSkin CSV job is {0}".format(job.pid))
+        logger.debug("Export Fluoro to openSkin CSV job is {0}".format(job.uuid))
 
     return redirect(reverse_lazy("export"))
 
@@ -433,7 +433,7 @@ def rf_xlsx_phe2019(request):
             request.GET,
             request.user.id
         )
-        logger.debug("Export PHE 2019 IR/fluoro survey format job is {0}.".format(job.pid))
+        logger.debug("Export PHE 2019 IR/fluoro survey format job is {0}.".format(job.uuid))
         return redirect(reverse_lazy("export"))
     else:
         messages.error(request, "Only users in the Export group can launch exports")
@@ -469,7 +469,7 @@ def mgcsv1(request, name=None, pat_id=None):
             pid["include_pat_id"],
             request.user.id,
         )
-        logger.debug("Export MG to CSV job is {0}".format(job.pid))
+        logger.debug("Export MG to CSV job is {0}".format(job.uuid))
 
     return redirect(reverse_lazy("export"))
 
@@ -500,7 +500,7 @@ def mgxlsx1(request, name=None, pat_id=None):
             user=request.user.id,
             xlsx=True,
         )
-        logger.debug("Export MG to xlsx job is {0}".format(job.pid))
+        logger.debug("Export MG to xlsx job is {0}".format(job.uuid))
 
     return redirect(reverse_lazy("export"))
 
@@ -523,7 +523,7 @@ def mgnhsbsp(request):
             request.GET,
             request.user.id
         )
-        logger.debug("Export MG to CSV NHSBSP job is {0}".format(job.pid))
+        logger.debug("Export MG to CSV NHSBSP job is {0}".format(job.uuid))
 
     return redirect(reverse_lazy("export"))
 

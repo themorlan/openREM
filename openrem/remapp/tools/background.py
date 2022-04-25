@@ -4,20 +4,25 @@ Implements helpers to run and manage sub processes
 
 from multiprocessing import Process
 from django import db
+from django.db.models import Q
+
 from remapp.models import BackgroundTask
 import os
-import sys
 import traceback
 import time
 import signal
+import uuid as uuidgen
 
-def _run(fun, task_type, *args, **kwargs):
+def _run(fun, task_type, uuid, *args, **kwargs):
     """
     This helper manages the background process. (Create BackgroundTask object,
     actually call the function, handle Exceptions)
     """
 
-    b = BackgroundTask.objects.create(pid = os.getpid(), task_type=task_type)
+    b = BackgroundTask.objects.create(
+        pid = os.getpid(),
+        task_type=task_type,
+        uuid=uuid)
     b.save()
     try:
         fun(*args, **kwargs)
@@ -54,14 +59,23 @@ def run_in_background(fun, task_type, *args, **kwargs):
     # On linux connection gets copied which leads to problems.
     # Close them so a new one is created for each process
     db.connections.close_all()
-    p = Process(target=_run, args=(fun, task_type, *args), kwargs=kwargs)
+
+    uuid = str(uuidgen.uuid4())
+    p = Process(target=_run,
+    args=(fun, uuid, task_type, *args),
+    kwargs=kwargs)
+
     p.start()
-    while True:
-        if p.exitcode is None and BackgroundTask.objects.filter(pid__exact=p.pid).count() < 1:
+    while True: # Wait until the Task object exists or process returns
+        if (p.exitcode is None 
+            and BackgroundTask.objects.filter(
+                Q(pid__exact=p.pid) &
+                Q(complete__exact=False)
+            ).count() < 1):
             time.sleep(0.2)
         else:
             break
-    return p
+    return _get_task_via_uuid(uuid)
 
 def terminate_background(task: BackgroundTask):
     """
@@ -78,10 +92,17 @@ def terminate_background(task: BackgroundTask):
     task.complete=True
     task.save()
 
+def _get_task_via_uuid(uuid):
+    return BackgroundTask.objects.filter(uuid__exact=uuid).first()
+
+def _get_task_via_pid(pid):
+    return BackgroundTask.objects.filter(Q(pid__exact=pid) 
+        & Q(complete__exact=False)).first()
+
 def get_current_task():
     """
     Call inside a background process to get the associated BackgroundTask object.
     If this is not executed in a background Task None will be returned.
     """
-    task_id = os.getpid()
-    return BackgroundTask.objects.filter(pid__exact=task_id).first()
+    process_id = os.getpid()
+    return _get_task_via_pid(process_id)

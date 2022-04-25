@@ -1326,7 +1326,7 @@ def qrscu(
     task = get_current_task()
     if task is None:
         raise NotImplementedError("This currently can only be called as a background task")
-    logger.debug(f"task id is {task.pid}")
+    logger.debug(f"task id is {task.uuid}")
 
     # Currently, if called from qrscu_script modalities will either be a list of modalities or it will be "SR".
     # Web interface hasn't changed, so will be a list of modalities and or the inc_sr flag
@@ -2335,5 +2335,5 @@ def qrscu_script():
             filters=processed_args["filters"],
             get_toshiba_images=processed_args["get_toshiba"],
             get_empty_sr=processed_args["get_empty_sr"],
-        ).pid
+        ).uuid
     )
