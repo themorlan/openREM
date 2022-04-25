@@ -1237,7 +1237,6 @@ def _remove_duplicates_in_study_response(query, initial_count):
 
 from django.db import transaction
 
-@transaction.atomic
 def qrscu(
     qr_scp_pk=None,
     store_scp_pk=None,

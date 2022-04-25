@@ -49,6 +49,8 @@ from .. import __docs_version__, __version__
 from ..forms import DicomQueryForm, DicomQRForm, DicomStoreForm
 from ..views_admin import _create_admin_dict
 
+from remapp.tools.background import run_in_background
+
 os.environ["DJANGO_SETTINGS_MODULE"] = "openremproject.settings"
 
 
@@ -198,17 +200,6 @@ def q_update(request):
     return HttpResponse(json.dumps(resp), content_type="application/json")
 
 
-from multiprocessing import Process
-from django import db
-
-def _run(fun, *args, **kwargs):
-    fun(*args, **kwargs)
-
-def run_in_background(fun, *args, **kwargs):
-    db.connections.close_all()
-    p = Process(target=_run, args=(fun, *args), kwargs=kwargs)
-    p.start()
-
 @csrf_exempt
 @login_required
 def q_process(request, *args, **kwargs):
@@ -274,7 +265,9 @@ def q_process(request, *args, **kwargs):
                 "stationname_study": stationname_study_level,
             }
 
-            run_in_background(qrscu,
+            run_in_background(
+                qrscu, 
+                "query",
                 qr_scp_pk=rh_pk,
                 store_scp_pk=store_pk,
                 query_id=query_id,

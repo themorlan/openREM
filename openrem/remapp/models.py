@@ -2817,3 +2817,10 @@ class UpgradeStatus(SingletonModel):
     """
 
     from_0_9_1_summary_fields = models.BooleanField(default=False)
+
+
+class BackgroundTask(models.Model):
+    pid = models.IntegerField(primary_key=True)
+    task_type = models.TextField()
+    status = models.TextField(blank=True, null=True)
+    complete = models.BooleanField(default=False)
