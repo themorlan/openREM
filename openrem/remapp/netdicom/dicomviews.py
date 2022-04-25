@@ -198,6 +198,17 @@ def q_update(request):
     return HttpResponse(json.dumps(resp), content_type="application/json")
 
 
+from multiprocessing import Process
+from django import db
+
+def _run(fun, *args, **kwargs):
+    fun(*args, **kwargs)
+
+def run_in_background(fun, *args, **kwargs):
+    db.connections.close_all()
+    p = Process(target=_run, args=(fun, *args), kwargs=kwargs)
+    p.start()
+
 @csrf_exempt
 @login_required
 def q_process(request, *args, **kwargs):
@@ -263,7 +274,7 @@ def q_process(request, *args, **kwargs):
                 "stationname_study": stationname_study_level,
             }
 
-            qrscu.delay(
+            run_in_background(qrscu,
                 qr_scp_pk=rh_pk,
                 store_scp_pk=store_pk,
                 query_id=query_id,

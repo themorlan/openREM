@@ -1235,10 +1235,9 @@ def _remove_duplicates_in_study_response(query, initial_count):
         )
         return initial_count
 
+from django.db import transaction
 
-@shared_task(
-    name="remapp.netdicom.qrscu.qrscu"
-)  # (name='remapp.netdicom.qrscu.qrscu', queue='qr')
+@transaction.atomic
 def qrscu(
     qr_scp_pk=None,
     store_scp_pk=None,
@@ -1325,7 +1324,8 @@ def qrscu(
             query_id,
         )
     )
-    celery_task_uuid = qrscu.request.id
+    #celery_task_uuid = qrscu.request.id
+    celery_task_uuid = None
     if celery_task_uuid is None:
         celery_task_uuid = uuid.uuid4()
     logger.debug(f"Celery task UUID is {celery_task_uuid}")
