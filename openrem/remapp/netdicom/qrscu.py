@@ -719,7 +719,7 @@ def _get_series_sop_class(ae, remote, assoc, study, query, get_empty_sr, modalit
     :param assoc: Current DICOM query object
     :param study: study level C-Find response object in database
     :param get_empty_sr: Whether to get SR series that return empty at image level query
-    :param only_sr: If True will only check SOP Classes for SR series. Otherwise will check all.
+    :param modality: Basically a filter, the method will only check the SOP classes of series with this modality
     :return: set of SOP classes found for SR/All series
     """
     query_id_8 = _query_id_8(query)
@@ -1322,11 +1322,11 @@ def _duplicate_ct_pet_studies(query, all_mods):
             study_nm.pk = None
             study_nm.set_modalities_in_study(base + ["NM"])
             study_nm.save()
-            for serie in study.dicomqrrspseries_set.all():
-                serie_nm = deepcopy(serie)
-                serie_nm.dicom_qr_rsp_study = study_nm
-                serie_nm.pk = None
-                serie_nm.save()
+            for series in study.dicomqrrspseries_set.all():
+                series_nm = deepcopy(series)
+                series_nm.dicom_qr_rsp_study = study_nm
+                series_nm.pk = None
+                series_nm.save()
 
 
 @shared_task(
