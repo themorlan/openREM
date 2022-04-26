@@ -40,8 +40,9 @@ from django.shortcuts import redirect, render, get_object_or_404
 from django.conf import settings
 from django.urls import reverse, reverse_lazy
 from django.views.decorators.csrf import csrf_exempt
+from openrem.remapp.tools.background import run_in_background, terminate_background
 
-from remapp.models import SizeUpload
+from remapp.models import BackgroundTask, SizeUpload
 from .rdsr import rdsr
 from .dx import dx
 from .mam import mam
@@ -169,7 +170,11 @@ def size_process(request, *args, **kwargs):
                 csvrecord.overwrite = True
             csvrecord.save()
 
-            websizeimport.delay(csv_pk=kwargs["pk"])
+            run_in_background(
+                websizeimport,
+                "import_size",
+                csv_pk=kwargs["pk"],
+            )
 
             return HttpResponseRedirect(reverse_lazy("size_imports"))
 
@@ -311,14 +316,14 @@ def size_abort(request, pk):
 
     :param pk: Size upload task primary key
     """
-    from openremproject.celeryapp import app as celery_app
-
     size_import = get_object_or_404(SizeUpload, pk=pk)
+    task = get_object_or_404(BackgroundTask, uuid=size_import.task_id)
 
     if request.user.groups.filter(
         name="importsizegroup"
     ) or request.users.groups.filter(name="admingroup"):
-        celery_app.control.revoke(size_import.task_id, terminate=True)
+    
+        terminate_background(task)
         size_import.logfile.delete()
         size_import.sizefile.delete()
         size_import.delete()

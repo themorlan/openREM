@@ -1945,36 +1945,30 @@ def tasks(request, stage=None):
 def task_abort(request, task_id=None):
     """Function to abort one of the tasks"""
     if task_id and request.user.groups.filter(name="admingroup"):
-        task = BackgroundTask.objects.filter(uuid__exact=task_id).first()
+        task = get_object_or_404(BackgroundTask, uuid=task_id)
 
-        if not task:
-            messages.error(
-                request,
-                "Failure! Task {0} was not found".format(task_id),
-            )
-        else:
-            try:
-                if task.task_type == "query" or task.task_type == "move":
-                    abort_logger = logging.getLogger("remapp.netdicom.qrscu")
-                    abort_logger.info(
-                        "Query or move task {0} terminated from the Tasks interface".format(
-                            task_id
-                        )
+        try:
+            if task.task_type == "query" or task.task_type == "move":
+                abort_logger = logging.getLogger("remapp.netdicom.qrscu")
+                abort_logger.info(
+                    "Query or move task {0} terminated from the Tasks interface".format(
+                        task_id
                     )
-                else:
-                    abort_logger = logging.getLogger("remapp")
-                    abort_logger.info(
-                        "Task {0} of type {1} terminated from the Tasks interface".format(
-                            task_id, task.task_type
-                        )
+                )
+            else:
+                abort_logger = logging.getLogger("remapp")
+                abort_logger.info(
+                    "Task {0} of type {1} terminated from the Tasks interface".format(
+                        task_id, task.task_type
                     )
-            except ObjectDoesNotExist:
-                pass
-            terminate_background(task)
-            messages.success(
-                request,
-                "Task {0} terminated".format(task_id),
-            )
+                )
+        except ObjectDoesNotExist:
+            pass
+        terminate_background(task)
+        messages.success(
+            request,
+            "Task {0} terminated".format(task_id),
+        )
 
     return redirect(reverse_lazy("task_admin"))
 

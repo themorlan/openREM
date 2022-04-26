@@ -663,11 +663,10 @@ def export_abort(request, pk):
     from remapp.models import Exports, BackgroundTask
 
     export_task = get_object_or_404(Exports, pk=pk)
+    task = get_object_or_404(BackgroundTask, uuid=export_task.task_id)
 
     if request.user.groups.filter(name="exportgroup"):
-        task = BackgroundTask.objects.filter(uuid__exact=export_task.task_id).first()
-        if task is not None:
-            terminate_background(task)
+        terminate_background(task)
         export_task.delete()
         logger.info(
             "Export task {0} terminated from the Exports interface".format(

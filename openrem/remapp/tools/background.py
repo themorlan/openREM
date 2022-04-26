@@ -58,22 +58,24 @@ def run_in_background(fun, task_type, *args, **kwargs):
     """
     Runs fun as background Process.
 
-    This method will create a BackgroundTask object.
-    Inside the calling process it can be obtained via get_current_task().
-    This function will not return until the BackgroundTask object exists. Note that
-    BackgroundTask objects will not be deleted onto completion - instead there
-    complete Flag will be set to True.
+    This method will create a BackgroundTask object, which can be obtained
+    via get_current_task() inside the calling process.
+    This function will not return until the BackgroundTask object exists in the database.
+    Potentially it may only return after the process has already exited.
+    Note that BackgroundTask objects will not be deleted onto completion - instead the
+    complete flag will be set to True.
     This function cannot be used with Django Tests, unless they use TransactionTestCase
     instead of TestCase (which is far slower, so use with caution).
 
     :param fun: The function to run. Note that you should set the status of the task yourself
-        an mark as completed when exiting directly e.g. via sys.exit(). Otherwise the function
-        is expected to return normally on success or to return with an exception on error.
+        and mark as completed when exiting yourself e.g. via sys.exit(). Assuming the function
+        returns normally on success or returns with an exception on error, the status of
+        the BackgroundTask object will be set correctly.
     :param task_type: One of the strings declared in BackgroundTask.task_type. Indicates which
         kind of background process this is supposed to be. (E.g. move, query, ...)
     :param args: Positional arguments. Passed to fun.
     :param kwargs:  Keywords arguments. Passed to fun.
-    :returns: The Process object. Via pid attribute the process id can be obtained.
+    :returns: The BackgroundTask object. 
     """
     # On linux connection gets copied which leads to problems.
     # Close them so a new one is created for each process
@@ -102,13 +104,14 @@ def terminate_background(task: BackgroundTask):
     Terminate a background task by force. Sets complete=True on the task object.
     """
     if os.name == "nt":
-        # On windows this signal is not implemented. The api will just use TerminateProcess instead
+        # On windows this signal is not implemented. The api will just use TerminateProcess instead.
         # The if/else here is only to make absolutely clear that we are not doing the same on windows
         # versus linux and potentially those commands will have to differ at some point in the future.
         os.kill(task.pid, signal.SIGTERM)
     else:
         os.kill(task.pid, signal.SIGTERM)
-    os.waitpid(task.pid, 0)
+
+    os.waitpid(task.pid, 0) # Wait until the process has returned (potentially it already has when we call wait)
     task.completed_successfull = False
     task.complete = True
     task.status = "Forcefully aborted"
