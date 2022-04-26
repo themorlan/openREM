@@ -27,7 +27,7 @@ django.setup()
 from remapp.models import BackgroundTask
 
 
-def _run(fun, task_type, taskuuid, *args, **kwargs):
+def _run(func, task_type, taskuuid, *args, **kwargs):
     """
     This helper manages the background process. (Create BackgroundTask object,
     actually call the function, handle Exceptions)
@@ -41,7 +41,7 @@ def _run(fun, task_type, taskuuid, *args, **kwargs):
     )
     b.save()
     try:
-        fun(*args, **kwargs)
+        func(*args, **kwargs)
     except:  # Literally anything could happen here
         err_msg = traceback.format_exc()
         BackgroundTask.objects.filter(pid__exact=os.getpid()).update(
@@ -54,7 +54,7 @@ def _run(fun, task_type, taskuuid, *args, **kwargs):
     )
 
 
-def run_in_background(fun, task_type, *args, **kwargs):
+def run_in_background(func, task_type, *args, **kwargs):
     """
     Runs fun as background Process.
 
@@ -82,7 +82,7 @@ def run_in_background(fun, task_type, *args, **kwargs):
     db.connections.close_all()
 
     taskuuid = str(uuid.uuid4())
-    p = Process(target=_run, args=(fun, task_type, taskuuid, *args), kwargs=kwargs)
+    p = Process(target=_run, args=(func, task_type, taskuuid, *args), kwargs=kwargs)
 
     p.start()
     while True:  # Wait until the Task object exists or process returns
