@@ -52,17 +52,17 @@ def run_in_background(fun, task_type, *args, **kwargs):
     """
     Runs fun as background Process.
 
-    This method will create a BackgroundTask object, the primary key of which
-    corresponds to the process id (pid). Inside the background process this Id may
-    be read via os.getpid(). Inside the calling process it can be obtained via
-    the pid argument of return value.
-    The function will not return until the BackgroundTask object exists. Note that 
+    This method will create a BackgroundTask object.
+    Inside the calling process it can be obtained via get_current_task().
+    This function will not return until the BackgroundTask object exists. Note that 
     BackgroundTask objects will not be deleted onto completion - instead there
     complete Flag will be set to True.
     This function cannot be used with Django Tests, unless they use TransactionTestCase
     instead of TestCase (which is far slower, so use with caution).
 
-    :param fun: The function to run
+    :param fun: The function to run. Note that you should set the status of the task yourself
+        an mark as completed when exiting directly e.g. via sys.exit(). Otherwise the function
+        is expected to return normally on success or to return with an exception on error.
     :param task_type: One of the strings declared in BackgroundTask.task_type. Indicates which
         kind of background process this is supposed to be. (E.g. move, query, ...)
     :param args: Positional arguments. Passed to fun. 
@@ -94,7 +94,7 @@ def run_in_background(fun, task_type, *args, **kwargs):
 
 def terminate_background(task: BackgroundTask):
     """
-    Terminate a background task by force. Sets complete=True on the task object
+    Terminate a background task by force. Sets complete=True on the task object.
     """
     if os.name == 'nt':
         # On windows this signal is not implemented. The api will just use TerminateProcess instead
