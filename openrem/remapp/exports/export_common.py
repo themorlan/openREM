@@ -755,8 +755,7 @@ def create_export_task(
             del removed_blanks["itemsPerPage"]
     no_plot_filters_dict = {k: v for k, v in removed_blanks.items() if "plot" not in k}
 
-    task = Exports.objects.create()
-    task.task_id = id
+    task = Exports.objects.create(task_id = id)
     task.modality = modality
     task.export_type = export_type
     task.export_date = date_stamp

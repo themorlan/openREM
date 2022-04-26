@@ -29,7 +29,7 @@
 """
 import datetime
 import logging
-from os import getpid
+from remapp.tools.background import get_current_task
 
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -238,8 +238,11 @@ def exportDX2excel(filterdict, pid=False, name=None, patid=None, user=None):
     from ..interface.mod_filters import dx_acq_filter
 
     datestamp = datetime.datetime.now()
+    task_id = get_current_task()
+    if task_id is not None:
+        task_id = task_id.uuid
     tsk = create_export_task(
-        id=getpid(),
+        id=task_id,
         modality="DX",
         export_type="CSV export",
         date_stamp=datestamp,
@@ -347,8 +350,11 @@ def dxxlsx(filterdict, pid=False, name=None, patid=None, user=None):
     from ..interface.mod_filters import dx_acq_filter
 
     datestamp = datetime.datetime.now()
+    task_id = get_current_task()
+    if task_id is not None:
+        task_id = task_id.uuid
     tsk = create_export_task(
-        id=getpid(),
+        id=task_id,
         modality="DX",
         export_type="XLSX export",
         date_stamp=datestamp,
@@ -510,8 +516,11 @@ def dx_phe_2019(filterdict, user=None, projection=True, bespoke=False):
     from ..interface.mod_filters import dx_acq_filter
 
     datestamp = datetime.datetime.now()
+    task_id = get_current_task()
+    if task_id is not None:
+        task_id = task_id.uuid
     tsk = create_export_task(
-        id=getpid(),
+        id=task_id,
         modality="DX",
         export_type="PHE DX 2019 export",
         date_stamp=datestamp,

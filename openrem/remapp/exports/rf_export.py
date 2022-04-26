@@ -30,7 +30,7 @@
 
 import datetime
 import logging
-from os import getpid
+from remapp.tools.background import get_current_task
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Avg, Max, Min
@@ -255,8 +255,11 @@ def rfxlsx(filterdict, pid=False, name=None, patid=None, user=None):
     """
 
     datestamp = datetime.datetime.now()
+    task_id = get_current_task()
+    if task_id is not None:
+        task_id = task_id.uuid
     tsk = create_export_task(
-        id=getpid(),
+        id=task_id,
         modality="RF",
         export_type="XLSX export",
         date_stamp=datestamp,
@@ -631,8 +634,11 @@ def exportFL2excel(filterdict, pid=False, name=None, patid=None, user=None):
     """
 
     datestamp = datetime.datetime.now()
+    task_id = get_current_task()
+    if task_id is not None:
+        task_id = task_id.uuid
     tsk = create_export_task(
-        id=getpid(),
+        id=task_id,
         modality="RF",
         export_type="CSV export",
         date_stamp=datestamp,
@@ -726,8 +732,11 @@ def rfopenskin(studyid):
     """
 
     datestamp = datetime.datetime.now()
+    task_id = get_current_task()
+    if task_id is not None:
+        task_id = task_id.uuid
     tsk = create_export_task(
-        id=getpid(),
+        id=task_id,
         modality="RF-OpenSkin",
         export_type="OpenSkin RF csv export",
         date_stamp=datestamp,
@@ -977,8 +986,11 @@ def rf_phe_2019(filterdict, user=None):
     """
 
     datestamp = datetime.datetime.now()
+    task_id = get_current_task()
+    if task_id is not None:
+        task_id = task_id.uuid
     tsk = create_export_task(
-        id=getpid(),
+        id=task_id,
         modality="RF",
         export_type="PHE RF 2019 export",
         date_stamp=datestamp,

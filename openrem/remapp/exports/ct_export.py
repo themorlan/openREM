@@ -31,7 +31,7 @@ import logging
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.translation import gettext as _
-from os import getpid
+from remapp.tools.background import get_current_task
 
 from .export_common import (
     get_common_data,
@@ -64,8 +64,11 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
     from ..interface.mod_filters import ct_acq_filter
 
     datestamp = datetime.datetime.now()
+    task_id = get_current_task()
+    if task_id is not None:
+        task_id = task_id.uuid
     tsk = create_export_task(
-        id = getpid(),
+        id=task_id,
         modality="CT",
         export_type="XLSX_export",
         date_stamp=datestamp,
@@ -225,8 +228,11 @@ def ct_csv(filterdict, pid=False, name=None, patid=None, user=None):
     from ..interface.mod_filters import ct_acq_filter
 
     datestamp = datetime.datetime.now()
+    task_id = get_current_task()
+    if task_id is not None:
+        task_id = task_id.uuid
     tsk = create_export_task(
-        id=getpid(),
+        id=task_id,
         modality="CT",
         export_type="CSV export",
         date_stamp=datestamp,
@@ -534,8 +540,11 @@ def ct_phe_2019(filterdict, user=None):
     from ..interface.mod_filters import ct_acq_filter
 
     datestamp = datetime.datetime.now()
+    task_id = get_current_task()
+    if task_id is not None:
+        task_id = task_id.uuid
     tsk = create_export_task(
-        id=getpid(),
+        id=task_id,
         modality="CT",
         export_type="PHE CT 2019 export",
         date_stamp=datestamp,

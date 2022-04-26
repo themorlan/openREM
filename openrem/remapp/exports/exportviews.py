@@ -41,7 +41,7 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from django.urls import reverse_lazy
 import remapp
-from remapp.tools.background import run_in_background
+from remapp.tools.background import run_in_background, terminate_background
 
 logger = logging.getLogger(__name__)
 
@@ -166,6 +166,7 @@ def ct_xlsx_phe2019(request):
     if request.user.groups.filter(name="exportgroup"):
         job = run_in_background(
             ct_phe_2019,
+            "export_ct",
             request.GET,
             request.user.id
         )
@@ -275,6 +276,7 @@ def dx_xlsx_phe2019(request, export_type=None):
                     )
                 job = run_in_background(
                     dx_phe_2019,
+                    "export_dx",
                     request.GET,
                     request.user.id,
                     projection=True
@@ -306,6 +308,7 @@ def dx_xlsx_phe2019(request, export_type=None):
                     messages.info(request, "PHE 2019 DX Study export started.")
                 job = run_in_background(
                     dx_phe_2019,
+                    "export_dx",
                     request.GET,
                     request.user.id,
                     projection=False,
@@ -427,9 +430,9 @@ def rf_xlsx_phe2019(request):
     from remapp.exports.rf_export import rf_phe_2019
 
     if request.user.groups.filter(name="exportgroup"):
-        messages.info(request, "PHE 2019 IR/fluoro export started")
         job = run_in_background(
             rf_phe_2019,
+            "export_rf",
             request.GET,
             request.user.id
         )
@@ -668,12 +671,14 @@ def export_abort(request, pk):
     """
     from django.http import HttpResponseRedirect
     from django.shortcuts import get_object_or_404
-    from remapp.models import Exports
+    from remapp.models import Exports, BackgroundTask
 
     export_task = get_object_or_404(Exports, pk=pk)
 
     if request.user.groups.filter(name="exportgroup"):
-        celery_app.control.revoke(export_task.task_id, terminate=True)
+        task = BackgroundTask.objects.filter(uuid__exact=export_task.task_id).first()
+        if task is not None:
+            terminate_background(task)
         export_task.delete()
         logger.info(
             "Export task {0} terminated from the Exports interface".format(

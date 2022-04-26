@@ -105,6 +105,7 @@ def terminate_background(task: BackgroundTask):
         os.kill(task.pid, signal.SIGTERM)
     else:
         os.kill(task.pid, signal.SIGTERM)
+    os.waitpid(task.pid, 0)
     task.completed_successfull = False
     task.complete=True
     task.status = "Forcefully aborted"

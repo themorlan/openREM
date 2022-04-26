@@ -31,7 +31,7 @@ import datetime
 import logging
 
 from django.core.exceptions import ObjectDoesNotExist
-from os import getpid
+from remapp.tools.background import get_current_task
 
 logger = logging.getLogger(__name__)
 
@@ -55,8 +55,11 @@ def mg_csv_nhsbsp(filterdict, user=None):
     )
 
     datestamp = datetime.datetime.now()
+    task_id = get_current_task()
+    if task_id is not None:
+        task_id = task_id.uuid
     tsk = create_export_task(
-        id=getpid(),
+        id=task_id,
         modality="MG",
         export_type="NHSBSP CSV export",
         date_stamp=datestamp,
