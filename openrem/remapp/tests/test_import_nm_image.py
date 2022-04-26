@@ -1,6 +1,6 @@
 # This Python file uses the following encoding: utf-8
 #    OpenREM - Radiation Exposure Monitoring tools for the physicist
-#    Copyright (C) 2012,2013  The Royal Marsden NHS Foundation Trust
+#    Copyright (C) 2022  The Royal Marsden NHS Foundation Trust
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -243,6 +243,9 @@ class ImportNMImage(ImportTest):
         self._check_values(study, self._get_pet_simens_rrdsr_one_img_combined())
 
     def test_pet_image_rrdsr(self):
+        """
+        Loads the PET-Image, followed by an associated rrdsr
+        """
         img_loc = self._get_dcm_file("test_files/NM-PetIm-Siemens.dcm")
         nm_image(img_loc)
         rrdsr_file = self._get_dcm_file("test_files/NM-RRDSR-Siemens.dcm")

@@ -31,6 +31,7 @@ from remapp.extractors import rdsr
 from remapp.models import GeneralStudyModuleAttr, PatientIDSettings
 
 class ImportTest(TestCase):
+
     def _get_dcm_file(self, dicom_file):
         root_tests = os.path.dirname(os.path.abspath(__file__))
         dicom_path = os.path.join(root_tests, dicom_file)
