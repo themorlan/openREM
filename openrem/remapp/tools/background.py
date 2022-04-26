@@ -9,6 +9,7 @@ import signal
 import sys
 import uuid
 from multiprocessing import Process
+import datetime
 
 import django
 from django import db
@@ -34,7 +35,8 @@ def _run(fun, task_type, taskuuid, *args, **kwargs):
     b = BackgroundTask.objects.create(
         uuid=taskuuid,
         pid = os.getpid(),
-        task_type=task_type
+        task_type=task_type,
+        started_at=datetime.datetime.now()
     )
     b.save()
     try:
@@ -105,6 +107,7 @@ def terminate_background(task: BackgroundTask):
         os.kill(task.pid, signal.SIGTERM)
     task.completed_successfull = False
     task.complete=True
+    task.status = "Forcefully aborted"
     task.save()
 
 def _get_task_via_uuid(uuid):

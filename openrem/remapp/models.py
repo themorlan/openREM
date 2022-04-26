@@ -2825,3 +2825,4 @@ class BackgroundTask(models.Model):
     status = models.TextField(blank=True, null=True)
     completed_successfull = models.BooleanField(default=False)
     complete = models.BooleanField(default=False)
+    started_at = models.DateTimeField()
