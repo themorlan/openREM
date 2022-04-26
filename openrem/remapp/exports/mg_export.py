@@ -30,7 +30,7 @@
 
 import datetime
 import logging
-from remapp.tools.background import get_current_task
+from remapp.tools.background import get_or_generate_task_uuid
 
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -202,9 +202,7 @@ def exportMG2excel(filterdict, pid=False, name=None, patid=None, user=None, xlsx
         export_type = "XLSX export"
     else:
         export_type = "CSV export"
-    task_id = get_current_task()
-    if task_id is not None:
-        task_id = task_id.uuid
+    task_id = get_or_generate_task_uuid()
     tsk = create_export_task(
         id=task_id,
         modality="MG",

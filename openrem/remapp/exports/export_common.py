@@ -741,7 +741,7 @@ def create_export_task(id, modality, export_type, date_stamp, pid, user, filters
     """
 
     if id is None:
-        id = int(uuid.uuid4().int)
+        id = str(uuid.uuid4())
 
     removed_blanks = {k: v for k, v in filters_dict.items() if v}
     if removed_blanks:
