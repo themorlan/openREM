@@ -228,7 +228,7 @@ class ImportNMImage(ImportTest):
         }
 
     @patch("remapp.extractors.nm_image.logger")
-    def test_pet_image_rrdsr(self, logger_mock):
+    def test_rrdsr_pet_image(self, logger_mock):
         """
         Loads the rrdsr, followed by an associated PET-Image
         """
@@ -242,7 +242,7 @@ class ImportNMImage(ImportTest):
         study = GeneralStudyModuleAttr.objects.get()
         self._check_values(study, self._get_pet_simens_rrdsr_one_img_combined())
 
-    def test_rrdsr_pet_image(self):
+    def test_pet_image_rrdsr(self):
         img_loc = self._get_dcm_file("test_files/NM-PetIm-Siemens.dcm")
         nm_image(img_loc)
         rrdsr_file = self._get_dcm_file("test_files/NM-RRDSR-Siemens.dcm")
