@@ -137,7 +137,7 @@ def _isotope(study, dataset):
     (such that SOPClassUID can be read)
     """
     is_nm_img = dataset.SOPClassUID == "1.2.840.10008.5.1.4.1.1.20"
-    dataset = dataset[0x54, 0x16].value[0]
+    dataset = dataset[0x54, 0x16].value[0] # Radio​pharmaceutical​Information​Sequence
 
     float_not_equal = lambda x, y: abs(x - y) > 10e-5
     float_convert = Decimal
@@ -317,7 +317,7 @@ def _nm2db(dataset):
 
 
 @shared_task(name="remapp.extractors.nm_image.nm_image")
-def nm_image(file: str):
+def nm_image(filename: str):
     """
     Extract radiation dose related data from DICOM PET/NM-Image.
 
@@ -329,7 +329,7 @@ def nm_image(file: str):
     except ObjectDoesNotExist:
         del_nm_im = False
 
-    dataset = pydicom.dcmread(file)
+    dataset = pydicom.dcmread(filename)
     dataset.decode()
 
     if dataset.SOPClassUID in [
@@ -338,12 +338,13 @@ def nm_image(file: str):
     ]:
         _nm2db(dataset)
     else:
-        logger.error(f"{file} is not an NM or PET Image. Will not import.")
+        logger.error(f"{filename} is not an NM or PET Image. Will not import.")
 
     if del_nm_im:
-        os.remove(file)
+        os.remove(filename)
 
     return 0
+
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
