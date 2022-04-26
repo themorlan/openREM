@@ -40,6 +40,7 @@ import django
 from django import db
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.files.base import ContentFile
+from openrem.remapp.tools.background import get_or_generate_task_uuid
 
 
 logger = logging.getLogger(__name__)
@@ -193,7 +194,7 @@ def websizeimport(csv_pk=None):
 
     if csv_pk:
         size_upload = SizeUpload.objects.all().filter(id__exact=csv_pk)[0]
-        size_upload.task_id = websizeimport.request.id
+        size_upload.task_id = get_or_generate_task_uuid()
         datestamp = datetime.datetime.now()
         size_upload.import_date = datestamp
         size_upload.progress = "Patient size data import started"

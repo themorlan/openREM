@@ -727,9 +727,7 @@ def abort_if_zero_studies(num_studies, tsk):
         return False
 
 
-def create_export_task(
-    id, modality, export_type, date_stamp, pid, user, filters_dict
-):
+def create_export_task(id, modality, export_type, date_stamp, pid, user, filters_dict):
     """Create export task, add filter details and Task UUID to export table to track later
 
     :param id: The id allocated for this task
@@ -755,7 +753,7 @@ def create_export_task(
             del removed_blanks["itemsPerPage"]
     no_plot_filters_dict = {k: v for k, v in removed_blanks.items() if "plot" not in k}
 
-    task = Exports.objects.create(task_id = id)
+    task = Exports.objects.create(task_id=id)
     task.modality = modality
     task.export_type = export_type
     task.export_date = date_stamp

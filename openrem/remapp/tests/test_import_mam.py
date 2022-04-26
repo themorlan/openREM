@@ -41,44 +41,44 @@ class ImportMGImg(TestCase):
         # Test that study level data is recorded correctly
         self.assertEqual(study.study_date, datetime.date(2013, 4, 12))
         self.assertEqual(study.study_time, datetime.time(12, 35, 46))
-        self.assertEqual(study.accession_number, u"AAAA9876")
-        self.assertEqual(study.modality_type, u"MG")
+        self.assertEqual(study.accession_number, "AAAA9876")
+        self.assertEqual(study.modality_type, "MG")
 
-        institution_name_string = u"Institution name is {0}".format(
+        institution_name_string = "Institution name is {0}".format(
             study.generalequipmentmoduleattr_set.get().institution_name
         )
-        self.assertEqual(institution_name_string, u"Institution name is 中心医院")
+        self.assertEqual(institution_name_string, "Institution name is 中心医院")
         self.assertEqual(
             study.generalequipmentmoduleattr_set.get().manufacturer,
-            u"GE MEDICAL SYSTEMS",
+            "GE MEDICAL SYSTEMS",
         )
         self.assertEqual(
-            study.generalequipmentmoduleattr_set.get().institution_address, u"Москва"
+            study.generalequipmentmoduleattr_set.get().institution_address, "Москва"
         )
         self.assertEqual(
-            study.generalequipmentmoduleattr_set.get().station_name, u"SENODS01"
+            study.generalequipmentmoduleattr_set.get().station_name, "SENODS01"
         )
         self.assertEqual(
             study.generalequipmentmoduleattr_set.get().manufacturer_model_name,
-            u"Senograph DS ADS_43.10.1",
+            "Senograph DS ADS_43.10.1",
         )
         self.assertEqual(
-            study.generalequipmentmoduleattr_set.get().device_serial_number, u"843b85b7"
+            study.generalequipmentmoduleattr_set.get().device_serial_number, "843b85b7"
         )
         self.assertEqual(
             study.generalequipmentmoduleattr_set.get().software_versions,
-            u"Ads Application Package VERSION ADS_43.10.1",
+            "Ads Application Package VERSION ADS_43.10.1",
         )
 
         # Test that patient study level data is recorded correctly
-        self.assertEqual(study.patientstudymoduleattr_set.get().patient_age, u"001D")
-        self.assertEqual(study.patientmoduleattr_set.get().patient_sex, u"O")
+        self.assertEqual(study.patientstudymoduleattr_set.get().patient_age, "001D")
+        self.assertEqual(study.patientmoduleattr_set.get().patient_sex, "O")
 
         self.assertEqual(
             study.projectionxrayradiationdose_set.get()
             .irradeventxraydata_set.get()
             .acquisition_protocol,
-            u"ROUTINE",
+            "ROUTINE",
         )
         self.assertAlmostEqual(
             study.projectionxrayradiationdose_set.get()
@@ -145,7 +145,7 @@ class ImportMGImg(TestCase):
             .irradeventxraydata_set.get()
             .irradeventxraysourcedata_set.get()
             .anode_target_material.code_meaning,
-            u"Rhodium or Rhodium compound",
+            "Rhodium or Rhodium compound",
         )
         self.assertEqual(
             study.projectionxrayradiationdose_set.get()
@@ -153,7 +153,7 @@ class ImportMGImg(TestCase):
             .irradeventxraysourcedata_set.get()
             .xrayfilters_set.get()
             .xray_filter_material.code_meaning,
-            u"Rhodium or Rhodium compound",
+            "Rhodium or Rhodium compound",
         )
         self.assertAlmostEqual(
             study.projectionxrayradiationdose_set.get()
@@ -275,9 +275,9 @@ class ImportMGImg(TestCase):
 
         # Test that patient identifiable data is stored in plain text
         self.assertEqual(
-            study.patientmoduleattr_set.get().patient_name, u"Mamografía^Bịnhnhân"
+            study.patientmoduleattr_set.get().patient_name, "Mamografía^Bịnhnhân"
         )
-        self.assertEqual(study.patientmoduleattr_set.get().patient_id, u"ABCD1234")
+        self.assertEqual(study.patientmoduleattr_set.get().patient_id, "ABCD1234")
         birth_date = datetime.date(2013, 4, 12)
         self.assertEqual(
             study.patientmoduleattr_set.get().patient_birth_date, birth_date
@@ -389,8 +389,8 @@ class ImportDuplicatesMG(TestCase):
                 (
                     "remapp.extractors.mam",
                     "DEBUG",
-                    u"A previous MG object with this study UID (1.3.6.1.4.1.5962.99.1.1270844358.1571783457"
-                    u".1525984267206.3.0) and time (2013-04-12T13:22:23) has been imported. Stopping",
+                    "A previous MG object with this study UID (1.3.6.1.4.1.5962.99.1.1270844358.1571783457"
+                    ".1525984267206.3.0) and time (2013-04-12T13:22:23) has been imported. Stopping",
                 )
             )
 
@@ -432,7 +432,7 @@ class ImportDuplicatesMG(TestCase):
                 (
                     "remapp.extractors.mam",
                     "DEBUG",
-                    u"MG instance UID 1.3.6.1.4.1.5962.99.1.1270844358.1571783457.1525984267206.2.0 of study UID "
-                    u"1.3.6.1.4.1.5962.99.1.1270844358.1571783457.1525984267206.3.0 previously processed, stopping.",
+                    "MG instance UID 1.3.6.1.4.1.5962.99.1.1270844358.1571783457.1525984267206.2.0 of study UID "
+                    "1.3.6.1.4.1.5962.99.1.1270844358.1571783457.1525984267206.3.0 previously processed, stopping.",
                 )
             )

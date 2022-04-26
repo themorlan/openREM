@@ -102,9 +102,9 @@ class DAPUnitsTest(TestCase):
         from remapp.extractors.rdsr import _check_dap_units
 
         units_sequence = Dataset()
-        units_sequence.CodeValue = u"dGy.cm2"
-        units_sequence.CodingSchemeDesignator = u"UCUM"
-        units_sequence.CodeMeaning = u"dGy.cm2"
+        units_sequence.CodeValue = "dGy.cm2"
+        units_sequence.CodingSchemeDesignator = "UCUM"
+        units_sequence.CodeMeaning = "dGy.cm2"
         measured_values_sequence = Dataset()
         measured_values_sequence.NumericValue = 1.034
         measured_values_sequence.MeasurementUnitsCodeSequence = Sequence(
@@ -124,9 +124,9 @@ class DAPUnitsTest(TestCase):
         from remapp.extractors.rdsr import _check_dap_units
 
         units_sequence = Dataset()
-        units_sequence.CodeValue = u"Gym2"
-        units_sequence.CodingSchemeDesignator = u"UCUM"
-        units_sequence.CodeMeaning = u"Gym2"
+        units_sequence.CodeValue = "Gym2"
+        units_sequence.CodingSchemeDesignator = "UCUM"
+        units_sequence.CodeMeaning = "Gym2"
         measured_values_sequence = Dataset()
         measured_values_sequence.NumericValue = 1.6e-005
         measured_values_sequence.MeasurementUnitsCodeSequence = Sequence(
@@ -166,9 +166,9 @@ class RPDoseUnitsTest(TestCase):
         from remapp.extractors.rdsr import _check_rp_dose_units
 
         units_sequence = Dataset()
-        units_sequence.CodeValue = u"mGy"
-        units_sequence.CodingSchemeDesignator = u"UCUM"
-        units_sequence.CodeMeaning = u"mGy"
+        units_sequence.CodeValue = "mGy"
+        units_sequence.CodingSchemeDesignator = "UCUM"
+        units_sequence.CodeMeaning = "mGy"
         measured_values_sequence = Dataset()
         measured_values_sequence.NumericValue = 1.034
         measured_values_sequence.MeasurementUnitsCodeSequence = Sequence(
@@ -188,9 +188,9 @@ class RPDoseUnitsTest(TestCase):
         from remapp.extractors.rdsr import _check_rp_dose_units
 
         units_sequence = Dataset()
-        units_sequence.CodeValue = u"Gy"
-        units_sequence.CodingSchemeDesignator = u"UCUM"
-        units_sequence.CodeMeaning = u"Gy"
+        units_sequence.CodeValue = "Gy"
+        units_sequence.CodingSchemeDesignator = "UCUM"
+        units_sequence.CodeMeaning = "Gy"
         measured_values_sequence = Dataset()
         measured_values_sequence.NumericValue = 1.6e-003
         measured_values_sequence.MeasurementUnitsCodeSequence = Sequence(
@@ -280,7 +280,7 @@ class ImportRFRDSRGESurgical(TestCase):
         device_observer_uid = (
             study.generalequipmentmoduleattr_set.get().unique_equipment_name.device_observer_uid
         )
-        self.assertEqual(device_observer_uid, u"1.3.6.1.4.1.45593.912345678.9876543123")
+        self.assertEqual(device_observer_uid, "1.3.6.1.4.1.45593.912345678.9876543123")
 
         accum_proj = (
             study.projectionxrayradiationdose_set.get()
@@ -305,10 +305,10 @@ class ImportRFRDSRGESurgical(TestCase):
         self.assertEqual(
             event_4.date_time_started, datetime.datetime(2019, 3, 16, 13, 27, 25)
         )
-        self.assertEqual(event_4.reference_point_definition.code_value, u"113861")
+        self.assertEqual(event_4.reference_point_definition.code_value, "113861")
         self.assertEqual(
             event_4.irradiation_event_uid,
-            u"1.3.6.1.4.1.5962.99.1.3577657414.286912992.1554060884038.8.0",
+            "1.3.6.1.4.1.5962.99.1.3577657414.286912992.1554060884038.8.0",
         )
         self.assertAlmostEqual(event_4.dose_area_product, Decimal(0.00004334))
         event_4_source = event_4.irradeventxraysourcedata_set.get()
@@ -320,10 +320,10 @@ class ImportRFRDSRGESurgical(TestCase):
             event_4_source.average_xray_tube_current, Decimal(18.90340042)
         )
         self.assertEqual(
-            event_4_source.xraygrid_set.get().xray_grid.code_meaning, u"Fixed Grid"
+            event_4_source.xraygrid_set.get().xray_grid.code_meaning, "Fixed Grid"
         )
         self.assertEqual(
-            event_4_source.xraygrid_set.get().xray_grid.code_value, u"111641"
+            event_4_source.xraygrid_set.get().xray_grid.code_value, "111641"
         )
 
         # Test summary fields

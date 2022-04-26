@@ -294,7 +294,6 @@ def rf_summary_list_filter(request):
         "docsversion": __docs_version__,
     }
 
-
     for group in request.user.groups.all():
         admin[group.name] = True
 

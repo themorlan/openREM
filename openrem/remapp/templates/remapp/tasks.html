@@ -1,9 +1,9 @@
 <table class="table sortable" id="{{ type }}">
   <tr>
-    <th id="uuid_{{ type }}" onclick="updateSort(this.id, 'user_click');" style="width: 15%">UUID</th>
-    <th id="task_{{ type }}" onclick="updateSort(this.id, 'user_click');" style="width: 19%">Task type</th>
-    <th id="result_{{ type }}" onclick="updateSort(this.id, 'user_click');" style="width: 15%">Message</th>
-    <th id="started_{{ type }}" onclick="updateSort(this.id, 'user_click');" style="width: 13%">Started</th>
+    <th id="uuid_{{ type }}" onclick="updateSort(this.id, 'user_click');">UUID</th>
+    <th id="task_{{ type }}" onclick="updateSort(this.id, 'user_click');">Task type</th>
+    <th id="result_{{ type }}" onclick="updateSort(this.id, 'user_click');">Message</th>
+    <th id="started_{{ type }}" onclick="updateSort(this.id, 'user_click');">Started</th>
     <th id="state_{{ type }}" onclick="updateSort(this.id, 'user_click');">State</th>
     {% if type == 'active' %} 
       <th id="abort">Abort Task</th>
@@ -37,7 +37,6 @@
 
 <script>
     $(document).ready(function () {
-        document.getElementById("{{ type }}")
         var taskTable{{ type }} = document.getElementById("{{ type }}");
         sorttable.makeSortable(taskTable{{ type }});
         updateSort(sort_info_{{ type }}.heading);

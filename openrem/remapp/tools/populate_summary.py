@@ -168,6 +168,7 @@ def populate_summary_dx():
         task.current_study += 1
         task.save()
 
+
 def populate_summary_rf():
     """Populate the RF summary fields in GeneralStudyModuleAttr table for existing studies
 

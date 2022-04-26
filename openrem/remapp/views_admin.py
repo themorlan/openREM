@@ -777,16 +777,19 @@ def reset_dual(pk=None):
         .exclude(modality_type__exact="CR")
         .exclude(modality_type__exact="PX")
     )
-    message_start = "Reprocessing dual for {0}. Number of studies is {1}, of which {2} are " "DX, {3} are CR, {4} are PX, {5} are RF and {6} are something else before processing,".format(  # pylint: disable=line-too-long
-        studies[0]
-        .generalequipmentmoduleattr_set.get()
-        .unique_equipment_name.display_name,
-        studies.count(),
-        studies.filter(modality_type__exact="DX").count(),
-        studies.filter(modality_type__exact="CR").count(),
-        studies.filter(modality_type__exact="PX").count(),
-        studies.filter(modality_type__exact="RF").count(),
-        not_dx_rf_cr.count(),
+    message_start = (
+        "Reprocessing dual for {0}. Number of studies is {1}, of which {2} are "
+        "DX, {3} are CR, {4} are PX, {5} are RF and {6} are something else before processing,".format(  # pylint: disable=line-too-long
+            studies[0]
+            .generalequipmentmoduleattr_set.get()
+            .unique_equipment_name.display_name,
+            studies.count(),
+            studies.filter(modality_type__exact="DX").count(),
+            studies.filter(modality_type__exact="CR").count(),
+            studies.filter(modality_type__exact="PX").count(),
+            studies.filter(modality_type__exact="RF").count(),
+            not_dx_rf_cr.count(),
+        )
     )
 
     logger.debug(message_start)
@@ -1910,6 +1913,7 @@ def display_tasks(request):
     template = "remapp/task_admin.html"
     return render(request, template, {"admin": admin})
 
+
 def tasks(request, stage=None):
     """AJAX function to get current task details"""
     if request.is_ajax() and request.user.groups.filter(name="admingroup"):
@@ -1935,11 +1939,7 @@ def tasks(request, stage=None):
         elif "older" in stage:
             tinfo = {"tasks": older_tasks, "type": "older"}
 
-        return render(
-            request,
-            "remapp/tasks.html",
-            tinfo
-        )
+        return render(request, "remapp/tasks.html", tinfo)
 
 
 def task_abort(request, task_id=None):

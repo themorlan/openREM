@@ -164,12 +164,7 @@ def ct_xlsx_phe2019(request):
     from remapp.exports.ct_export import ct_phe_2019
 
     if request.user.groups.filter(name="exportgroup"):
-        job = run_in_background(
-            ct_phe_2019,
-            "export_ct",
-            request.GET,
-            request.user.id
-        )
+        job = run_in_background(ct_phe_2019, "export_ct", request.GET, request.user.id)
         logger.debug("Export CT to XLSX job is {0}".format(job.uuid))
     return redirect(reverse_lazy("export"))
 
@@ -279,9 +274,11 @@ def dx_xlsx_phe2019(request, export_type=None):
                     "export_dx",
                     request.GET,
                     request.user.id,
-                    projection=True
+                    projection=True,
                 )
-                logger.debug("Export PHE 2019 DX survey format job is {0}".format(job.uuid))
+                logger.debug(
+                    "Export PHE 2019 DX survey format job is {0}".format(job.uuid)
+                )
                 return redirect(reverse_lazy("export"))
             elif "exam" in export_type:
                 if max_events > 6:
@@ -314,7 +311,9 @@ def dx_xlsx_phe2019(request, export_type=None):
                     projection=False,
                     bespoke=bespoke,
                 )
-                logger.debug("Export PHE 2019 DX survey format job is {0}".format(job.uuid))
+                logger.debug(
+                    "Export PHE 2019 DX survey format job is {0}".format(job.uuid)
+                )
                 return redirect(reverse_lazy("export"))
         else:
             messages.error(request, "Malformed export URL {0}".format(type))
@@ -408,11 +407,7 @@ def rfopenskin(request, pk):
     export = get_object_or_404(GeneralStudyModuleAttr, pk=pk)
 
     if request.user.groups.filter(name="exportgroup"):
-        job = run_in_background(
-            rfopenskin,
-            "export_rf",
-            export.pk
-        )
+        job = run_in_background(rfopenskin, "export_rf", export.pk)
         logger.debug("Export Fluoro to openSkin CSV job is {0}".format(job.uuid))
 
     return redirect(reverse_lazy("export"))
@@ -430,13 +425,10 @@ def rf_xlsx_phe2019(request):
     from remapp.exports.rf_export import rf_phe_2019
 
     if request.user.groups.filter(name="exportgroup"):
-        job = run_in_background(
-            rf_phe_2019,
-            "export_rf",
-            request.GET,
-            request.user.id
+        job = run_in_background(rf_phe_2019, "export_rf", request.GET, request.user.id)
+        logger.debug(
+            "Export PHE 2019 IR/fluoro survey format job is {0}.".format(job.uuid)
         )
-        logger.debug("Export PHE 2019 IR/fluoro survey format job is {0}.".format(job.uuid))
         return redirect(reverse_lazy("export"))
     else:
         messages.error(request, "Only users in the Export group can launch exports")
@@ -521,10 +513,7 @@ def mgnhsbsp(request):
 
     if request.user.groups.filter(name="exportgroup"):
         job = run_in_background(
-            mg_csv_nhsbsp,
-            "export_mg",
-            request.GET,
-            request.user.id
+            mg_csv_nhsbsp, "export_mg", request.GET, request.user.id
         )
         logger.debug("Export MG to CSV NHSBSP job is {0}".format(job.uuid))
 

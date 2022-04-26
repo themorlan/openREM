@@ -266,7 +266,7 @@ def q_process(request, *args, **kwargs):
             }
 
             run_in_background(
-                qrscu, 
+                qrscu,
                 "query",
                 qr_scp_pk=rh_pk,
                 store_scp_pk=store_pk,
@@ -355,7 +355,7 @@ def r_start(request):
         movescu,
         "move",
         query_id,
-        )
+    )
 
     return HttpResponse(json.dumps(resp), content_type="application/json")
 

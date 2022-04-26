@@ -132,7 +132,7 @@ tasks_patterns = [
         "tasks/abort_task/<uuid:task_id>/",
         views_admin.task_abort,
         name="abort_task",
-    )
+    ),
 ]
 
 

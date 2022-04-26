@@ -1322,11 +1322,12 @@ def qrscu(
             query_id,
         )
     )
-    
+
     task = get_current_task()
     if task is None:
-        raise NotImplementedError("This currently can only be called as a background task")
-    logger.debug(f"task id is {task.uuid}")
+        logger.debug(f"qrscu is running in synchronous mode (no task id)")
+    else:
+        logger.debug(f"task id is {task.uuid}")
 
     # Currently, if called from qrscu_script modalities will either be a list of modalities or it will be "SR".
     # Web interface hasn't changed, so will be a list of modalities and or the inc_sr flag

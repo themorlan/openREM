@@ -212,6 +212,7 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
 
     write_export(tsk, xlsxfilename, tmpxlsx, datestamp)
 
+
 def ct_csv(filterdict, pid=False, name=None, patid=None, user=None):
     """Export filtered CT database data to a single-sheet CSV file.
 
