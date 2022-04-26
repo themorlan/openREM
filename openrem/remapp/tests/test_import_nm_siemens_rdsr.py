@@ -30,8 +30,19 @@ from django.test import TestCase
 from remapp.extractors import rdsr
 from remapp.models import GeneralStudyModuleAttr, PatientIDSettings
 
+class ImportTest(TestCase):
 
-class ImportNMRDSR(TestCase):
+    def _get_dcm_file(self, dicom_file):
+        root_tests = os.path.dirname(os.path.abspath(__file__))
+        dicom_path = os.path.join(root_tests, dicom_file)
+        return dicom_path
+
+    def setUp(self) -> None:
+        u: PatientIDSettings = PatientIDSettings.objects.create()
+        u.name_stored = True
+        u.name_hashed = False
+        u.save()
+
     def _verify_equality(self, value, expect_value, location):
         msg = f"At {location}"
         check_type = type(expect_value)
@@ -79,17 +90,7 @@ class ImportNMRDSR(TestCase):
             else:
                 self._check_values(current, subdata, location)
 
-    def _get_dcm_file(self, dicom_file):
-        root_tests = os.path.dirname(os.path.abspath(__file__))
-        dicom_path = os.path.join(root_tests, dicom_file)
-        return dicom_path
-
-    def setUp(self) -> None:
-        u: PatientIDSettings = PatientIDSettings.objects.create()
-        u.name_stored = True
-        u.name_hashed = False
-        u.save()
-
+class ImportNMRDSR(ImportTest):
     def test_import_siemens_rrdsr(self):
         """Loads a Siemens RRDSR-File and checks all values against the expected ones"""
 

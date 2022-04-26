@@ -182,7 +182,11 @@
                     </td>
                     <td>
                         <a href="{% url 'nm_detail_view' pk=exam.id %}">
-                            {{radioadmin.radiopharmaceutical_agent.code_meaning}}
+                            {% if radioadmin.radiopharmaceutical_agent %}
+                                {{radioadmin.radiopharmaceutical_agent.code_meaning}}
+                            {% else %} 
+                                {{radioadmin.radiopharmaceutical_agent_string}}
+                            {% endif %}
                         </a>
                     </td>
                     <td>

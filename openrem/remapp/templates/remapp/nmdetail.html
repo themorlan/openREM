@@ -45,7 +45,13 @@
       <table class="table table-condensed table-bordered small" aria-describedby="Radiopharmaceutical details about this study">
         <tr>
             <th scope="col">Radiopharmaceutical</th>
-            <td>{{radioadmin.radiopharmaceutical_agent.code_meaning}}</td>
+            <td>
+                {% if radioadmin.radiopharmaceutical_agent %}
+                    {{radioadmin.radiopharmaceutical_agent.code_meaning}}
+                {% else %} 
+                    {{radioadmin.radiopharmaceutical_agent_string}}
+                {% endif %}
+            </td>
         </tr>
         <tr>
             <th scope="col">Radionuclide</th>
