@@ -274,6 +274,7 @@ def _prune_series_responses(
         "Getting series and image level information and deleting series we can't use"
     )
     query.save()
+    query_id = query.query_id
     query_id_8 = _query_id_8(query)
     logger.debug(
         f"{query_id_8} Getting series and image level information and deleting series we can't use"
