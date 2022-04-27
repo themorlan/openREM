@@ -75,7 +75,7 @@ def import_from_docker(request):
 
     if dicom_path:
         if import_type == "rdsr":
-            run_as_task(rdsr, "import_rdsr", None, dicom_path)
+            rdsr(dicom_path)
             return_type = "RDSR"
         elif import_type == "dx":
             dx(dicom_path)
