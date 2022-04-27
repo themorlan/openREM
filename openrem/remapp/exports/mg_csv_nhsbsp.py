@@ -31,7 +31,7 @@ import datetime
 import logging
 
 from django.core.exceptions import ObjectDoesNotExist
-from remapp.tools.background import get_or_generate_task_uuid
+from openrem.remapp.tools.background import get_or_generate_task_uuid
 
 logger = logging.getLogger(__name__)
 

@@ -2,7 +2,8 @@
   <tr>
     <th id="uuid_{{ type }}" onclick="updateSort(this.id, 'user_click');">UUID</th>
     <th id="task_{{ type }}" onclick="updateSort(this.id, 'user_click');">Task type</th>
-    <th id="result_{{ type }}" onclick="updateSort(this.id, 'user_click');">Message</th>
+    <th id="info_{{ type }}" onclick="updateSort(this.id, 'user_click');">Info</th>
+    <th id="error_{{ type }}" onclick="updateSort(this.id, 'user_click');">Error</th>
     <th id="started_{{ type }}" onclick="updateSort(this.id, 'user_click');">Started</th>
     <th id="state_{{ type }}" onclick="updateSort(this.id, 'user_click');">State</th>
     {% if type == 'active' %} 
@@ -13,7 +14,8 @@
     <tr>
       <td>{{ task.uuid }}</td>
       <td>{{ task.task_type|safe }}</td>
-      <td>{{ task.status|safe }}</td>
+      <td>{{ task.info|safe }}</td>
+      <td>{{  task.error|safe }}</td>
       <td>{{ task.started_at }}</td> <!--sortable_customkey="{{timedelta}}"-->
       {% if task.complete %} 
         {% if task.completed_successfull %} 

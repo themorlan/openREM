@@ -41,7 +41,7 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from django.urls import reverse_lazy
 import remapp
-from remapp.tools.background import run_in_background, terminate_background
+from openrem.remapp.tools.background import run_in_background, terminate_background
 
 logger = logging.getLogger(__name__)
 

@@ -103,9 +103,8 @@ from .tools.populate_summary import (
     populate_summary_dx,
     populate_summary_rf,
 )
-from remapp.tools.background import run_in_background
+from openrem.remapp.tools.background import run_in_background, terminate_background
 from .tools.send_high_dose_alert_emails import send_rf_high_dose_alert_email
-from remapp.tools.background import terminate_background
 from .version import __version__, __docs_version__
 
 

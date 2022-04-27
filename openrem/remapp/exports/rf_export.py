@@ -30,7 +30,7 @@
 
 import datetime
 import logging
-from remapp.tools.background import get_or_generate_task_uuid
+from openrem.remapp.tools.background import get_or_generate_task_uuid
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Avg, Max, Min

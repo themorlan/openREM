@@ -31,7 +31,7 @@ import logging
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.translation import gettext as _
-from remapp.tools.background import get_or_generate_task_uuid
+from openrem.remapp.tools.background import get_or_generate_task_uuid
 
 from .export_common import (
     get_common_data,

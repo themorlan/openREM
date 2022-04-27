@@ -40,7 +40,11 @@ from django.shortcuts import redirect, render, get_object_or_404
 from django.conf import settings
 from django.urls import reverse, reverse_lazy
 from django.views.decorators.csrf import csrf_exempt
-from openrem.remapp.tools.background import run_in_background, terminate_background
+from openrem.remapp.tools.background import (
+    run_as_task,
+    run_in_background,
+    terminate_background,
+)
 
 from remapp.models import BackgroundTask, SizeUpload
 from .rdsr import rdsr
@@ -71,7 +75,7 @@ def import_from_docker(request):
 
     if dicom_path:
         if import_type == "rdsr":
-            rdsr(dicom_path)
+            run_as_task(rdsr, "import_rdsr", None, dicom_path)
             return_type = "RDSR"
         elif import_type == "dx":
             dx(dicom_path)
@@ -322,7 +326,7 @@ def size_abort(request, pk):
     if request.user.groups.filter(
         name="importsizegroup"
     ) or request.users.groups.filter(name="admingroup"):
-    
+
         terminate_background(task)
         size_import.logfile.delete()
         size_import.sizefile.delete()

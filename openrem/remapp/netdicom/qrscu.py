@@ -51,7 +51,7 @@ from remapp.models import (  # pylint: disable=wrong-import-order, wrong-import-
     DicomStoreSCP,
     GeneralStudyModuleAttr,
 )
-from remapp.tools.background import get_current_task, run_in_background
+from openrem.remapp.tools.background import get_current_task, run_in_background
 
 _config.LOG_RESPONSE_IDENTIFIERS = False
 _config.LOG_HANDLER_LEVEL = "none"

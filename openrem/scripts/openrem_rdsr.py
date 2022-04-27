@@ -15,6 +15,7 @@
 import sys
 from glob import glob
 from openrem.remapp.extractors.rdsr import rdsr
+from openrem.remapp.tools.background import run_as_task
 
 if len(sys.argv) < 2:
     sys.exit(
@@ -23,6 +24,11 @@ if len(sys.argv) < 2:
 
 for arg in sys.argv[1:]:
     for filename in glob(arg):
-        rdsr(filename)
+        run_as_task(
+            rdsr,
+            "import_rdsr",
+            None,
+            filename,
+        )
 
 sys.exit()

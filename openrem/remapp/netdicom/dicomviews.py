@@ -49,7 +49,7 @@ from .. import __docs_version__, __version__
 from ..forms import DicomQueryForm, DicomQRForm, DicomStoreForm
 from ..views_admin import _create_admin_dict
 
-from remapp.tools.background import run_in_background
+from openrem.remapp.tools.background import run_in_background
 
 os.environ["DJANGO_SETTINGS_MODULE"] = "openremproject.settings"
 
