@@ -65,8 +65,9 @@ from ..tools.hash_id import hash_id
 from ..tools.make_skin_map import make_skin_map
 from ..tools.send_high_dose_alert_emails import send_rf_high_dose_alert_email
 from openrem.remapp.tools.background import (
-    BackgroundTaskErrorMsg,
     get_current_task,
+    record_task_error_exit,
+    record_task_info,
     run_as_task,
 )
 
@@ -118,7 +119,6 @@ from remapp.models import (  # pylint: disable=wrong-import-order, wrong-import-
     XrayFilters,
     XrayGrid,
     XrayTubeCurrent,
-    BackgroundTask,
 )
 
 logger = logging.getLogger(
@@ -2182,17 +2182,16 @@ def _generalstudymoduleattributes(dataset, g):
             populate_dx_rf_summary(g)
 
 
-@transaction.atomic
 def _rdsr2db(dataset):
+
+    if "StudyInstanceUID" in dataset:
+        study_uid = dataset.StudyInstanceUID
+        record_task_info(f"StudyInstanceUID: {study_uid}")
+
     existing_sop_instance_uids = set()
     keep_existing_sop_instance_uids = False
     if "StudyInstanceUID" in dataset:
         study_uid = dataset.StudyInstanceUID
-
-        task_obj = get_current_task()
-        task_obj.info = f"StudyInstanceUID: {study_uid}"
-        task_obj.save()
-
         existing_study_uid_match = GeneralStudyModuleAttr.objects.filter(
             study_instance_uid__exact=study_uid
         )
@@ -2207,7 +2206,8 @@ def _rdsr2db(dataset):
                     "Import match on Study Instance UID {0} and object SOP Instance UID {1}. "
                     "Will not import.".format(study_uid, new_sop_instance_uid)
                 )
-                raise BackgroundTaskErrorMsg("Already in db.")
+                record_task_error_exit("Already in db.")
+                return
             # Either we've not seen it before, or it wasn't recorded when we did.
             # Next find the event UIDs in the RDSR being imported
             new_event_uids = set()
@@ -2257,7 +2257,8 @@ def _rdsr2db(dataset):
                     record_sop_instance_uid(
                         existing_study_uid_match[study_index], new_sop_instance_uid
                     )
-                    raise BackgroundTaskErrorMsg("Already in db.")
+                    record_task_error_exit("Already in db.")
+                    return
                 elif new_event_uids.issubset(uid_list):
                     # New RDSR has the same but fewer events than existing one
                     logger.debug(
@@ -2267,7 +2268,8 @@ def _rdsr2db(dataset):
                     record_sop_instance_uid(
                         existing_study_uid_match[study_index], new_sop_instance_uid
                     )
-                    raise BackgroundTaskErrorMsg("Already in db.")
+                    record_task_error_exit("Already in db.")
+                    return
                 elif uid_list.issubset(new_event_uids):
                     existing_study_uid_match[study_index].delete()
                     keep_existing_sop_instance_uids = True
@@ -2487,7 +2489,8 @@ def rdsr(rdsr_file):
                 rdsr_file
             )
         )
-        raise BackgroundTaskErrorMsg("Not an rdsr. Will not import.")
+        record_task_error_exit("Not an rdsr. Will not import.")
+        return
 
     if del_rdsr:
         os.remove(rdsr_file)

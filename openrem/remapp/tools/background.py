@@ -54,21 +54,6 @@ django.setup()
 from remapp.models import BackgroundTask
 
 
-class BackgroundTaskErrorMsg(Exception):
-    """
-    Just a basic Exception, but run_as_task will only
-    record the message not the traceback for this type.
-    (i.e. this should be used for 'controlled' errors)
-    """
-
-    def __init__(self, msg, *args: object) -> None:
-        super().__init__(*args)
-        self.msg = msg
-
-    def __str__(self):
-        return self.msg
-
-
 def run_as_task(func, task_type, taskuuid, *args, **kwargs):
     """
     Runs func as a task. (Which means it runs normally, but a BackgroundTask
@@ -84,7 +69,7 @@ def run_as_task(func, task_type, taskuuid, *args, **kwargs):
     :param taskuuid: An uuid which will be used as uuid of the BackgroundTask object. If None will generate one itself
     :args: Args to func
     :kwargs: Args to func
-    :return: The created backgroundTask object
+    :return: The created BackgroundTask object
     """
     if taskuuid is None:
         taskuuid = str(uuid.uuid4())
@@ -100,20 +85,18 @@ def run_as_task(func, task_type, taskuuid, *args, **kwargs):
     try:
         func(*args, **kwargs)
     except Exception as e:  # Literally anything could happen here
-        b = get_current_task()
+        b = _get_task_via_uuid(taskuuid)
         b.complete = True
         b.completed_successfull = False
-        if isinstance(e, BackgroundTaskErrorMsg):
-            b.error = str(e)
-        else:
-            b.error = traceback.format_exc()
+        b.error = traceback.format_exc()
         b.save()
         return b
 
-    b = get_current_task()
-    b.complete = True
-    b.completed_successfull = True
-    b.save()
+    b = _get_task_via_uuid(taskuuid)
+    if not b.complete:
+        b.complete = True
+        b.completed_successfull = True
+        b.save()
     return b
 
 
@@ -216,3 +199,30 @@ def get_or_generate_task_uuid():
         return str(uuid.uuid4())
     else:
         return task.uuid
+
+
+def record_task_info(info_msg):
+    """
+    Small helper that checks if we are in a task and
+    assuming we are records info_msg as info.
+    """
+    b = get_current_task()
+    if b is not None:
+        b.info = info_msg
+        b.save()
+
+
+def record_task_error_exit(error_msg):
+    """
+    Small helper that checks if we are in a task and
+    assuming we are records error_msg as well as setting
+    the completed_successfully to false and completed to
+    True. Note that get_current_task will return None
+    after a call to this.
+    """
+    b = get_current_task()
+    if b is not None:
+        b.complete = True
+        b.completed_successfull = False
+        b.error = error_msg
+        b.save()
