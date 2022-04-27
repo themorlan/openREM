@@ -1,5 +1,5 @@
 #    OpenREM - Radiation Exposure Monitoring tools for the physicist
-#    Copyright (C) 2012,2013  The Royal Marsden NHS Foundation Trust
+#    Copyright (C) 2022 The Royal Marsden NHS Foundation Trust
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -47,7 +47,7 @@ from .export_common import (
     write_export,
     abort_if_zero_studies,
     create_export_task,
-    sheet_name
+    sheet_name,
 )
 
 logger = logging.getLogger(__name__)
@@ -82,24 +82,28 @@ def _get_data(filterdict, pid, task):
     task.progress = f"{task.num_records} studies in query"
     task.save()
 
-    #num_person_participants, num_organ_doses,
-    #num_patient_state, num_glomerular_filtration_rate
+    # num_person_participants, num_organ_doses,
+    # num_patient_state, num_glomerular_filtration_rate
     statistics = data.annotate(
         num_person_participants=Count(
             "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__"
-            "personparticipant", distinct=True
+            "personparticipant",
+            distinct=True,
         ),
         num_organ_doses=Count(
             "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__"
-            "organdose", distinct=True
+            "organdose",
+            distinct=True,
         ),
         num_patient_state=Count(
             "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationpatientcharacteristics__"
-            "patientstate", distinct=True
+            "patientstate",
+            distinct=True,
         ),
         num_glomerular_filtration_rate=Count(
             "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationpatientcharacteristics__"
-            "glomerularfiltrationrate", distinct=True
+            "glomerularfiltrationrate",
+            distinct=True,
         ),
     ).aggregate(
         max_person_participants=Max("num_person_participants"),
@@ -109,6 +113,7 @@ def _get_data(filterdict, pid, task):
     )
 
     return (data, statistics)
+
 
 def _nm_headers(pid, name, patid, statistics):
     headings = common_headers("NM", pid, name, patid)
@@ -125,23 +130,20 @@ def _nm_headers(pid, name, patid, statistics):
         "Route of Administration",
         "Route of Administration Laterality",
     ]
-    for i in range(1, statistics["max_person_participants"]+1):
-        headings += [f"Person participant name {i}",
-                    f"Person participant role {i}"]
+    for i in range(1, statistics["max_person_participants"] + 1):
+        headings += [f"Person participant name {i}", f"Person participant role {i}"]
     headings += ["Comment"]
-    for i in range(1, statistics["max_organ_doses"]+1):
+    for i in range(1, statistics["max_organ_doses"] + 1):
         headings += [
             f"Organ Dose Finding Site {i}",
             f"Organ Laterality {i}",
             f"Organ Dose {i} (mGy)",
             f"Organ Mass {i}(g)",
             f"Organ Dose Measurement Method {i}",
-            f"Organ Dose Reference Authority {i}"
+            f"Organ Dose Reference Authority {i}",
         ]
-    for i in range(1, statistics["max_patient_states"]+1):
-        headings += [
-            f"Patient state {i}"
-        ]
+    for i in range(1, statistics["max_patient_states"] + 1):
+        headings += [f"Patient state {i}"]
     headings += [
         "Body Surface Area (m^2)",
         "Body Surface Area Formula",
@@ -153,14 +155,15 @@ def _nm_headers(pid, name, patid, statistics):
         "Recent Physical Activity",
         "Serum Creatinine (mg/dl)",
     ]
-    for i in range(1, statistics["max_glomerular_filtration_rates"]+1):
+    for i in range(1, statistics["max_glomerular_filtration_rates"] + 1):
         headings += [
             f"Glomerular Filtration Rate {i} (ml/min/1.73m^2)",
             f"Measurement Method {i}",
-            f"Equivalent meaning of concept name {i}"
+            f"Equivalent meaning of concept name {i}",
         ]
 
     return headings
+
 
 def _get_code_not_none(code):
     if code is None:
@@ -168,16 +171,22 @@ def _get_code_not_none(code):
     else:
         return code.code_meaning
 
+
 def _array_to_match_maximum(len_current, len_max):
     return [None for _ in range(len_max - len_current)]
+
 
 def _extract_study_data(exams, pid, name, patid, statistics):
     exam_data = get_common_data("NM", exams, pid, name, patid)
 
     try:
         radiopharm = exams.radiopharmaceuticalradiationdose_set.get()
-        radiopharm_admin = radiopharm.radiopharmaceuticaladministrationeventdata_set.get()
-        patient_charac = radiopharm.radiopharmaceuticaladministrationpatientcharacteristics_set.get()
+        radiopharm_admin = (
+            radiopharm.radiopharmaceuticaladministrationeventdata_set.get()
+        )
+        patient_charac = (
+            radiopharm.radiopharmaceuticaladministrationpatientcharacteristics_set.get()
+        )
         person_participants = radiopharm_admin.personparticipant_set.all()
         organ_doses = radiopharm_admin.organdose_set.all()
         patient_states = patient_charac.patientstate_set.all()
@@ -201,11 +210,15 @@ def _extract_study_data(exams, pid, name, patid, statistics):
             person_participant.person_name,
             _get_code_not_none(person_participant.person_role_in_procedure_cid),
         ]
-    exam_data += _array_to_match_maximum(len(person_participants), statistics["max_person_participants"])
+    exam_data += _array_to_match_maximum(
+        len(person_participants), statistics["max_person_participants"]
+    )
     exam_data += [radiopharm.comment]
     for organ_dose in organ_doses:
         if organ_dose.reference_authority_code is not None:
-            organ_dose_reference_authority = organ_dose.reference_authority_code.code_meaning
+            organ_dose_reference_authority = (
+                organ_dose.reference_authority_code.code_meaning
+            )
         else:
             organ_dose_reference_authority = organ_dose.reference_authority_text
         exam_data += [
@@ -216,12 +229,14 @@ def _extract_study_data(exams, pid, name, patid, statistics):
             organ_dose.measurement_method,
             organ_dose_reference_authority,
         ]
-    exam_data += _array_to_match_maximum(len(organ_doses), statistics["max_organ_doses"])
+    exam_data += _array_to_match_maximum(
+        len(organ_doses), statistics["max_organ_doses"]
+    )
     for patient_state in patient_states:
-        exam_data += [
-            _get_code_not_none(patient_state.patient_state)
-        ]
-    exam_data += _array_to_match_maximum(len(patient_states), statistics["max_patient_states"])
+        exam_data += [_get_code_not_none(patient_state.patient_state)]
+    exam_data += _array_to_match_maximum(
+        len(patient_states), statistics["max_patient_states"]
+    )
     exam_data += [
         patient_charac.body_surface_area,
         _get_code_not_none(patient_charac.body_surface_area_formula),
@@ -237,10 +252,11 @@ def _extract_study_data(exams, pid, name, patid, statistics):
         exam_data += [
             glomerular.glomerular_filtration_rate,
             _get_code_not_none(glomerular.measurement_method),
-            _get_code_not_none(glomerular.equivalent_meaning_of_concept_name)
+            _get_code_not_none(glomerular.equivalent_meaning_of_concept_name),
         ]
-    exam_data += _array_to_match_maximum(len(glomerular_filtration_rates),
-        statistics["max_glomerular_filtration_rates"])
+    exam_data += _array_to_match_maximum(
+        len(glomerular_filtration_rates), statistics["max_glomerular_filtration_rates"]
+    )
 
     for i, item in enumerate(exam_data):
         if item is None:
@@ -308,8 +324,19 @@ def exportNM2csv(filterdict, pid=False, name=None, patid=None, user=None):
     task.progress = "All data written."
     _exit_proc(task, date_stamp, force_exit=False)
 
-def _write_nm_excel_sheet(task, sheet, data, pid, name, patid, headings,
-    statistics, sheet_index=1, sheet_total=1):
+
+def _write_nm_excel_sheet(
+    task,
+    sheet,
+    data,
+    pid,
+    name,
+    patid,
+    headings,
+    statistics,
+    sheet_index=1,
+    sheet_total=1,
+):
     sheet.write_row(0, 0, headings)
     numcolumns = len(headings) - 1
     if isinstance(data, list):
@@ -333,6 +360,7 @@ def _write_nm_excel_sheet(task, sheet, data, pid, name, patid, headings,
 
         task.progress = f"{i+1} of {task.num_records} written on sheet {sheet_index} of {sheet_total}"
         task.save()
+
 
 @shared_task
 def exportNM2excel(filterdict, pid=False, name=None, patid=None, user=None):
@@ -379,21 +407,32 @@ def exportNM2excel(filterdict, pid=False, name=None, patid=None, user=None):
         study_descriptions = list(study_descriptions.items())
         study_descriptions.sort(key=lambda x: x[0])
         sheet_count = len(study_descriptions) + 1
-        
+
         all_data = book.add_worksheet("All data")
         book = text_and_date_formats(book, all_data, pid, name, patid)
-        _write_nm_excel_sheet(task, all_data, data, pid, name, patid,
-            headings, statistics, 1, sheet_count)
+        _write_nm_excel_sheet(
+            task, all_data, data, pid, name, patid, headings, statistics, 1, sheet_count
+        )
 
         for i, study_description in enumerate(study_descriptions):
             study_description, current_data = study_description
             current_sheet = book.add_worksheet(sheet_name(study_description))
             book = text_and_date_formats(book, current_sheet, pid, name, patid)
-            _write_nm_excel_sheet(task, current_sheet, current_data, pid, name, patid,
-                headings, statistics, i, sheet_count)
+            _write_nm_excel_sheet(
+                task,
+                current_sheet,
+                current_data,
+                pid,
+                name,
+                patid,
+                headings,
+                statistics,
+                i,
+                sheet_count,
+            )
 
         book.close()
-    except Exception: # pylint: disable=broad-except
+    except Exception:  # pylint: disable=broad-except
         unknown_error(task, date_stamp)
 
     xlsxfilename = "nmexport{0}.xlsx".format(date_stamp.strftime("%Y%m%d-%H%M%S%f"))
