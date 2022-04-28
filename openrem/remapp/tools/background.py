@@ -159,11 +159,13 @@ def terminate_background(task: BackgroundTask):
             os.kill(task.pid, signal.SIGTERM)
         else:
             os.kill(task.pid, signal.SIGTERM)
+            # Wait until the process has returned (potentially it already has when we call wait)
+            # On  Windows the equivalent does not work, but seems to be blocking there anyway
+            os.waitpid(
+                task.pid, 0
+            )  
 
-        os.waitpid(
-            task.pid, 0
-        )  # Wait until the process has returned (potentially it already has when we call wait)
-    except ProcessLookupError:
+    except (ProcessLookupError, OSError):
         pass
     task.completed_successfull = False
     task.complete = True
