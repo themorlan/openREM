@@ -532,7 +532,7 @@ def _mammo2db(dataset):
         record_task_error_exit(error)
         return
     study_in_db = check_uid.check_uid(study_uid)
-    record_task_info(f"UID: {study_uid}")
+    record_task_info(f"UID: {study_uid.replace('.', '. ')}")
     logger.debug("In mam.py. Study_UID %s, study_in_db %s", study_uid, study_in_db)
 
     if study_in_db:
@@ -563,7 +563,9 @@ def _mammo2db(dataset):
         if study_in_db == 1:
             _generalstudymoduleattributes(dataset, g)
         elif not study_in_db:
-            record_task_error_exit("Something went wrong, GeneralStudyModuleAttr wasn't created")
+            record_task_error_exit(
+                "Something went wrong, GeneralStudyModuleAttr wasn't created"
+            )
             return
         elif study_in_db > 1:
             sleep(random())  # nosec - not being used for cryptography

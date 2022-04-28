@@ -15,16 +15,22 @@
 import sys
 from glob import glob
 from openrem.remapp.extractors.ct_philips import ct_philips
-from openrem.remapp.tools.background import run_as_task
+from openrem.remapp.tools.background import run_in_background_with_limits, wait_task
 
 if len(sys.argv) < 2:
     sys.exit("Error: Supply at least one argument - the Philips dose report image")
 
+tasks = []
 for arg in sys.argv[1:]:
     for filename in glob(arg):
-        run_as_task(
+        b = run_in_background_with_limits(
             ct_philips,
             "import_ct_philips",
-            None,
+            0,
+            {"import_ct_philips": 1},
             filename,
         )
+        tasks.append(b)
+
+for t in tasks:
+    wait_task(t)

@@ -351,7 +351,7 @@ def _generalstudymoduleattributes(dataset, g):
 def _philips_ct2db(dataset):
     if "StudyInstanceUID" in dataset:
         study_instance_uid = dataset.StudyInstanceUID
-        record_task_info(f"UID: {study_instance_uid}")
+        record_task_info(f"UID: {study_instance_uid.replace('.', '. ')}")
         existing = GeneralStudyModuleAttr.objects.filter(
             study_instance_uid__exact=study_instance_uid
         )
@@ -400,4 +400,3 @@ def ct_philips(philips_file):
         os.remove(philips_file)
 
     return 0
-

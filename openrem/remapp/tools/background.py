@@ -41,6 +41,8 @@ import datetime
 import django
 from django import db
 from django.db.models import Q
+from django.db import transaction
+import random
 
 # Setup django. This is required on windows, because process is created via spawn and
 # django will not be initialized anymore then (On Linux this will only be executed once)
@@ -62,7 +64,8 @@ def run_as_task(func, task_type, taskuuid, *args, **kwargs):
 
     As a note: This is used as a helper for run_in_background. However in
     principle it could also be used to run any function in sequential
-    for which we would like to document that it was executed.
+    for which we would like to document that it was executed. (Has some not so nice
+    parts, especially that user can terminate a bunch of sequentially running tasks)
 
     :param func: The function to run
     :param task_type: A string documenting what kind of task this is
@@ -74,13 +77,23 @@ def run_as_task(func, task_type, taskuuid, *args, **kwargs):
     if taskuuid is None:
         taskuuid = str(uuid.uuid4())
 
-    b = BackgroundTask.objects.create(
-        uuid=taskuuid,
-        pid=os.getpid(),
-        task_type=task_type,
-        started_at=datetime.datetime.now(),
-    )
-    b.save()
+    with transaction.atomic():
+        b = BackgroundTask.objects.filter(uuid=taskuuid).first()
+        if b is None:
+            b = BackgroundTask.objects.create(
+                uuid=taskuuid,
+                pid=os.getpid(),
+                task_type=task_type,
+                started_at=datetime.datetime.now(),
+            )
+        else:
+            if (
+                b.complete
+            ):  # Can happen when task was aborted before the process started
+                return b
+            b.pid = os.getpid()
+            b.started_at = datetime.datetime.now()
+        b.save()
 
     try:
         func(*args, **kwargs)
@@ -100,7 +113,9 @@ def run_as_task(func, task_type, taskuuid, *args, **kwargs):
     return b
 
 
-def run_in_background(func, task_type, *args, **kwargs):
+def run_in_background_with_limits(
+    func, task_type, num_proc, num_of_task_type, *args, **kwargs
+):
     """
     Runs fun as background Process.
 
@@ -112,6 +127,10 @@ def run_in_background(func, task_type, *args, **kwargs):
     complete flag will be set to True.
     This function cannot be used with Django Tests, unless they use TransactionTestCase
     instead of TestCase (which is far slower, so use with caution).
+    num_proc and num_of_task_type can be used to give conditions on the start. Note that
+    using arguments other than 0 resp. {} can make this function block for an unspecified
+    amount of time, hence it should never be used like that on the webinterface. Use
+    run_in_background there.
 
     :param fun: The function to run. Note that you should set the status of the task yourself
         and mark as completed when exiting yourself e.g. via sys.exit(). Assuming the function
@@ -119,15 +138,43 @@ def run_in_background(func, task_type, *args, **kwargs):
         the BackgroundTask object will be set correctly.
     :param task_type: One of the strings declared in BackgroundTask.task_type. Indicates which
         kind of background process this is supposed to be. (E.g. move, query, ...)
+    :param num_proc: Will wait with execution until there are less than num_proc active tasks.
+        If num_proc == 0 will run directly
+    :param num_of_task_type: A dictionary from str to int, where key should be some used
+        task_type. Will wait until there are less active tasks of task_type than
+        specified in the value of the dict for that key.
     :param args: Positional arguments. Passed to fun.
     :param kwargs:  Keywords arguments. Passed to fun.
     :returns: The BackgroundTask object.
     """
+    taskuuid = str(uuid.uuid4())
+
+    if num_proc > 0 or len(num_of_task_type) > 0:
+        while True:
+            with transaction.atomic():
+                qs = BackgroundTask.objects.filter(complete__exact=False)
+                a = qs.count()
+                if num_proc == 0 or a < num_proc:
+                    ok = True
+                    for k, v in num_of_task_type.items():
+                        a = qs.filter(task_type__exact=k).count()
+                        ok = ok and a < v
+                        if not ok:
+                            break
+                    if ok:
+                        BackgroundTask.objects.create(
+                            uuid=taskuuid,
+                            pid=0,
+                            task_type=task_type,
+                            started_at=datetime.datetime(1, 1, 1),
+                        )
+                        break
+            time.sleep(1)
+
     # On linux connection gets copied which leads to problems.
     # Close them so a new one is created for each process
     db.connections.close_all()
 
-    taskuuid = str(uuid.uuid4())
     p = Process(
         target=run_as_task, args=(func, task_type, taskuuid, *args), kwargs=kwargs
     )
@@ -147,26 +194,50 @@ def run_in_background(func, task_type, *args, **kwargs):
     return _get_task_via_uuid(taskuuid)
 
 
+def run_in_background(func, task_type, *args, **kwargs):
+    """
+    Syntactic sugar around run_in_background_with_limits.
+
+    Arguments correspond to run_in_background_with_limits. Will always run the
+    passed function as fast as possible. This function should always
+    be used for functions triggered from the webinterface.
+    """
+    return run_in_background_with_limits(func, task_type, 0, {}, *args, **kwargs)
+
+
 def terminate_background(task: BackgroundTask):
     """
     Terminate a background task by force. Sets complete=True on the task object.
     """
-    try:
-        if os.name == "nt":
-            # On windows this signal is not implemented. The api will just use TerminateProcess instead.
-            os.kill(task.pid, signal.SIGTERM)
-        else:
-            os.kill(task.pid, signal.SIGTERM)
-            # Wait until the process has returned (potentially it already has when we call wait)
-            # On  Windows the equivalent does not work, but seems to be blocking there anyway
-            os.waitpid(task.pid, 0)
-
-    except (ProcessLookupError, OSError):
-        pass
     task.completed_successfull = False
     task.complete = True
     task.error = "Forcefully aborted"
     task.save()
+
+    if task.pid > 0:
+        try:
+            if os.name == "nt":
+                # On windows this signal is not implemented. The api will just use TerminateProcess instead.
+                os.kill(task.pid, signal.SIGTERM)
+            else:
+                os.kill(task.pid, signal.SIGTERM)
+                # Wait until the process has returned (potentially it already has when we call wait)
+                # On  Windows the equivalent does not work, but seems to be blocking there anyway
+                os.waitpid(task.pid, 0)
+
+        except (ProcessLookupError, OSError):
+            pass
+
+
+def wait_task(task: BackgroundTask):
+    """
+    Wait until the task has completed
+    """
+    while True:
+        if task.complete:
+            return
+        time.sleep(1)
+        task.refresh_from_db()
 
 
 def _get_task_via_uuid(task_uuid):

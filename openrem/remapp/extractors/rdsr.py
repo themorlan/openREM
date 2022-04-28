@@ -2489,7 +2489,9 @@ def rdsr(rdsr_file):
                 rdsr_file
             )
         )
-        record_task_error_exit(f"Not attempting to extract from {rdsr_file}, not an rdsr")
+        record_task_error_exit(
+            f"Not attempting to extract from {rdsr_file}, not an rdsr"
+        )
         return 1
 
     if del_rdsr:

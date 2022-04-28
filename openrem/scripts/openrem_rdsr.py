@@ -15,18 +15,25 @@
 import sys
 from glob import glob
 from openrem.remapp.extractors.rdsr import rdsr
-from openrem.remapp.tools.background import run_as_task
+from openrem.remapp.tools.background import (
+    run_as_task,
+    run_in_background,
+    run_in_background_with_limits,
+    wait_task,
+)
 
 if len(sys.argv) < 2:
     sys.exit(
         "Error: Supply at least one argument - the radiation dose structured report"
     )
 
+tasks = []
 for arg in sys.argv[1:]:
     for filename in glob(arg):
-        run_as_task(
-            rdsr,
-            "import_rdsr",
-            None,
-            filename
+        b = run_in_background_with_limits(
+            rdsr, "import_rdsr", 0, {"import_rdsr": 1}, filename
         )
+        tasks.append(b)
+
+for t in tasks:
+    wait_task(t)

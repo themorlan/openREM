@@ -41,8 +41,8 @@ from django.conf import settings
 from django.urls import reverse, reverse_lazy
 from django.views.decorators.csrf import csrf_exempt
 from openrem.remapp.tools.background import (
-    run_as_task,
     run_in_background,
+    run_in_background_with_limits,
     terminate_background,
 )
 
@@ -74,47 +74,48 @@ def import_from_docker(request):
         f"In import_from_docker, dicom_path is {dicom_path}, import type is {import_type}"
     )
 
-    # This violates the rules for running background processes at the moment,
+    # This violates the rules for running background processes at the moment (may block),
     # but at least it ensures correctness
     if dicom_path:
         if import_type == "rdsr":
-            run_as_task(
-                rdsr,
-                "import_rdsr",
-                None,
-                dicom_path
+            run_in_background_with_limits(
+                rdsr, "import_rdsr", 0, {"import_rdsr": 1}, dicom_path
             )
             return_type = "RDSR"
         elif import_type == "dx":
-            run_as_task(
+            run_in_background_with_limits(
                 dx,
                 "import_dx",
-                None,
-                dicom_path
+                0,
+                {"import_dx": 1},
+                dicom_path,
             )
             return_type = "DX"
         elif import_type == "mam":
-            run_as_task(
+            run_in_background_with_limits(
                 mam,
                 "import_mam",
-                None,
+                0,
+                {"import_mam": 1},
                 dicom_path,
             )
             return_type = "Mammography"
         elif import_type == "ct_philips":
-            run_as_task(
+            run_in_background_with_limits(
                 ct_philips,
                 "import_ct_philips",
-                None,
+                0,
+                {"import_ct_philips": 1},
                 dicom_path,
             )
             return_type = "CT Philips"
         elif import_type == "ct_toshiba":
-            run_as_task(
+            run_in_background_with_limits(
                 ct_toshiba,
                 "import_ct_toshiba",
-                None,
-                dicom_path
+                0,
+                {"import_ct_toshiba": 1},
+                dicom_path,
             )
             return HttpResponse(f"{dicom_path} passed to CT Toshiba import")
         else:

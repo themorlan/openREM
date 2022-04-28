@@ -40,7 +40,10 @@ import django
 from django import db
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.files.base import ContentFile
-from openrem.remapp.tools.background import get_or_generate_task_uuid, record_task_error_exit
+from openrem.remapp.tools.background import (
+    get_or_generate_task_uuid,
+    record_task_error_exit,
+)
 
 
 logger = logging.getLogger(__name__)
@@ -223,8 +226,10 @@ def websizeimport(csv_pk=None):
             try:
                 size_upload.logfile.save(log_file, headerrow)
             except OSError as e:
-                error = ("Error saving export file - please contact an administrator. "
-                    "Error({0}): {1}".format(e.errno, e.strerror))
+                error = (
+                    "Error saving export file - please contact an administrator. "
+                    "Error({0}): {1}".format(e.errno, e.strerror)
+                )
                 size_upload.progress = error
                 size_upload.status = "ERROR"
                 size_upload.save()

@@ -51,7 +51,11 @@ from remapp.models import (  # pylint: disable=wrong-import-order, wrong-import-
     DicomStoreSCP,
     GeneralStudyModuleAttr,
 )
-from openrem.remapp.tools.background import get_current_task, run_as_task
+from openrem.remapp.tools.background import (
+    get_current_task,
+    run_in_background,
+    wait_task,
+)
 
 _config.LOG_RESPONSE_IDENTIFIERS = False
 _config.LOG_HANDLER_LEVEL = "none"
@@ -2319,7 +2323,7 @@ def qrscu_script():
     parser = _create_parser()
     args = parser.parse_args()
     processed_args = _process_args(args, parser)
-    run_as_task(
+    b = run_in_background(
         qrscu,
         "query",
         qr_scp_pk=processed_args["qr_id"],
@@ -2336,3 +2340,5 @@ def qrscu_script():
         get_toshiba_images=processed_args["get_toshiba"],
         get_empty_sr=processed_args["get_empty_sr"],
     )
+    print("Running Query")
+    wait_task(b)

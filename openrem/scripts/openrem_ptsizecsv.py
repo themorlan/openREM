@@ -12,10 +12,5 @@
 """
 
 from openrem.remapp.extractors.ptsizecsv2db import csv2db
-from openrem.remapp.tools.background import run_as_task
 
-run_as_task(
-    csv2db,
-    "import_size",
-    None,
-)
+csv2db()

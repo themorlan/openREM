@@ -771,7 +771,7 @@ def _dx2db(dataset):
         logger.error(error)
         record_task_error_exit(error)
         return
-    record_task_info(f"UID: {study_uid}")
+    record_task_info(f"UID: {study_uid.replace('.', '. ')}")
     study_in_db = check_uid.check_uid(study_uid)
 
     if study_in_db:
@@ -789,7 +789,7 @@ def _dx2db(dataset):
             )
             this_study.save()
         else:
-            error = f"Study {study_uid} already in DB"
+            error = f"Study {study_uid.replace('.', '. ')} already in DB"
             logger.error(error)
             record_task_error_exit(error)
             return

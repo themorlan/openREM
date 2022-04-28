@@ -15,16 +15,22 @@
 import sys
 from glob import glob
 from openrem.remapp.extractors.mam import mam
-from openrem.remapp.tools.background import run_as_task
+from openrem.remapp.tools.background import run_in_background_with_limits, wait_task
 
 if len(sys.argv) < 2:
     sys.exit("Error: Supply at least one argument - the DICOM mammography image file")
 
+tasks = []
 for arg in sys.argv[1:]:
     for filename in glob(arg):
-        run_as_task(
+        b = run_in_background_with_limits(
             mam,
             "import_mam",
-            None,
+            0,
+            {"import_mam": 1},
             filename,
         )
+        tasks.append(b)
+
+for t in tasks:
+    wait_task(t)
