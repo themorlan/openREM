@@ -1,7 +1,7 @@
 __version__ = "1.0.0.dev0"  # Actual version number
 __docs_version__ = "1.0.0.dev0-docs"  # Should match the branch readthedocs will build against - tag + '-docs'
 __short_version__ = "1.0"  # Short version number for setuptools config
-__skin_map_version__ = "0.81"  # To enable changes to skinmap file format
+__skin_map_version__ = "0.8.1"  # To enable changes to skinmap file format
 __netdicom_implementation_version__ = (
     "1.0.0.0"  # Used as part of UID when storing DICOM objects
 )

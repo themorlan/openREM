@@ -66,7 +66,7 @@ class OpenSkinBlackBox(TestCase):
             self.assertEqual(
                 existing_skin_map_data["patient_orientation_source"], "extracted"
             )
-            self.assertEqual(existing_skin_map_data["skin_map_version"], "0.8")
+            self.assertEqual(existing_skin_map_data["skin_map_version"], "0.8.1")
             self.assertEqual(existing_skin_map_data["skin_map"], ZEE_SKIN_MAP)
 
         os.remove(skin_map_path)
@@ -131,7 +131,7 @@ class OpenSkinBlackBox(TestCase):
             self.assertEqual(
                 existing_skin_map_data["patient_orientation_source"], "extracted"
             )
-            self.assertEqual(existing_skin_map_data["skin_map_version"], "0.8")
+            self.assertEqual(existing_skin_map_data["skin_map_version"], "0.8.1")
             self.assertEqual(existing_skin_map_data["skin_map"], ZEE_SKIN_MAP)
 
         os.remove(skin_map_path)
