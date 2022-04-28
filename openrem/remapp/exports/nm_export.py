@@ -193,7 +193,9 @@ def _extract_study_data(exams, pid, name, patid, statistics):
         organ_doses = radiopharm_admin.organdose_set.all()
         if patient_charac is not None:
             patient_states = patient_charac.patientstate_set.all()
-            glomerular_filtration_rates = patient_charac.glomerularfiltrationrate_set.all()
+            glomerular_filtration_rates = (
+                patient_charac.glomerularfiltrationrate_set.all()
+            )
         else:
             patient_states, glomerular_filtration_rates = ([], [])
     except ObjectDoesNotExist:
