@@ -637,7 +637,9 @@ def write_export(task, filename, temp_file, datestamp):
     task.save()
 
 
-def create_summary_sheet(task, studies, book, summary_sheet, sheet_list, has_series_protocol=True):
+def create_summary_sheet(
+    task, studies, book, summary_sheet, sheet_list, has_series_protocol=True
+):
     """Create summary sheet for xlsx exports
 
     :param task: Export task object
