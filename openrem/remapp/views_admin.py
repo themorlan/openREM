@@ -1955,6 +1955,10 @@ def task_abort(request, task_id=None):
                     )
                 )
             else:
+                if task.task_type.startswith("export"):
+                    Exports.objects.filter(task_id__exact=task_id).delete()
+                elif task.task_type.startswith("import_size"):
+                    SizeUpload.objects.filter(task_id__exact=task_id).delete()
                 abort_logger = logging.getLogger("remapp")
                 abort_logger.info(
                     "Task {0} of type {1} terminated from the Tasks interface".format(
