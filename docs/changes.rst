@@ -5,6 +5,7 @@ OpenREM version history
 
 1.0.0b1 (2021-xx-xx)
 --------------------
+* :issue:`933`  openSkin: bug fixed that caused incorrect field size at skin for exposures with a non-zero secondary angle (caudocranial)
 * :issue:`925`  Docker: docs and config file for enabling bind mounts with SELinux
 * :issue:`922`  Database: optimise indexes and duplicate queries
 * :issue:`917`  Interface: added horizintal lines between chart option groups and shaded chart option CheckboxSelectMultiple items
