@@ -144,7 +144,7 @@ def _nm_headers(pid, name, patid, statistics):
         ]
     for i in range(1, statistics["max_patient_states"] + 1):
         headings += [f"Patient state {i}"]
-    headings += [
+    patcharac_headers = [
         "Body Surface Area (m^2)",
         "Body Surface Area Formula",
         "Body Mass Index (kg/m^2)",
@@ -155,6 +155,8 @@ def _nm_headers(pid, name, patid, statistics):
         "Recent Physical Activity",
         "Serum Creatinine (mg/dl)",
     ]
+    headings += patcharac_headers
+    statistics["max_patient_charac_header"] = len(patcharac_headers)
     for i in range(1, statistics["max_glomerular_filtration_rates"] + 1):
         headings += [
             f"Glomerular Filtration Rate {i} (ml/min/1.73m^2)",
@@ -162,7 +164,7 @@ def _nm_headers(pid, name, patid, statistics):
             f"Equivalent meaning of concept name {i}",
         ]
 
-    return headings
+    return (headings, statistics)
 
 
 def _get_code_not_none(code):
@@ -185,16 +187,25 @@ def _extract_study_data(exams, pid, name, patid, statistics):
             radiopharm.radiopharmaceuticaladministrationeventdata_set.get()
         )
         patient_charac = (
-            radiopharm.radiopharmaceuticaladministrationpatientcharacteristics_set.get()
+            radiopharm.radiopharmaceuticaladministrationpatientcharacteristics_set.first()
         )
         person_participants = radiopharm_admin.personparticipant_set.all()
         organ_doses = radiopharm_admin.organdose_set.all()
-        patient_states = patient_charac.patientstate_set.all()
-        glomerular_filtration_rates = patient_charac.glomerularfiltrationrate_set.all()
+        if patient_charac is not None:
+            patient_states = patient_charac.patientstate_set.all()
+            glomerular_filtration_rates = patient_charac.glomerularfiltrationrate_set.all()
+        else:
+            patient_states, glomerular_filtration_rates = ([], [])
     except ObjectDoesNotExist:
         raise  # We handle this on the level of the export function
+    if radiopharm_admin.radiopharmaceutical_agent is None:
+        radiopharmaceutical_agent = radiopharm_admin.radiopharmaceutical_agent_string
+    else:
+        radiopharmaceutical_agent = _get_code_not_none(
+            radiopharm_admin.radiopharmaceutical_agent
+        )
     exam_data += [
-        _get_code_not_none(radiopharm_admin.radiopharmaceutical_agent),
+        radiopharmaceutical_agent,
         _get_code_not_none(radiopharm_admin.radionuclide),
         radiopharm_admin.radionuclide_half_life,
         radiopharm_admin.administered_activity,
@@ -237,17 +248,20 @@ def _extract_study_data(exams, pid, name, patid, statistics):
     exam_data += _array_to_match_maximum(
         len(patient_states), statistics["max_patient_states"]
     )
-    exam_data += [
-        patient_charac.body_surface_area,
-        _get_code_not_none(patient_charac.body_surface_area_formula),
-        patient_charac.body_mass_index,
-        _get_code_not_none(patient_charac.equation),
-        patient_charac.glucose,
-        patient_charac.fasting_duration,
-        patient_charac.hydration_volume,
-        patient_charac.recent_physical_activity,
-        patient_charac.serum_creatinine,
-    ]
+    if patient_charac is not None:
+        exam_data += [
+            patient_charac.body_surface_area,
+            _get_code_not_none(patient_charac.body_surface_area_formula),
+            patient_charac.body_mass_index,
+            _get_code_not_none(patient_charac.equation),
+            patient_charac.glucose,
+            patient_charac.fasting_duration,
+            patient_charac.hydration_volume,
+            patient_charac.recent_physical_activity,
+            patient_charac.serum_creatinine,
+        ]
+    else:
+        exam_data += _array_to_match_maximum(0, statistics["max_patient_charac_header"])
     for glomerular in glomerular_filtration_rates:
         exam_data += [
             glomerular.glomerular_filtration_rate,
@@ -296,7 +310,7 @@ def exportNM2csv(filterdict, pid=False, name=None, patid=None, user=None):
             _exit_proc(task, date_stamp, "Failed to create the export file")
 
         data, statistics = _get_data(filterdict, pid, task)
-        headings = _nm_headers(pid, name, patid, statistics)
+        headings, statistics = _nm_headers(pid, name, patid, statistics)
         writer.writerow(headings)
 
         task.progress = "CSV header row written."
@@ -391,7 +405,7 @@ def exportNM2excel(filterdict, pid=False, name=None, patid=None, user=None):
             _exit_proc(task, date_stamp, "Failed to create file")
 
         data, statistics = _get_data(filterdict, pid, task)
-        headings = _nm_headers(pid, name, patid, statistics)
+        headings, statistics = _nm_headers(pid, name, patid, statistics)
 
         summary = book.add_worksheet("Summary")
         create_summary_sheet(task, data, book, summary, None, False)
