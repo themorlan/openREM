@@ -41,7 +41,6 @@ from django.conf import settings
 from django.urls import reverse, reverse_lazy
 from django.views.decorators.csrf import csrf_exempt
 from openrem.remapp.tools.background import (
-    run_as_task,
     run_in_background,
     terminate_background,
 )
@@ -60,7 +59,8 @@ logger = logging.getLogger(__name__)
 
 @csrf_exempt
 def import_from_docker(request):
-    """View to consume the local path of an object ot import and pass to import scripts. To be used by Orthanc Docker
+    """
+    View to consume the local path of an object ot import and pass to import scripts. To be used by Orthanc Docker
     container.
 
     :param request: Request object containing local path and script name in POST data
@@ -97,7 +97,8 @@ def import_from_docker(request):
 
 @login_required
 def size_upload(request):
-    """Form for upload of csv file containing patient size information. POST request passes database entry ID to
+    """
+    Form for upload of csv file containing patient size information. POST request passes database entry ID to
     size_process
 
     :param request: If POST, contains the file upload information
@@ -136,7 +137,8 @@ def size_upload(request):
 
 @login_required
 def size_process(request, *args, **kwargs):
-    """Form for csv column header patient size imports through the web interface. POST request launches import task
+    """
+    Form for csv column header patient size imports through the web interface. POST request launches import task
 
     :param request: If POST, contains the field header information
     :param pk: From URL, identifies database patient size import record
@@ -246,7 +248,8 @@ def size_process(request, *args, **kwargs):
 
 
 def size_imports(request, *args, **kwargs):
-    """Lists patient size imports in the web interface
+    """
+    Lists patient size imports in the web interface
 
     :param request:
     """
@@ -281,7 +284,8 @@ def size_imports(request, *args, **kwargs):
 @csrf_exempt
 @login_required
 def size_delete(request):
-    """Task to delete records of patient size imports through the web interface
+    """
+    Task to delete records of patient size imports through the web interface
 
     :param request: Contains the task ID
     :type request: POST
@@ -316,7 +320,8 @@ def size_delete(request):
 
 @login_required
 def size_abort(request, pk):
-    """View to abort current patient size imports
+    """
+    View to abort current patient size imports
 
     :param pk: Size upload task primary key
     """
@@ -347,7 +352,8 @@ def size_abort(request, pk):
 
 @login_required
 def size_download(request, task_id):
-    """View to handle downloads of files from the server
+    """
+    View to handle downloads of files from the server
 
     For downloading the patient size import logfiles.
 

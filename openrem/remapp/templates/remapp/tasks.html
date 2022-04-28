@@ -1,4 +1,4 @@
-<table class="table sortable" id="{{ type }}">
+<table class="table sortable" id="{{ type }}" aria-describedby="Table showing running or runned tasks">
   <tr>
     <th id="uuid_{{ type }}" onclick="updateSort(this.id, 'user_click');">UUID</th>
     <th id="task_{{ type }}" onclick="updateSort(this.id, 'user_click');">Task type</th>
@@ -16,7 +16,7 @@
       <td>{{ task.task_type|safe }}</td>
       <td>{{ task.info|safe }}</td>
       <td>{{  task.error|safe }}</td>
-      <td>{{ task.started_at }}</td> <!--sortable_customkey="{{timedelta}}"-->
+      <td>{{ task.started_at }}</td>
       {% if task.complete %} 
         {% if task.completed_successfull %} 
           <td>Success</td>

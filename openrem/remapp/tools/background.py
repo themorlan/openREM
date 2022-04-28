@@ -21,7 +21,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 """
-..  module:: nm_export
+..  module:: background
     :synopsis: Module with tools to run functions on a different process
         and to record their execution with tasks
 
@@ -84,7 +84,7 @@ def run_as_task(func, task_type, taskuuid, *args, **kwargs):
 
     try:
         func(*args, **kwargs)
-    except Exception as e:  # Literally anything could happen here
+    except Exception:  # Literally anything could happen here
         b = _get_task_via_uuid(taskuuid)
         b.complete = True
         b.completed_successfull = False
@@ -154,16 +154,12 @@ def terminate_background(task: BackgroundTask):
     try:
         if os.name == "nt":
             # On windows this signal is not implemented. The api will just use TerminateProcess instead.
-            # The if/else here is only to make absolutely clear that we are not doing the same on windows
-            # versus linux and potentially those commands will have to differ at some point in the future.
             os.kill(task.pid, signal.SIGTERM)
         else:
             os.kill(task.pid, signal.SIGTERM)
             # Wait until the process has returned (potentially it already has when we call wait)
             # On  Windows the equivalent does not work, but seems to be blocking there anyway
-            os.waitpid(
-                task.pid, 0
-            )  
+            os.waitpid(task.pid, 0)
 
     except (ProcessLookupError, OSError):
         pass
@@ -173,8 +169,8 @@ def terminate_background(task: BackgroundTask):
     task.save()
 
 
-def _get_task_via_uuid(uuid):
-    return BackgroundTask.objects.filter(uuid__exact=uuid).first()
+def _get_task_via_uuid(task_uuid):
+    return BackgroundTask.objects.filter(uuid__exact=task_uuid).first()
 
 
 def _get_task_via_pid(pid):

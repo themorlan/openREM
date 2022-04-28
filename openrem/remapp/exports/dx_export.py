@@ -240,7 +240,7 @@ def exportDX2excel(filterdict, pid=False, name=None, patid=None, user=None):
     datestamp = datetime.datetime.now()
     task_id = get_or_generate_task_uuid()
     tsk = create_export_task(
-        id=task_id,
+        task_id=task_id,
         modality="DX",
         export_type="CSV export",
         date_stamp=datestamp,
@@ -350,7 +350,7 @@ def dxxlsx(filterdict, pid=False, name=None, patid=None, user=None):
     datestamp = datetime.datetime.now()
     task_id = get_or_generate_task_uuid()
     tsk = create_export_task(
-        id=task_id,
+        task_id=task_id,
         modality="DX",
         export_type="XLSX export",
         date_stamp=datestamp,
@@ -514,7 +514,7 @@ def dx_phe_2019(filterdict, user=None, projection=True, bespoke=False):
     datestamp = datetime.datetime.now()
     task_id = get_or_generate_task_uuid()
     tsk = create_export_task(
-        id=task_id,
+        task_id=task_id,
         modality="DX",
         export_type="PHE DX 2019 export",
         date_stamp=datestamp,

@@ -204,7 +204,7 @@ def exportMG2excel(filterdict, pid=False, name=None, patid=None, user=None, xlsx
         export_type = "CSV export"
     task_id = get_or_generate_task_uuid()
     tsk = create_export_task(
-        id=task_id,
+        task_id=task_id,
         modality="MG",
         export_type=export_type,
         date_stamp=datestamp,

@@ -1325,7 +1325,7 @@ def qrscu(
 
     task = get_current_task()
     if task is None:
-        logger.debug(f"qrscu is running in synchronous mode (no task id)")
+        logger.debug("qrscu is running in synchronous mode (no task id)")
     else:
         logger.debug(f"task id is {task.uuid}")
 

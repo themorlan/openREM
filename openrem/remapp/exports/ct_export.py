@@ -66,7 +66,7 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
     datestamp = datetime.datetime.now()
     task_id = get_or_generate_task_uuid()
     tsk = create_export_task(
-        id=task_id,
+        task_id=task_id,
         modality="CT",
         export_type="XLSX_export",
         date_stamp=datestamp,
@@ -229,7 +229,7 @@ def ct_csv(filterdict, pid=False, name=None, patid=None, user=None):
     datestamp = datetime.datetime.now()
     task_id = get_or_generate_task_uuid()
     tsk = create_export_task(
-        id=task_id,
+        task_id=task_id,
         modality="CT",
         export_type="CSV export",
         date_stamp=datestamp,
@@ -539,7 +539,7 @@ def ct_phe_2019(filterdict, user=None):
     datestamp = datetime.datetime.now()
     task_id = get_or_generate_task_uuid()
     tsk = create_export_task(
-        id=task_id,
+        task_id=task_id,
         modality="CT",
         export_type="PHE CT 2019 export",
         date_stamp=datestamp,

@@ -1906,9 +1906,7 @@ def _create_admin_dict(request):
 @login_required
 def display_tasks(request):
     """View to show tasks. Content generated using AJAX"""
-
     admin = _create_admin_dict(request)
-
     template = "remapp/task_admin.html"
     return render(request, template, {"admin": admin})
 

@@ -257,7 +257,7 @@ def rfxlsx(filterdict, pid=False, name=None, patid=None, user=None):
     datestamp = datetime.datetime.now()
     task_id = get_or_generate_task_uuid()
     tsk = create_export_task(
-        id=task_id,
+        task_id=task_id,
         modality="RF",
         export_type="XLSX export",
         date_stamp=datestamp,
@@ -634,7 +634,7 @@ def exportFL2excel(filterdict, pid=False, name=None, patid=None, user=None):
     datestamp = datetime.datetime.now()
     task_id = get_or_generate_task_uuid()
     tsk = create_export_task(
-        id=task_id,
+        task_id=task_id,
         modality="RF",
         export_type="CSV export",
         date_stamp=datestamp,
@@ -730,7 +730,7 @@ def rfopenskin(studyid):
     datestamp = datetime.datetime.now()
     task_id = get_or_generate_task_uuid()
     tsk = create_export_task(
-        id=task_id,
+        task_id=task_id,
         modality="RF-OpenSkin",
         export_type="OpenSkin RF csv export",
         date_stamp=datestamp,
@@ -982,7 +982,7 @@ def rf_phe_2019(filterdict, user=None):
     datestamp = datetime.datetime.now()
     task_id = get_or_generate_task_uuid()
     tsk = create_export_task(
-        id=task_id,
+        task_id=task_id,
         modality="RF",
         export_type="PHE RF 2019 export",
         date_stamp=datestamp,
