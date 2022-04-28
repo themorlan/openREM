@@ -80,7 +80,8 @@ def include_pid(request, name, pat_id):
 @csrf_exempt
 @login_required
 def ctcsv1(request, name=None, pat_id=None):
-    """View to launch celery task to export CT studies to csv file
+    """
+    View to launch celery task to export CT studies to csv file
 
     :param request: Contains the database filtering parameters. Also used to get user group.
     :param name: string, 0 or 1 from URL indicating if names should be exported
@@ -115,7 +116,8 @@ def ctcsv1(request, name=None, pat_id=None):
 @csrf_exempt
 @login_required
 def ctxlsx1(request, name=None, pat_id=None):
-    """View to launch celery task to export CT studies to xlsx file
+    """
+    View to launch celery task to export CT studies to xlsx file
 
     :param request: Contains the database filtering parameters. Also used to get user group.
     :param name: string, 0 or 1 from URL indicating if names should be exported
@@ -151,7 +153,8 @@ def ctxlsx1(request, name=None, pat_id=None):
 @csrf_exempt
 @login_required
 def ct_xlsx_phe2019(request):
-    """View to launch celery task to export CT studies to xlsx file in PHE 2019 CT survey format
+    """
+    View to launch celery task to export CT studies to xlsx file in PHE 2019 CT survey format
 
     :param request: Contains the database filtering parameters and user details.
     """
@@ -167,19 +170,66 @@ def ct_xlsx_phe2019(request):
 @csrf_exempt
 @login_required
 def nmcsv1(request, name=None, pat_id=None):
-    raise NotImplementedError
+    """
+    View to launch celery task to export NM studies to csv file
+
+    :param request: Contains the database filtering parameters. Also used to get user group.
+    :param name: string, 0 or 1 from URL indicating if names should be exported
+    :param pat_id: string, 0 or 1 from URL indicating if patient ID should be exported
+    :type request: GET
+    """
+    from django.shortcuts import redirect
+    from remapp.exports.nm_export import exportNM2csv
+
+    pid = include_pid(request, name, pat_id)
+
+    if request.user.groups.filter(name="exportgroup"):
+        job = exportNM2csv.delay(
+            request.GET,
+            pid["pidgroup"],
+            pid["include_names"],
+            pid["include_pat_id"],
+            request.user.id,
+        )
+        logger.debug(f"Export NM to CSV job is {job}")
+
+    return redirect(reverse_lazy("export"))
 
 
 @csrf_exempt
 @login_required
 def nmxlsx1(request, name=None, pat_id=None):
-    raise NotImplementedError
+    """
+    View to launch celery task to export NM studies to excel file
+
+    :param request: Contains the database filtering parameters. Also used to get user group.
+    :param name: string, 0 or 1 from URL indicating if names should be exported
+    :param pat_id: string, 0 or 1 from URL indicating if patient ID should be exported
+    :type request: GET
+    """
+    from django.shortcuts import redirect
+    from remapp.exports.nm_export import exportNM2excel
+
+    pid = include_pid(request, name, pat_id)
+
+    if request.user.groups.filter(name="exportgroup"):
+        job = exportNM2excel.delay(
+            request.GET,
+            pid["pidgroup"],
+            pid["include_names"],
+            pid["include_pat_id"],
+            request.user.id,
+        )
+        logger.debug(f"Exprt NM to Excel job is {job}")
+
+    return redirect(reverse_lazy("export"))
 
 
 @csrf_exempt
 @login_required
 def dxcsv1(request, name=None, pat_id=None):
-    """View to launch celery task to export DX and CR studies to csv file
+    """
+    View to launch celery task to export DX and CR studies to csv file
 
     :param request: Contains the database filtering parameters. Also used to get user group.
     :param name: string, 0 or 1 from URL indicating if names should be exported
@@ -207,7 +257,8 @@ def dxcsv1(request, name=None, pat_id=None):
 @csrf_exempt
 @login_required
 def dxxlsx1(request, name=None, pat_id=None):
-    """View to launch celery task to export DX and CR studies to xlsx file
+    """
+    View to launch celery task to export DX and CR studies to xlsx file
 
     :param request: Contains the database filtering parameters. Also used to get user group.
     :param name: string, 0 or 1 from URL indicating if names should be exported
@@ -235,7 +286,8 @@ def dxxlsx1(request, name=None, pat_id=None):
 @csrf_exempt
 @login_required
 def dx_xlsx_phe2019(request, export_type=None):
-    """View to launch celery task to export DX studies to xlsx file in PHE 2019 DX survey format
+    """
+    View to launch celery task to export DX studies to xlsx file in PHE 2019 DX survey format
 
     :param request: Contains the database filtering parameters and user details.
     :param export_type: string, 'projection' or 'exam'
@@ -323,7 +375,8 @@ def dx_xlsx_phe2019(request, export_type=None):
 @csrf_exempt
 @login_required
 def flcsv1(request, name=None, pat_id=None):
-    """View to launch celery task to export fluoroscopy studies to csv file
+    """
+    View to launch celery task to export fluoroscopy studies to csv file
 
     :param request: Contains the database filtering parameters. Also used to get user group.
     :param name: string, 0 or 1 from URL indicating if names should be exported
@@ -351,7 +404,8 @@ def flcsv1(request, name=None, pat_id=None):
 @csrf_exempt
 @login_required
 def rfxlsx1(request, name=None, pat_id=None):
-    """View to launch celery task to export fluoroscopy studies to xlsx file
+    """
+    View to launch celery task to export fluoroscopy studies to xlsx file
 
     :param request: Contains the database filtering parameters. Also used to get user group.
     :param name: string, 0 or 1 from URL indicating if names should be exported
@@ -400,7 +454,8 @@ def rfopenskin(request, pk):
 @csrf_exempt
 @login_required
 def rf_xlsx_phe2019(request):
-    """View to launch celery task to export fluoro studies to xlsx file in PHE 2019 IR/fluoro survey format
+    """
+    View to launch celery task to export fluoro studies to xlsx file in PHE 2019 IR/fluoro survey format
 
     :param request: Contains the database filtering parameters and user details.
     """
@@ -482,7 +537,8 @@ def mgxlsx1(request, name=None, pat_id=None):
 @csrf_exempt
 @login_required
 def mgnhsbsp(request):
-    """View to launch celery task to export mammography studies to csv file using a NHSBSP template
+    """
+    View to launch celery task to export mammography studies to csv file using a NHSBSP template
 
     :param request: Contains the database filtering parameters. Also used to get user group.
     :type request: GET
@@ -500,7 +556,8 @@ def mgnhsbsp(request):
 @csrf_exempt
 @login_required
 def export(request):
-    """View to list current and completed exports to track progress, download and delete
+    """
+    View to list current and completed exports to track progress, download and delete
 
     :param request: Used to get user group.
     """
@@ -536,7 +593,8 @@ def export(request):
 
 @login_required
 def download(request, task_id):
-    """View to handle downloads of files from the server
+    """
+    View to handle downloads of files from the server
 
     Originally used for download of the export spreadsheets, now also used
     for downloading the patient size import logfiles.
@@ -591,7 +649,8 @@ def download(request, task_id):
 @csrf_exempt
 @login_required
 def deletefile(request):
-    """View to delete export files from the server
+    """
+    View to delete export files from the server
 
     :param request: Contains the task ID
     :type request: POST
@@ -630,7 +689,8 @@ def deletefile(request):
 
 @login_required
 def export_abort(request, pk):
-    """View to abort current export job
+    """
+    View to abort current export job
 
     :param request: Contains the task primary key
     :type request: POST
@@ -657,7 +717,8 @@ def export_abort(request, pk):
 @csrf_exempt
 @login_required
 def update_active(request):
-    """AJAX function to return active exports
+    """
+    AJAX function to return active exports
 
     :param request: Request object
     :return: HTML table of active exports
@@ -676,7 +737,8 @@ def update_active(request):
 @csrf_exempt
 @login_required
 def update_error(request):
-    """AJAX function to return exports in error state
+    """
+    AJAX function to return exports in error state
 
     :param request: Request object
     :return: HTML table of exports in error state
@@ -695,7 +757,8 @@ def update_error(request):
 @csrf_exempt
 @login_required
 def update_complete(request):
-    """AJAX function to return recently completed exports
+    """
+    AJAX function to return recently completed exports
 
     :param request: Request object, including pk of latest complete export at initial page load
     :return: HTML table of completed exports

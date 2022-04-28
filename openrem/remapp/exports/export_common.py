@@ -637,7 +637,9 @@ def write_export(task, filename, temp_file, datestamp):
     task.save()
 
 
-def create_summary_sheet(task, studies, book, summary_sheet, sheet_list):
+def create_summary_sheet(
+    task, studies, book, summary_sheet, sheet_list, has_series_protocol=True
+):
     """Create summary sheet for xlsx exports
 
     :param task: Export task object
@@ -696,17 +698,18 @@ def create_summary_sheet(task, studies, book, summary_sheet, sheet_list):
     summary_sheet.set_column("D:D", 25)
 
     # Generate list of Series Protocols
-    summary_sheet.write(5, 6, "Series Protocol")
-    summary_sheet.write(5, 7, "Frequency")
-    sorted_protocols = sorted(
-        iter(sheet_list.items()), key=lambda k_v: k_v[1]["count"], reverse=True
-    )
-    for row, item in enumerate(sorted_protocols):
-        summary_sheet.write(
-            row + 6, 6, ", ".join(item[1]["protocolname"])
-        )  # Join - can't write list to a single cell.
-        summary_sheet.write(row + 6, 7, item[1]["count"])
-    summary_sheet.set_column("G:G", 15)
+    if has_series_protocol:
+        summary_sheet.write(5, 6, "Series Protocol")
+        summary_sheet.write(5, 7, "Frequency")
+        sorted_protocols = sorted(
+            iter(sheet_list.items()), key=lambda k_v: k_v[1]["count"], reverse=True
+        )
+        for row, item in enumerate(sorted_protocols):
+            summary_sheet.write(
+                row + 6, 6, ", ".join(item[1]["protocolname"])
+            )  # Join - can't write list to a single cell.
+            summary_sheet.write(row + 6, 7, item[1]["count"])
+        summary_sheet.set_column("G:G", 15)
 
 
 def abort_if_zero_studies(num_studies, tsk):
