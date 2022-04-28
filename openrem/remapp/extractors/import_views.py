@@ -41,6 +41,7 @@ from django.conf import settings
 from django.urls import reverse, reverse_lazy
 from django.views.decorators.csrf import csrf_exempt
 from openrem.remapp.tools.background import (
+    run_as_task,
     run_in_background,
     terminate_background,
 )
@@ -75,19 +76,44 @@ def import_from_docker(request):
 
     if dicom_path:
         if import_type == "rdsr":
-            rdsr(dicom_path)
+            run_as_task(
+                rdsr,
+                "import_rdsr",
+                None,
+                dicom_path
+            )
             return_type = "RDSR"
         elif import_type == "dx":
-            dx(dicom_path)
+            run_as_task(
+                dx,
+                "import_dx",
+                None,
+                dicom_path
+            )
             return_type = "DX"
         elif import_type == "mam":
-            mam(dicom_path)
+            run_as_task(
+                mam,
+                "import_mam",
+                None,
+                dicom_path,
+            )
             return_type = "Mammography"
         elif import_type == "ct_philips":
-            ct_philips(dicom_path)
+            run_as_task(
+                ct_philips,
+                "import_ct_philips",
+                None,
+                dicom_path,
+            )
             return_type = "CT Philips"
         elif import_type == "ct_toshiba":
-            ct_toshiba(dicom_path)
+            run_as_task(
+                ct_toshiba,
+                "import_ct_toshiba",
+                None,
+                dicom_path
+            )
             return HttpResponse(f"{dicom_path} passed to CT Toshiba import")
         else:
             return HttpResponse("Import script name not recognised")

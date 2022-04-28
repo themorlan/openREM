@@ -51,7 +51,7 @@ from remapp.models import (  # pylint: disable=wrong-import-order, wrong-import-
     DicomStoreSCP,
     GeneralStudyModuleAttr,
 )
-from openrem.remapp.tools.background import get_current_task, run_in_background
+from openrem.remapp.tools.background import get_current_task, run_as_task
 
 _config.LOG_RESPONSE_IDENTIFIERS = False
 _config.LOG_HANDLER_LEVEL = "none"
@@ -2319,22 +2319,20 @@ def qrscu_script():
     parser = _create_parser()
     args = parser.parse_args()
     processed_args = _process_args(args, parser)
-    sys.exit(
-        run_in_background(
-            qrscu,
-            "query",
-            qr_scp_pk=processed_args["qr_id"],
-            store_scp_pk=processed_args["store_id"],
-            move=True,
-            modalities=processed_args["modalities"],
-            remove_duplicates=processed_args["remove_duplicates"],
-            date_from=processed_args["dfrom"],
-            date_until=processed_args["duntil"],
-            single_date=processed_args["single_date"],
-            time_from=processed_args["tfrom"],
-            time_until=processed_args["tuntil"],
-            filters=processed_args["filters"],
-            get_toshiba_images=processed_args["get_toshiba"],
-            get_empty_sr=processed_args["get_empty_sr"],
-        ).uuid
+    run_as_task(
+        qrscu,
+        "query",
+        qr_scp_pk=processed_args["qr_id"],
+        store_scp_pk=processed_args["store_id"],
+        move=True,
+        modalities=processed_args["modalities"],
+        remove_duplicates=processed_args["remove_duplicates"],
+        date_from=processed_args["dfrom"],
+        date_until=processed_args["duntil"],
+        single_date=processed_args["single_date"],
+        time_from=processed_args["tfrom"],
+        time_until=processed_args["tuntil"],
+        filters=processed_args["filters"],
+        get_toshiba_images=processed_args["get_toshiba"],
+        get_empty_sr=processed_args["get_empty_sr"],
     )

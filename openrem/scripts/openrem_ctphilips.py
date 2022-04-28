@@ -15,12 +15,16 @@
 import sys
 from glob import glob
 from openrem.remapp.extractors.ct_philips import ct_philips
+from openrem.remapp.tools.background import run_as_task
 
 if len(sys.argv) < 2:
     sys.exit("Error: Supply at least one argument - the Philips dose report image")
 
 for arg in sys.argv[1:]:
     for filename in glob(arg):
-        ct_philips(filename)
-
-sys.exit()
+        run_as_task(
+            ct_philips,
+            "import_ct_philips",
+            None,
+            filename,
+        )

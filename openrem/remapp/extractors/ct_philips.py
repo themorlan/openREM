@@ -395,10 +395,3 @@ def ct_philips(philips_file):
 
     return 0
 
-
-if __name__ == "__main__":
-
-    if len(sys.argv) != 2:
-        sys.exit("Error: Supply exactly one argument - the Philips dose report image")
-
-    sys.exit(ct_philips(sys.argv[1]))

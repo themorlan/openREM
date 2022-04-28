@@ -2560,11 +2560,3 @@ def rdsr(rdsr_file):
         os.remove(rdsr_file)
 
     return 0
-
-
-if __name__ == "__main__":
-
-    if len(sys.argv) != 2:
-        sys.exit("Error: Supply exactly one argument - the DICOM RDSR file")
-
-    sys.exit(rdsr(sys.argv[1]))

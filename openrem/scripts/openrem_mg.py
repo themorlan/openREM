@@ -15,12 +15,16 @@
 import sys
 from glob import glob
 from openrem.remapp.extractors.mam import mam
+from openrem.remapp.tools.background import run_as_task
 
 if len(sys.argv) < 2:
     sys.exit("Error: Supply at least one argument - the DICOM mammography image file")
 
 for arg in sys.argv[1:]:
     for filename in glob(arg):
-        mam(filename)
-
-sys.exit()
+        run_as_task(
+            mam,
+            "import_mam",
+            None,
+            filename,
+        )

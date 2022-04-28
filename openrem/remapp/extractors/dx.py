@@ -929,14 +929,3 @@ def dx(dig_file):
         os.remove(dig_file)
 
     return 0
-
-
-if __name__ == "__main__":
-    import sys
-
-    if len(sys.argv) != 2:
-        sys.exit(
-            "Error: Supply exactly one argument - the DICOM DX radiographic image file"
-        )
-
-    sys.exit(dx(sys.argv[1]))

@@ -654,13 +654,3 @@ def mam(mg_file):
         logger.debug("Mammo %s processing complete, file remains", mg_file)
 
     return 0
-
-
-if __name__ == "__main__":
-
-    if len(sys.argv) != 2:
-        sys.exit(
-            "Error: Supply exactly one argument - the DICOM mammography image file"
-        )
-
-    sys.exit(mam(sys.argv[1]))
