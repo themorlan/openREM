@@ -40,7 +40,7 @@ import django
 from django import db
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.files.base import ContentFile
-from openrem.remapp.tools.background import get_or_generate_task_uuid
+from openrem.remapp.tools.background import get_or_generate_task_uuid, record_task_error_exit
 
 
 logger = logging.getLogger(__name__)
@@ -69,10 +69,12 @@ def _patientstudymoduleattributes(
     try:
         patient_attributes = exam.patientstudymoduleattr_set.get()
     except ObjectDoesNotExist:
-        logger.error(
+        error = (
             f"Attempt to import pt size info for study UID {exam.study_instance_uid}/acc. number"
             f" {exam.accession_number} failed due to a failed import"
         )
+        logger.error(error)
+        record_task_error_exit(error)
         log_file.file.open("a")
         log_file.write(
             "\r\n    ********* Failed to insert size - database entry incomplete *********"
@@ -221,20 +223,22 @@ def websizeimport(csv_pk=None):
             try:
                 size_upload.logfile.save(log_file, headerrow)
             except OSError as e:
-                size_upload.progress = (
-                    "Error saving export file - please contact an administrator. "
-                    "Error({0}): {1}".format(e.errno, e.strerror)
-                )
+                error = ("Error saving export file - please contact an administrator. "
+                    "Error({0}): {1}".format(e.errno, e.strerror))
+                size_upload.progress = error
                 size_upload.status = "ERROR"
                 size_upload.save()
+                record_task_error_exit(error)
                 return
             except:
-                size_upload.progress = (
+                error = (
                     "Unexpected error saving export file - please contact an "
                     "administrator: {0}".format(sys.exc_info()[0])
                 )
+                size_upload.progress = error
                 size_upload.status = "ERROR"
                 size_upload.save()
+                record_task_error_exit(error)
                 return
 
             log_file = size_upload.logfile
@@ -320,7 +324,9 @@ def csv2db():
         fieldnames = dataset.fieldnames
         arg_headers = [args.id, args.height, args.weight]
         if not all(header in fieldnames for header in arg_headers):
-            print(f"Error: one or more of {arg_headers} not found in csv file")
+            msg = f"Error: one or more of {arg_headers} not found in csv file"
+            print(msg)
+            record_task_error_exit(msg)
             return
         size_upload = SizeUpload()
         date_stamp = datetime.datetime.now()

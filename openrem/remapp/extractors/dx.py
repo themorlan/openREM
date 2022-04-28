@@ -46,6 +46,8 @@ from django.core.exceptions import ObjectDoesNotExist
 import pydicom
 from pydicom.valuerep import MultiValue
 
+from openrem.remapp.tools.background import record_task_error_exit, record_task_info
+
 from ..tools import check_uid
 from ..tools.dcmdatetime import get_date, get_time, make_date_time
 from ..tools.get_values import (
@@ -765,7 +767,11 @@ def _test_if_dx(dataset):
 def _dx2db(dataset):
     study_uid = get_value_kw("StudyInstanceUID", dataset)
     if not study_uid:
-        sys.exit("No UID returned")
+        error = "In dx import: No UID returned"
+        logger.error(error)
+        record_task_error_exit(error)
+        return
+    record_task_info(f"UID: {study_uid}")
     study_in_db = check_uid.check_uid(study_uid)
 
     if study_in_db:
@@ -782,6 +788,11 @@ def _dx2db(dataset):
                 this_study.projectionxrayradiationdose_set.get().irradeventxraydata_set.count()
             )
             this_study.save()
+        else:
+            error = f"Study {study_uid} already in DB"
+            logger.error(error)
+            record_task_error_exit(error)
+            return
 
     if not study_in_db:
         # study doesn't exist, start from scratch
@@ -800,7 +811,10 @@ def _dx2db(dataset):
         if study_in_db == 1:
             _generalstudymoduleattributes(dataset, g)
         elif not study_in_db:
-            sys.exit("Something went wrong, GeneralStudyModuleAttr wasn't created")
+            error = "Something went wrong, GeneralStudyModuleAttr wasn't created"
+            record_task_error_exit(error)
+            logger.error(error)
+            return
         elif study_in_db > 1:
             sleep(random())  # nosec - not being used for cryptography
             # Check if other instance(s) has deleted the study yet
@@ -920,7 +934,10 @@ def dx(dig_file):
             dataset.decode()
     isdx = _test_if_dx(dataset)
     if not isdx:
-        return "{0} is not a DICOM DX radiographic image".format(dig_file)
+        error = "{0} is not a DICOM DX radiographic image".format(dig_file)
+        logger.error(error)
+        record_task_error_exit(error)
+        return 1
 
     logger.debug("About to launch _dx2db")
     _dx2db(dataset)

@@ -34,6 +34,8 @@ import django
 import logging
 from pydicom.charset import default_encoding
 
+from openrem.remapp.tools.background import record_task_error_exit, record_task_info
+
 logger = logging.getLogger("remapp.extractors.mam")
 
 # setup django/OpenREM
@@ -525,8 +527,12 @@ def _mammo2db(dataset):
 
     study_uid = get_value_kw("StudyInstanceUID", dataset)
     if not study_uid:
-        sys.exit("No UID returned")
+        error = "In mammo import no UID present. Stop import."
+        logger.error(error)
+        record_task_error_exit(error)
+        return
     study_in_db = check_uid.check_uid(study_uid)
+    record_task_info(f"UID: {study_uid}")
     logger.debug("In mam.py. Study_UID %s, study_in_db %s", study_uid, study_in_db)
 
     if study_in_db:
@@ -557,7 +563,8 @@ def _mammo2db(dataset):
         if study_in_db == 1:
             _generalstudymoduleattributes(dataset, g)
         elif not study_in_db:
-            sys.exit("Something went wrong, GeneralStudyModuleAttr wasn't created")
+            record_task_error_exit("Something went wrong, GeneralStudyModuleAttr wasn't created")
+            return
         elif study_in_db > 1:
             sleep(random())  # nosec - not being used for cryptography
             # Check if other instance(s) has deleted the study yet
@@ -641,8 +648,9 @@ def mam(mg_file):
     ismammo = _test_if_mammo(dataset)
     if not ismammo:
         if del_no_match:
-            logger.debug("%s id not a mammo file, deleting", mg_file)
+            logger.debug("%s is not a mammo file, deleting", mg_file)
             os.remove(mg_file)
+        record_task_error_exit(f"{mg_file} is not a mammo file")
         return 1
 
     _mammo2db(dataset)

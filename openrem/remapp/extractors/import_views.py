@@ -74,6 +74,8 @@ def import_from_docker(request):
         f"In import_from_docker, dicom_path is {dicom_path}, import type is {import_type}"
     )
 
+    # This violates the rules for running background processes at the moment,
+    # but at least it ensures correctness
     if dicom_path:
         if import_type == "rdsr":
             run_as_task(

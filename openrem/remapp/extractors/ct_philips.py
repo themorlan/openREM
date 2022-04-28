@@ -38,6 +38,8 @@ import django
 from django.db.models import Max, Min, ObjectDoesNotExist
 import pydicom
 
+from openrem.remapp.tools.background import record_task_error_exit, record_task_info
+
 from ..tools.dcmdatetime import get_date_time, get_date, get_time
 from ..tools.get_values import (
     get_value_kw,
@@ -349,6 +351,7 @@ def _generalstudymoduleattributes(dataset, g):
 def _philips_ct2db(dataset):
     if "StudyInstanceUID" in dataset:
         study_instance_uid = dataset.StudyInstanceUID
+        record_task_info(f"UID: {study_instance_uid}")
         existing = GeneralStudyModuleAttr.objects.filter(
             study_instance_uid__exact=study_instance_uid
         )
@@ -386,7 +389,10 @@ def ct_philips(philips_file):
         or dataset.Manufacturer != "Philips"
         or dataset.SeriesDescription != "Dose Info"
     ):
-        return "{0} is not a Philips CT dose report image".format(philips_file)
+        error = "{0} is not a Philips CT dose report image".format(philips_file)
+        logger.error(error)
+        record_task_error_exit(error)
+        return 1
 
     _philips_ct2db(dataset)
 
