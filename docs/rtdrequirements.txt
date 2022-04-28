@@ -17,7 +17,6 @@ testfixtures==6.14.0
 mock==4.0.2
 django-js-reverse==0.9.1
 requests==2.23.0
-flower==0.9.5
 numpy==1.19.4
 scipy==1.5.4
 defusedxml==0.6.0
