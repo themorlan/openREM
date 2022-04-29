@@ -138,6 +138,7 @@ def _nm_headers(pid, name, patid, statistics):
     headings = common_headers("NM", pid, name, patid)
     header_lengths = {}
     headings.remove("No. events")  # There is always just one event for a study
+    header_lengths["common_begin"] = len(headings)
     headings += [
         "Radiopharmaceutical Agent",
         "Radionuclide",
@@ -524,7 +525,7 @@ def exportNM2excel(filterdict, pid=False, name=None, patid=None, user=None):
         sheet_count = len(study_descriptions) + 1
 
         all_data = book.add_worksheet("All data")
-        book = text_and_date_formats(book, all_data, pid, name, patid)
+        book = text_and_date_formats(book, all_data, pid, name, patid, "NM", headings)
         _write_nm_excel_sheet(
             task,
             all_data,
@@ -542,7 +543,7 @@ def exportNM2excel(filterdict, pid=False, name=None, patid=None, user=None):
         for i, study_description in enumerate(study_descriptions):
             study_description, current_data = study_description
             current_sheet = book.add_worksheet(sheet_name(study_description))
-            book = text_and_date_formats(book, current_sheet, pid, name, patid)
+            book = text_and_date_formats(book, current_sheet, pid, name, patid, "NM", headings)
             _write_nm_excel_sheet(
                 task,
                 current_sheet,
