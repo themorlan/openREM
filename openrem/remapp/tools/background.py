@@ -169,7 +169,7 @@ def run_in_background_with_limits(
                             started_at=datetime.datetime(1, 1, 1),
                         )
                         break
-            time.sleep(1)
+            time.sleep(0.3)
 
     # On linux connection gets copied which leads to problems.
     # Close them so a new one is created for each process
@@ -234,10 +234,10 @@ def wait_task(task: BackgroundTask):
     Wait until the task has completed
     """
     while True:
+        task.refresh_from_db()
         if task.complete:
             return
-        time.sleep(1)
-        task.refresh_from_db()
+        time.sleep(0.3)
 
 
 def _get_task_via_uuid(task_uuid):
