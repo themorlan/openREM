@@ -17,7 +17,6 @@ import sys
 import uuid
 
 
-from celery import shared_task
 import django
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.translation import gettext as _
@@ -51,6 +50,11 @@ from remapp.models import (  # pylint: disable=wrong-import-order, wrong-import-
     DicomRemoteQR,
     DicomStoreSCP,
     GeneralStudyModuleAttr,
+)
+from openrem.remapp.tools.background import (
+    get_current_task,
+    run_in_background,
+    wait_task,
 )
 
 _config.LOG_RESPONSE_IDENTIFIERS = False
@@ -1236,9 +1240,6 @@ def _remove_duplicates_in_study_response(query, initial_count):
         return initial_count
 
 
-@shared_task(
-    name="remapp.netdicom.qrscu.qrscu"
-)  # (name='remapp.netdicom.qrscu.qrscu', queue='qr')
 def qrscu(
     qr_scp_pk=None,
     store_scp_pk=None,
@@ -1325,10 +1326,12 @@ def qrscu(
             query_id,
         )
     )
-    celery_task_uuid = qrscu.request.id
-    if celery_task_uuid is None:
-        celery_task_uuid = uuid.uuid4()
-    logger.debug(f"Celery task UUID is {celery_task_uuid}")
+
+    task = get_current_task()
+    if task is None:
+        logger.debug("qrscu is running in synchronous mode (no task id)")
+    else:
+        logger.debug(f"task id is {task.uuid}")
 
     # Currently, if called from qrscu_script modalities will either be a list of modalities or it will be "SR".
     # Web interface hasn't changed, so will be a list of modalities and or the inc_sr flag
@@ -1370,7 +1373,6 @@ def qrscu(
     query = DicomQuery.objects.create()
     query.started_at = datetime.now()
     query.query_id = query_id
-    query.query_uuid = celery_task_uuid
     query.complete = False
     query.store_scp_fk = DicomStoreSCP.objects.get(pk=store_scp_pk)
     query.qr_scp_fk = qr_scp
@@ -1412,12 +1414,8 @@ def qrscu(
 
     if assoc.is_established:
 
-        try:
-            celery_task_uuid_8 = celery_task_uuid.hex[:8]
-        except AttributeError:
-            celery_task_uuid_8 = celery_task_uuid[:8]
         logger.info(
-            f"{query_id_8} Celery {celery_task_uuid_8} "
+            f"{query_id_8} "
             f"DICOM FindSCU: {query_summary_1} \n    {query_summary_2} \n    {query_summary_3}"
         )
         d = Dataset()
@@ -1742,7 +1740,7 @@ def qrscu(
         )
 
         if move:
-            movescu.delay(str(query.query_id))
+            movescu(str(query.query_id))
 
     else:
         if assoc.is_rejected:
@@ -1899,13 +1897,10 @@ def _move_if_established(ae, assoc, d, study_no, series_no, query, remote):
     return False, msg
 
 
-@shared_task(
-    name="remapp.netdicom.qrscu.movescu"
-)  # (name='remapp.netdicom.qrscu.movescu', queue='qr')
 def movescu(query_id):
     """
     C-Move request element of query-retrieve service class user
-    :param query_id: UUID of query in the DicomQuery table
+    :param query_id: ID of query in the DicomQuery table
     :return: None
     """
     # debug_logger()
@@ -1920,12 +1915,9 @@ def movescu(query_id):
         return 0
     query.move_complete = False
     query.failed = False
-    query.move_uuid = movescu.request.id
     query.save()
     qr_scp = query.qr_scp_fk
     store_scp = query.store_scp_fk
-
-    logger.debug(f"movescu uuid is {movescu.request.id}")
 
     ae = AE()
     ae.add_requested_context(StudyRootQueryRetrieveInformationModelMove)
@@ -2332,38 +2324,22 @@ def qrscu_script():
     parser = _create_parser()
     args = parser.parse_args()
     processed_args = _process_args(args, parser)
-    sys.exit(
-        qrscu.delay(
-            qr_scp_pk=processed_args["qr_id"],
-            store_scp_pk=processed_args["store_id"],
-            move=True,
-            modalities=processed_args["modalities"],
-            remove_duplicates=processed_args["remove_duplicates"],
-            date_from=processed_args["dfrom"],
-            date_until=processed_args["duntil"],
-            single_date=processed_args["single_date"],
-            time_from=processed_args["tfrom"],
-            time_until=processed_args["tuntil"],
-            filters=processed_args["filters"],
-            get_toshiba_images=processed_args["get_toshiba"],
-            get_empty_sr=processed_args["get_empty_sr"],
-        )
+    b = run_in_background(
+        qrscu,
+        "query",
+        qr_scp_pk=processed_args["qr_id"],
+        store_scp_pk=processed_args["store_id"],
+        move=True,
+        modalities=processed_args["modalities"],
+        remove_duplicates=processed_args["remove_duplicates"],
+        date_from=processed_args["dfrom"],
+        date_until=processed_args["duntil"],
+        single_date=processed_args["single_date"],
+        time_from=processed_args["tfrom"],
+        time_until=processed_args["tuntil"],
+        filters=processed_args["filters"],
+        get_toshiba_images=processed_args["get_toshiba"],
+        get_empty_sr=processed_args["get_empty_sr"],
     )
-
-
-# if __name__ == "__main__":
-#     parser = _create_parser()
-#     args = parser.parse_args()
-#     processed_args = _process_args(args, parser)
-#     sys.exit(
-#         qrscu.delay(qr_scp_pk=processed_args['qr_id'],
-#                     store_scp_pk=processed_args['store_id'],
-#                     move=True,
-#                     modalities=processed_args['modalities'],
-#                     remove_duplicates=processed_args['remove_duplicates'],
-#                     date_from=processed_args['dfrom'],
-#                     date_until=processed_args['duntil'],
-#                     filters=processed_args['filters'],
-#                     get_toshiba_images=processed_args['get_toshiba']
-#                     )
-#     )
+    print("Running Query")
+    wait_task(b)

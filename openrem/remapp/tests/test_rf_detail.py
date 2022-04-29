@@ -64,14 +64,14 @@ class SummaryTotalDoses(TestCase):
 
         summary_table_text = [
             [
-                u"Fluoroscopy",
+                "Fluoroscopy",
                 Decimal("16.000000000000"),
                 Decimal("0.002520000000"),
                 Decimal("28.00"),
             ],
-            [u"Acquisition", Decimal("0E-12"), Decimal("0E-12"), Decimal("0E-8")],
+            ["Acquisition", Decimal("0E-12"), Decimal("0E-12"), Decimal("0E-8")],
             [
-                u"Total",
+                "Total",
                 Decimal("16.000000000000"),
                 Decimal("0.002520000000"),
                 Decimal("28.00000000"),
@@ -82,25 +82,25 @@ class SummaryTotalDoses(TestCase):
 
         summary_philips = [
             [
-                u"Fluoroscopy",
+                "Fluoroscopy",
                 Decimal("10.558274000000"),
                 Decimal("0.000293081169"),
                 Decimal("13.00"),
             ],
             [
-                u"Acquisition",
+                "Acquisition",
                 Decimal("143.010366000000"),
                 Decimal("0.003978199182"),
                 Decimal("14.75000000"),
             ],
             [
-                u"- Stationary Acquisition",
+                "- Stationary Acquisition",
                 Decimal("143.0104000000"),
                 Decimal("0.003978199182"),
                 Decimal("14.75000000"),
             ],
             [
-                u"Total",
+                "Total",
                 Decimal("153.568640000000"),
                 Decimal("0.004271280351"),
                 Decimal("27.75000000"),

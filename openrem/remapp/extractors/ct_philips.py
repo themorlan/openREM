@@ -33,11 +33,12 @@ import logging
 import os
 import sys
 
-from celery import shared_task
 from decimal import Decimal
 import django
 from django.db.models import Max, Min, ObjectDoesNotExist
 import pydicom
+
+from openrem.remapp.tools.background import record_task_error_exit, record_task_info
 
 from ..tools.dcmdatetime import get_date_time, get_date, get_time
 from ..tools.get_values import (
@@ -350,6 +351,7 @@ def _generalstudymoduleattributes(dataset, g):
 def _philips_ct2db(dataset):
     if "StudyInstanceUID" in dataset:
         study_instance_uid = dataset.StudyInstanceUID
+        record_task_info(f"UID: {study_instance_uid.replace('.', '. ')}")
         existing = GeneralStudyModuleAttr.objects.filter(
             study_instance_uid__exact=study_instance_uid
         )
@@ -363,7 +365,6 @@ def _philips_ct2db(dataset):
     patient_module_attributes(dataset, g)
 
 
-@shared_task(name="remapp.extractors.ct_philips.ct_philips")
 def ct_philips(philips_file):
     """Extract radiation dose structured report related data from Philips CT dose report images
 
@@ -388,7 +389,10 @@ def ct_philips(philips_file):
         or dataset.Manufacturer != "Philips"
         or dataset.SeriesDescription != "Dose Info"
     ):
-        return "{0} is not a Philips CT dose report image".format(philips_file)
+        error = "{0} is not a Philips CT dose report image".format(philips_file)
+        logger.error(error)
+        record_task_error_exit(error)
+        return 1
 
     _philips_ct2db(dataset)
 
@@ -396,11 +400,3 @@ def ct_philips(philips_file):
         os.remove(philips_file)
 
     return 0
-
-
-if __name__ == "__main__":
-
-    if len(sys.argv) != 2:
-        sys.exit("Error: Supply exactly one argument - the Philips dose report image")
-
-    sys.exit(ct_philips(sys.argv[1]))

@@ -6,7 +6,6 @@
 
 """
 
-import sys
 from openrem.remapp.netdicom.qrscu import qrscu_script
 
-sys.exit(qrscu_script())
+qrscu_script()

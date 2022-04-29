@@ -376,7 +376,6 @@ class DicomQuery(models.Model):
     move_warning_sub_ops = models.IntegerField(default=0)
     move_complete = models.BooleanField(default=False)
     move_summary = models.TextField(blank=True)
-    query_uuid = models.UUIDField(null=True)
     move_uuid = models.UUIDField(null=True)
 
 
@@ -2818,3 +2817,14 @@ class UpgradeStatus(SingletonModel):
     """
 
     from_0_9_1_summary_fields = models.BooleanField(default=False)
+
+
+class BackgroundTask(models.Model):
+    uuid = models.TextField()
+    pid = models.IntegerField()
+    task_type = models.TextField()
+    info = models.TextField(blank=True, null=True)
+    error = models.TextField(blank=True, null=True)
+    completed_successfull = models.BooleanField(default=False)
+    complete = models.BooleanField(default=False)
+    started_at = models.DateTimeField()

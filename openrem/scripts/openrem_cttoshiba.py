@@ -18,14 +18,24 @@
 import sys
 from glob import glob
 from openrem.remapp.extractors.ct_toshiba import ct_toshiba
+from openrem.remapp.tools.background import run_in_background_with_limits, wait_task
 
 if len(sys.argv) < 2:
     sys.exit(
         "Error: supply at least one argument - the folder containing the DICOM objects"
     )
 
+tasks = []
 for arg in sys.argv[1:]:
     for folder_name in glob(arg):
-        ct_toshiba(folder_name)
+        b = run_in_background_with_limits(
+            ct_toshiba,
+            "import_ct_toshiba",
+            0,
+            {"import_ct_toshiba": 1},
+            folder_name,
+        )
+        tasks.append(b)
 
-sys.exit()
+for t in tasks:
+    wait_task(t)

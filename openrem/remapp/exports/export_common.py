@@ -728,11 +728,11 @@ def abort_if_zero_studies(num_studies, tsk):
 
 
 def create_export_task(
-    celery_uuid, modality, export_type, date_stamp, pid, user, filters_dict
+    task_id, modality, export_type, date_stamp, pid, user, filters_dict
 ):
-    """Create export task, add filter details and Celery UUID to export table to track later
+    """Create export task, add filter details and Task UUID to export table to track later
 
-    :param celery_uuid: UUID allocated by Celery for task
+    :param id: The id allocated for this task
     :param modality: export modality
     :param export_type: CSV, XLSX or special
     :param date_stamp: datetime export started
@@ -741,9 +741,8 @@ def create_export_task(
     :param filters_dict: filters from GET
     :return: Exports database object
     """
-
-    if celery_uuid is None:
-        celery_uuid = uuid.uuid4()
+    if task_id is None:
+        task_id = str(uuid.uuid4())
 
     removed_blanks = {k: v for k, v in filters_dict.items() if v}
     if removed_blanks:
@@ -755,8 +754,7 @@ def create_export_task(
             del removed_blanks["itemsPerPage"]
     no_plot_filters_dict = {k: v for k, v in removed_blanks.items() if "plot" not in k}
 
-    task = Exports.objects.create()
-    task.task_id = celery_uuid
+    task = Exports.objects.create(task_id=task_id)
     task.modality = modality
     task.export_type = export_type
     task.export_date = date_stamp

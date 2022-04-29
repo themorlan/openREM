@@ -49,6 +49,8 @@ from .. import __docs_version__, __version__
 from ..forms import DicomQueryForm, DicomQRForm, DicomStoreForm
 from ..views_admin import _create_admin_dict
 
+from openrem.remapp.tools.background import run_in_background
+
 os.environ["DJANGO_SETTINGS_MODULE"] = "openremproject.settings"
 
 @csrf_exempt
@@ -282,7 +284,9 @@ def q_process(request, *args, **kwargs):
                 "stationname_study": stationname_study_level,
             }
 
-            qrscu.delay(
+            run_in_background(
+                qrscu,
+                "query",
                 qr_scp_pk=rh_pk,
                 store_scp_pk=store_pk,
                 query_id=query_id,
@@ -366,7 +370,11 @@ def r_start(request):
     query_id = data.get("queryID")
     resp["queryID"] = query_id
 
-    movescu.delay(query_id)
+    run_in_background(
+        movescu,
+        "move",
+        query_id,
+    )
 
     return HttpResponse(json.dumps(resp), content_type="application/json")
 

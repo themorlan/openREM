@@ -126,22 +126,12 @@ main_patterns = [
 
 
 tasks_patterns = [
+    path("tasks/task_admin/", views_admin.display_tasks, name="task_admin"),
+    path("tasks/get_tasks/<str:stage>/", views_admin.tasks, name="get_tasks"),
     path(
-        "rabbitmq/purge_queue/<str:queue>/",
-        views_admin.rabbitmq_purge,
-        name="rabbitmq_purge",
-    ),
-    path("celery/", views_admin.celery_admin, name="celery_admin"),
-    path("celery/tasks/<str:stage>/", views_admin.celery_tasks, name="celery_tasks"),
-    path(
-        "celery/abort_task/<uuid:task_id>/<str:type>/",
-        views_admin.celery_abort,
-        name="celery_abort",
-    ),
-    path(
-        "celery/service_status/",
-        views_admin.task_service_status,
-        name="task_service_status",
+        "tasks/abort_task/<uuid:task_id>/",
+        views_admin.task_abort,
+        name="abort_task",
     ),
 ]
 
@@ -317,7 +307,7 @@ export_patterns = [
     path("mgnhsbsp/", exportviews.mgnhsbsp, name="mgnhsbsp"),
     path("download/<uuid:task_id>/", exportviews.download, name="download"),
     path("deletefile/", exportviews.deletefile, name="deletefile"),
-    path("abort/<int:pk>/", exportviews.export_abort, name="export_abort"),
+    path("abort/<str:pk>/", exportviews.export_abort, name="export_abort"),
     path("updateactive/", exportviews.update_active, name="update_active"),
     path("updateerror/", exportviews.update_error, name="update_error"),
     path("updatecomplete/", exportviews.update_complete, name="update_complete"),

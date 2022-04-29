@@ -82,11 +82,11 @@ class ImportCTRDSRFromPixelMed(TestCase):
         # Test that study level data is recorded correctly
         self.assertEqual(
             study.generalequipmentmoduleattr_set.get().institution_name,
-            u"OpenREM centre médical",
+            "OpenREM centre médical",
         )
         self.assertEqual(
             study.generalequipmentmoduleattr_set.get().manufacturer,
-            u"GE MEDICAL SYSTEMS",
+            "GE MEDICAL SYSTEMS",
         )
 
         # Test that patient study level data is recorded correctly

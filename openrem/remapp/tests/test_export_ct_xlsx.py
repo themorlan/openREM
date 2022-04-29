@@ -99,14 +99,14 @@ class ExportCTxlsx(TestCase):
         self.assertEqual(all_data_sheet.cell_value(2, dlp_total_col), 2002.39)
 
         e1_dose_check_string = (
-            u"Dose Check Alerts: DLP alert is configured at 100.00 mGy.cm with an accumulated "
-            u"forward estimate of 251.20 mGy.cm. CTDIvol alert is configured at 10.00 mGy with no "
-            u"accumulated forward estimate recorded. Person authorizing irradiation: Luuk. "
+            "Dose Check Alerts: DLP alert is configured at 100.00 mGy.cm with an accumulated "
+            "forward estimate of 251.20 mGy.cm. CTDIvol alert is configured at 10.00 mGy with no "
+            "accumulated forward estimate recorded. Person authorizing irradiation: Luuk. "
         )
         e2_dose_check_string = (
-            u"Dose Check Alerts: DLP alert is configured at 100.00 mGy.cm with an accumulated "
-            u"forward estimate of 502.40 mGy.cm. CTDIvol alert is configured at 10.00 mGy with an "
-            u"accumulated forward estimate of 10.60 mGy. Person authorizing irradiation: Luuk. "
+            "Dose Check Alerts: DLP alert is configured at 100.00 mGy.cm with an accumulated "
+            "forward estimate of 502.40 mGy.cm. CTDIvol alert is configured at 10.00 mGy with an "
+            "accumulated forward estimate of 10.60 mGy. Person authorizing irradiation: Luuk. "
         )
         self.assertEqual(
             all_data_sheet.cell_value(1, e1_dose_check_col), e1_dose_check_string
@@ -128,7 +128,7 @@ class ExportCTxlsx(TestCase):
         ctxlsx(filter_set, pid=pid, name=name, patid=patient_id, user=self.user)
 
         task = Exports.objects.all()[0]
-        self.assertEqual(u"ERROR", task.status)
+        self.assertEqual("ERROR", task.status)
 
     def test_acq_type_filter_spiral(self):
         """Test to check that filtering CT by acquisition type works
