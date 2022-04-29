@@ -262,8 +262,6 @@ def q_process(request, *args, **kwargs):
             get_toshiba_images = form.cleaned_data.get("get_toshiba_images_field")
             get_empty_sr = form.cleaned_data.get("get_empty_sr_field")
 
-            query_id = str(uuid.uuid4())
-
             if date_from:
                 date_from = date_from.isoformat()
             if date_until:
@@ -302,12 +300,11 @@ def q_process(request, *args, **kwargs):
                 "stationname_study": stationname_study_level,
             }
 
-            run_in_background(
+            b = run_in_background(
                 qrscu,
                 "query",
                 qr_scp_pk=rh_pk,
                 store_scp_pk=store_pk,
-                query_id=query_id,
                 date_from=date_from,
                 date_until=date_until,
                 modalities=modalities,
@@ -321,7 +318,7 @@ def q_process(request, *args, **kwargs):
             resp = {}
             resp["message"] = "Request created"
             resp["status"] = "not complete"
-            resp["queryID"] = query_id
+            resp["queryID"] = b.uuid
 
             return HttpResponse(json.dumps(resp), content_type="application/json")
         else:

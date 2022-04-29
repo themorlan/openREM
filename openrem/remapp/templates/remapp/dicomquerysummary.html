@@ -10,12 +10,14 @@
     <tr>
       <th id="query_id">Query ID</th>
       <th id="started_at">Started at</th>
+      <th id="complete">Complete</th>
       <th id="message">Message</th>
     </tr>
     {% for query in queries %}
             <tr class="clickable-row" data-href="{% url 'get_query_details' query.pk %}">
                 <td><a href="{% url 'get_query_details' query.pk %}">{{ query.query_id }}</a></td>
                 <td><a href="{% url 'get_query_details' query.pk %}">{{ query.started_at }}</a></td>
+                <td><a href="{% url 'get_query_details' query.pk %}">{{ query.complete }}</a></td>
                 <td><a href="{% url 'get_query_details' query.pk %}">{{ query.message }}</a></td>
             </tr>
     {% endfor %}

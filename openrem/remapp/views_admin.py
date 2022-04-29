@@ -1952,6 +1952,8 @@ def task_abort(request, task_id=None):
                         task_id
                     )
                 )
+                if task.task_type == "query":
+                    DicomQuery.objects.filter(query_id__exact=task_id).delete()
             else:
                 if task.task_type.startswith("export"):
                     Exports.objects.filter(task_id__exact=task_id).delete()

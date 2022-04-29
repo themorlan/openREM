@@ -5,40 +5,10 @@
   <script src="{{ STATIC_URL }}js/django_reverse/reverse.js"></script>
   <script src="{{ STATIC_URL }}js/dicom.js"></script>
   <script>
-      
         $(document).ready(function() {
-                json = {"queryID": "{{query.query_id}}"};
-                queryProgress(json);
+            json = {"queryID": "{{query.query_id}}"};
+            queryProgress(json);
         });
-
-        /*
-        $(document).ready(function() {
-            $.ajax({
-                url: Urls.query_update(),
-                data: {
-                    queryID: "{{query.query_id}}"
-                },
-                type: "POST",
-                dataType: "json",
-                success: function( json ) {
-                    if (json.status === "complete"){
-                        $.ajax({
-                            url: Urls.start_retrieve(),
-                            data: {
-                                queryID: "{{query.query_id}}"
-                            },
-                            type: "POST",
-                            dataType: "json",
-                            success: function( json ) {
-                                alert("Done")
-                            }
-                        });
-                    }
-                }
-            });
-        });
-        */
-      
   </script>
 {% endblock %}
 

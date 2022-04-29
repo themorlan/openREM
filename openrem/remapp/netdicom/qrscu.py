@@ -53,6 +53,7 @@ from remapp.models import (  # pylint: disable=wrong-import-order, wrong-import-
 )
 from openrem.remapp.tools.background import (
     get_current_task,
+    get_or_generate_task_uuid,
     run_in_background,
     wait_task,
 )
@@ -1291,7 +1292,7 @@ def qrscu(
 
     debug_timer = datetime.now()
     if not query_id:
-        query_id = uuid.uuid4()
+        query_id = get_or_generate_task_uuid()
     try:
         query_id_8 = query_id.hex[:8]
     except AttributeError:
@@ -1409,9 +1410,6 @@ def qrscu(
         f"{query_summary_1} <br> {query_summary_2} <br> {query_summary_3}"
     )
     query.save()
-
-    import time
-    time.sleep(20)
 
     assoc = ae.associate(remote["host"], remote["port"], ae_title=remote["aet"])
 
