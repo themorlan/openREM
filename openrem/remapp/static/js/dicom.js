@@ -49,27 +49,45 @@ function queryProgress(json ) {
                 var data = {
                     queryID: json.queryID
                 };
-                var moveHtml = '<div><button type="button" class="btn btn-default" id="move" data-id="'
-                    + json.queryID
-                    + '">Move</button></div>';
-                $( "#move-button").html( moveHtml );
-                $("#move").click(function(){
-                    // console.log("In the move function");
-                    var queryID = $(this).data("id");
-                    // console.log(queryID);
-                    $( "#move-button").html( "" );
-                    $.ajax({
-                        url: Urls.start_retrieve(),
-                        data: {
-                            queryID: queryID
-                        },
-                        type: "POST",
-                        dataType: "json",
-                        success: function( json ) {
-                            // console.log("In the qr success function.");
-                            retrieveProgress( json );
+                $.ajax({
+                    url: Urls.move_update(),
+                    data: {
+                        queryID: json.queryID
+                    },
+                    type: "POST",
+                    dataType: "json",
+                    success: function( json ) {
+                        if (json.status !== "move complete") {
+                            var moveHtml = '<div><button type="button" class="btn btn-default" id="move" data-id="'
+                                + json.queryID
+                                + '">Move</button></div>';
+                            $( "#move-button").html( moveHtml );
+                            $("#move").click(function(){
+                                // console.log("In the move function");
+                                var queryID = $(this).data("id");
+                                // console.log(queryID);
+                                $( "#move-button").html( "" );
+                                $.ajax({
+                                    url: Urls.start_retrieve(),
+                                    data: {
+                                        queryID: queryID
+                                    },
+                                    type: "POST",
+                                    dataType: "json",
+                                    success: function( json ) {
+                                        // console.log("In the qr success function.");
+                                        retrieveProgress( json );
+                                    }
+                                });
+                            });
                         }
-                    });
+                        else {
+                            retrieveProgress( {queryID: json.queryID })
+                        }
+                    },
+                    error: function( xhr, status, errorThrown ) {
+                        alert( "Sorry, there was a problem getting the status!" );
+                    }
                 });
             }
         },

@@ -37,7 +37,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Count
 from django.http import HttpResponse
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
@@ -53,12 +53,29 @@ from openrem.remapp.tools.background import run_in_background
 
 os.environ["DJANGO_SETTINGS_MODULE"] = "openremproject.settings"
 
+def create_admin_info(request):
+    admin = {
+        "openremversion": __version__,
+        "docsversion": __docs_version__,
+    }
+
+    for group in request.user.groups.all():
+        admin[group.name] = True
+    return admin
+
 @csrf_exempt
 @login_required
-def get_query_studies(request, pk):
+def get_query_details(request, pk):
     """View to show all query studies"""
 
-    raise NotImplemented
+    query = get_object_or_404(DicomQuery, pk=pk)
+    admin = create_admin_info(request)
+
+    return render(
+        request,
+        "remapp/dicomquerydetails.html",
+        {"query": query, "admin": admin}
+    )
 
 @csrf_exempt
 @login_required
@@ -66,11 +83,12 @@ def get_query_summary(request):
     """View to show all queries from the past"""
 
     queries = DicomQuery.objects.all()
+    admin = create_admin_info(request)
 
     return render(
         request,
         "remapp/dicomquerysummary.html",
-        {"queries": queries}
+        {"queries": queries, "admin": admin}
     )
 
 @csrf_exempt

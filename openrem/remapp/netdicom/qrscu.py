@@ -1410,6 +1410,9 @@ def qrscu(
     )
     query.save()
 
+    import time
+    time.sleep(20)
+
     assoc = ae.associate(remote["host"], remote["port"], ae_title=remote["aet"])
 
     if assoc.is_established:
