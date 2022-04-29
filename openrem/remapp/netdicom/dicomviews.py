@@ -51,6 +51,25 @@ from ..views_admin import _create_admin_dict
 
 os.environ["DJANGO_SETTINGS_MODULE"] = "openremproject.settings"
 
+@csrf_exempt
+@login_required
+def get_query_studies(request, pk):
+    """View to show all query studies"""
+
+    raise NotImplemented
+
+@csrf_exempt
+@login_required
+def get_query_summary(request):
+    """View to show all queries from the past"""
+
+    queries = DicomQuery.objects.all()
+
+    return render(
+        request,
+        "remapp/dicomquerysummary.html",
+        {"queries": queries}
+    )
 
 @csrf_exempt
 def status_update_store(request):

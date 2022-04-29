@@ -358,6 +358,7 @@ class DicomQuery(models.Model):
     Table to store DICOM query settings
     """
 
+    started_at = models.DateTimeField(blank=True, null=True)
     complete = models.BooleanField(default=False)
     query_id = models.CharField(max_length=64)
     query_summary = models.TextField(blank=True, null=True)

@@ -1,0 +1,24 @@
+{% extends "remapp/base.html" %}
+
+{% block headextras %}
+  <script src="{{ STATIC_URL }}js/sorttable.js"></script>
+{% endblock %}
+
+{% block mainblock %} 
+
+<table class="table sortable table-bordered table-hover row-clickable small" aria-describedby="Study summary table">
+    <tr>
+      <th id="query_id">Query ID</th>
+      <th id="started_at">Started at</th>
+      <th id="message">Message</th>
+    </tr>
+    {% for query in queries %}
+            <tr class="clickable-row" data-href="{% url 'get_query_studies' query.pk %}">
+                <td><a href="{% url 'get_query_studies' query.pk %}">{{ query.query_id }}</a></td>
+                <td><a href="{% url 'get_query_studies' query.pk %}">{{ query.started_at }}</a></td>
+                <td><a href="{% url 'get_query_studies' query.pk %}">{{ query.message }}</a></td>
+            </tr>
+    {% endfor %}
+  </table>
+  
+{% endblock %}

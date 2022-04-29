@@ -1368,6 +1368,7 @@ def qrscu(
     logger.debug(f"{query_id_8} Remote AE is {remote['aet']}")
 
     query = DicomQuery.objects.create()
+    query.started_at = datetime.now()
     query.query_id = query_id
     query.query_uuid = celery_task_uuid
     query.complete = False
