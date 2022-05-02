@@ -343,7 +343,8 @@ dicom_patterns = [
     path("storenodestatus", dicomviews.get_store_status, name="get_store_status"),
     path("querysummary", dicomviews.get_query_summary, name="get_query_summary"),
     path("querydetails/<int:pk>", dicomviews.get_query_details, name="get_query_details"),
-    path("querystudydetails/<int:pk>", dicomviews.get_query_study_details, name="get_query_study_details"),
+    path("queryseries/<int:pk>", dicomviews.get_query_series, name="get_query_series"),
+    path("queryimages/<int:pk>", dicomviews.get_query_images, name="get_query_images"),
 ]
 
 import_patterns = [  # pylint: disable=invalid-name

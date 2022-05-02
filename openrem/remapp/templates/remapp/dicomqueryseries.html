@@ -1,0 +1,47 @@
+{% extends "remapp/base.html" %}
+
+{% block headextras %}
+  <script src="{{ STATIC_URL }}js/sorttable.js"></script>
+  <script src="{{ STATIC_URL }}js/django_reverse/reverse.js"></script>
+{% endblock %}
+
+{% block mainblock %} 
+
+<div class="row">
+    <div class="col-md-8">
+        <h4>
+            This table shows all the series that the remote PACS/DICOM node sent and where
+            considered for downloading (moving). Click on any to see which files 
+            (usually images or structured reports) where considered for downloading.
+        </h4>
+        <table class="table table-bordered table-hover row-clickable table-sortable">
+            <tr>
+                <th>Series UID</th>
+                <th>Modality</th>
+                <th>Downloaded?</th>
+            </tr>
+            {% for qseries in queryseries %} 
+                <tr>
+                    <td>
+                        <a href="{% url 'get_query_images' qseries.pk %}">
+                            {{qseries.series_instance_uid}}
+                        </a>
+                    </td>
+                    <td>
+                        <a href="{% url 'get_query_images' qseries.pk %}">
+                            {{qseries.modality}}
+                        </a>
+                    </td>
+                    <td>
+                        <a href="{% url 'get_query_images' qseries.pk %}">
+                            Not present yet
+                        </a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+</div>
+
+
+{% endblock %}

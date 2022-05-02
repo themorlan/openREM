@@ -15,11 +15,11 @@
 {% block mainblock %} 
 
 <div class="row">
-    <div class="col-md-6 col-md-offset-1">
-        <div class="row">
+    <div class="col-md-8">
         <h4>
             This table shows all the studies that the remote PACS/DICOM node sent and where
-            considered for downloading (moving).
+            considered for downloading (moving). Click on any study to see the series that 
+            were found for this study.
         </h4>
         <table class="table table-bordered table-hover row-clickable table-sortable">
             <tr>
@@ -30,27 +30,26 @@
             {% for qstudy in querystudies %} 
                 <tr>
                     <td>
-                        <a href="{% url 'get_query_study_details' qstudy.pk %}">
+                        <a href="{% url 'get_query_series' qstudy.pk %}">
                             {{qstudy.study_instance_uid}}
                         </a>
                     </td>
                     <td>
-                        <a href="{% url 'get_query_study_details' qstudy.pk %}">
+                        <a href="{% url 'get_query_series' qstudy.pk %}">
                             {{qstudy.modality}}
                         </a>
                     </td>
                     <td>
-                        <a href="{% url 'get_query_study_details' qstudy.pk %}">
+                        <a href="{% url 'get_query_series' qstudy.pk %}">
                             Not present yet
                         </a>
                     </td>
                 </tr>
             {% endfor %}
         </table>
-        </div>
     </div>
 
-    <div class="col-md-3 col-md-offset-1">
+    <div class="col-md-3 ">
         <div class="row">
             <div id="qr-status"></div>
             <div id="move-button"></div>
@@ -63,6 +62,5 @@
         </div>
     </div>
 </div>
-
 
 {% endblock %}

@@ -42,7 +42,7 @@ from django.urls import reverse_lazy
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 
-from remapp.models import DicomDeleteSettings, DicomQRRspStudy, DicomQuery, DicomStoreSCP, DicomRemoteQR
+from remapp.models import DicomDeleteSettings, DicomQRRspSeries, DicomQRRspStudy, DicomQuery, DicomStoreSCP, DicomRemoteQR
 from .qrscu import movescu, qrscu
 from .tools import echoscu
 from .. import __docs_version__, __version__
@@ -63,16 +63,32 @@ def create_admin_info(request):
         admin[group.name] = True
     return admin
 
+@csrf_exempt
+@login_required
+def get_query_images(request, pk):
+    "View to show the images of a queried series"
+    queryseries = get_object_or_404(DicomQRRspSeries, pk=pk)
+    images = queryseries.dicomqrrspimage_set.all()
+    admin = create_admin_info(request)
+
+    raise NotImplementedError
 
 @csrf_exempt
 @login_required
-def get_query_study_details(request, pk):
-    """Viw to show the series of a queried study"""
+def get_query_series(request, pk):
+    """View to show the series of a queried study"""
     querystudy = get_object_or_404(DicomQRRspStudy, pk=pk)
     series = querystudy.dicomqrrspseries_set.all()
     admin = create_admin_info(request)
 
-    raise NotImplementedError
+    return render(
+        request,
+        "remapp/dicomqueryseries.html",
+        {
+            "queryseries": series,
+            "admin": admin,
+        }
+    )
 
 
 @csrf_exempt
