@@ -1,0 +1,37 @@
+{% extends "remapp/base.html" %}
+
+{% block headextras %}
+  <script src="{{ STATIC_URL }}js/sorttable.js"></script>
+  <script src="{{ STATIC_URL }}js/django_reverse/reverse.js"></script>
+{% endblock %}
+
+{% block mainblock %} 
+
+<div class="row">
+    <div class="col-md-8">
+        <h4>
+            This table shows all the files that the remote PACS/DICOM node sent and where
+            considered for downloading (moving). For a list of SOP classes see the 
+            <a href="https://dicom.nema.org/medical/dicom/current/output/chtml/part04/sect_B.5.html" target="_blank">
+                DICOM Standard
+            </a>. You are viewing files that are part of 
+            <a href="{% url 'get_query_series' queryseries.dicom_qr_rsp_study.pk %}">series {{queryseries.series_instance_uid}}</a>, which is a part of the 
+            study <a href=" {% url 'get_query_details' queryseries.dicom_qr_rsp_study.dicom_query.pk %}">study {{queryseries.dicom_qr_rsp_study.study_instance_uid}}</a>.
+        </h4>
+        <table class="table table-bordered table-hover table-sortable">
+            <tr>
+                <th>SOP class</th>
+                <th>Downloaded?</th>
+            </tr>
+            {% for image in queryimages %} 
+                <tr>
+                    <td>{{image.sop_instance_uid}}</td>
+                    <td>Not present yet</td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+</div>
+
+
+{% endblock %}

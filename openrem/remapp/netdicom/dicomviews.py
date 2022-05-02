@@ -71,7 +71,15 @@ def get_query_images(request, pk):
     images = queryseries.dicomqrrspimage_set.all()
     admin = create_admin_info(request)
 
-    raise NotImplementedError
+    return render(
+        request,
+        "remapp/dicomqueryimages.html",
+        {
+            "queryseries": queryseries,
+            "queryimages": images,
+            "admin": admin,
+        }
+    )
 
 @csrf_exempt
 @login_required

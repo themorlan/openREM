@@ -19,7 +19,9 @@
         <h4>
             This table shows all the studies that the remote PACS/DICOM node sent and where
             considered for downloading (moving). Click on any study to see the series that 
-            were found for this study.
+            were found for this study. <a href="{% url 'get_query_summary' %}">
+                Back to the query overview.
+            </a>
         </h4>
         <table class="table table-bordered table-hover row-clickable table-sortable">
             <tr>

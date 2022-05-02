@@ -12,7 +12,8 @@
         <h4>
             This table shows all the series that the remote PACS/DICOM node sent and where
             considered for downloading (moving). Click on any to see which files 
-            (usually images or structured reports) where considered for downloading.
+            (usually images or structured reports) where considered for downloading. You are viewing series of the study 
+            <a href="{% url 'get_query_details' queryseries.first.dicom_qr_rsp_study.dicom_query.pk %}">study {{queryseries.first.dicom_qr_rsp_study.study_instance_uid}}</a>.
         </h4>
         <table class="table table-bordered table-hover row-clickable table-sortable">
             <tr>
