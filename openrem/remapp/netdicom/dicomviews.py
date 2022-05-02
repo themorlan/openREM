@@ -124,7 +124,7 @@ def get_query_details(request, pk):
 def get_query_summary(request):
     """View to show all queries from the past"""
 
-    queries = DicomQuery.objects.all()
+    queries = DicomQuery.objects.order_by("started_at").reverse().all()
     admin = create_admin_info(request)
 
     return render(
