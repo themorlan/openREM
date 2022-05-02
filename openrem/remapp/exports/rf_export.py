@@ -201,7 +201,7 @@ def _get_series_data(event, filter_data):
         number_of_pulses,
         exposure_time,
         irradiation_duration,
-        str(event.convert_gym2_to_cgycm2()),
+        event.convert_gym2_to_cgycm2(),
         dose_rp,
         pos_primary_angle,
         pos_secondary_angle,
