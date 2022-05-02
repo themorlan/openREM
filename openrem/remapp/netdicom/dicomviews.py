@@ -42,7 +42,7 @@ from django.urls import reverse_lazy
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 
-from remapp.models import DicomDeleteSettings, DicomQuery, DicomStoreSCP, DicomRemoteQR
+from remapp.models import DicomDeleteSettings, DicomQRRspStudy, DicomQuery, DicomStoreSCP, DicomRemoteQR
 from .qrscu import movescu, qrscu
 from .tools import echoscu
 from .. import __docs_version__, __version__
@@ -63,19 +63,37 @@ def create_admin_info(request):
         admin[group.name] = True
     return admin
 
+
+@csrf_exempt
+@login_required
+def get_query_study_details(request, pk):
+    """Viw to show the series of a queried study"""
+    querystudy = get_object_or_404(DicomQRRspStudy, pk=pk)
+    series = querystudy.dicomqrrspseries_set.all()
+    admin = create_admin_info(request)
+
+    raise NotImplementedError
+
+
 @csrf_exempt
 @login_required
 def get_query_details(request, pk):
     """View to show all query studies"""
 
     query = get_object_or_404(DicomQuery, pk=pk)
+    querystudies = query.dicomqrrspstudy_set.all()
     admin = create_admin_info(request)
 
     return render(
         request,
         "remapp/dicomquerydetails.html",
-        {"query": query, "admin": admin}
+        {
+            "query": query, 
+            "admin": admin,
+            "querystudies": querystudies,
+        }
     )
+
 
 @csrf_exempt
 @login_required
