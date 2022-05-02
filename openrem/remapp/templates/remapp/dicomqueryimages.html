@@ -26,7 +26,7 @@
             {% for image in queryimages %} 
                 <tr>
                     <td>{{image.sop_instance_uid}}</td>
-                    <td>Not present yet</td>
+                    <td>{{image.deleted_reason}}</td>
                 </tr>
             {% endfor %}
         </table>

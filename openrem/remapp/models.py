@@ -389,6 +389,8 @@ class DicomQRRspStudy(models.Model):
     number_of_study_related_series = models.IntegerField(blank=True, null=True)
     sop_classes_in_study = models.TextField(blank=True, null=True)
     station_name = models.CharField(max_length=32, blank=True, null=True)
+    deleted_flag = models.BooleanField(default=False)
+    deleted_reason = models.TextField(default="Downloaded")
 
     def set_modalities_in_study(self, x):
         self.modalities_in_study = json.dumps(list(x or []))
@@ -418,6 +420,8 @@ class DicomQRRspSeries(models.Model):
     station_name = models.CharField(max_length=32, blank=True, null=True)
     sop_class_in_series = models.TextField(blank=True, null=True)
     image_level_move = models.BooleanField(default=False)
+    deleted_flag = models.BooleanField(default=False)
+    deleted_reason = models.TextField(default="Downloaded")
 
     class Meta:
         indexes = [
@@ -435,6 +439,8 @@ class DicomQRRspImage(models.Model):
     sop_instance_uid = models.TextField(blank=True, null=True)
     instance_number = models.IntegerField(blank=True, null=True)
     sop_class_uid = models.TextField(blank=True, null=True)
+    deleted_flag = models.BooleanField(default=False)
+    deleted_reason = models.TextField(default="Downloaded")
 
     class Meta:
         indexes = [

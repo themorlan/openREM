@@ -35,7 +35,7 @@
                     </td>
                     <td>
                         <a href="{% url 'get_query_images' qseries.pk %}">
-                            Not present yet
+                            {{qseries.deleted_reason}}
                         </a>
                     </td>
                 </tr>
