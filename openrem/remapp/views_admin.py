@@ -212,69 +212,6 @@ def display_names_view(request):
                     )
         return HttpResponseRedirect(reverse_lazy("display_names_view"))
 
-    f = UniqueEquipmentNames.objects.order_by("display_name")
-
-    # if user_defined_modality is filled, we should use this value, otherwise the value of modality type in the
-    # general_study module. So we look if the concatenation of the user_defined_modality (empty if not used) and
-    # modality_type starts with a specific modality type
-    ct_names = f.filter(
-        generalequipmentmoduleattr__general_study_module_attributes__modality_type="CT"
-    ).distinct()
-    mg_names = f.filter(
-        generalequipmentmoduleattr__general_study_module_attributes__modality_type="MG"
-    ).distinct()
-    dx_names = f.filter(
-        Q(user_defined_modality="DX")
-        | Q(user_defined_modality="dual")
-        | (
-            Q(user_defined_modality__isnull=True)
-            & (
-                Q(
-                    generalequipmentmoduleattr__general_study_module_attributes__modality_type="DX"
-                )
-                | Q(
-                    generalequipmentmoduleattr__general_study_module_attributes__modality_type="CR"
-                )
-                | Q(
-                    generalequipmentmoduleattr__general_study_module_attributes__modality_type="PX"
-                )
-            )
-        )
-    ).distinct()
-    rf_names = f.filter(
-        Q(user_defined_modality="RF")
-        | Q(user_defined_modality="dual")
-        | (
-            Q(user_defined_modality__isnull=True)
-            & Q(
-                generalequipmentmoduleattr__general_study_module_attributes__modality_type="RF"
-            )
-        )
-    ).distinct()
-    ot_names = f.filter(
-        ~Q(user_defined_modality__isnull=True)
-        | (
-            ~Q(
-                generalequipmentmoduleattr__general_study_module_attributes__modality_type="RF"
-            )
-            & ~Q(
-                generalequipmentmoduleattr__general_study_module_attributes__modality_type="MG"
-            )
-            & ~Q(
-                generalequipmentmoduleattr__general_study_module_attributes__modality_type="CT"
-            )
-            & ~Q(
-                generalequipmentmoduleattr__general_study_module_attributes__modality_type="DX"
-            )
-            & ~Q(
-                generalequipmentmoduleattr__general_study_module_attributes__modality_type="CR"
-            )
-            & ~Q(
-                generalequipmentmoduleattr__general_study_module_attributes__modality_type="PX"
-            )
-        )
-    ).distinct()
-
     admin = {
         "openremversion": __version__,
         "docsversion": __docs_version__,
@@ -288,15 +225,9 @@ def display_names_view(request):
         admin[group.name] = True
 
     return_structure = {
-        "name_list": f,
         "admin": admin,
         "MergeOptionsForm": merge_options_form,
-        "ct_names": ct_names,
-        "mg_names": mg_names,
-        "dx_names": dx_names,
-        "rf_names": rf_names,
-        "ot_names": ot_names,
-        "modalities": ["CT", "RF", "MG", "DX", "OT"],
+        "modalities": ["CT", "RF", "MG", "DX", "OT", "NM"],
     }
 
     return render(request, "remapp/displaynameview.html", return_structure)
@@ -338,7 +269,7 @@ def display_name_update(request):
                     )[0].modality_type
                 except:
                     modality = ""
-                if modality in {"DX", "CR", "RF", "dual", "OT"}:
+                if modality in {"DX", "CR", "RF", "dual", "OT", "NM"}:
                     display_name_data.user_defined_modality = new_user_defined_modality
                     # We can't reimport as new modality type, instead we just change the modality type value
                     if new_user_defined_modality == "dual":
@@ -424,7 +355,7 @@ def display_name_populate(request):
         }
         for group in request.user.groups.all():
             admin[group.name] = True
-        if modality in ["MG", "CT"]:
+        if modality in ["MG", "CT", "NM"]:
             name_set = f.filter(
                 generalequipmentmoduleattr__general_study_module_attributes__modality_type=modality
             ).distinct()
@@ -481,6 +412,9 @@ def display_name_populate(request):
                 & ~Q(
                     generalequipmentmoduleattr__general_study_module_attributes__modality_type="PX"
                 )
+                & ~Q(
+                    generalequipmentmoduleattr__general_study_module_attributes__modality_type="NM"
+                )
             ).distinct()
             dual = False
         else:
@@ -506,7 +440,7 @@ def display_name_modality_filter(equip_name_pk=None, modality=None):
             "Display name modality filter function called without a primary key ID for the unique names table"
         )
         return
-    if not modality or modality not in ["CT", "RF", "MG", "DX", "OT"]:
+    if not modality or modality not in ["CT", "RF", "MG", "DX", "OT", "NM"]:
         logger.error(
             "Display name modality filter function called without an appropriate modality specified"
         )
@@ -516,7 +450,7 @@ def display_name_modality_filter(equip_name_pk=None, modality=None):
         generalequipmentmoduleattr__unique_equipment_name__pk=equip_name_pk
     )
     count_all = studies_all.count()
-    if modality in ["CT", "MG", "RF"]:
+    if modality in ["CT", "MG", "RF", "NM"]:
         studies = studies_all.filter(modality_type__exact=modality)
     elif modality == "DX":
         studies = studies_all.filter(
@@ -538,6 +472,7 @@ def display_name_modality_filter(equip_name_pk=None, modality=None):
             .exclude(modality_type__exact="CR")
             .exclude(modality_type__exact="PX")
             .exclude(modality_type__exact="RF")
+            .exclude(modality_type__exact="NM")
         )
     return studies, count_all
 
@@ -1214,7 +1149,7 @@ def failed_list_populate(request):
 
     if request.is_ajax():
         failed = {}
-        for modality in ["CT", "RF", "MG", "DX"]:
+        for modality in ["CT", "RF", "MG", "DX", "NM"]:
             failed[modality] = _get_broken_studies(modality).count()
         template = "remapp/failed_summary_list.html"
         return render(request, template, {"failed": failed})
@@ -1228,7 +1163,7 @@ def review_failed_imports(request, modality=None):
     :param modality: modality to filter by
     :return:
     """
-    if not modality in ["CT", "RF", "MG", "DX"]:
+    if not modality in ["CT", "RF", "MG", "DX", "NM"]:
         logger.error("Attempt to load review_failed_imports without suitable modality")
         messages.error(
             request,
