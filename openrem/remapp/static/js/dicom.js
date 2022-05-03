@@ -82,7 +82,7 @@ function queryProgress(json ) {
                             });
                         }
                         else {
-                            retrieveProgress( {queryID: json.queryID })
+                            retrieveProgress( {queryID: json.queryID });
                         }
                     },
                     error: function( xhr, status, errorThrown ) {
@@ -119,7 +119,7 @@ $(document).ready(function(){
             dataType: "json",
             success: function( json ) {
                 // This is only ever executed on the import page. When used on the details view it is None. (No link shown)
-                json.showDetailsLink = "yes" 
+                json.showDetailsLink = "yes";
                 queryProgress( json );
             },
             error: function( xhr, status, errorThrown ) {

@@ -89,11 +89,7 @@ def _generate_modalities_in_study(study_rsp, query_id):
     study_rsp.save()
 
 
-def _make_query_deleted_reasons_consistent(
-    query,
-    access_list=["dicomqrrspstudy_set", "dicomqrrspseries_set", "dicomqrrspimage_set"],
-    mark=False,
-):
+def _make_query_deleted_reasons_consistent(query):
     """
     When the parent of an object is marked as deleted all it's children
     still exist and are potentially not marked as deleted. This routine marks
@@ -101,12 +97,16 @@ def _make_query_deleted_reasons_consistent(
     """
 
     DicomQRRspSeries.objects.filter(
-        dicom_qr_rsp_study__deleted_flag=True, deleted_flag=False
+        dicom_qr_rsp_study__deleted_flag=True,
+        deleted_flag=False,
+        dicom_qr_rsp_study__dicom_query__pk=query.pk,
     ).update(
         deleted_flag=True, deleted_reason="Ignored, since parent study was ignored"
     )
     DicomQRRspImage.objects.filter(
-        dicom_qr_rsp_series__deleted_flag=True, deleted_flag=False
+        dicom_qr_rsp_series__deleted_flag=True,
+        deleted_flag=False,
+        dicom_qr_rsp_series__dicom_qr_rsp_study__dicom_query__pk=query.pk,
     ).update(
         deleted_flag=True, deleted_reason="Ignored, since parent series was ignored"
     )
@@ -220,7 +220,8 @@ def _remove_duplicates(ae, remote, query, study_rsp, assoc):
             study.save()
 
     logger.info(
-        f"{query_id_8} After removing studies we already have in the db, {query.dicomqrrspstudy_set.filter(deleted_flag=False).count()} studies are left"
+        f"{query_id_8} After removing studies we already have in the db, "
+        f"{query.dicomqrrspstudy_set.filter(deleted_flag=False).count()} studies are left"
     )
 
 
@@ -599,7 +600,8 @@ def _get_philips_dose_images(series, get_toshiba_images, query_id):
         )
         series.filter(number_of_series_related_instances__gt=5).update(
             deleted_flag=True,
-            deleted_reason="No series descriptions when checking for philips dose image. Keeping only series with < 6 images.",
+            deleted_reason="No series descriptions when checking for philips dose image."
+            "Keeping only series with < 6 images.",
         )
         return False, True
 
@@ -642,14 +644,16 @@ def _get_toshiba_dose_images(ae, remote, study_series, assoc, query):
                     deleted_reason="Toshiba option selected. Ignoring all but the first image.",
                 )
                 logger.debug(
-                    f"{query_id_8} Toshiba option: Deleted other images, now {images.filter(deleted_flag=False).count()} "
+                    f"{query_id_8} Toshiba option: Deleted other images, "
+                    f"now {images.filter(deleted_flag=False).count()} "
                     f"remaining (should be 1)"
                 )
                 series.image_level_move = True
                 series.save()
             else:
                 logger.debug(
-                    f"{query_id_8} Toshiba option: Secondary capture series, keep the {images.filter(deleted_flag=False).count()} "
+                    f"{query_id_8} Toshiba option: Secondary capture series, "
+                    f"keep the {images.filter(deleted_flag=False).count()} "
                     f"images in this series."
                 )
 
@@ -807,7 +811,8 @@ def _check_sr_type_in_study(ae, remote, assoc, study, query, get_empty_sr):
         return "null_response"
     else:
         logger.debug(
-            f"{query_id_8} Check SR type: {series_sr.filter(deleted_flag=False).count()} non-RDSR, non-ESR SR series remain"
+            f"{query_id_8} Check SR type: {series_sr.filter(deleted_flag=False).count()} "
+            f"non-RDSR, non-ESR SR series remain"
         )
         return "no_dose_report"
 

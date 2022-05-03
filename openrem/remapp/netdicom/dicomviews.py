@@ -37,7 +37,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Count
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
-from django.urls import reverse_lazy, reverse
+from django.urls import reverse_lazy
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 
@@ -74,7 +74,7 @@ def create_admin_info(request):
 @csrf_exempt
 @login_required
 def get_query_images(request, pk):
-    "View to show the images of a queried series"
+    """View to show the images of a queried series."""
     queryseries = get_object_or_404(DicomQRRspSeries, pk=pk)
     images = queryseries.dicomqrrspimage_set.all()
     admin = create_admin_info(request)
@@ -93,7 +93,7 @@ def get_query_images(request, pk):
 @csrf_exempt
 @login_required
 def get_query_series(request, pk):
-    """View to show the series of a queried study"""
+    """View to show the series of a queried study."""
     querystudy = get_object_or_404(DicomQRRspStudy, pk=pk)
     series = querystudy.dicomqrrspseries_set.all()
     admin = create_admin_info(request)
@@ -111,8 +111,7 @@ def get_query_series(request, pk):
 @csrf_exempt
 @login_required
 def get_query_details(request, pk):
-    """View to show all query studies"""
-
+    """View to show all query studies."""
     query = get_object_or_404(DicomQuery, pk=pk)
     querystudies = query.dicomqrrspstudy_set.all()
     admin = create_admin_info(request)
@@ -131,7 +130,7 @@ def get_query_details(request, pk):
 @csrf_exempt
 @login_required
 def get_query_summary(request):
-    """View to show all queries from the past"""
+    """View to show all queries from the past."""
 
     queries = DicomQuery.objects.order_by("started_at").reverse().all()
     admin = create_admin_info(request)
@@ -201,7 +200,10 @@ def q_update(request):
         return HttpResponse(json.dumps(resp), content_type="application/json")
 
     if show_details_link:
-        query_details_link = f'<a href="{reverse_lazy("get_query_details", None, [query.pk])}">Go to query details page</a>'
+        query_details_link = (
+            f'<a href="{reverse_lazy("get_query_details", None, [query.pk])}">'
+            f"Go to query details page</a>"
+        )
     else:
         query_details_link = ""
 
