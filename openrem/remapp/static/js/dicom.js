@@ -32,7 +32,8 @@ function queryProgress(json ) {
     $.ajax({
         url: Urls.query_update(),
         data: {
-            queryID: json.queryID
+            queryID: json.queryID,
+            showDetailsLink: json.showDetailsLink
         },
         type: "POST",
         dataType: "json",
@@ -41,19 +42,18 @@ function queryProgress(json ) {
             $( "#subops" ).html( json.subops );
             if (json.status === "not complete") setTimeout(function(){
                 var data = {
-                    queryID: json.queryID
+                    queryID: json.queryID,
+                    showDetailsLink: json.showDetailsLink
                 };
                 queryProgress( data );
             }, 500);
             if (json.status === "complete"){
                 var data = {
-                    queryID: json.queryID
+                    queryID: json.queryID,
                 };
                 $.ajax({
                     url: Urls.move_update(),
-                    data: {
-                        queryID: json.queryID
-                    },
+                    data: data,
                     type: "POST",
                     dataType: "json",
                     success: function( json ) {
@@ -118,6 +118,8 @@ $(document).ready(function(){
             data: serializedForm,
             dataType: "json",
             success: function( json ) {
+                // This is only ever executed on the import page. When used on the details view it is None. (No link shown)
+                json.showDetailsLink = "yes" 
                 queryProgress( json );
             },
             error: function( xhr, status, errorThrown ) {

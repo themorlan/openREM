@@ -88,6 +88,20 @@ def _generate_modalities_in_study(study_rsp, query_id):
     )
     study_rsp.save()
 
+def _make_query_deleted_reasons_consistent(query, access_list=["dicomqrrspstudy_set", "dicomqrrspseries_set", "dicomqrrspimage_set"], mark=False):
+    """
+    When the parent of an object is marked as deleted all it's children
+    still exist and are potentially not marked as deleted. This routine marks 
+    those children as deleted.
+    """
+
+    DicomQRRspSeries.objects.filter(dicom_qr_rsp_study__deleted_flag=True, deleted_flag=False).update(
+        deleted_flag=True, deleted_reason="Ignored, since parent study was ignored"
+    )
+    DicomQRRspImage.objects.filter(dicom_qr_rsp_series__deleted_flag=True, deleted_flag=False).update(
+        deleted_flag=True, deleted_reason="Ignored, since parent series was ignored"
+    )
+    
 
 def _remove_image_sop_uids(
     series_rsp, query_id_8, study_number, study_instance_uid, existing_sop_instance_uids
@@ -111,7 +125,7 @@ def _remove_image_sop_uids(
             series_rsp.save()
     if not series_rsp.dicomqrrspimage_set.filter(deleted_flag=False):
         series_rsp.deleted_flag=True
-        series_rsp.deleted_reason="All files of this series deleted"
+        series_rsp.deleted_reason="All files of this series ignored"
         series_rsp.save()
 
 
@@ -266,7 +280,7 @@ def _filter(query, level, filter_name, filter_list, filter_type):
             nr_series_remaining = study.dicomqrrspseries_set.all().count()
             if nr_series_remaining == 0:
                 study.deleted_flag=True
-                study.deleted_reason="All Series of this studies where removed due to some active filter"
+                study.deleted_reason="All Series of this studies where ignored due to some active filter"
                 study.save()
     logger.info(f"{query_id_8} Now have {query.dicomqrrspstudy_set.filter(deleted_flag=False).count()} studies")
 
@@ -355,14 +369,14 @@ def _prune_series_responses(
                     )
                     series = study.dicomqrrspseries_set.filter(deleted_flag=False).all()
                     series.exclude(modality__exact="SR").update(
-                        deleted_flag=True, deleted_reason="RDSR present, all other series deleted")
+                        deleted_flag=True, deleted_reason="RDSR present, all other series ignored")
                 else:
                     logger.debug(
                         f"{query_id_8} no RDSR in MG study, deleting other SR series"
                     )
                     series = study.dicomqrrspseries_set.filter(deleted_flag=False).all()
                     series.filter(modality__exact="SR").update(deleted_flag=True, 
-                        deleted_reason="No RDSR, deleted all SR series")
+                        deleted_reason="No RDSR, ignored all SR series")
             # ToDo: see if there is a mechanism to remove duplicate 'for processing' 'for presentation' images.
 
         elif all_mods["DX"]["inc"] and any(
@@ -385,14 +399,14 @@ def _prune_series_responses(
                     )
                     series = study.dicomqrrspseries_set.filter(deleted_flag=False).all()
                     series.exclude(modality__exact="SR").update(
-                        deleted_flag=True, deleted_reason="RDSR present, all not SR series deleted")
+                        deleted_flag=True, deleted_reason="RDSR present, all non SR series ignored")
                 else:
                     logger.debug(
                         f"{query_id_8} no RDSR in DX study, deleting other SR series"
                     )
                     series = study.dicomqrrspseries_set.filter(deleted_flag=False).all()
                     series.filter(modality__exact="SR").update(
-                        deleted_flag=True, deleted_reason="No RDSR, deleted all SR series")
+                        deleted_flag=True, deleted_reason="No RDSR, ignored all SR series")
 
         elif all_mods["FL"]["inc"] and any(
             mod in study.get_modalities_in_study() for mod in ("XA", "RF")
@@ -417,7 +431,7 @@ def _prune_series_responses(
                 )
                 series = study.dicomqrrspseries_set.filter(deleted_flag=False).all()
                 series.exclude(modality__exact="SR").update(
-                        deleted_flag=True, deleted_reason="RDSR present, all not SR series deleted")
+                        deleted_flag=True, deleted_reason="RDSR present, all not SR series ignored")
 
         elif all_mods["CT"]["inc"] and "CT" in study.get_modalities_in_study():
             # If _check_sr_type_in_study returns RDSR, all other SR series responses will have been deleted and then all
@@ -439,7 +453,7 @@ def _prune_series_responses(
                     f"{query_id_8} {sr_type} in CT study, keep SR, delete all other series"
                 )
                 series.exclude(modality__exact="SR").update(
-                        deleted_flag=True, deleted_reason="RDSR present, all not SR series deleted")
+                        deleted_flag=True, deleted_reason="RDSR present, all not SR series ignored")
                 kept_ct["SR"] += 1
             else:
                 logger.debug(
@@ -531,7 +545,7 @@ def _get_philips_dose_images(series, get_toshiba_images, query_id):
                 f"{query_id_8} Get Philips: found likely Philips dose image, no SR, delete all other series"
             )
             series.exclude(series_description__iexact="dose info").update(
-                deleted_flag=True, deleted_reason="Found what is probably Philips dose image, no SR, all other series deleted")
+                deleted_flag=True, deleted_reason="Found what is probably Philips dose image, no SR, all other series ignored")
             return True, True
         else:
             logger.debug(f"{query_id_8} Get Philips: not matched Philips dose image")
@@ -581,7 +595,7 @@ def _get_toshiba_dose_images(ae, remote, study_series, assoc, query):
                 images.exclude(
                     sop_instance_uid__exact=images[0].sop_instance_uid
                 ).update(
-                    deleted_flag=True, deleted_reason="Toshiba option selected. Deleting all but the first image.")
+                    deleted_flag=True, deleted_reason="Toshiba option selected. Ignoring all but the first image.")
                 logger.debug(
                     f"{query_id_8} Toshiba option: Deleted other images, now {images.filter(deleted_flag=False).count()} "
                     f"remaining (should be 1)"
@@ -699,7 +713,7 @@ def _check_sr_type_in_study(ae, remote, assoc, study, query, get_empty_sr):
                     f"{query_id_8} Chesk SR type: Have RDSR, deleting non-RDSR SR"
                 )
                 sr.deleted_flag=True
-                sr.deleted_reason="RDSR present, deleting all non-RDSR SR"
+                sr.deleted_reason="RDSR present, ignoring all non-RDSR SR"
                 sr.save()
         return "RDSR"
     elif "1.2.840.10008.5.1.4.1.1.88.22" in sop_classes:
@@ -709,7 +723,7 @@ def _check_sr_type_in_study(ae, remote, assoc, study, query, get_empty_sr):
                     f"{query_id_8} Check SR type: Have ESR, deleting non-RDSR, non-ESR SR"
                 )
                 sr.deleted_flag=True
-                sr.deleted_reason="ESR present, no RDSR found, all other SR series deleted"
+                sr.deleted_reason="ESR present, no RDSR found, all other SR series ignored"
                 sr.save()
         return "ESR"
     elif "null_response" in sop_classes:
@@ -1663,6 +1677,7 @@ def qrscu(
 
         # done
         assoc.release()
+        _make_query_deleted_reasons_consistent(query)
         query.complete = True
 
         time_took = (datetime.now() - debug_timer).total_seconds()

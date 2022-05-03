@@ -29,7 +29,6 @@
 """
 import json
 import os
-import uuid
 
 from django.conf import settings
 from django.contrib import messages
@@ -38,7 +37,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Count
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 
@@ -175,7 +174,9 @@ def q_update(request):
     resp = {}
     data = request.POST
     query_id = data.get("queryID")
+    show_details_link = data.get("showDetailsLink")
     resp["queryID"] = query_id
+    resp["showDetailsLink"] = show_details_link
     try:
         query = DicomQuery.objects.get(query_id=query_id)
     except ObjectDoesNotExist:
@@ -189,6 +190,11 @@ def q_update(request):
         resp["message"] = "<h4>Query Failed</h4> {0}".format(query.message)
         resp["subops"] = ""
         return HttpResponse(json.dumps(resp), content_type="application/json")
+
+    if show_details_link:
+        query_details_link = f'<a href="{reverse_lazy("get_query_details", None, [query.pk])}">Go to query details page</a>'
+    else:
+        query_details_link = ""
 
     study_rsp = query.dicomqrrspstudy_set.all()
     if not query.complete:
@@ -209,8 +215,8 @@ def q_update(request):
         table.append("</table>")
         tablestr = "".join(table)
         resp["status"] = "not complete"
-        resp["message"] = "<h4>{0}</h4><p>Responses so far:</p> {1}".format(
-            query.stage, tablestr
+        resp["message"] = "<h4>{0}</h4><p>{2}</p><p>Responses so far:</p> {1}".format(
+            query.stage, tablestr, query_details_link
         )
         resp["subops"] = ""
     else:
@@ -240,7 +246,7 @@ def q_update(request):
             "</a></h4></div>"
             "<div id='query-details' class='panel-collapse collapse'>"
             "<div class='panel-body'>"
-            "<p>{0}</p></div></div></div></div>".format(query.stage)
+            "<p>{0}</p><p>{1}</p></div></div></div></div>".format(query.stage, query_details_link)
         )
         not_as_expected_help_text = (
             "<div class='panel-group' id='accordion'>"
