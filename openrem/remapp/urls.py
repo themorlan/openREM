@@ -342,7 +342,9 @@ dicom_patterns = [
     path("qrnodestatus", dicomviews.get_qr_status, name="get_qr_status"),
     path("storenodestatus", dicomviews.get_store_status, name="get_store_status"),
     path("querysummary", dicomviews.get_query_summary, name="get_query_summary"),
-    path("querydetails/<int:pk>", dicomviews.get_query_details, name="get_query_details"),
+    path(
+        "querydetails/<int:pk>", dicomviews.get_query_details, name="get_query_details"
+    ),
     path("queryseries/<int:pk>", dicomviews.get_query_series, name="get_query_series"),
     path("queryimages/<int:pk>", dicomviews.get_query_images, name="get_query_images"),
 ]

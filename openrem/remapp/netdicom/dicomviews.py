@@ -41,7 +41,14 @@ from django.urls import reverse_lazy, reverse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 
-from remapp.models import DicomDeleteSettings, DicomQRRspSeries, DicomQRRspStudy, DicomQuery, DicomStoreSCP, DicomRemoteQR
+from remapp.models import (
+    DicomDeleteSettings,
+    DicomQRRspSeries,
+    DicomQRRspStudy,
+    DicomQuery,
+    DicomStoreSCP,
+    DicomRemoteQR,
+)
 from .qrscu import movescu, qrscu
 from .tools import echoscu
 from .. import __docs_version__, __version__
@@ -52,6 +59,7 @@ from openrem.remapp.tools.background import run_in_background
 
 os.environ["DJANGO_SETTINGS_MODULE"] = "openremproject.settings"
 
+
 def create_admin_info(request):
     admin = {
         "openremversion": __version__,
@@ -61,6 +69,7 @@ def create_admin_info(request):
     for group in request.user.groups.all():
         admin[group.name] = True
     return admin
+
 
 @csrf_exempt
 @login_required
@@ -77,8 +86,9 @@ def get_query_images(request, pk):
             "queryseries": queryseries,
             "queryimages": images,
             "admin": admin,
-        }
+        },
     )
+
 
 @csrf_exempt
 @login_required
@@ -94,7 +104,7 @@ def get_query_series(request, pk):
         {
             "queryseries": series,
             "admin": admin,
-        }
+        },
     )
 
 
@@ -111,10 +121,10 @@ def get_query_details(request, pk):
         request,
         "remapp/dicomquerydetails.html",
         {
-            "query": query, 
+            "query": query,
             "admin": admin,
             "querystudies": querystudies,
-        }
+        },
     )
 
 
@@ -127,10 +137,9 @@ def get_query_summary(request):
     admin = create_admin_info(request)
 
     return render(
-        request,
-        "remapp/dicomquerysummary.html",
-        {"queries": queries, "admin": admin}
+        request, "remapp/dicomquerysummary.html", {"queries": queries, "admin": admin}
     )
+
 
 @csrf_exempt
 def status_update_store(request):
@@ -246,7 +255,9 @@ def q_update(request):
             "</a></h4></div>"
             "<div id='query-details' class='panel-collapse collapse'>"
             "<div class='panel-body'>"
-            "<p>{0}</p><p>{1}</p></div></div></div></div>".format(query.stage, query_details_link)
+            "<p>{0}</p><p>{1}</p></div></div></div></div>".format(
+                query.stage, query_details_link
+            )
         )
         not_as_expected_help_text = (
             "<div class='panel-group' id='accordion'>"

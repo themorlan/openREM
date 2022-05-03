@@ -246,7 +246,9 @@ class QRPhilipsCT(TestCase):
         query = DicomQuery.objects.get()
         rst1 = query.dicomqrrspstudy_set.filter(deleted_flag=False).all()[0]
 
-        self.assertEqual(rst1.dicomqrrspseries_set.filter(deleted_flag=False).count(), 3)
+        self.assertEqual(
+            rst1.dicomqrrspseries_set.filter(deleted_flag=False).count(), 3
+        )
 
         assoc = None
         ae = None
@@ -262,10 +264,17 @@ class QRPhilipsCT(TestCase):
             get_empty_sr=False,
         )
 
-        self.assertEqual(query.dicomqrrspstudy_set.filter(deleted_flag=False).count(), 1)
-        self.assertEqual(rst1.dicomqrrspseries_set.filter(deleted_flag=False).count(), 1)
         self.assertEqual(
-            rst1.dicomqrrspseries_set.filter(deleted_flag=False).all()[0].series_description, "dose info"
+            query.dicomqrrspstudy_set.filter(deleted_flag=False).count(), 1
+        )
+        self.assertEqual(
+            rst1.dicomqrrspseries_set.filter(deleted_flag=False).count(), 1
+        )
+        self.assertEqual(
+            rst1.dicomqrrspseries_set.filter(deleted_flag=False)
+            .all()[0]
+            .series_description,
+            "dose info",
         )
 
     def test_response_sorting_ct_philips_no_desc(self):
@@ -301,7 +310,9 @@ class QRPhilipsCT(TestCase):
         rst1s3.save()
 
         # Before pruning, three series
-        self.assertEqual(rst1.dicomqrrspseries_set.filter(deleted_flag=False).count(), 3)
+        self.assertEqual(
+            rst1.dicomqrrspseries_set.filter(deleted_flag=False).count(), 3
+        )
 
         assoc = None
         ae = None
@@ -318,8 +329,12 @@ class QRPhilipsCT(TestCase):
         )
 
         # After pruning, two series
-        self.assertEqual(query.dicomqrrspstudy_set.filter(deleted_flag=False).all().count(), 1)
-        self.assertEqual(rst1.dicomqrrspseries_set.filter(deleted_flag=False).all().count(), 2)
+        self.assertEqual(
+            query.dicomqrrspstudy_set.filter(deleted_flag=False).all().count(), 1
+        )
+        self.assertEqual(
+            rst1.dicomqrrspseries_set.filter(deleted_flag=False).all().count(), 2
+        )
 
     def test_response_sorting_ct_philips_with_desc_no_dose_info(self):
         """
@@ -341,14 +356,18 @@ class QRPhilipsCT(TestCase):
 
         query = DicomQuery.objects.get()
         rst1 = query.dicomqrrspstudy_set.filter(deleted_flag=False).all()[0]
-        rst1_series_rsp = rst1.dicomqrrspseries_set.filter(deleted_flag=False).order_by("id")
+        rst1_series_rsp = rst1.dicomqrrspseries_set.filter(deleted_flag=False).order_by(
+            "id"
+        )
         rst1s3 = rst1_series_rsp[2]
 
         # Remove the third series with the 'dose info' description
         rst1s3.delete()
 
         # Before the pruning, two series
-        self.assertEqual(rst1.dicomqrrspseries_set.filter(deleted_flag=False).all().count(), 2)
+        self.assertEqual(
+            rst1.dicomqrrspseries_set.filter(deleted_flag=False).all().count(), 2
+        )
 
         assoc = None
         ae = None
@@ -365,7 +384,9 @@ class QRPhilipsCT(TestCase):
         )
 
         # After pruning, there should be no studies left
-        self.assertEqual(query.dicomqrrspstudy_set.filter(deleted_flag=False).all().count(), 0)
+        self.assertEqual(
+            query.dicomqrrspstudy_set.filter(deleted_flag=False).all().count(), 0
+        )
 
     @patch(
         "remapp.netdicom.qrscu._check_sr_type_in_study",
@@ -416,7 +437,9 @@ class QRPhilipsCT(TestCase):
         rst1.save()
 
         # Now starting with four series
-        self.assertEqual(rst1.dicomqrrspseries_set.filter(deleted_flag=False).all().count(), 4)
+        self.assertEqual(
+            rst1.dicomqrrspseries_set.filter(deleted_flag=False).all().count(), 4
+        )
 
         assoc = None
         ae = None
@@ -433,10 +456,16 @@ class QRPhilipsCT(TestCase):
         )
 
         # Should now have one SR series left, identified by the series description for the purposes of this test
-        self.assertEqual(query.dicomqrrspstudy_set.filter(deleted_flag=False).all().count(), 1)
-        self.assertEqual(rst1.dicomqrrspseries_set.filter(deleted_flag=False).all().count(), 1)
         self.assertEqual(
-            rst1.dicomqrrspseries_set.filter(deleted_flag=False).all()[0].series_description,
+            query.dicomqrrspstudy_set.filter(deleted_flag=False).all().count(), 1
+        )
+        self.assertEqual(
+            rst1.dicomqrrspseries_set.filter(deleted_flag=False).all().count(), 1
+        )
+        self.assertEqual(
+            rst1.dicomqrrspseries_set.filter(deleted_flag=False)
+            .all()[0]
+            .series_description,
             "radiation dose report",
         )
 
@@ -571,7 +600,9 @@ class ResponseFiltering(TestCase):
         query = DicomQuery.objects.get()
         _filter(query, "study", "station_name", ["goodstation"], "include")
 
-        self.assertEqual(query.dicomqrrspstudy_set.filter(deleted_flag=False).all().count(), 4)
+        self.assertEqual(
+            query.dicomqrrspstudy_set.filter(deleted_flag=False).all().count(), 4
+        )
         studies = query.dicomqrrspstudy_set.filter(deleted_flag=False).all()
         for study in studies:
             if study.station_name is not None:
@@ -588,7 +619,9 @@ class ResponseFiltering(TestCase):
         query = DicomQuery.objects.get()
         _filter(query, "study", "station_name", ["badstation"], "exclude")
 
-        self.assertEqual(query.dicomqrrspstudy_set.filter(deleted_flag=False).all().count(), 4)
+        self.assertEqual(
+            query.dicomqrrspstudy_set.filter(deleted_flag=False).all().count(), 4
+        )
         studies = query.dicomqrrspstudy_set.filter(deleted_flag=False).all()
         for study in studies:
             if study.station_name is not None and study.station_name != "":
@@ -611,7 +644,9 @@ class ResponseFiltering(TestCase):
             "exclude",
         )
 
-        self.assertEqual(query.dicomqrrspstudy_set.filter(deleted_flag=False).all().count(), 3)
+        self.assertEqual(
+            query.dicomqrrspstudy_set.filter(deleted_flag=False).all().count(), 3
+        )
         study = query.dicomqrrspstudy_set.filter(deleted_flag=False).order_by("pk")
         self.assertTrue(study[0].station_name == "goodstation")
 
@@ -634,7 +669,9 @@ class ResponseFiltering(TestCase):
             "include",
         )
 
-        self.assertEqual(query.dicomqrrspstudy_set.filter(deleted_flag=False).all().count(), 4)
+        self.assertEqual(
+            query.dicomqrrspstudy_set.filter(deleted_flag=False).all().count(), 4
+        )
         studies = query.dicomqrrspstudy_set.filter(deleted_flag=False).all()
         for study in studies:
             if study.station_name is not None and study.station_name != "":
@@ -1338,7 +1375,9 @@ class PruneSeriesResponsesCT(TestCase):
         query = DicomQuery.objects.get(query_id__exact="CT")
 
         study = query.dicomqrrspstudy_set.filter(deleted_flag=False).get()
-        rdsr_series = study.dicomqrrspseries_set.filter(deleted_flag=False).filter(series_number__exact=5)
+        rdsr_series = study.dicomqrrspseries_set.filter(deleted_flag=False).filter(
+            series_number__exact=5
+        )
         rdsr_series.delete()
 
         all_mods = self.all_mods
@@ -1374,9 +1413,13 @@ class PruneSeriesResponsesCT(TestCase):
         query = DicomQuery.objects.get(query_id__exact="CT")
 
         study = query.dicomqrrspstudy_set.filter(deleted_flag=False).get()
-        rdsr_series = study.dicomqrrspseries_set.filter(deleted_flag=False).filter(series_number__exact=5)
+        rdsr_series = study.dicomqrrspseries_set.filter(deleted_flag=False).filter(
+            series_number__exact=5
+        )
         rdsr_series.delete()
-        esr_series = study.dicomqrrspseries_set.filter(deleted_flag=False).filter(series_number__exact=2)
+        esr_series = study.dicomqrrspseries_set.filter(deleted_flag=False).filter(
+            series_number__exact=2
+        )
         esr_series.delete()
 
         all_mods = self.all_mods
@@ -1411,11 +1454,17 @@ class PruneSeriesResponsesCT(TestCase):
         query = DicomQuery.objects.get(query_id__exact="CT")
 
         study = query.dicomqrrspstudy_set.filter(deleted_flag=False).get()
-        rdsr_series = study.dicomqrrspseries_set.filter(deleted_flag=False).filter(series_number__exact=5)
+        rdsr_series = study.dicomqrrspseries_set.filter(deleted_flag=False).filter(
+            series_number__exact=5
+        )
         rdsr_series.delete()
-        esr_series = study.dicomqrrspseries_set.filter(deleted_flag=False).filter(series_number__exact=2)
+        esr_series = study.dicomqrrspseries_set.filter(deleted_flag=False).filter(
+            series_number__exact=2
+        )
         esr_series.delete()
-        dose_info_series = study.dicomqrrspseries_set.filter(deleted_flag=False).filter(series_number__exact=4)
+        dose_info_series = study.dicomqrrspseries_set.filter(deleted_flag=False).filter(
+            series_number__exact=4
+        )
         dose_info_series[0].series_description = ""
 
         all_mods = self.all_mods
@@ -1452,10 +1501,16 @@ class PruneSeriesResponsesCT(TestCase):
 
         study = query.dicomqrrspstudy_set.filter(deleted_flag=False).get()
 
-        esr_series = study.dicomqrrspseries_set.filter(deleted_flag=False).filter(series_number__exact=2)
+        esr_series = study.dicomqrrspseries_set.filter(deleted_flag=False).filter(
+            series_number__exact=2
+        )
         esr_series[0].dicomqrrspimage_set.filter(deleted_flag=False).get().delete()
-        study.dicomqrrspseries_set.filter(deleted_flag=False).filter(series_number__exact=3).all().delete()
-        study.dicomqrrspseries_set.filter(deleted_flag=False).filter(series_number__exact=5).all().delete()
+        study.dicomqrrspseries_set.filter(deleted_flag=False).filter(
+            series_number__exact=3
+        ).all().delete()
+        study.dicomqrrspseries_set.filter(deleted_flag=False).filter(
+            series_number__exact=5
+        ).all().delete()
 
         all_mods = self.all_mods
         filters = self.filters
@@ -1492,10 +1547,16 @@ class PruneSeriesResponsesCT(TestCase):
 
         study = query.dicomqrrspstudy_set.filter(deleted_flag=False).get()
 
-        esr_series = study.dicomqrrspseries_set.filter(deleted_flag=False).filter(series_number__exact=2)
+        esr_series = study.dicomqrrspseries_set.filter(deleted_flag=False).filter(
+            series_number__exact=2
+        )
         esr_series[0].dicomqrrspimage_set.filter(deleted_flag=False).get().delete()
-        study.dicomqrrspseries_set.filter(deleted_flag=False).filter(series_number__exact=3).all().delete()
-        study.dicomqrrspseries_set.filter(deleted_flag=False).filter(series_number__exact=5).all().delete()
+        study.dicomqrrspseries_set.filter(deleted_flag=False).filter(
+            series_number__exact=3
+        ).all().delete()
+        study.dicomqrrspseries_set.filter(deleted_flag=False).filter(
+            series_number__exact=5
+        ).all().delete()
 
         all_mods = self.all_mods
         filters = self.filters
@@ -1682,7 +1743,12 @@ class RemoveDuplicates(TestCase):
 
         study_responses_pre = DicomQRRspStudy.objects.all()
         self.assertEqual(study_responses_pre.count(), 1)
-        self.assertEqual(study_responses_pre[0].dicomqrrspseries_set.filter(deleted_flag=False).count(), 1)
+        self.assertEqual(
+            study_responses_pre[0]
+            .dicomqrrspseries_set.filter(deleted_flag=False)
+            .count(),
+            1,
+        )
 
         study_rsp = query.dicomqrrspstudy_set.filter(deleted_flag=False).all()
         assoc = None
@@ -1692,7 +1758,12 @@ class RemoveDuplicates(TestCase):
 
         study_responses_post = DicomQRRspStudy.objects.all()
         self.assertEqual(study_responses_post.count(), 1)
-        self.assertEqual(study_responses_post[0].dicomqrrspseries_set.filter(deleted_flag=False).count(), 1)
+        self.assertEqual(
+            study_responses_post[0]
+            .dicomqrrspseries_set.filter(deleted_flag=False)
+            .count(),
+            1,
+        )
 
     def test_rdsr_same(self):
         """Now testing _remove_duplicates will remove an identical RDSR, but retain a new one."""
@@ -1756,7 +1827,12 @@ class RemoveDuplicates(TestCase):
 
         study_responses_pre = DicomQRRspStudy.objects.all()
         self.assertEqual(study_responses_pre.count(), 1)
-        self.assertEqual(study_responses_pre[0].dicomqrrspseries_set.filter(deleted_flag=False).count(), 2)
+        self.assertEqual(
+            study_responses_pre[0]
+            .dicomqrrspseries_set.filter(deleted_flag=False)
+            .count(),
+            2,
+        )
 
         study_rsp = query.dicomqrrspstudy_set.filter(deleted_flag=False).all()
         assoc = None
@@ -1766,9 +1842,17 @@ class RemoveDuplicates(TestCase):
 
         study_responses_post = DicomQRRspStudy.objects.all()
         self.assertEqual(study_responses_post.count(), 1)
-        self.assertEqual(study_responses_post[0].dicomqrrspseries_set.filter(deleted_flag=False).count(), 1)
         self.assertEqual(
-            study_responses_post[0].dicomqrrspseries_set.filter(deleted_flag=False).all()[0].series_instance_uid,
+            study_responses_post[0]
+            .dicomqrrspseries_set.filter(deleted_flag=False)
+            .count(),
+            1,
+        )
+        self.assertEqual(
+            study_responses_post[0]
+            .dicomqrrspseries_set.filter(deleted_flag=False)
+            .all()[0]
+            .series_instance_uid,
             "1.3.6.1.4.1.5962.99.1.792239193.1702185591.1516915727449.7.0",
         )
 
@@ -1823,7 +1907,12 @@ class RemoveDuplicates(TestCase):
 
         study_responses_pre = DicomQRRspStudy.objects.all()
         self.assertEqual(study_responses_pre.count(), 1)
-        self.assertEqual(study_responses_pre[0].dicomqrrspseries_set.filter(deleted_flag=False).count(), 1)
+        self.assertEqual(
+            study_responses_pre[0]
+            .dicomqrrspseries_set.filter(deleted_flag=False)
+            .count(),
+            1,
+        )
 
         study_rsp = query.dicomqrrspstudy_set.filter(deleted_flag=False).all()
         assoc = None
@@ -1833,7 +1922,12 @@ class RemoveDuplicates(TestCase):
 
         study_responses_post = DicomQRRspStudy.objects.all()
         self.assertEqual(study_responses_post.count(), 1)
-        self.assertEqual(study_responses_post[0].dicomqrrspseries_set.filter(deleted_flag=False).count(), 1)
+        self.assertEqual(
+            study_responses_post[0]
+            .dicomqrrspseries_set.filter(deleted_flag=False)
+            .count(),
+            1,
+        )
 
     @patch("remapp.netdicom.qrscu._query_images", _fake_image_query)
     def test_dx(self):
@@ -1895,11 +1989,17 @@ class RemoveDuplicates(TestCase):
 
         study_responses_pre = DicomQRRspStudy.objects.all()
         self.assertEqual(study_responses_pre.count(), 1)
-        self.assertEqual(study_responses_pre[0].dicomqrrspseries_set.filter(deleted_flag=False).count(), 1)
+        self.assertEqual(
+            study_responses_pre[0]
+            .dicomqrrspseries_set.filter(deleted_flag=False)
+            .count(),
+            1,
+        )
         self.assertEqual(
             study_responses_pre[0]
             .dicomqrrspseries_set.get()
-            .dicomqrrspimage_set.filter(deleted_flag=False).count(),
+            .dicomqrrspimage_set.filter(deleted_flag=False)
+            .count(),
             2,
         )
 
@@ -1912,15 +2012,24 @@ class RemoveDuplicates(TestCase):
         # One image response should have been deleted, one remain
         study_responses_post = DicomQRRspStudy.objects.all()
         self.assertEqual(study_responses_post.count(), 1)
-        self.assertEqual(study_responses_post[0].dicomqrrspseries_set.filter(deleted_flag=False).count(), 1)
+        self.assertEqual(
+            study_responses_post[0]
+            .dicomqrrspseries_set.filter(deleted_flag=False)
+            .count(),
+            1,
+        )
         self.assertEqual(
             study_responses_pre[0]
             .dicomqrrspseries_set.get()
-            .dicomqrrspimage_set.filter(deleted_flag=False).count(),
+            .dicomqrrspimage_set.filter(deleted_flag=False)
+            .count(),
             1,
         )
         remaining_image_rsp = (
-            study_responses_pre[0].dicomqrrspseries_set.get().dicomqrrspimage_set.filter(deleted_flag=False).get()
+            study_responses_pre[0]
+            .dicomqrrspseries_set.get()
+            .dicomqrrspimage_set.filter(deleted_flag=False)
+            .get()
         )
         self.assertEqual(
             remaining_image_rsp.sop_instance_uid,
@@ -1976,11 +2085,15 @@ class DuplicatesInStudyResponse(TestCase):
         rst3.study_instance_uid = rst1.study_instance_uid
         rst3.save()
 
-        self.assertEqual(query.dicomqrrspstudy_set.filter(deleted_flag=False).count(), 3)
+        self.assertEqual(
+            query.dicomqrrspstudy_set.filter(deleted_flag=False).count(), 3
+        )
 
         current_count = _remove_duplicates_in_study_response(query, 3)
         self.assertEqual(current_count, 2)
-        self.assertEqual(query.dicomqrrspstudy_set.filter(deleted_flag=False).count(), 2)
+        self.assertEqual(
+            query.dicomqrrspstudy_set.filter(deleted_flag=False).count(), 2
+        )
 
 
 def _fake_query_each_mod(all_mods, query, d, assoc, ae, remote):
@@ -2070,7 +2183,9 @@ class DifferentStationNamesAtStudySeriesLevel(TestCase):
         studies = query.dicomqrrspstudy_set.filter(deleted_flag=False).all()
 
         self.assertEqual(studies.count(), 1)
-        self.assertEqual(studies[0].dicomqrrspseries_set.filter(deleted_flag=False).count(), 1)
+        self.assertEqual(
+            studies[0].dicomqrrspseries_set.filter(deleted_flag=False).count(), 1
+        )
 
         qr_scp.delete()
         store_scp.delete()
@@ -2108,7 +2223,9 @@ class DifferentStationNamesAtStudySeriesLevel(TestCase):
         studies = query.dicomqrrspstudy_set.filter(deleted_flag=False).all()
 
         self.assertEqual(1, studies.count())
-        self.assertEqual(1, studies[0].dicomqrrspseries_set.filter(deleted_flag=False).count())
+        self.assertEqual(
+            1, studies[0].dicomqrrspseries_set.filter(deleted_flag=False).count()
+        )
 
         qr_scp.delete()
         store_scp.delete()
@@ -2183,7 +2300,9 @@ class DifferentStationNamesAtStudySeriesLevel(TestCase):
         studies = query.dicomqrrspstudy_set.filter(deleted_flag=False).all()
 
         self.assertEqual(studies.count(), 1)
-        self.assertEqual(studies[0].dicomqrrspseries_set.filter(deleted_flag=False).count(), 1)
+        self.assertEqual(
+            studies[0].dicomqrrspseries_set.filter(deleted_flag=False).count(), 1
+        )
 
         qr_scp.delete()
         store_scp.delete()
