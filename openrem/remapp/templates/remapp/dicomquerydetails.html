@@ -35,6 +35,7 @@
         <table class="table table-bordered table-hover row-clickable table-sortable">
             <tr>
                 <th>Study UID</th>
+                <th>Study description</th>
                 <th>Modality</th>
                 <th>Downloaded?</th>
             </tr>
@@ -43,6 +44,11 @@
                     <td>
                         <a href="{% url 'get_query_series' qstudy.pk %}">
                             {{qstudy.study_instance_uid}}
+                        </a>
+                    </td>
+                    <td>
+                        <a href="{% url 'get_query_series' qstudy.pk %}">
+                            {{qstudy.study_description}}
                         </a>
                     </td>
                     <td>
