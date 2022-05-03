@@ -186,8 +186,9 @@ def _remove_duplicates(ae, remote, query, study_rsp, assoc):
                         series_rsp.update(
                             deleted_flag=True, deleted_reason="Does not have modality SR, MG, DX, CR or PX")
         if not study.dicomqrrspseries_set.filter(deleted_flag=False):
-            study.update(
-                deleted_flag=True, deleted_reason="Study does not have any series left")
+            study.deleted_flag=True
+            study.deleted_reason="Study does not have any series left"
+            study.save()
 
     logger.info(
         f"{query_id_8} After removing studies we already have in the db, {query.dicomqrrspstudy_set.filter(deleted_flag=False).count()} studies are left"
@@ -259,10 +260,14 @@ def _filter(query, level, filter_name, filter_list, filter_type):
                         is filtertype
                     )
                 ):
-                    s.update(deleted_flag=True, deleted_reason=f"Filter {filter_name} {filter_type} active and matched here")
+                    s.deleted_flag=True
+                    s.deleted_reason=f"Filter {filter_name} {filter_type} active and matched here"
+                    s.save()
             nr_series_remaining = study.dicomqrrspseries_set.all().count()
             if nr_series_remaining == 0:
-                study.update(deleted_flag=True, deleted_reason="All Series of this studies where removed due to some active filter")
+                study.deleted_flag=True
+                study.deleted_reason="All Series of this studies where removed due to some active filter"
+                study.save()
     logger.info(f"{query_id_8} Now have {query.dicomqrrspstudy_set.filter(deleted_flag=False).count()} studies")
 
 
@@ -402,7 +407,9 @@ def _prune_series_responses(
                 logger.debug(
                     f"{query_id_8} No usable SR in RF study. Deleting from query."
                 )
-                study.update(deleted_flag=True, deleted_reason="No usable SR in study")
+                study.deleted_flag=True
+                study.deleted_reason="No usable SR in study"
+                study.save()
                 deleted_studies["RF"] += 1
             else:
                 logger.debug(
@@ -460,8 +467,9 @@ def _prune_series_responses(
                     logger.debug(
                         f"{query_id_8} No usable CT information available, deleting study from query"
                     )
-                    study.update(
-                        deleted_flag=True, deleted_reason="Found no usuable information in this study")
+                    study.deleted_flag=True
+                    study.deleted_reason="Found no usuable information in this study"
+                    study.save()
                     deleted_studies["CT"] += 1
 
         elif all_mods["SR"]["inc"]:
@@ -482,16 +490,18 @@ def _prune_series_responses(
                 logger.debug(
                     f"{query_id_8} No RDSR or ESR found. Study will be deleted."
                 )
-                study.update(
-                    deleted_flag=True, deleted_reason="No RDSR or ESR found.")
+                study.deleted_flag=True
+                study.deleted_reason="No RDSR or ESR found."
+                study.save()
                 deleted_studies["SR"] += 1
 
         if study.id is not None and study.dicomqrrspseries_set.filter(deleted_flag=False).all().count() == 0:
             logger.debug(
                 f"{query_id_8} Deleting empty study with suid {study.study_instance_uid}"
             )
-            study.update(
-                deleted_flag=True, deleted_reason="There are no series left")
+            study.deleted_flag=True
+            study.deleted_reason="There are no series left"
+            study.save()
 
     return deleted_studies, deleted_studies_filters, kept_ct
 
@@ -688,8 +698,9 @@ def _check_sr_type_in_study(ae, remote, assoc, study, query, get_empty_sr):
                 logger.debug(
                     f"{query_id_8} Chesk SR type: Have RDSR, deleting non-RDSR SR"
                 )
-                sr.update(
-                    deleted_flag=True, deleted_reason="RDSR present, deleting all non-RDSR SR")
+                sr.deleted_flag=True
+                sr.deleted_reason="RDSR present, deleting all non-RDSR SR"
+                sr.save()
         return "RDSR"
     elif "1.2.840.10008.5.1.4.1.1.88.22" in sop_classes:
         for sr in series_sr:
@@ -697,8 +708,9 @@ def _check_sr_type_in_study(ae, remote, assoc, study, query, get_empty_sr):
                 logger.debug(
                     f"{query_id_8} Check SR type: Have ESR, deleting non-RDSR, non-ESR SR"
                 )
-                sr.update(
-                    deleted_flag=True, deleted_reason="ESR present, no RDSR found, all other SR series deleted")
+                sr.deleted_flag=True
+                sr.deleted_reason="ESR present, no RDSR found, all other SR series deleted"
+                sr.save()
         return "ESR"
     elif "null_response" in sop_classes:
         logger.debug(
@@ -708,7 +720,7 @@ def _check_sr_type_in_study(ae, remote, assoc, study, query, get_empty_sr):
         return "null_response"
     else:
         logger.debug(
-            f"{query_id_8} Check SR type: {series_sr.count()} non-RDSR, non-ESR SR series remain"
+            f"{query_id_8} Check SR type: {series_sr.filter(deleted_flag=False).count()} non-RDSR, non-ESR SR series remain"
         )
         return "no_dose_report"
 
@@ -1442,7 +1454,9 @@ def qrscu(
             for study in study_rsp:
                 mods = study.get_modalities_in_study()
                 if mods != ["SR"]:
-                    study.update(deleted_flag=True, deleted_reason=f"SR only checked, but this study contains {mods}")
+                    study.deleted_flag=True
+                    study.deleted_reason=f"SR only checked, but this study contains {mods}"
+                    study.save()
             study_rsp = study_rsp.filter(deleted_flag=False)
             study_numbers["current"] = study_rsp.count()
             study_numbers["sr_only_removed"] = (
