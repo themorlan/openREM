@@ -73,6 +73,19 @@ def create_admin_info(request):
 
 @csrf_exempt
 @login_required
+def delete_queries(request):
+    """Delete all queries"""
+    resp = {}
+    resp["status"] = "fail"
+    if request.method == "POST":
+        DicomQuery.objects.all().delete()
+        resp["status"] = "success"
+
+    return HttpResponse(json.dumps(resp), content_type="application/json")
+
+
+@csrf_exempt
+@login_required
 def get_query_images(request, pk):
     """View to show the images of a queried series."""
     queryseries = get_object_or_404(DicomQRRspSeries, pk=pk)
@@ -131,7 +144,6 @@ def get_query_details(request, pk):
 @login_required
 def get_query_summary(request):
     """View to show all queries from the past."""
-
     queries = DicomQuery.objects.order_by("started_at").reverse().all()
     admin = create_admin_info(request)
 
@@ -178,7 +190,6 @@ def status_update_store(request):
 @csrf_exempt
 def q_update(request):
     """View to update query status"""
-
     resp = {}
     data = request.POST
     query_id = data.get("queryID")

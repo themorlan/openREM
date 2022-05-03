@@ -347,6 +347,7 @@ dicom_patterns = [
     ),
     path("queryseries/<int:pk>", dicomviews.get_query_series, name="get_query_series"),
     path("queryimages/<int:pk>", dicomviews.get_query_images, name="get_query_images"),
+    path("deletequeries/", dicomviews.delete_queries, name="delete_queries"),
 ]
 
 import_patterns = [  # pylint: disable=invalid-name
