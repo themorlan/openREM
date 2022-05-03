@@ -74,7 +74,7 @@ def create_admin_info(request):
 @csrf_exempt
 @login_required
 def delete_queries(request):
-    """Delete all queries"""
+    """Delete all queries."""
     resp = {}
     resp["status"] = "fail"
     if request.method == "POST":
