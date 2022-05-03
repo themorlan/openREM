@@ -1066,6 +1066,28 @@ def _get_review_study_data(study):
         study_data["eventsource"] = ""
         study_data["eventmech"] = ""
         study_data["eventmech"] = ""
+    radio_dose = study.radiopharmaceuticalradiationdose_set.first()
+    study_data["radiopharm_template"] = ""
+    study_data["radiopharm_dose"] = ""
+    study_data["radiopharm_petseries"] = ""
+    if radio_dose:
+        study_data["radiopharm_template"] = "Yes"
+        radio_admin = radio_dose.radiopharmaceuticaladministrationeventdata_set.first()
+        if radio_admin:
+            if radio_admin.radiopharmaceutical_agent:
+                radio_agent_str = radio_admin.radiopharmaceutical_agent.code_meaning
+            else:
+                radio_agent_str = radio_admin.radiopharmaceutical_agent_string
+            if radio_admin.radionuclide:
+                radionuclide_str = radio_admin.radionuclide.code_meaning
+            else:
+                radionuclide_str = ""
+            study_data["radiopharm_dose"] = (f"{radio_admin.administered_activity:.2f} MBq,"
+                f" radiopharmaceutical {radio_agent_str}, "
+                f" radionuclide {radionuclide_str}")
+        pet_series = radio_dose.petseries_set.count()
+        if pet_series > 0:
+            study_data["radiopharm_petseries"] = f"Yes, {pet_series}"
     return study_data
 
 
