@@ -121,17 +121,17 @@ def _get_data(filterdict, pid, task):
 
 
 def _build_block_header(
-    headings, get_header_block, header_block_name, header_lenghts, statistics=None
+    headings, get_header_block, header_block_name, header_lengths, statistics=None
 ):
     tmp = get_header_block(1)
-    header_lenghts[header_block_name] = len(tmp)
+    header_lengths[header_block_name] = len(tmp)
     if statistics is None:
         until = 2  # 1 + 1
     else:
         until = statistics[header_block_name] + 1
     for i in range(1, until):
         headings += get_header_block(i)
-    return (headings, header_lenghts)
+    return headings, header_lengths
 
 
 def _nm_headers(pid, name, patid, statistics):
