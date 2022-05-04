@@ -353,6 +353,17 @@ class DicomRemoteQR(models.Model):
         return self.name
 
 
+class BackgroundTask(models.Model):
+    uuid = models.TextField()
+    pid = models.IntegerField()
+    task_type = models.TextField()
+    info = models.TextField(blank=True, null=True)
+    error = models.TextField(blank=True, null=True)
+    completed_successfull = models.BooleanField(default=False)
+    complete = models.BooleanField(default=False)
+    started_at = models.DateTimeField()
+
+
 class DicomQuery(models.Model):
     """
     Table to store DICOM query settings
@@ -377,6 +388,10 @@ class DicomQuery(models.Model):
     move_complete = models.BooleanField(default=False)
     move_summary = models.TextField(blank=True)
     move_uuid = models.UUIDField(null=True)
+    query_task = models.ForeignKey(BackgroundTask, 
+        on_delete=models.SET_NULL, blank=True, null=True, related_name="query_part")
+    move_task = models.ForeignKey(BackgroundTask, 
+        on_delete=models.SET_NULL, blank=True, null=True, related_name="move_part")
 
 
 class DicomQRRspStudy(models.Model):
@@ -391,6 +406,7 @@ class DicomQRRspStudy(models.Model):
     station_name = models.CharField(max_length=32, blank=True, null=True)
     deleted_flag = models.BooleanField(default=False)
     deleted_reason = models.TextField(default="Downloaded")
+    related_imports = models.ManyToManyField(BackgroundTask)
 
     def set_modalities_in_study(self, x):
         self.modalities_in_study = json.dumps(list(x or []))
@@ -2824,13 +2840,3 @@ class UpgradeStatus(SingletonModel):
 
     from_0_9_1_summary_fields = models.BooleanField(default=False)
 
-
-class BackgroundTask(models.Model):
-    uuid = models.TextField()
-    pid = models.IntegerField()
-    task_type = models.TextField()
-    info = models.TextField(blank=True, null=True)
-    error = models.TextField(blank=True, null=True)
-    completed_successfull = models.BooleanField(default=False)
-    complete = models.BooleanField(default=False)
-    started_at = models.DateTimeField()

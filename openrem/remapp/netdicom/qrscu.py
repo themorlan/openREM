@@ -1459,6 +1459,7 @@ def qrscu(
     query.move_completed_sub_ops = 0
     query.move_warning_sub_ops = 0
     query.move_failed_sub_ops = 0
+    query.query_task = task
     study_date = str(
         make_dcm_date_range(date1=date_from, date2=date_until, single_date=single_date)
         or ""
@@ -2008,6 +2009,7 @@ def movescu(query_id):
         )
         return 0
     query.move_complete = False
+    query.move_task = get_current_task()
     query.failed = False
     query.save()
     qr_scp = query.qr_scp_fk

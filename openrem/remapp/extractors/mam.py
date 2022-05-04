@@ -34,7 +34,7 @@ import django
 import logging
 from pydicom.charset import default_encoding
 
-from openrem.remapp.tools.background import record_task_error_exit, record_task_info
+from openrem.remapp.tools.background import record_task_error_exit, record_task_related_query, record_task_info
 
 logger = logging.getLogger("remapp.extractors.mam")
 
@@ -533,6 +533,7 @@ def _mammo2db(dataset):
         return
     study_in_db = check_uid.check_uid(study_uid)
     record_task_info(f"UID: {study_uid.replace('.', '. ')}")
+    record_task_related_query(study_uid)
     logger.debug("In mam.py. Study_UID %s, study_in_db %s", study_uid, study_in_db)
 
     if study_in_db:

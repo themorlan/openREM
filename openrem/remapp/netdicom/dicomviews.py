@@ -110,6 +110,7 @@ def get_query_series(request, pk):
     querystudy = get_object_or_404(DicomQRRspStudy, pk=pk)
     series = querystudy.dicomqrrspseries_set.all()
     admin = create_admin_info(request)
+    studyimports = querystudy.related_imports.all()
 
     return render(
         request,
@@ -117,6 +118,7 @@ def get_query_series(request, pk):
         {
             "queryseries": series,
             "admin": admin,
+            "studyimports": studyimports,
         },
     )
 
@@ -218,7 +220,7 @@ def q_update(request):
     else:
         query_details_link = ""
 
-    study_rsp = query.dicomqrrspstudy_set.all()
+    study_rsp = query.dicomqrrspstudy_set.filter(deleted_flag=False).all()
     if not query.complete:
         modalities = study_rsp.values("modalities_in_study").annotate(count=Count("pk"))
         table = [
@@ -474,10 +476,18 @@ def r_update(request):
     data = request.POST
     query_id = data.get("queryID")
     resp["queryID"] = query_id
+    has_started = True
     try:
         query = DicomQuery.objects.get(query_id=query_id)
     except ObjectDoesNotExist:
-        resp["status"] = "not complete"
+        has_started = False
+
+    if has_started:
+        task = query.move_task
+        has_started = task is not None
+
+    if not has_started:
+        resp["status"] = "not started"
         resp["message"] = f"<h4>Move request {query_id} not yet started</h4>"
         resp["subops"] = ""
         return HttpResponse(json.dumps(resp), content_type="application/json")

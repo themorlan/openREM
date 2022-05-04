@@ -53,7 +53,7 @@ if projectpath not in sys.path:
 os.environ["DJANGO_SETTINGS_MODULE"] = "openremproject.settings"
 django.setup()
 
-from remapp.models import BackgroundTask
+from remapp.models import BackgroundTask, DicomQRRspStudy, DicomQuery
 
 
 def run_as_task(func, task_type, taskuuid, *args, **kwargs):
@@ -295,3 +295,28 @@ def record_task_error_exit(error_msg):
         b.completed_successfull = False
         b.error = error_msg
         b.save()
+
+def record_task_related_query(study_instance_uid):
+    """
+    Tries to find the related DicomQRRspStudy object
+    given a study instance uid and if this is running in
+    a task will record it to the task object. This
+    is used to later find the import tasks that were run as 
+    part of a query.
+    Since this actually just takes the latest query if the user 
+    runs imports manually via script it may in principle wrongly
+    associtate.
+    """
+    b = get_current_task()
+    if b is not None:
+        if DicomQuery.objects.exists():
+            queries = DicomQuery.objects.filter(
+                started_at__isnull=False
+            ).latest(
+                "started_at"
+            ).dicomqrrspstudy_set.filter(
+                study_instance_uid=study_instance_uid
+            ).all()
+            
+            for query in queries:
+                query.related_imports.add(b)

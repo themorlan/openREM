@@ -17,14 +17,7 @@ function retrieveProgress(json ) {
                 };
                 retrieveProgress( data );
             }, 100);
-        },
-        error: function( xhr, status, errorThrown ) {
-            alert( "Sorry, there was a problem getting the status!" );
-            // console.log( "Error: " + errorThrown );
-            // console.log( "Status: " + status );
-            // console.dir( xhr );
         }
-
     });
 
 }
@@ -57,8 +50,7 @@ function queryProgress(json ) {
                     type: "POST",
                     dataType: "json",
                     success: function( json ) {
-                        if (json.status !== "move complete" && 
-                            json.message.indexOf("not yet started") !== -1) {
+                        if (json.status === "not started") {
                             var moveHtml = '<div><button type="button" class="btn btn-default" id="move" data-id="'
                                 + json.queryID
                                 + '">Move</button></div>';
@@ -85,20 +77,10 @@ function queryProgress(json ) {
                         else {
                             retrieveProgress( {queryID: json.queryID });
                         }
-                    },
-                    error: function( xhr, status, errorThrown ) {
-                        alert( "Sorry, there was a problem getting the status!" );
                     }
                 });
             }
-        },
-        error: function( xhr, status, errorThrown ) {
-            alert( "Sorry, there was a problem getting the status!" );
-            // console.log( "Error: " + errorThrown );
-            // console.log( "Status: " + status );
-            // console.dir( xhr );
         }
-
     });
 
 }
@@ -125,9 +107,6 @@ $(document).ready(function(){
             },
             error: function( xhr, status, errorThrown ) {
                 alert( "Sorry, there was a problem starting the job!" );
-                // console.log( "Error: " + errorThrown );
-                // console.log( "Status: " + status );
-                // console.dir( xhr );
             }
         });
     });
