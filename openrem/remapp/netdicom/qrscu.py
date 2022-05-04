@@ -30,6 +30,7 @@ from copy import deepcopy
 from celery import shared_task
 import django
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Q
 from django.utils.translation import gettext as _
 from pydicom.dataset import Dataset
 from pynetdicom import AE, _config  # , debug_logger
@@ -467,7 +468,8 @@ def _prune_series_responses(
             study.save()
             # SOP ids: RRDSR, PET Image, NM Image. We will try to
             # get all of those (In case of NM and PT only the first
-            # object of the series)
+            # object of the series). NM will not be taken unless 
+            # nothing else present
             nm_img_sop_ids = [
                 "1.2.840.10008.5.1.4.1.1.88.68",
                 "1.2.840.10008.5.1.4.1.1.128",
@@ -488,10 +490,19 @@ def _prune_series_responses(
                             ae, remote, assoc, study, query, get_empty_sr, load_mod
                         )
                     )
-            loaded_sop_classes.intersection_update(nm_img_sop_ids)
+                loaded_sop_classes.intersection_update(nm_img_sop_ids)
+                # Don't download NM images when anything else is available
+                if sop_class == nm_img_sop_ids[1] and len(loaded_sop_classes) > 0: 
+                    break
 
             series = study.dicomqrrspseries_set.all()
             series.exclude(sop_class_in_series__in=nm_img_sop_ids).delete()
+            keep = series.filter(sop_class_in_series=nm_img_sop_ids[2]).first()
+            if keep is not None:
+                series.filter(
+                    Q(sop_class_in_series=nm_img_sop_ids[2]) & 
+                    ~ Q(pk=keep.pk)
+                ).delete() # Only take the first NM imgage
 
             if series.count() == 0:
                 logger.debug(

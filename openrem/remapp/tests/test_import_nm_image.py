@@ -385,7 +385,7 @@ class ImportNMImage(ImportTest):
         nm_image(self._get_dcm_file("test_files/NM-NmIm-Siemens-s1-2.dcm"))
 
         study = GeneralStudyModuleAttr.objects.get()
-        expected = expected = {
+        expected = {
             "modality_type": "NM",
             "study_date": datetime(2022, 2, 18).date(),
             "patientmoduleattr_set": {
