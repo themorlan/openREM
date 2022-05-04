@@ -388,9 +388,9 @@ class DicomQuery(models.Model):
     move_complete = models.BooleanField(default=False)
     move_summary = models.TextField(blank=True)
     move_uuid = models.UUIDField(null=True)
-    query_task = models.ForeignKey(BackgroundTask, 
+    query_task = models.ForeignKey(BackgroundTask,
         on_delete=models.SET_NULL, blank=True, null=True, related_name="query_part")
-    move_task = models.ForeignKey(BackgroundTask, 
+    move_task = models.ForeignKey(BackgroundTask,
         on_delete=models.SET_NULL, blank=True, null=True, related_name="move_part")
 
 

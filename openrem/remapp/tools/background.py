@@ -42,7 +42,6 @@ import django
 from django import db
 from django.db.models import Q
 from django.db import transaction
-import random
 
 # Setup django. This is required on windows, because process is created via spawn and
 # django will not be initialized anymore then (On Linux this will only be executed once)
@@ -53,7 +52,7 @@ if projectpath not in sys.path:
 os.environ["DJANGO_SETTINGS_MODULE"] = "openremproject.settings"
 django.setup()
 
-from remapp.models import BackgroundTask, DicomQRRspStudy, DicomQuery
+from remapp.models import BackgroundTask, DicomQuery
 
 
 def run_as_task(func, task_type, taskuuid, *args, **kwargs):
@@ -300,10 +299,10 @@ def record_task_related_query(study_instance_uid):
     """
     Tries to find the related DicomQRRspStudy object
     given a study instance uid and if this is running in
-    a task will record it to the task object. This
-    is used to later find the import tasks that were run as 
+    a task will record it to the query object. This
+    is used to later find the import tasks that were run as
     part of a query.
-    Since this actually just takes the latest query if the user 
+    Since this actually just takes the latest query if the user
     runs imports manually via script it may in principle wrongly
     associtate.
     """
@@ -317,6 +316,6 @@ def record_task_related_query(study_instance_uid):
             ).dicomqrrspstudy_set.filter(
                 study_instance_uid=study_instance_uid
             ).all()
-            
+
             for query in queries:
                 query.related_imports.add(b)
