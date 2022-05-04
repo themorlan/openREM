@@ -210,10 +210,9 @@ def _remove_duplicates(ae, remote, query, study_rsp, assoc):
                             existing_sop_instance_uids,
                         )
                     else:
-                        series_rsp.update(
-                            deleted_flag=True,
-                            deleted_reason="Does not have modality SR, MG, DX, CR or PX",
-                        )
+                        series_rsp.deleted_flag=True
+                        series_rsp.deleted_reason="Does not have modality SR, MG, DX, CR or PX"
+                        series_rsp.save()
         if not study.dicomqrrspseries_set.filter(deleted_flag=False):
             study.deleted_flag = True
             study.deleted_reason = "Study does not have any series left"
@@ -627,10 +626,9 @@ def _get_toshiba_dose_images(ae, remote, study_series, assoc, query):
             logger.debug(
                 f"{query_id_8} Toshiba option: No images in series, deleting series."
             )
-            series.update(
-                deleted_flag=True,
-                deleted_reason="Searching for Toshiba: No images in series found.",
-            )
+            series.deleted_flag=True
+            series.deleted_reason="Searching for Toshiba: No images in series found."
+            series.save()
         else:
             if images[0].sop_class_uid != "1.2.840.10008.5.1.4.1.1.7":
                 logger.debug(
