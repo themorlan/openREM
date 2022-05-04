@@ -57,7 +57,8 @@ function queryProgress(json ) {
                     type: "POST",
                     dataType: "json",
                     success: function( json ) {
-                        if (json.status !== "move complete") {
+                        if (json.status !== "move complete" && 
+                            json.message.indexOf("not yet started") !== -1) {
                             var moveHtml = '<div><button type="button" class="btn btn-default" id="move" data-id="'
                                 + json.queryID
                                 + '">Move</button></div>';
