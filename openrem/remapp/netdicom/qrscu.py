@@ -468,7 +468,7 @@ def _prune_series_responses(
             study.save()
             # SOP ids: RRDSR, PET Image, NM Image. We will try to
             # get all of those (In case of NM and PT only the first
-            # object of the series). NM will not be taken unless 
+            # object of the series). NM will not be taken unless
             # nothing else present
             nm_img_sop_ids = [
                 "1.2.840.10008.5.1.4.1.1.88.68",
@@ -492,7 +492,7 @@ def _prune_series_responses(
                     )
                 loaded_sop_classes.intersection_update(nm_img_sop_ids)
                 # Don't download NM images when anything else is available
-                if sop_class == nm_img_sop_ids[1] and len(loaded_sop_classes) > 0: 
+                if sop_class == nm_img_sop_ids[1] and len(loaded_sop_classes) > 0:
                     break
 
             series = study.dicomqrrspseries_set.all()
@@ -500,7 +500,7 @@ def _prune_series_responses(
             keep = series.filter(sop_class_in_series=nm_img_sop_ids[2]).first()
             if keep is not None:
                 series.filter(
-                    Q(sop_class_in_series=nm_img_sop_ids[2]) & 
+                    Q(sop_class_in_series=nm_img_sop_ids[2]) &
                     ~ Q(pk=keep.pk)
                 ).delete() # Only take the first NM imgage
 
