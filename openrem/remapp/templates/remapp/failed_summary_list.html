@@ -19,5 +19,9 @@
     <td><a href="{% url 'review_failed_imports' 'DX' %}" style="text-decoration: none">Radiography</a></td>
     <td><a href="{% url 'review_failed_imports' 'DX' %}" style="text-decoration: none">{{ failed.DX }}</a></td>
   </tr>
+  <tr class="row-clickable">
+    <td><a href="{% url 'review_failed_imports' 'NM' %}" style="text-decoration: none">Nuclear Medicine</a></td>
+    <td><a href="{% url 'review_failed_imports' 'NM' %}" style="text-decoration: none">{{ failed.NM }}</a></td>
+  </tr>
 </table>
 

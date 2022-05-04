@@ -38,7 +38,8 @@
       {% endif %}
       <p>
         Jump to <a href="#ct">CT</a> | <a href="#fluoro">Fluoroscopy</a> |<a href="#mammo">Mammography</a> |
-        <a href="#dx">DX and CR</a> | <a href="#others">Others</a> | <a href="#failed">Failed imports</a> |
+        <a href="#dx">DX and CR</a> | <a href="#nm">Nuclear Medicine</a> | <a href="#others">Others</a> | 
+        <a href="#failed">Failed imports</a> |
       </p>
 
     </div>
@@ -180,6 +181,16 @@
     <p>
       <input class="btn btn-default" type="submit" value="Update">
     </p>
+{% endif %}
+
+<a id="nm" class="vert-offset">
+  <h3>Nuclear Medicine</h3>
+</a>
+<span id="NM-names">Querying the database for display names, please wait</span>
+{% if admin.admingroup %} 
+  <p>
+    <input class="btn btn-default" type="submit" value="Update">
+  </p>
 {% endif %}
 
 <a id="others" class="vert-offset">
