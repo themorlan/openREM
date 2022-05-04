@@ -87,7 +87,7 @@ def run_as_task(func, task_type, taskuuid, *args, **kwargs):
     except Exception:  # Literally anything could happen here
         b = _get_task_via_uuid(taskuuid)
         b.complete = True
-        b.completed_successful = False
+        b.completed_successfully = False
         b.error = traceback.format_exc()
         b.save()
         return b
@@ -95,7 +95,7 @@ def run_as_task(func, task_type, taskuuid, *args, **kwargs):
     b = _get_task_via_uuid(taskuuid)
     if not b.complete:
         b.complete = True
-        b.completed_successful = True
+        b.completed_successfully = True
         b.save()
     return b
 
@@ -163,7 +163,7 @@ def terminate_background(task: BackgroundTask):
 
     except (ProcessLookupError, OSError):
         pass
-    task.completed_successful = False
+    task.completed_successfully = False
     task.complete = True
     task.error = "Forcefully aborted"
     task.save()
@@ -221,6 +221,6 @@ def record_task_error_exit(error_msg):
     b = get_current_task()
     if b is not None:
         b.complete = True
-        b.completed_successful = False
+        b.completed_successfully = False
         b.error = error_msg
         b.save()
