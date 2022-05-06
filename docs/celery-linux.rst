@@ -1,6 +1,6 @@
-######################################
+###############################################
 Daemonising Celery and Flower on Linux - Legacy
-######################################
+###############################################
 
 Guides to daemonising Celery can be found in the Celery documentation at
 http://docs.celeryproject.org/en/latest/userguide/daemonizing.html.
