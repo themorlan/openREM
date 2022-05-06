@@ -171,3 +171,139 @@ Log locations
 
 
 .. _`WinSCP`: https://winscp.net
+
+.. _celery-task-queue:
+
+Celery task queue
+=================
+
+Celery will have been automatically installed with OpenREM, and along with
+RabbitMQ allows for asynchronous task processing for imports, exports and DICOM networking tasks.
+
+..  Note::
+
+    Celery needs to be able to write to the place where the Celery logs and pid file are to be stored, so make sure:
+
+    * the folder exists (the suggestion below is to create a folder in the ``MEDIA_ROOT`` location)
+    * the user that starts Celery can write to that folder
+
+You can put the folder wherever you like, for example you might like to create a ``/var/log/openrem/`` folder on a linux
+system.
+
+If you are using the built-in `Test web server`_ then Celery and the webserver will be running as your user. If you are
+running a production webserver, such as Apache or nginx on linux, then the user that runs those daemons will need to
+be able to write to the ``MEDIA_ROOT`` and the Celery log files folder. In this case, you need to change the ownership
+of the folders and change to the right user before running Celery. On Ubuntu:
+
+.. sourcecode:: console
+
+    mkdir /path/to/media/celery  # change as appropriate
+    sudo chown www-data /path/to/media  # change as appropriate
+    sudo su -p www-data
+
+Now start celery...
+
+Move into the openrem folder:
+
+* Ubuntu linux: ``/usr/local/lib/python2.7/dist-packages/openrem/``
+* Other linux: ``/usr/lib/python2.7/site-packages/openrem/``
+* Linux virtualenv: ``vitualenvfolder/lib/python2.7/site-packages/openrem/`` (remember to activate the virtualenv)
+* Windows: ``C:\Python27\Lib\site-packages\openrem\``
+* Windows virtualenv: ``virtualenvfolder\Lib\site-packages\openrem\`` (remember to activate the virtualenv)
+
+Linux - ``\`` is the line continuation character:
+
+.. sourcecode:: console
+
+    celery multi start default -Ofair -A openremproject -c 4 -Q default \
+    --pidfile=/path/to/media/celery/%N.pid --logfile=/path/to/media/celery/%N.log
+
+Windows - ``celery multi`` doesn't work on Windows, and ``^`` is the continuation character:
+
+.. sourcecode:: console
+
+    celery worker -n default -Ofair -A openremproject -c 4 -Q default ^
+    --pidfile=C:\path\to\media\celery\default.pid --logfile=C:\path\to\media\celery\default.log
+
+.. _start_flower:
+
+Celery task management: Flower
+==============================
+
+Flower will have been automatically installed with OpenREM and enables monitoring and management of Celery tasks.
+
+You should start Flower with the same user that you started Celery with, and put the log file in the same place too.
+
+Move into the openrem folder:
+
+* Ubuntu linux: ``/usr/local/lib/python2.7/dist-packages/openrem/``
+* Other linux: ``/usr/lib/python2.7/site-packages/openrem/``
+* Linux virtualenv: ``vitualenvfolder/lib/python2.7/site-packages/openrem/`` (remember to activate the virtualenv)
+* Windows: ``C:\Python27\Lib\site-packages\openrem\``
+* Windows virtualenv: ``virtualenvfolder\Lib\site-packages\openrem\`` (remember to activate the virtualenv)
+
+If you need to change the default port from 5555 then you need to make the same change in
+``openremproject\local_settings.py`` to add/modify the line ``FLOWER_PORT = 5555``
+
+If you wish to be able to use the Flower management interface independently of OpenREM, then omit the ``--address``
+part of the command. Flower will then be available from any PC on the network at http://yourdoseservernameorIP:5555/
+
+Linux - ``\`` is the line continuation character:
+
+.. sourcecode:: console
+
+    celery flower -A openremproject --port=5555 --address=127.0.0.1  --loglevel=INFO \
+    ---log-file-prefix=/path/to/media/celery/flower.log
+
+Windows - ``^`` is the line continuation character:
+
+.. sourcecode:: console
+
+    celery flower -A openremproject --port=5555 --address=127.0.0.1  --loglevel=INFO ^
+    ---log-file-prefix=C:\path\to\media\celery\flower.log
+
+For production use, see `Daemonising Celery`_ below.
+
+.. _celery-beat:
+
+Celery periodic tasks: beat
+===========================
+
+.. note::
+
+    Celery beat is only required if you are using the :ref:`nativestore`. Please read the warnings there before deciding
+    if you need to run Celery beat. At the current time, using a third party DICOM store service is recommended for
+    most users. See the :ref:`configure_third_party_DICOM` documentation for more details
+
+Celery beat is a scheduler. If it is running, then every 60 seconds a task is run to check if any of the DICOM
+Store SCP nodes are set to ``keep_alive``, and if they are, it tries to verify they are running with a DICOM echo.
+If this is not successful, then the Store SCP is started.
+
+To run celery beat, open a new shell and move into the openrem folder:
+
+* Ubuntu linux: ``/usr/local/lib/python2.7/dist-packages/openrem/``
+* Other linux: ``/usr/lib/python2.7/site-packages/openrem/``
+* Linux virtualenv: ``vitualenvfolder/lib/python2.7/site-packages/openrem/`` (remember to activate the virtualenv)
+* Windows: ``C:\Python27\Lib\site-packages\openrem\``
+* Windows virtualenv: ``virtualenvfolder\Lib\site-packages\openrem\`` (remember to activate the virtualenv)
+
+Linux::
+
+    celery -A openremproject beat -s /path/to/media/celery/celerybeat-schedule \
+    -f /path/to/media/celery/celerybeat.log \
+    --pidfile=/path/to/media/celery/celerybeat.pid
+
+Windows::
+
+    celery -A openremproject beat -s C:\path\to\media\celery\celerybeat-schedule ^
+    -f C:\path\to\media\celery\celerybeat.log ^
+    --pidfile=C:\path\to\media\celery\celerybeat.pid
+
+For production use, see `Daemonising Celery`_ below
+
+As with starting the Celery workers, the folder that the pid, log and for beat, schedule files are to be written
+**must already exist** and the user starting Celery beat must be able write to that folder.
+
+To stop Celery beat, just press ``Ctrl+c``
+
+.. _user-settings:

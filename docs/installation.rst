@@ -52,8 +52,8 @@ Get the database and translations ready:
 
 Open a web browser and go to http://localhost/
 
-Non-Docker alternative - Linux only
-===================================
+Non-Docker alternative
+======================
 
 We recommend all installations to use the Docker method described above. However, it is possible to install without
 Docker. The instructions are a prescriptive install on Ubuntu:
