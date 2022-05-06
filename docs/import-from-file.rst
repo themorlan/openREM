@@ -53,7 +53,8 @@ For PET/NM DICOM images
 
     openrem_nm.py filename.dcm
 
-Note that more complete information can be loaded from the RRDSRs if available.
+Note that more complete information can be loaded from the RRDSRs if available. For PET images the PET series
+part is imported partially.
 
 For CT dose summary files from Philips CT scanners
 --------------------------------------------------
