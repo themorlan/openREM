@@ -1,5 +1,5 @@
 ########################################
-Daemonising Celery and Flower on Windows
+Daemonising Celery and Flower on Windows - Legacy
 ########################################
 
 To ensure that the Celery task queue and Flower are started at system start-up

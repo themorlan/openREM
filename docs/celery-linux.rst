@@ -1,5 +1,5 @@
 ######################################
-Daemonising Celery and Flower on Linux
+Daemonising Celery and Flower on Linux - Legacy
 ######################################
 
 Guides to daemonising Celery can be found in the Celery documentation at
