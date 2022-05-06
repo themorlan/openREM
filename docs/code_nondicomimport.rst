@@ -14,4 +14,4 @@ is limited to accession number or study instance UID.
 .. automodule:: openrem.remapp.extractors.ptsizecsv2db
     :members:
 
-.. autotask::   openrem.remapp.extractors.ptsizecsv2db.websizeimport
+.. autofunction::   openrem.remapp.extractors.ptsizecsv2db.websizeimport
