@@ -20,7 +20,6 @@ Single sheet CSV exports
    
 .. autofunction:: remapp.exports.rf_export.exportFL2excel
 .. autofunction:: remapp.exports.ct_export.ct_csv
-.. autofunction:: remapp.exports.mg_export.exportMG2excel
 .. autofunction:: remapp.exports.dx_export.exportDX2excel
 
 Specialised csv exports - NHSBSP formatted mammography export

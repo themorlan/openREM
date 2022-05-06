@@ -112,3 +112,10 @@ Now register, set to start on boot, and start the services:
     sudo systemctl start celery-openrem.service
     sudo systemctl enable flower-openrem.service
     sudo systemctl start flower-openrem.service
+
+Enable RadbbitMQ queue management interface
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code-block:: console
+
+    $ sudo rabbitmq-plugins enable rabbitmq_management

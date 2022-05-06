@@ -507,6 +507,9 @@ Restart Orthanc:
 
 New users, and quick access to physics folder
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. _`WinSCP`: https://winscp.net
+
 This is for new Linux users; for new OpenREM users, refer to :ref:`user-settings`
 
 If you left ``local use_physics_filtering = true`` in the Orthanc configuration, you might like to give your colleagues
