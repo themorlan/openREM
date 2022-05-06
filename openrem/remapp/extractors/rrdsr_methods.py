@@ -525,6 +525,16 @@ def _radiopharmaceutical_administration_event_data(dataset, radiopharmaceutical_
         elif cont.ConceptNameCodeSequence[0].CodeValue == "113517":  # Organ dose
             _organ_dose(cont, rad_event)
         elif (
+            cont.ConceptNameCodeSequence[0].CodeValue == "220001"
+        ):  # Effective dose information
+            for cont2 in get_content_sequence(cont):
+                if (
+                    cont2.ConceptNameCodeSequence[0].CodeValue == "113839"
+                ):  # Effective dose in mSv
+                    rad_event.effective_dose = test_numeric_value(
+                        cont2.MeasuredValueSequence[0].NumericValue
+                    )
+        elif (
             cont.ConceptNameCodeSequence[0].CodeValue == "113870"
         ):  # Person Participant
             person_participant(

@@ -248,6 +248,9 @@ class DicomDeleteSettings(SingletonModel):
         default=False,
         verbose_name="delete Philips CT dose info images after processing?",
     )
+    del_nm_im = models.BooleanField(
+        default=False, verbose_name="delete nuclear medicine images after processing?"
+    )
 
     def __unicode__(self):
         return "Delete DICOM objects settings"
@@ -611,6 +614,22 @@ class UserProfile(models.Model, CommonVariables):
         default=CommonVariables.FREQ,
     )
 
+    plotNMStudyFreq = models.BooleanField(default=False)
+    plotNMStudyPerDayAndHour = models.BooleanField(default=False)
+    plotNMInjectedDosePerStudy = models.BooleanField(default=False)
+    plotNMInjectedDoseOverTime = models.BooleanField(default=False)
+    plotNMInjectedDoseOverWeight = models.BooleanField(default=False)
+    plotNMOverTimePeriod = models.CharField(
+        max_length=13,
+        choices=CommonVariables.TIME_PERIOD,
+        default=CommonVariables.MONTHS,
+    )
+    plotNMInitialSortingChoice = models.CharField(
+        max_length=9,
+        choices=CommonVariables.SORTING_CHOICES,
+        default=CommonVariables.FREQ,
+    )
+
     plotCTAcquisitionMeanDLP = models.BooleanField(default=True)
     plotCTAcquisitionMeanCTDI = models.BooleanField(default=True)
     plotCTAcquisitionFreq = models.BooleanField(default=False)
@@ -687,6 +706,7 @@ class UserProfile(models.Model, CommonVariables):
     displayRF = models.BooleanField(default=True)
     displayMG = models.BooleanField(default=True)
     displayDX = models.BooleanField(default=True)
+    displayNM = models.BooleanField(default=True)
 
     plotSeriesPerSystem = models.BooleanField(default=False)
 
@@ -2150,6 +2170,9 @@ class RadiopharmaceuticalAdministrationEventData(models.Model):  # TID 10022
         related_name="tid10022_agent",
         on_delete=models.CASCADE,
     )  # CID 25 & CID 4021
+    radiopharmaceutical_agent_string = models.TextField(
+        blank=True, null=True
+    )  # In NM Images the radiopharmaceutical may only be present as string
     radionuclide = models.ForeignKey(
         ContextID,
         blank=True,
@@ -2172,6 +2195,9 @@ class RadiopharmaceuticalAdministrationEventData(models.Model):  # TID 10022
     radiopharmaceutical_start_datetime = models.DateTimeField(blank=True, null=True)
     radiopharmaceutical_stop_datetime = models.DateTimeField(blank=True, null=True)
     administered_activity = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+    effective_dose = models.DecimalField(
         max_digits=16, decimal_places=8, blank=True, null=True
     )
     radiopharmaceutical_volume = models.DecimalField(
@@ -2309,6 +2335,48 @@ class OrganDose(models.Model):  # TID 10023
         on_delete=models.CASCADE,
     )  # CID 10040
     reference_authority_text = models.TextField(blank=True, null=True)
+    type_of_detector_motion = models.TextField(blank=True, null=True)
+
+
+class PETSeries(models.Model):
+    radiopharmaceutical_radiation_dose = models.ForeignKey(
+        RadiopharmaceuticalRadiationDose, on_delete=models.CASCADE
+    )
+    series_uid = models.TextField(blank=True, null=True)
+    series_datetime = models.DateTimeField(blank=True, null=True)
+    number_of_rr_intervals = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+    number_of_time_slots = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+    number_of_time_slices = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+    number_of_slices = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+    reconstruction_method = models.TextField(blank=True, null=True)
+    coincidence_window_width = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+    energy_window_lower_limit = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+    energy_window_upper_limit = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+    scan_progression_direction = models.TextField(blank=True, null=True)
+
+
+class PETSeriesCorrection(models.Model):
+    pet_series = models.ForeignKey(PETSeries, on_delete=models.CASCADE)
+    corrected_image = models.TextField(blank=True, null=True)
+
+
+class PETSeriesType(models.Model):
+    pet_series = models.ForeignKey(PETSeries, on_delete=models.CASCADE)
+    series_type = models.TextField(blank=True, null=True)
 
 
 class RadiopharmaceuticalAdministrationPatientCharacteristics(models.Model):

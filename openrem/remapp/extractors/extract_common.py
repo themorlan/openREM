@@ -538,31 +538,37 @@ def generalequipmentmoduleattributes(dataset, study):  # C.7.5.1
     equip.software_versions = get_value_kw("SoftwareVersions", dataset)
     equip.gantry_id = get_value_kw("GantryID", dataset)
     equip.spatial_resolution = get_value_kw("SpatialResolution", dataset)
-    equip.date_of_last_calibration = get_date("DateOfLastCalibration", dataset)
-    equip.time_of_last_calibration = get_time("TimeOfLastCalibration", dataset)
     try:
-        device_observer_uid = [
-            content.UID
-            for content in dataset.ContentSequence
-            if (
-                content.ConceptNameCodeSequence[0].CodeValue == "121012"
-                and content.ConceptNameCodeSequence[0].CodingSchemeDesignator == "DCM"
-            )
-        ][
-            0
-        ]  # 121012 = DeviceObserverUID
-    except AttributeError:
-        device_observer_uid = [
-            content.TextValue
-            for content in dataset.ContentSequence
-            if (
-                content.ConceptNameCodeSequence[0].CodeValue == "121012"
-                and content.ConceptNameCodeSequence[0].CodingSchemeDesignator == "DCM"
-            )
-        ][
-            0
-        ]  # 121012 = DeviceObserverUID
-    except IndexError:
+        equip.date_of_last_calibration = get_date("DateOfLastCalibration", dataset)
+        equip.time_of_last_calibration = get_time("TimeOfLastCalibration", dataset)
+    except TypeError: # DICOM supports MultiValue for those fields, but we don't
+        pass
+    if hasattr(dataset, "ContentSequence"):
+        try:
+            device_observer_uid = [
+                content.UID
+                for content in dataset.ContentSequence
+                if (
+                    content.ConceptNameCodeSequence[0].CodeValue == "121012"
+                    and content.ConceptNameCodeSequence[0].CodingSchemeDesignator == "DCM"
+                )
+            ][
+                0
+            ]  # 121012 = DeviceObserverUID
+        except AttributeError:
+            device_observer_uid = [
+                content.TextValue
+                for content in dataset.ContentSequence
+                if (
+                    content.ConceptNameCodeSequence[0].CodeValue == "121012"
+                    and content.ConceptNameCodeSequence[0].CodingSchemeDesignator == "DCM"
+                )
+            ][
+                0
+            ]  # 121012 = DeviceObserverUID
+        except IndexError:
+            device_observer_uid = None
+    else:
         device_observer_uid = None
 
     if (

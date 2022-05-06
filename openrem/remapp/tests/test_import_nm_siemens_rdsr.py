@@ -30,8 +30,19 @@ from django.test import TestCase
 from remapp.extractors import rdsr
 from remapp.models import GeneralStudyModuleAttr, PatientIDSettings
 
+class ImportTest(TestCase):
 
-class ImportNMRDSR(TestCase):
+    def _get_dcm_file(self, dicom_file):
+        root_tests = os.path.dirname(os.path.abspath(__file__))
+        dicom_path = os.path.join(root_tests, dicom_file)
+        return dicom_path
+
+    def setUp(self) -> None:
+        u: PatientIDSettings = PatientIDSettings.objects.create()
+        u.name_stored = True
+        u.name_hashed = False
+        u.save()
+
     def _verify_equality(self, value, expect_value, location):
         msg = f"At {location}"
         check_type = type(expect_value)
@@ -43,6 +54,7 @@ class ImportNMRDSR(TestCase):
             or check_type == time
             or check_type == datetime
             or check_type == bool
+            or check_type == int
         ):
             self.assertEqual(value, expect_value, msg)
         elif check_type == Decimal:
@@ -79,17 +91,7 @@ class ImportNMRDSR(TestCase):
             else:
                 self._check_values(current, subdata, location)
 
-    def _get_dcm_file(self, dicom_file):
-        root_tests = os.path.dirname(os.path.abspath(__file__))
-        dicom_path = os.path.join(root_tests, dicom_file)
-        return dicom_path
-
-    def setUp(self) -> None:
-        u: PatientIDSettings = PatientIDSettings.objects.create()
-        u.name_stored = True
-        u.name_hashed = False
-        u.save()
-
+class ImportNMRDSR(ImportTest):
     def test_import_siemens_rrdsr(self):
         """Loads a Siemens RRDSR-File and checks all values against the expected ones"""
 
@@ -105,7 +107,7 @@ class ImportNMRDSR(TestCase):
                     "patient_name": "REMOVED1",
                 }
             },
-            "study_date": date(2000, 3, 24),
+            "study_date": date(2022, 2, 24),
             "study_time": time(11, 50, 25, 472000),
             "accession_number": "TEST123456",
             "study_description": "PET/CT Ganzkoerper FDG",
@@ -139,12 +141,13 @@ class ImportNMRDSR(TestCase):
                             "radionuclide_half_life": Decimal(6586.2),
                             "radiopharmaceutical_administration_event_uid": "1.3.12.2.1107.5.1.4.11090.20220224104830.000000",
                             "radiopharmaceutical_start_datetime": datetime(
-                                2000, 3, 24, 10, 40, 30, 0
+                                2022, 2, 24, 10, 40, 30, 0
                             ),
                             "radiopharmaceutical_stop_datetime": datetime(
-                                2000, 3, 24, 10, 40, 40, 0
+                                2022, 2, 24, 10, 40, 30, 0
                             ),
                             "administered_activity": Decimal(394.0),
+                            "effective_dose": Decimal(7.486),
                             "organdose_set": {
                                 "first": {
                                     "finding_site": {"code_meaning": "Adrenal gland"},
@@ -200,7 +203,7 @@ class ImportNMRDSR(TestCase):
                     "patient_name": "REMOVED2",
                 }
             },
-            "study_date": date(2000, 3, 23),
+            "study_date": date(2022, 2, 23),
             "study_time": time(9, 32, 12, 576000),
             "accession_number": "XYZ123",
             "study_description": "PET/CT Herz FDG",
@@ -257,12 +260,13 @@ class ImportNMRDSR(TestCase):
                             "estimated_extravasation_activity": Decimal(10.0),
                             "radiopharmaceutical_volume": Decimal(100),
                             "radiopharmaceutical_start_datetime": datetime(
-                                2000, 3, 23, 8, 29, 18, 0
+                                2022, 2, 23, 8, 29, 18, 0
                             ),
                             "radiopharmaceutical_stop_datetime": datetime(
-                                2000, 3, 23, 8, 29, 18, 0
+                                2022, 2, 23, 8, 29, 18, 0
                             ),
                             "administered_activity": Decimal(250.0),
+                            "effective_dose": Decimal(4.75),
                             "pre_administration_measured_activity": Decimal(11.0),
                             "pre_activity_measurement_device": {
                                 "code_meaning": "Dose Calibrator"

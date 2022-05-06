@@ -71,6 +71,7 @@ from .forms import (
     RFChartOptionsDisplayForm,
     RFHighDoseFluoroAlertsForm,
     UpdateDisplayNamesForm,
+    NMChartOptionsDisplayForm,
 )
 from .models import (
     AccumIntegratedProjRadiogDose,
@@ -211,69 +212,6 @@ def display_names_view(request):
                     )
         return HttpResponseRedirect(reverse_lazy("display_names_view"))
 
-    f = UniqueEquipmentNames.objects.order_by("display_name")
-
-    # if user_defined_modality is filled, we should use this value, otherwise the value of modality type in the
-    # general_study module. So we look if the concatenation of the user_defined_modality (empty if not used) and
-    # modality_type starts with a specific modality type
-    ct_names = f.filter(
-        generalequipmentmoduleattr__general_study_module_attributes__modality_type="CT"
-    ).distinct()
-    mg_names = f.filter(
-        generalequipmentmoduleattr__general_study_module_attributes__modality_type="MG"
-    ).distinct()
-    dx_names = f.filter(
-        Q(user_defined_modality="DX")
-        | Q(user_defined_modality="dual")
-        | (
-            Q(user_defined_modality__isnull=True)
-            & (
-                Q(
-                    generalequipmentmoduleattr__general_study_module_attributes__modality_type="DX"
-                )
-                | Q(
-                    generalequipmentmoduleattr__general_study_module_attributes__modality_type="CR"
-                )
-                | Q(
-                    generalequipmentmoduleattr__general_study_module_attributes__modality_type="PX"
-                )
-            )
-        )
-    ).distinct()
-    rf_names = f.filter(
-        Q(user_defined_modality="RF")
-        | Q(user_defined_modality="dual")
-        | (
-            Q(user_defined_modality__isnull=True)
-            & Q(
-                generalequipmentmoduleattr__general_study_module_attributes__modality_type="RF"
-            )
-        )
-    ).distinct()
-    ot_names = f.filter(
-        ~Q(user_defined_modality__isnull=True)
-        | (
-            ~Q(
-                generalequipmentmoduleattr__general_study_module_attributes__modality_type="RF"
-            )
-            & ~Q(
-                generalequipmentmoduleattr__general_study_module_attributes__modality_type="MG"
-            )
-            & ~Q(
-                generalequipmentmoduleattr__general_study_module_attributes__modality_type="CT"
-            )
-            & ~Q(
-                generalequipmentmoduleattr__general_study_module_attributes__modality_type="DX"
-            )
-            & ~Q(
-                generalequipmentmoduleattr__general_study_module_attributes__modality_type="CR"
-            )
-            & ~Q(
-                generalequipmentmoduleattr__general_study_module_attributes__modality_type="PX"
-            )
-        )
-    ).distinct()
-
     admin = {
         "openremversion": __version__,
         "docsversion": __docs_version__,
@@ -287,15 +225,9 @@ def display_names_view(request):
         admin[group.name] = True
 
     return_structure = {
-        "name_list": f,
         "admin": admin,
         "MergeOptionsForm": merge_options_form,
-        "ct_names": ct_names,
-        "mg_names": mg_names,
-        "dx_names": dx_names,
-        "rf_names": rf_names,
-        "ot_names": ot_names,
-        "modalities": ["CT", "RF", "MG", "DX", "OT"],
+        "modalities": ["CT", "RF", "MG", "DX", "OT", "NM"],
     }
 
     return render(request, "remapp/displaynameview.html", return_structure)
@@ -337,7 +269,7 @@ def display_name_update(request):
                     )[0].modality_type
                 except:
                     modality = ""
-                if modality in {"DX", "CR", "RF", "dual", "OT"}:
+                if modality in {"DX", "CR", "RF", "dual", "OT", "NM"}:
                     display_name_data.user_defined_modality = new_user_defined_modality
                     # We can't reimport as new modality type, instead we just change the modality type value
                     if new_user_defined_modality == "dual":
@@ -423,7 +355,7 @@ def display_name_populate(request):
         }
         for group in request.user.groups.all():
             admin[group.name] = True
-        if modality in ["MG", "CT"]:
+        if modality in ["MG", "CT", "NM"]:
             name_set = f.filter(
                 generalequipmentmoduleattr__general_study_module_attributes__modality_type=modality
             ).distinct()
@@ -480,6 +412,9 @@ def display_name_populate(request):
                 & ~Q(
                     generalequipmentmoduleattr__general_study_module_attributes__modality_type="PX"
                 )
+                & ~Q(
+                    generalequipmentmoduleattr__general_study_module_attributes__modality_type="NM"
+                )
             ).distinct()
             dual = False
         else:
@@ -505,7 +440,7 @@ def display_name_modality_filter(equip_name_pk=None, modality=None):
             "Display name modality filter function called without a primary key ID for the unique names table"
         )
         return
-    if not modality or modality not in ["CT", "RF", "MG", "DX", "OT"]:
+    if not modality or modality not in ["CT", "RF", "MG", "DX", "OT", "NM"]:
         logger.error(
             "Display name modality filter function called without an appropriate modality specified"
         )
@@ -515,7 +450,7 @@ def display_name_modality_filter(equip_name_pk=None, modality=None):
         generalequipmentmoduleattr__unique_equipment_name__pk=equip_name_pk
     )
     count_all = studies_all.count()
-    if modality in ["CT", "MG", "RF"]:
+    if modality in ["CT", "MG", "RF", "NM"]:
         studies = studies_all.filter(modality_type__exact=modality)
     elif modality == "DX":
         studies = studies_all.filter(
@@ -537,6 +472,7 @@ def display_name_modality_filter(equip_name_pk=None, modality=None):
             .exclude(modality_type__exact="CR")
             .exclude(modality_type__exact="PX")
             .exclude(modality_type__exact="RF")
+            .exclude(modality_type__exact="NM")
         )
     return studies, count_all
 
@@ -774,16 +710,19 @@ def reset_dual(pk=None):
         .exclude(modality_type__exact="CR")
         .exclude(modality_type__exact="PX")
     )
-    message_start = "Reprocessing dual for {0}. Number of studies is {1}, of which {2} are " "DX, {3} are CR, {4} are PX, {5} are RF and {6} are something else before processing,".format(  # pylint: disable=line-too-long
-        studies[0]
-        .generalequipmentmoduleattr_set.get()
-        .unique_equipment_name.display_name,
-        studies.count(),
-        studies.filter(modality_type__exact="DX").count(),
-        studies.filter(modality_type__exact="CR").count(),
-        studies.filter(modality_type__exact="PX").count(),
-        studies.filter(modality_type__exact="RF").count(),
-        not_dx_rf_cr.count(),
+    message_start = (
+        "Reprocessing dual for {0}. Number of studies is {1}, of which {2} are "
+        "DX, {3} are CR, {4} are PX, {5} are RF and {6} are something else before processing,".format(  # pylint: disable=line-too-long
+            studies[0]
+            .generalequipmentmoduleattr_set.get()
+            .unique_equipment_name.display_name,
+            studies.count(),
+            studies.filter(modality_type__exact="DX").count(),
+            studies.filter(modality_type__exact="CR").count(),
+            studies.filter(modality_type__exact="PX").count(),
+            studies.filter(modality_type__exact="RF").count(),
+            not_dx_rf_cr.count(),
+        )
     )
 
     logger.debug(message_start)
@@ -1127,6 +1066,28 @@ def _get_review_study_data(study):
         study_data["eventsource"] = ""
         study_data["eventmech"] = ""
         study_data["eventmech"] = ""
+    radio_dose = study.radiopharmaceuticalradiationdose_set.first()
+    study_data["radiopharm_template"] = ""
+    study_data["radiopharm_dose"] = ""
+    study_data["radiopharm_petseries"] = ""
+    if radio_dose:
+        study_data["radiopharm_template"] = "Yes"
+        radio_admin = radio_dose.radiopharmaceuticaladministrationeventdata_set.first()
+        if radio_admin:
+            if radio_admin.radiopharmaceutical_agent:
+                radio_agent_str = radio_admin.radiopharmaceutical_agent.code_meaning
+            else:
+                radio_agent_str = radio_admin.radiopharmaceutical_agent_string
+            if radio_admin.radionuclide:
+                radionuclide_str = radio_admin.radionuclide.code_meaning
+            else:
+                radionuclide_str = ""
+            study_data["radiopharm_dose"] = (f"{radio_admin.administered_activity:.2f} MBq,"
+                f" radiopharmaceutical {radio_agent_str}, "
+                f" radionuclide {radionuclide_str}")
+        pet_series = radio_dose.petseries_set.count()
+        if pet_series > 0:
+            study_data["radiopharm_petseries"] = f"Yes, {pet_series}"
     return study_data
 
 
@@ -1210,7 +1171,7 @@ def failed_list_populate(request):
 
     if request.is_ajax():
         failed = {}
-        for modality in ["CT", "RF", "MG", "DX"]:
+        for modality in ["CT", "RF", "MG", "DX", "NM"]:
             failed[modality] = _get_broken_studies(modality).count()
         template = "remapp/failed_summary_list.html"
         return render(request, template, {"failed": failed})
@@ -1224,7 +1185,7 @@ def review_failed_imports(request, modality=None):
     :param modality: modality to filter by
     :return:
     """
-    if not modality in ["CT", "RF", "MG", "DX"]:
+    if not modality in ["CT", "RF", "MG", "DX", "NM"]:
         logger.error("Attempt to load review_failed_imports without suitable modality")
         messages.error(
             request,
@@ -1298,12 +1259,14 @@ def chart_options_view(request):
         dx_form = DXChartOptionsDisplayForm(request.POST)
         rf_form = RFChartOptionsDisplayForm(request.POST)
         mg_form = MGChartOptionsDisplayForm(request.POST)
+        nm_form = NMChartOptionsDisplayForm(request.POST)
         if (
             general_form.is_valid()
             and ct_form.is_valid()
             and dx_form.is_valid()
             and rf_form.is_valid()
             and mg_form.is_valid()
+            and nm_form.is_valid()
         ):
             try:
                 # See if the user has plot settings in userprofile
@@ -1350,6 +1313,8 @@ def chart_options_view(request):
             set_rf_chart_options(rf_form, user_profile)
 
             set_mg_chart_options(mg_form, user_profile)
+
+            set_nm_chart_options(nm_form, user_profile)
 
             user_profile.save()
 
@@ -1399,11 +1364,14 @@ def chart_options_view(request):
 
     mg_form_data = initialise_mg_form_data(user_profile)
 
+    nm_form_data = initialise_nm_form_data(user_profile)
+
     general_chart_options_form = GeneralChartOptionsDisplayForm(general_form_data)
     ct_chart_options_form = CTChartOptionsDisplayForm(ct_form_data)
     dx_chart_options_form = DXChartOptionsDisplayForm(dx_form_data)
     rf_chart_options_form = RFChartOptionsDisplayForm(rf_form_data)
     mg_chart_options_form = MGChartOptionsDisplayForm(mg_form_data)
+    nm_chart_options_form = NMChartOptionsDisplayForm(nm_form_data)
 
     return_structure = {
         "admin": admin,
@@ -1412,6 +1380,7 @@ def chart_options_view(request):
         "DXChartOptionsForm": dx_chart_options_form,
         "RFChartOptionsForm": rf_chart_options_form,
         "MGChartOptionsForm": mg_chart_options_form,
+        "NMChartOptionsForm": nm_chart_options_form,
     }
 
     return render(request, "remapp/displaychartoptions.html", return_structure)
@@ -1575,6 +1544,39 @@ def set_average_chart_options(general_form, user_profile):
         user_profile.plotBoxplots = True
     else:
         user_profile.plotBoxplots = False
+
+
+def set_nm_chart_options(nm_form, user_profile):
+    user_profile.plotNMStudyFreq = nm_form.cleaned_data["plotNMStudyFreq"]
+    user_profile.plotNMStudyPerDayAndHour = nm_form.cleaned_data[
+        "plotNMStudyPerDayAndHour"
+    ]
+    user_profile.plotNMInjectedDosePerStudy = nm_form.cleaned_data[
+        "plotNMInjectedDosePerStudy"
+    ]
+    user_profile.plotNMInjectedDoseOverTime = nm_form.cleaned_data[
+        "plotNMInjectedDoseOverTime"
+    ]
+    user_profile.plotNMInjectedDoseOverWeight = nm_form.cleaned_data[
+        "plotNMInjectedDoseOverWeight"
+    ]
+    user_profile.plotNMOverTimePeriod = nm_form.cleaned_data["plotNMOverTimePeriod"]
+    user_profile.plotNMInitialSortingChoice = nm_form.cleaned_data[
+        "plotNMInitialSortingChoice"
+    ]
+
+
+def initialise_nm_form_data(user_profile):
+    nm_form_data = {
+        "plotNMStudyFreq": user_profile.plotNMStudyFreq,
+        "plotNMStudyPerDayAndHour": user_profile.plotNMStudyPerDayAndHour,
+        "plotNMInjectedDosePerStudy": user_profile.plotNMInjectedDosePerStudy,
+        "plotNMInjectedDoseOverTime": user_profile.plotNMInjectedDoseOverTime,
+        "plotNMInjectedDoseOverWeight": user_profile.plotNMInjectedDoseOverWeight,
+        "plotNMOverTimePeriod": user_profile.plotNMOverTimePeriod,
+        "plotNMInitialSortingChoice": user_profile.plotNMInitialSortingChoice,
+    }
+    return nm_form_data
 
 
 def set_ct_chart_options(ct_form, user_profile):

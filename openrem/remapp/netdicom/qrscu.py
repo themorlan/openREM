@@ -6,6 +6,15 @@ Query/Retrieve SCU AE
 
 Specialised QR routine to get just the objects that might be useful for dose related metrics from a remote PACS or
 modality
+
+The qrscu routine does basically act using c-find queries to the remote PACS/DICOM node. It progressively asks
+for information about studies, then series, then images storing the (high level) info acquired about them
+in the database as a DicomQuery object.
+On each level data that we are not interested in for some reason (studies that are duplicates; series that are
+excluded by our filters; and so on) are removed from the DicomQuery object.
+The movescu routing in the end initiates a c-move of all the objects that were not deleted from the query, such that
+those objects are sent to the local DICOM node (e.g. Orthanc). The local dicom node has to be configured such that it
+uses the openrem extractor scripts on receive of DICOM files.
 """
 
 import argparse
@@ -15,11 +24,13 @@ import logging
 import os
 import sys
 import uuid
+from copy import deepcopy
 
 
 from celery import shared_task
 import django
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Q
 from django.utils.translation import gettext as _
 from pydicom.dataset import Dataset
 from pynetdicom import AE, _config  # , debug_logger
@@ -106,6 +117,14 @@ def _remove_image_sop_uids(
         series_rsp.delete()
 
 
+def _query_id_8(query):
+    try:
+        query_id_8 = query.query_id.hex[:8]
+    except AttributeError:
+        query_id_8 = query.query_id[:8]
+    return query_id_8
+
+
 def _remove_duplicates(ae, remote, query, study_rsp, assoc):
     """
     Checks for objects in C-Find response already being in the OpenREM database to remove them from the C-Move request
@@ -115,10 +134,7 @@ def _remove_duplicates(ae, remote, query, study_rsp, assoc):
     :return: Study, series and image level responses deleted if not useful
     """
 
-    try:
-        query_id_8 = query.query_id.hex[:8]
-    except AttributeError:
-        query_id_8 = query.query_id[:8]
+    query_id_8 = _query_id_8(query)
     logger.debug(
         f"{query_id_8} About to remove any studies we already have in the database"
     )
@@ -160,12 +176,14 @@ def _remove_duplicates(ae, remote, query, study_rsp, assoc):
                             study.study_instance_uid,
                             existing_sop_instance_uids,
                         )
-                    elif series_rsp.modality in ["MG", "DX", "CR", "PX"]:
+                    elif series_rsp.modality in ["MG", "DX", "CR", "PX", "PT", "NM"]:
                         logger.debug(
                             f"{query_id_8} Study {study_number} {study.study_instance_uid} about to query at "
                             f"image level to get SOPInstanceUID"
                         )
-                        _query_images(ae, remote, assoc, series_rsp, query)
+                        _query_images(
+                            ae, remote, assoc, series_rsp, query, True
+                        )  # Only check first image of series
                         _remove_image_sop_uids(
                             series_rsp,
                             query_id_8,
@@ -195,10 +213,7 @@ def _filter(query, level, filter_name, filter_list, filter_type):
     :param filter_type: 'exclude', 'include'
     :return: None
     """
-    try:
-        query_id_8 = query.query_id.hex[:8]
-    except AttributeError:
-        query_id_8 = query.query_id[:8]
+    query_id_8 = _query_id_8(query)
     if filter_type == "exclude":
         filtertype = True
     elif filter_type == "include":
@@ -272,15 +287,11 @@ def _prune_series_responses(
     )
     query.save()
     query_id = query.query_id
-    try:
-        query_id_8 = query_id.hex[:8]
-    except AttributeError:
-        query_id_8 = query_id[:8]
+    query_id_8 = _query_id_8(query)
     logger.debug(
         f"{query_id_8} Getting series and image level information and deleting series we can't use"
     )
 
-    study_rsp = query.dicomqrrspstudy_set.all()
     deleted_studies = {"RF": 0, "CT": 0, "SR": 0}
     kept_ct = {"SR": 0, "philips": 0, "toshiba": 0, "maybe_philips": 0}
     deleted_studies_filters = {"stationname_inc": 0, "stationname_exc": 0}
@@ -316,6 +327,8 @@ def _prune_series_responses(
             logger.debug(
                 f"{query_id_8} stationname_exc removed {deleted_studies_filters['stationname_exc']} studies"
             )
+
+    study_rsp = query.dicomqrrspstudy_set.all()
 
     for study in study_rsp:
         logger.debug(
@@ -411,7 +424,7 @@ def _prune_series_responses(
                 sr_type = _check_sr_type_in_study(
                     ae, remote, assoc, study, query, get_empty_sr
                 )
-            if "SR" and sr_type in ("RDSR", "ESR", "null_response"):
+            if sr_type in ("RDSR", "ESR", "null_response"):
                 logger.debug(
                     f"{query_id_8} {sr_type} in CT study, keep SR, delete all other series"
                 )
@@ -445,6 +458,65 @@ def _prune_series_responses(
                     )
                     study.delete()
                     deleted_studies["CT"] += 1
+
+        elif all_mods["NM"]["inc"] and (
+            any(
+                mod in study.get_modalities_in_study() for mod in all_mods["NM"]["mods"]
+            )
+        ):
+            study.modality = "NM"
+            study.save()
+            # SOP ids: RRDSR, PET Image, NM Image. We will try to
+            # get all of those (In case of NM and PT only the first
+            # object of the series). NM will not be taken unless
+            # nothing else present
+            nm_img_sop_ids = [
+                "1.2.840.10008.5.1.4.1.1.88.68",
+                "1.2.840.10008.5.1.4.1.1.128",
+                "1.2.840.10008.5.1.4.1.1.20",
+            ]
+            possible_modalities = {
+                nm_img_sop_ids[0]: ["SR"],
+                nm_img_sop_ids[1]: ["PT"],
+                nm_img_sop_ids[2]: ["NM"],
+            }
+
+            loaded_sop_classes = set()
+            for sop_class in nm_img_sop_ids:
+                logger.debug(f"{query_id_8} Now checking for {sop_class} available")
+                for load_mod in possible_modalities[sop_class]:
+                    loaded_sop_classes = loaded_sop_classes.union(
+                        _get_series_sop_class(
+                            ae, remote, assoc, study, query, get_empty_sr, load_mod
+                        )
+                    )
+                loaded_sop_classes.intersection_update(nm_img_sop_ids)
+                # Don't download NM images when anything else is available
+                if sop_class == nm_img_sop_ids[1] and len(loaded_sop_classes) > 0:
+                    break
+
+            series = study.dicomqrrspseries_set.all()
+            series.exclude(sop_class_in_series__in=nm_img_sop_ids).delete()
+            keep = series.filter(sop_class_in_series=nm_img_sop_ids[2]).first()
+            if keep is not None:
+                series.filter(
+                    Q(sop_class_in_series=nm_img_sop_ids[2]) &
+                    ~ Q(pk=keep.pk)
+                ).delete() # Only take the first NM imgage
+
+            if series.count() == 0:
+                logger.debug(
+                    f"{query_id_8} No usable NM information available, deleting study from query"
+                )
+                study.delete()
+                continue
+            logger.debug(f"{query_id_8} Found {loaded_sop_classes}. Keeping them all.")
+            for serie in series:
+                if serie.sop_class_in_series in nm_img_sop_ids[1:2]:  # PET or NM Images
+                    serie.image_level_move = (
+                        True  # We set this so only the first img of the series is moved
+                    )
+                    serie.save()
 
         elif all_mods["SR"]["inc"]:
             sr_type = _check_sr_type_in_study(
@@ -523,10 +595,7 @@ def _get_toshiba_dose_images(ae, remote, study_series, assoc, query):
     :return: None. Non-useful entries will be removed from database
     """
 
-    try:
-        query_id_8 = query.query_id.hex[:8]
-    except AttributeError:
-        query_id_8 = query.query_id[:8]
+    query_id_8 = _query_id_8(query)
 
     for index, series in enumerate(study_series):
         _query_images(
@@ -562,10 +631,7 @@ def _get_toshiba_dose_images(ae, remote, study_series, assoc, query):
 
 def _prune_study_responses(query, filters):
 
-    try:
-        query_id_8 = query.query_id.hex[:8]
-    except AttributeError:
-        query_id_8 = query.query_id[:8]
+    query_id_8 = _query_id_8(query)
 
     deleted_studies_filters = {
         "study_desc_inc": 0,
@@ -653,6 +719,49 @@ def _prune_study_responses(query, filters):
     return deleted_studies_filters
 
 
+def _get_series_sop_class(ae, remote, assoc, study, query, get_empty_sr, modality="SR"):
+    """
+    Checks for all SR (or other modality) Series what their SOP-Class is and stores it to their DB entry.
+
+    :param assoc: Current DICOM query object
+    :param study: study level C-Find response object in database
+    :param get_empty_sr: Whether to get SR series that return empty at image level query
+    :param modality: Basically a filter, the method will only check the SOP classes of series with this modality
+    :return: set of SOP classes found for SR/All series
+    """
+    query_id_8 = _query_id_8(query)
+    series_selected = study.dicomqrrspseries_set.filter(modality__exact=modality)
+    logger.debug(
+        f"{query_id_8} Check {modality} type: Number of series with {modality} {series_selected.count()}"
+    )
+
+    sop_classes = set()
+    for sr in series_selected:
+        _query_images(ae, remote, assoc, sr, query, initial_image_only=True)
+        images = sr.dicomqrrspimage_set.all()
+        if images.count() == 0:
+            if get_empty_sr and modality == "SR":
+                logger.debug(
+                    f"{query_id_8} Check SR type: studyuid: {study.study_instance_uid} "
+                    f"seriesuid: {sr.series_instance_uid}. Image level response returned null, "
+                    f"-emptysr=True so assuming SR is RDSR"
+                )
+                sop_classes.add("null_response")
+            logger.warning(
+                f"{query_id_8} Check SR type: Oops, series {sr.series_number} of study instance "
+                f"UID {study.study_instance_uid} returned null at image level query. Try '-emptysr' option?"
+            )
+            continue
+        sop_classes.add(images[0].sop_class_uid)
+        sr.sop_class_in_series = images[0].sop_class_uid
+        sr.save()
+        logger.debug(
+            f"{query_id_8} Check {modality} type: studyuid: {study.study_instance_uid}   "
+            f"seriesuid: {sr.series_instance_uid}  sop_classes: {sop_classes}"
+        )
+    return sop_classes
+
+
 # returns SR-type: RDSR or ESR; otherwise returns 'no_dose_report'
 def _check_sr_type_in_study(ae, remote, assoc, study, query, get_empty_sr):
     """Checks at an image level whether SR in study is RDSR, ESR, or something else (Radiologist's report for example)
@@ -669,40 +778,10 @@ def _check_sr_type_in_study(ae, remote, assoc, study, query, get_empty_sr):
     :param get_empty_sr: Whether to get SR series that return empty at image level query
     :return: string indicating SR type remaining in study
     """
-
-    try:
-        query_id_8 = query.query_id.hex[:8]
-    except AttributeError:
-        query_id_8 = query.query_id[:8]
-
+    query_id_8 = _query_id_8(query)
+    sop_classes = _get_series_sop_class(ae, remote, assoc, study, query, get_empty_sr)
     series_sr = study.dicomqrrspseries_set.filter(modality__exact="SR")
-    logger.debug(
-        f"{query_id_8} Check SR type: Number of series with SR {series_sr.count()}"
-    )
-    sop_classes = set()
-    for sr in series_sr:
-        _query_images(ae, remote, assoc, sr, query)
-        images = sr.dicomqrrspimage_set.all()
-        if images.count() == 0:
-            if get_empty_sr:
-                logger.debug(
-                    f"{query_id_8} Check SR type: studyuid: {study.study_instance_uid} "
-                    f"seriesuid: {sr.series_instance_uid}. Image level response returned null, "
-                    f"-emptysr=True so assuming SR is RDSR"
-                )
-                sop_classes.add("null_response")
-            logger.warning(
-                f"{query_id_8} Check SR type: Oops, series {sr.series_number} of study instance "
-                f"UID {study.study_instance_uid} returned null at image level query. Try '-emptysr' option?"
-            )
-            continue
-        sop_classes.add(images[0].sop_class_uid)
-        sr.sop_class_in_series = images[0].sop_class_uid
-        sr.save()
-        logger.debug(
-            f"{query_id_8} Check SR type: studyuid: {study.study_instance_uid}   "
-            f"seriesuid: {sr.series_instance_uid}   nrimages: {images.count()}   sop_classes: {sop_classes}"
-        )
+
     logger.debug(f"{query_id_8} Check SR type: sop_classes: {sop_classes}")
     if "1.2.840.10008.5.1.4.1.1.88.67" in sop_classes:
         for sr in series_sr:
@@ -772,13 +851,17 @@ def _get_responses(ae, remote, assoc, query, query_details):
 
 
 def _query_images(
-    ae, remote, assoc, seriesrsp, query, initial_image_only=False, msg_id=None
+    ae,
+    remote,
+    assoc,
+    seriesrsp,
+    query,
+    initial_image_only=False,
+    msg_id=None,
+    instance_number=None,
 ):
 
-    try:
-        query_id_8 = query.query_id.hex[:8]
-    except AttributeError:
-        query_id_8 = query.query_id[:8]
+    query_id_8 = _query_id_8(query)
 
     logger.debug(f"Query_id {query_id_8}: In _query_images")
 
@@ -793,6 +876,8 @@ def _query_images(
 
     if initial_image_only:
         d3.InstanceNumber = "1"
+    if instance_number is not None:
+        d3.InstanceNumber = str(instance_number)
     if not msg_id:
         msg_id = 1
 
@@ -827,6 +912,15 @@ def _query_images(
                     "Image level matching for this study is complete (there many be more)"
                 )
                 query.save()
+
+                # Some older systems start their instance numbers with 0. If == 1 does not deliver, retry with 0
+                if initial_image_only and instance_number is None:
+                    image_count = seriesrsp.dicomqrrspimage_set.count()
+                    if image_count == 0:
+                        _query_images(
+                            ae, remote, assoc, seriesrsp, query, True, msg_id, 0
+                        )
+
                 return
             if status.Status in (0xFF00, 0xFF01):
                 logger.debug(
@@ -894,10 +988,7 @@ def _query_series(ae, remote, assoc, d2, studyrsp, query):
     d2.SpecificCharacterSet = ""
     d2.SeriesTime = ""
 
-    try:
-        query_id_8 = query.query_id.hex[:8]
-    except AttributeError:
-        query_id_8 = query.query_id[:8]
+    query_id_8 = _query_id_8(query)
 
     logger.debug(f"{query_id_8} In _query_series")
     logger.debug(f"{query_id_8} series query is {d2}")
@@ -1004,10 +1095,7 @@ def _query_study(ae, remote, assoc, d, query, study_query_id):
     d.StationName = ""
     d.SpecificCharacterSet = ""
 
-    try:
-        query_id_8 = query.query_id.hex[:8]
-    except AttributeError:
-        query_id_8 = query.query_id[:8]
+    query_id_8 = _query_id_8(query)
 
     logger.debug(
         f"{query_id_8}/{study_query_id.hex[:8]} Study level association requested"
@@ -1122,10 +1210,7 @@ def _query_for_each_modality(all_mods, query, d, assoc, ae, remote):
     # If not, 1 query is sufficient to retrieve all relevant studies
     modality_matching = True
     modalities_returned = False
-    try:
-        query_id_8 = query.query_id.hex[:8]
-    except AttributeError:
-        query_id_8 = query.query_id[:8]
+    query_id_8 = _query_id_8(query)
 
     # query for all requested studies
     # if ModalitiesInStudy is not supported by the PACS set modality_matching to False and stop querying further
@@ -1234,6 +1319,39 @@ def _remove_duplicates_in_study_response(query, initial_count):
             f"{query_id_8} Unable to remove duplicates - works with PostgreSQL only"
         )
         return initial_count
+
+
+def _duplicate_ct_pet_studies(query, all_mods):
+    """
+    CT and Radipharmaceutical Studies (i.e PET/CT) often occur in the same study.
+    Even though it's the same study, it has completly different data and is stored as 2
+    studies with same id in openREM. We start this already here by duplicating studies which
+    contain both modalities.
+    """
+    study_rsp = query.dicomqrrspstudy_set.all()
+    for study in study_rsp:
+        has_ct = all_mods["CT"]["inc"] and "CT" in study.get_modalities_in_study()
+        has_nm = all_mods["NM"]["inc"] and (
+            any(
+                mod in study.get_modalities_in_study() for mod in all_mods["NM"]["mods"]
+            )
+        )
+        if has_ct and has_nm:
+            if "SR" in study.get_modalities_in_study():
+                base = ["SR"]
+            else:
+                base = []
+            study.set_modalities_in_study(base + ["CT"])
+            study.save()
+            study_nm = deepcopy(study)
+            study_nm.pk = None
+            study_nm.set_modalities_in_study(base + ["NM"])
+            study_nm.save()
+            for series in study.dicomqrrspseries_set.all():
+                series_nm = deepcopy(series)
+                series_nm.dicom_qr_rsp_study = study_nm
+                series_nm.pk = None
+                series_nm.save()
 
 
 @shared_task(
@@ -1428,6 +1546,7 @@ def qrscu(
         all_mods["MG"] = {"inc": False, "mods": ["MG"]}
         all_mods["FL"] = {"inc": False, "mods": ["RF", "XA"]}
         all_mods["DX"] = {"inc": False, "mods": ["DX", "CR", "PX"]}
+        all_mods["NM"] = {"inc": False, "mods": ["NM", "PT"]}
         all_mods["SR"] = {"inc": False, "mods": ["SR"]}
 
         # Reasoning regarding PET-CT: Some PACS allocate study modality PT, some CT, some depending on order received.
@@ -1448,12 +1567,15 @@ def qrscu(
             remote,
         )
 
-        # Now we have all our studies. Time to throw duplicates and away any we don't want
-
-        study_numbers = {"initial": query.dicomqrrspstudy_set.count()}
-        study_numbers["current"] = _remove_duplicates_in_study_response(
-            query, study_numbers["initial"]
+        study_count = query.dicomqrrspstudy_set.count()
+        removed_study = study_count - _remove_duplicates_in_study_response(
+            query, study_count
         )
+
+        _duplicate_ct_pet_studies(query, all_mods)
+        study_rsp = query.dicomqrrspstudy_set.all()
+        study_numbers = {"initial": query.dicomqrrspstudy_set.count()}
+        study_numbers["current"] = study_numbers["initial"] - removed_study
 
         # Performing some cleanup if modality_matching=True (prevents having to retrieve unnecessary series)
         # We are assuming that if remote matches on modality it will populate ModalitiesInStudy and conversely
@@ -1867,6 +1989,20 @@ def _move_req(my_ae, assoc, d, study_no, series_no, query):
     return True
 
 
+def _remove_duplicate_images(series):
+    """
+    Removes duplicate images from a series. Duplication can happen if
+    for some reason the images for the same series are queried
+    multiple times.
+    """
+    # distinct with specific fields only works on postgres. Therefore not used here.
+    seen = set()
+    for img in series.dicomqrrspimage_set.all():
+        if img.sop_instance_uid in seen:
+            img.delete()
+        seen.add(img.sop_instance_uid)
+
+
 def _move_if_established(ae, assoc, d, study_no, series_no, query, remote):
     if assoc.is_established:
         move = _move_req(ae, assoc, d, study_no, series_no, query)
@@ -2006,6 +2142,7 @@ def movescu(query_id):
                 logger.debug("_move_req launched")
                 if series.image_level_move:
                     d.QueryRetrieveLevel = "IMAGE"
+                    _remove_duplicate_images(series)
                     for image in series.dicomqrrspimage_set.all():
                         d.SOPInstanceUID = image.sop_instance_uid
                         logger.debug("Image-level move - d is: {0}".format(d))
@@ -2096,6 +2233,11 @@ def _create_parser():
         "-dx",
         action="store_true",
         help="Query for planar X-ray studies (includes panoramic X-ray studies). Cannot be used with -sr",
+    )
+    parser.add_argument(
+        "-nm",
+        action="store_true",
+        help="Query for nuclear medicine studies. Cannot be used with -sr",
     )
     parser.add_argument(
         "-f",
@@ -2196,6 +2338,8 @@ def _process_args(parser_args, parser):
         modalities += ["FL"]
     if parser_args.dx:
         modalities += ["DX"]
+    if parser_args.nm:
+        modalities += ["NM"]
     if parser_args.sr:
         if modalities:
             parser.error("The sr option can not be combined with any other modalities")
