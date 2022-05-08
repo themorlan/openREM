@@ -2820,7 +2820,7 @@ class UpgradeStatus(SingletonModel):
 
 class BackgroundTask(models.Model):
     uuid = models.TextField()
-    pid = models.IntegerField()
+    proc_id = models.IntegerField()
     task_type = models.TextField()
     info = models.TextField(blank=True, null=True)
     error = models.TextField(blank=True, null=True)

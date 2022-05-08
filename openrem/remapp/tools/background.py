@@ -76,7 +76,7 @@ def run_as_task(func, task_type, taskuuid, *args, **kwargs):
 
     b = BackgroundTask.objects.create(
         uuid=taskuuid,
-        pid=os.getpid(),
+        proc_id=os.getpid(),
         task_type=task_type,
         started_at=datetime.datetime.now(),
     )
