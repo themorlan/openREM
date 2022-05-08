@@ -137,7 +137,7 @@ def run_in_background(func, task_type, *args, **kwargs):
         if (
             p.exitcode is None
             and BackgroundTask.objects.filter(
-                Q(pid__exact=p.pid) & Q(complete__exact=False)
+                Q(proc_id__exact=p.pid) & Q(complete__exact=False)
             ).count()
             < 1
         ):
@@ -154,12 +154,12 @@ def terminate_background(task: BackgroundTask):
     try:
         if os.name == "nt":
             # On windows this signal is not implemented. The api will just use TerminateProcess instead.
-            os.kill(task.pid, signal.SIGTERM)
+            os.kill(task.proc_id, signal.SIGTERM)
         else:
-            os.kill(task.pid, signal.SIGTERM)
+            os.kill(task.proc_id, signal.SIGTERM)
             # Wait until the process has returned (potentially it already has when we call wait)
             # On  Windows the equivalent does not work, but seems to be blocking there anyway
-            os.waitpid(task.pid, 0)
+            os.waitpid(task.proc_id, 0)
 
     except (ProcessLookupError, OSError):
         pass
@@ -173,9 +173,9 @@ def _get_task_via_uuid(task_uuid):
     return BackgroundTask.objects.filter(uuid__exact=task_uuid).first()
 
 
-def _get_task_via_pid(pid):
+def _get_task_via_pid(proc_id):
     return BackgroundTask.objects.filter(
-        Q(pid__exact=pid) & Q(complete__exact=False)
+        Q(proc_id__exact=proc_id) & Q(complete__exact=False)
     ).first()
 
 
