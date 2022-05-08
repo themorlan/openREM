@@ -68,7 +68,7 @@ Diagram of system components
       web_browser -> webserver [dir=both label="via user-requests\land Ajax\l" fontsize=8 fontname="Courier" tooltip="Ajax used to retrieve chart data"];
       modality -> conquest [label="via modality\lconfiguration\l" fontsize=8 fontname="Courier"];
       pacs -> conquest [label="via OpenREM\lquery-retrieve\l" fontsize=8 fontname="Courier"];
-      pacs -> python_django [style=dotted dir=both];
+      // pacs -> python_django [style=dotted dir=both];
 
       // Force the web browser, blank node, modality and pacs to be on the same level in a specific order
       {rank=same; web_browser->blank_node_2->modality->pacs [style=invis]; rankdir=LR;};
