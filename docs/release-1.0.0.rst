@@ -11,7 +11,7 @@ Headline changes
 * Python 3
 * Django 2.2
 * Docker
-* Celery removed from requirements
+* Celery, Flower and RabbitMQ removed from requirements
 
 * Performing physician added to standard fluoroscopy exports (:issue:`840`)
 * Station name checked at series level only, option to check at study level only instead (:issue:`772`)

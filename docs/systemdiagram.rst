@@ -21,12 +21,15 @@ Diagram of system components
          webserver [label="Web server&sup1;" fontname="Helvetica" tooltip="Serve web pages to the user" shape="box"];
          python_django [label="OpenREM\nDjango app" fontname="Helvetica" tooltip="Python web framework" shape="box"];
          database [label="Database&sup3;" fontname="Helvetica" tooltip="Relational database management system" shape="parallelogram"];
+         skin_dose_map_data [label="Skin dose map\ndata calculation,\nstorage, retrieval" fontname="Helvetica" tooltip="Calculate, store and retrieve skin dose map data" shape="parallelogram"];
          server_media_folder [label="Server file storage\n(Media Home folder)" fontname="Helvetica" tooltip="File storage on the server" shape="parallelogram"];
          data_export [label="Data export to\nlocal file system" fontname="Helvetica" tooltip="Files are made available to the user via a web page URL" shape="box"];
 
          // Define the links between the data storage, display and retrieval
          webserver -> python_django [dir=both];
          python_django -> database [dir=both label="via psycopg2\nPython adapter" fontsize=8 fontname="Courier"];
+         skin_dose_map_data -> server_media_folder [dir=both];
+         skin_dose_map_data -> python_django [style=dotted dir=both];
          data_export -> server_media_folder;
          data_export -> python_django [style=dotted dir=both];
 
@@ -47,6 +50,8 @@ Diagram of system components
 
          // Define the links between the two groups
          populate_database -> database
+         python_django -> populate_database [dir=back]
+         calc_skin_dose_map -> skin_dose_map_data [style=dotted label="Yes" fontcolor=darkgreen fontsize=8 fontname="Courier"]
 
          // Force certain nodes to be on the same level so that the diagram looks good (hopefully)
          {rank=same; webserver conquest};
