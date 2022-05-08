@@ -17,6 +17,9 @@ This install is based on Ubuntu 18.04 using:
 
 The instructions should work for Ubuntu 20.04 too, references to bionic will be focal instead.
 
+Initial prep
+^^^^^^^^^^^^
+
 **Apt sources**
 
 We will need the ``universe`` repository enabled. Check first:
