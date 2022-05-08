@@ -49,7 +49,7 @@ Diagram of system components
          populate_database -> calc_skin_dose_map;
 
          // Define the links between the two groups
-         populate_database -> database
+         // populate_database -> database
          python_django -> populate_database [dir=back]
          calc_skin_dose_map -> skin_dose_map_data [style=dotted label="Yes" fontcolor=darkgreen fontsize=8 fontname="Courier"]
 
