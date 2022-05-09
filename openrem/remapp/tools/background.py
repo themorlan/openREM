@@ -295,6 +295,7 @@ def record_task_error_exit(error_msg):
         b.error = error_msg
         b.save()
 
+
 def record_task_related_query(study_instance_uid):
     """
     Tries to find the related DicomQRRspStudy object
@@ -304,7 +305,7 @@ def record_task_related_query(study_instance_uid):
     part of a query.
     Since this actually just takes the latest query if the user
     runs imports manually via script it may in principle wrongly
-    associtate.
+    associate.
     """
     b = get_current_task()
     if b is not None:
