@@ -53,6 +53,7 @@ from remapp.models import (  # pylint: disable=wrong-import-order, wrong-import-
 )
 from openrem.remapp.tools.background import (
     get_current_task,
+    record_task_error_exit,
     run_in_background,
     wait_task,
 )
@@ -772,6 +773,7 @@ def _get_responses(ae, remote, assoc, query, query_details):
     query.stage = msg
     query.failed = True
     query.save()
+    record_task_error_exit(msg)
     sys.exit()
 
 
@@ -2289,11 +2291,11 @@ def _process_args(parser_args, parser):
                 qr_node_up, store_node_up
             )
         )
-        sys.exit(
+        record_task_error_exit(
             "Query-retrieve aborted: DICOM nodes not ready. QR SCP echo is {0}, Store SCP echo is {1}".format(
                 qr_node_up, store_node_up
-            )
-        )
+            ))
+        sys.exit()
 
     return_args = {
         "qr_id": parser_args.qr_id,

@@ -36,13 +36,12 @@ import signal
 import sys
 import uuid
 from multiprocessing import Process
-import datetime
 
 import django
 from django import db
 from django.db.models import Q
 from django.db import transaction
-import random
+from django.utils import timezone
 
 # Setup django. This is required on windows, because process is created via spawn and
 # django will not be initialized anymore then (On Linux this will only be executed once)
@@ -84,7 +83,7 @@ def run_as_task(func, task_type, taskuuid, *args, **kwargs):
                 uuid=taskuuid,
                 proc_id=os.getpid(),
                 task_type=task_type,
-                started_at=datetime.datetime.now(),
+                started_at=timezone.now(),
             )
         else:
             if (
@@ -92,7 +91,7 @@ def run_as_task(func, task_type, taskuuid, *args, **kwargs):
             ):  # Can happen when task was aborted before the process started
                 return b
             b.proc_id = os.getpid()
-            b.started_at = datetime.datetime.now()
+            b.started_at = timezone.now()
         b.save()
 
     try:
@@ -166,7 +165,7 @@ def run_in_background_with_limits(
                             uuid=taskuuid,
                             proc_id=0,
                             task_type=task_type,
-                            started_at=datetime.datetime(1, 1, 1),
+                            started_at=timezone.now(),
                         )
                         break
             time.sleep(0.3)

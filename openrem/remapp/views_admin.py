@@ -36,7 +36,7 @@ from __future__ import absolute_import
 import os
 import json
 import logging
-from datetime import datetime, timedelta
+from datetime import timedelta
 import requests
 from builtins import map  # pylint: disable=redefined-builtin
 
@@ -56,6 +56,7 @@ from django.urls import reverse_lazy
 from django.utils.safestring import mark_safe
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.utils import timezone
 
 from .extractors.extract_common import populate_rf_delta_weeks_summary
 from .forms import (
@@ -1906,6 +1907,8 @@ def _create_admin_dict(request):
 @login_required
 def display_tasks(request):
     """View to show tasks. Content generated using AJAX"""
+    #from remapp.models import GeneralStudyModuleAttr
+    #GeneralStudyModuleAttr.objects.all().delete()
     admin = _create_admin_dict(request)
     template = "remapp/task_admin.html"
     return render(request, template, {"admin": admin})
@@ -1918,7 +1921,7 @@ def tasks(request, stage=None):
         recent_tasks = []
         older_tasks = []
         tasks = BackgroundTask.objects.all()
-        datetime_now = datetime.now()
+        datetime_now = timezone.now()
 
         for task in tasks:
             recent_time_delta = timedelta(hours=6)
