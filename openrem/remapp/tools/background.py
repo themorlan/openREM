@@ -82,7 +82,7 @@ def run_as_task(func, task_type, taskuuid, *args, **kwargs):
         if b is None:
             b = BackgroundTask.objects.create(
                 uuid=taskuuid,
-                pid=os.getpid(),
+                proc_id=os.getpid(),
                 task_type=task_type,
                 started_at=datetime.datetime.now(),
             )
@@ -91,7 +91,7 @@ def run_as_task(func, task_type, taskuuid, *args, **kwargs):
                 b.complete
             ):  # Can happen when task was aborted before the process started
                 return b
-            b.pid = os.getpid()
+            b.proc_id = os.getpid()
             b.started_at = datetime.datetime.now()
         b.save()
 
@@ -164,7 +164,7 @@ def run_in_background_with_limits(
                     if ok:
                         BackgroundTask.objects.create(
                             uuid=taskuuid,
-                            pid=0,
+                            proc_id=0,
                             task_type=task_type,
                             started_at=datetime.datetime(1, 1, 1),
                         )
@@ -184,7 +184,7 @@ def run_in_background_with_limits(
         if (
             p.exitcode is None
             and BackgroundTask.objects.filter(
-                Q(pid__exact=p.pid) & Q(complete__exact=False)
+                Q(proc_id__exact=p.pid) & Q(complete__exact=False)
             ).count()
             < 1
         ):
@@ -214,16 +214,16 @@ def terminate_background(task: BackgroundTask):
     task.error = "Forcefully aborted"
     task.save()
 
-    if task.pid > 0:
+    if task.proc_id > 0:
         try:
             if os.name == "nt":
                 # On windows this signal is not implemented. The api will just use TerminateProcess instead.
-                os.kill(task.pid, signal.SIGTERM)
+                os.kill(task.proc_id, signal.SIGTERM)
             else:
-                os.kill(task.pid, signal.SIGTERM)
+                os.kill(task.proc_id, signal.SIGTERM)
                 # Wait until the process has returned (potentially it already has when we call wait)
                 # On  Windows the equivalent does not work, but seems to be blocking there anyway
-                os.waitpid(task.pid, 0)
+                os.waitpid(task.proc_id, 0)
 
         except (ProcessLookupError, OSError):
             pass
@@ -244,9 +244,9 @@ def _get_task_via_uuid(task_uuid):
     return BackgroundTask.objects.filter(uuid__exact=task_uuid).first()
 
 
-def _get_task_via_pid(pid):
+def _get_task_via_pid(process_id):
     return BackgroundTask.objects.filter(
-        Q(pid__exact=pid) & Q(complete__exact=False)
+        Q(proc_id__exact=process_id) & Q(complete__exact=False)
     ).first()
 
 
