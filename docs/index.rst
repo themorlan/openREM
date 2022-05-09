@@ -41,6 +41,7 @@ Contents:
     code
     releasenotes
     systemdiagram
+    celery
 
 ******************
 Indices and tables

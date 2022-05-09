@@ -10,20 +10,19 @@ remaining sheets are specific to each series protocol, in alphabetical
 order, with one series per line. If one study has three series with the
 same protocol name, each one has a line of its own.
 
-.. autotask:: remapp.exports.rf_export.rfxlsx
-.. autotask:: remapp.exports.ct_export.ctxlsx
-.. autotask:: remapp.exports.dx_export.dxxlsx
-.. autotask:: remapp.exports.mg_export.exportMG2excel
+.. autofunction:: remapp.exports.rf_export.rfxlsx
+.. autofunction:: remapp.exports.ct_export.ctxlsx
+.. autofunction:: remapp.exports.dx_export.dxxlsx
+.. autofunction:: remapp.exports.mg_export.exportMG2excel
 
 Single sheet CSV exports
 ++++++++++++++++++++++++
    
-.. autotask:: remapp.exports.rf_export.exportFL2excel
-.. autotask:: remapp.exports.ct_export.ct_csv
-.. autotask:: remapp.exports.mg_export.exportMG2excel
-.. autotask:: remapp.exports.dx_export.exportDX2excel
+.. autofunction:: remapp.exports.rf_export.exportFL2excel
+.. autofunction:: remapp.exports.ct_export.ct_csv
+.. autofunction:: remapp.exports.dx_export.exportDX2excel
 
 Specialised csv exports - NHSBSP formatted mammography export
 -------------------------------------------------------------
 
-.. autotask:: remapp.exports.mg_csv_nhsbsp.mg_csv_nhsbsp
+.. autofunction:: remapp.exports.mg_csv_nhsbsp.mg_csv_nhsbsp

@@ -81,9 +81,6 @@ When you have finished the query parameters, click ``Submit``
 Review and retrieve
 ===================
 
-The progress of the query is reported on the right hand side. If nothing happens, ask the administrator to check if the
-celery queue is running.
-
 Once all the responses have been purged of unwanted modalities, study descriptions or study UIDs, the number of studies
 of each type will be displayed and a button appears. Click ``Retrieve`` to request the remote server send the selected
 objects to your selected Store node. This will be based on your original selection - changing the node on the left hand

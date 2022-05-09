@@ -2104,7 +2104,6 @@ def _fake_query_each_mod(all_mods, query, d, assoc, ae, remote):
     rsp1.set_modalities_in_study(["PT", "CT", "SR"])
     rsp1.modality = None
     rsp1.save()
-    print("Finished fake _query_for_each_modality")
     return True, True
 
 

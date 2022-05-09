@@ -1,6 +1,6 @@
-######################################
-Daemonising Celery and Flower on Linux
-######################################
+###############################################
+Daemonising Celery and Flower on Linux - Legacy
+###############################################
 
 Guides to daemonising Celery can be found in the Celery documentation at
 http://docs.celeryproject.org/en/latest/userguide/daemonizing.html.
@@ -112,3 +112,10 @@ Now register, set to start on boot, and start the services:
     sudo systemctl start celery-openrem.service
     sudo systemctl enable flower-openrem.service
     sudo systemctl start flower-openrem.service
+
+Enable RadbbitMQ queue management interface
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code-block:: console
+
+    $ sudo rabbitmq-plugins enable rabbitmq_management
