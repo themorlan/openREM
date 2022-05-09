@@ -13,4 +13,4 @@ Configuration and administration
     i_deletestudies
     i_patientsize
     i_fluoro_high_dose_alerts
-    rabbitmq_management
+    task-management

@@ -183,7 +183,8 @@ def _mg_get_series_data(event):
 
 
 def exportMG2excel(filterdict, pid=False, name=None, patid=None, user=None, xlsx=False):
-    """Export filtered mammography database data to a single-sheet CSV file or a multi sheet xlsx file.
+    """
+    Export filtered mammography database data to a single-sheet CSV file or a multi sheet xlsx file.
 
     :param filterdict: Queryset of studies to export
     :param pid: does the user have patient identifiable data permission

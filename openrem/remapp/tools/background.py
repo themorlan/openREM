@@ -59,10 +59,10 @@ from remapp.models import BackgroundTask
 def run_as_task(func, task_type, taskuuid, *args, **kwargs):
     """
     Runs func as a task. (Which means it runs normally, but a BackgroundTask
-    object is created and hence the execution as well as occured errors are
+    object is created and hence the execution as well as occurred errors are
     documented and visible to the user).
 
-    As a note: This is used as a helper for run_in_background. However in
+    As a note: This is used as a helper for run_in_background. However, in
     principle it could also be used to run any function in sequential
     for which we would like to document that it was executed. (Has some not so nice
     parts, especially that user can terminate a bunch of sequentially running tasks)
@@ -100,7 +100,7 @@ def run_as_task(func, task_type, taskuuid, *args, **kwargs):
     except Exception:  # Literally anything could happen here
         b = _get_task_via_uuid(taskuuid)
         b.complete = True
-        b.completed_successfull = False
+        b.completed_successfully = False
         b.error = traceback.format_exc()
         b.save()
         return b
@@ -108,7 +108,7 @@ def run_as_task(func, task_type, taskuuid, *args, **kwargs):
     b = _get_task_via_uuid(taskuuid)
     if not b.complete:
         b.complete = True
-        b.completed_successfull = True
+        b.completed_successfully = True
         b.save()
     return b
 
@@ -132,7 +132,7 @@ def run_in_background_with_limits(
     amount of time, hence it should never be used like that on the webinterface. Use
     run_in_background there.
 
-    :param fun: The function to run. Note that you should set the status of the task yourself
+    :param func: The function to run. Note that you should set the status of the task yourself
         and mark as completed when exiting yourself e.g. via sys.exit(). Assuming the function
         returns normally on success or returns with an exception on error, the status of
         the BackgroundTask object will be set correctly.
@@ -143,8 +143,8 @@ def run_in_background_with_limits(
     :param num_of_task_type: A dictionary from str to int, where key should be some used
         task_type. Will wait until there are less active tasks of task_type than
         specified in the value of the dict for that key.
-    :param args: Positional arguments. Passed to fun.
-    :param kwargs:  Keywords arguments. Passed to fun.
+    :param args: Positional arguments. Passed to func.
+    :param kwargs:  Keywords arguments. Passed to func.
     :returns: The BackgroundTask object.
     """
     taskuuid = str(uuid.uuid4())
@@ -209,7 +209,7 @@ def terminate_background(task: BackgroundTask):
     """
     Terminate a background task by force. Sets complete=True on the task object.
     """
-    task.completed_successfull = False
+    task.completed_successfully = False
     task.complete = True
     task.error = "Forcefully aborted"
     task.save()
@@ -292,6 +292,6 @@ def record_task_error_exit(error_msg):
     b = get_current_task()
     if b is not None:
         b.complete = True
-        b.completed_successfull = False
+        b.completed_successfully = False
         b.error = error_msg
         b.save()

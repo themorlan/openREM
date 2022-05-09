@@ -9,12 +9,12 @@ Query-retrieve module
 Query function
 ==============
 
-..  autotask:: openrem.remapp.netdicom.qrscu.qrscu
+..  autofunction:: openrem.remapp.netdicom.qrscu.qrscu
 
 Move function
 =============
 
-..  autotask:: openrem.remapp.netdicom.qrscu.movescu
+..  autofunction:: openrem.remapp.netdicom.qrscu.movescu
 
 openrem_qr.py script
 ====================

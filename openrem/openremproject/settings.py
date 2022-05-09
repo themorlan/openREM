@@ -38,10 +38,6 @@ JS_REVERSE_OUTPUT_PATH = os.path.join(STATIC_ROOT, "js", "django_reverse")
 VIRTUAL_DIRECTORY = os.environ.get("VIRTUAL_DIRECTORY", default="")
 FIXTURES_DIRS = os.path.join(BASE_DIR, "/remapp/fixtures")
 
-
-FLOWER_PORT = int(os.environ.get("FLOWER_PORT", default=5555))
-FLOWER_URL = os.environ.get("FLOWER_URL", default="http://localhost")
-
 ROOT_PROJECT = os.path.join(os.path.split(__file__)[0], "..")
 
 # Local time zone for this installation. Choices can be found here:

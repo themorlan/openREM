@@ -38,8 +38,8 @@ Reload the containers:
     $ docker-compose down
     $ docker-compose up -d
 
-Non-Docker Linux install
-------------------------
+Non-Docker install
+------------------
 
 Change the same settings as for the Docker install above:
 

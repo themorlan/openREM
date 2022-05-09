@@ -72,8 +72,6 @@ For native DICOM store nodes, you need to open the ``Advanced - test/development
    Figure 2: DICOM Store SCP advanced configuration
 
 * Control the server using OpenREM: this checkbox will enable OpenREM to create and control the node
-* Auto-start the server using celery beat: if checked, and if :ref:`celery-beat` is running, then OpenREM will attempt
-  to start the store node whenever it finds it not to be running.
 
 
 Third-party DICOM store node for scripted import to OpenREM
@@ -115,11 +113,6 @@ Controlling native Store SCP nodes
 
 If a native Store SCP node is not running, then a ``Start server`` button will be presented at the bottom right. If it
 is running, this buttin will change to ``Stop server``, and the ``Delete`` button will become inactive.
-
-If the node is configured to be auto-started, and if :ref:`celery-beat` is running, then each minute if the server is
-not started Celery will try to start the node. If you intend to stop the node for some reason, modify the configuration
-so that auto-start is not selected, then stop the server.
-
 
 
 ****************************************************************
