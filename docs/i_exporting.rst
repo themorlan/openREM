@@ -84,8 +84,6 @@ Nuclear medicine does not have a concept like different irradiation events. Ther
 it the summary dose information does not show protocols, and the excel export has individual sheets per study description
 instead of per protocol names. 
 
-An export for :ref:`NHSBSP_dose_audit` does not exist at the moment.
-
 Exports page
 ------------
 

@@ -1,11 +1,15 @@
 .wy-nav-content {
   max-width: 1000px;
 }
-.function, .task, .class {
+
+.function,
+.task,
+.class {
   padding-bottom: 10px;
   padding-top: 20px;
   border-bottom: 1px solid black;
 }
+
 .class .class {
   border-bottom: 1px solid transparent;
 }
