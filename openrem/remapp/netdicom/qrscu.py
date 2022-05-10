@@ -2037,7 +2037,8 @@ def movescu(query_id):
 
             logger.debug("Query_id {0}: Releasing move association".format(query_id))
         else:
-            record_task_error_exit("Something went wrong, cannot move further. Aborting. (Probably lost connection for a short time)")
+            record_task_error_exit("Something went wrong, cannot move further. "
+                "Aborting. (Probably lost connection for a short time)")
             return
 
     elif assoc.is_rejected:

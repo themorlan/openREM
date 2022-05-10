@@ -2198,7 +2198,7 @@ def _rdsr2db(dataset):
                     "Import match on Study Instance UID {0} and object SOP Instance UID {1}. "
                     "Will not import.".format(study_uid, new_sop_instance_uid)
                 )
-                record_task_error_exit(f"Already in db")
+                record_task_error_exit("Already in db")
                 return
             # Either we've not seen it before, or it wasn't recorded when we did.
             # Next find the event UIDs in the RDSR being imported
