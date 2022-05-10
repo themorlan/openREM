@@ -270,7 +270,7 @@ function OnStoredInstance(instanceId)
     os.execute(python_executable .. ' ' .. python_scripts_path .. import_script .. ' ' .. temp_file_path .. ' &')
 
     -- Do not remove the dicom file. It is read async (so probably still needed and if it should be deleted after 
-    -- import or not should be choosen by the user)
+    -- import or not should be chosen by the user)
     -- os.remove(temp_file_path)
 
     -- Remove study from Orthanc

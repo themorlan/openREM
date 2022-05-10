@@ -68,9 +68,9 @@ def run_as_task(func, task_type, num_proc, num_of_task_type, taskuuid, *args, **
 
     Note that waiting here if it is ok to start is actually quite ugly, since running a lot
     of processes with conditions will use a lot of RAM without any use. This however is the
-    simplest possible fix for making the run_in_background_with_limits non blocking, which
+    simplest possible fix for making the run_in_background_with_limits non-blocking, which
     is a requirement for the docker import. A nice update would be to either have 1 process
-    managing the execution of the other processes, or at least do this based on signaling
+    managing the execution of the other processes, or at least do this based on signalling
     from the exiting processes instead of polling.
 
     :param func: The function to run
@@ -78,7 +78,7 @@ def run_as_task(func, task_type, num_proc, num_of_task_type, taskuuid, *args, **
     :param num_proc: The maximum number of processes that should be executing
     :param num_of_task_type: The maximum number of processes for multiple tasks type which are allowed to
         run at the same time
-    :param taskuuid: An uuid which will be used as uuid of the BackgroundTask object. If None will generate one itself
+    :param taskuuid: An uuid which will be used as uuid of the BackgroundTask object. If None, will generate one itself
     :args: Args to func
     :kwargs: Args to func
     :return: The created BackgroundTask object
