@@ -2826,4 +2826,4 @@ class BackgroundTask(models.Model):
     error = models.TextField(blank=True, null=True)
     completed_successfully = models.BooleanField(default=False)
     complete = models.BooleanField(default=False)
-    started_at = models.DateTimeField()
+    started_at = models.DateTimeField(blank=True, null=True)
