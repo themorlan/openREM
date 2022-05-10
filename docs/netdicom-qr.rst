@@ -331,7 +331,7 @@ DICOM query summary
 Either by clicking on the "Go to query details page" when executing a query or by going to 
 Config > DICOM query summary you can review the current and older queries, check which files
 were found on the remote, which  studies/files were ignored and why, 
-and review the result of importing files which were ``retrieved``.
+and review the result of importing files which were retrieved.
 
 .. figure:: img/dicomQueryDetailsPage.png
   :target: _images/dicomQueryDetailsPage.png
@@ -342,7 +342,7 @@ and review the result of importing files which were ``retrieved``.
 By clicking on the studies of a query you can review the discovered DICOM series as well as
 to some extent the individual files that are part of those series. 
 If no import tasks are shown, even though the study is marked for downloading, that probably means
-that the query has not been ``retrived``, respectively was aborted before completion.
+that the query has not been retrieved, i.e. was aborted before completion.
 In the example below the query was run with the setting to not ignore duplicates, 
 therefore the study was still downloaded but then thrown away by the import.
 
