@@ -2032,7 +2032,7 @@ def _generalstudymoduleattributes(dataset, g):
     if not g.study_date:
         logger.error(
             f"Study UID {g.study_instance_uid} of modality {get_value_kw('ManufacturerModelName', dataset)} has no date"
-            f" information which is needed in the interface - date has been set to 1900!"
+            " information which is needed in the interface - date has been set to 1900!"
         )
         g.study_date = make_date("19000101")
     g.study_time = get_time("StudyTime", dataset)
@@ -2257,7 +2257,7 @@ def _rdsr2db(dataset):
                     record_sop_instance_uid(
                         existing_study_uid_match[study_index], new_sop_instance_uid
                     )
-                    record_task_error_exit(f"Already in db")
+                    record_task_error_exit("Already in db")
                     return
                 elif new_event_uids.issubset(uid_list):
                     # New RDSR has the same but fewer events than existing one
@@ -2268,7 +2268,7 @@ def _rdsr2db(dataset):
                     record_sop_instance_uid(
                         existing_study_uid_match[study_index], new_sop_instance_uid
                     )
-                    record_task_error_exit(f"Already in db")
+                    record_task_error_exit("Already in db")
                     return
                 elif uid_list.issubset(new_event_uids):
                     existing_study_uid_match[study_index].delete()
