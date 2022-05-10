@@ -86,7 +86,8 @@ of each type will be displayed and a button appears. Click ``Retrieve`` to reque
 objects to your selected Store node. This will be based on your original selection - changing the node on the left hand
 side at this stage will have no effect.
 
-The progress of the retrieve is displayed in the same place until the retrieve is complete.
+The progress of the retrieve is displayed in the same place until the retrieve is complete. You can also see the query
+and start the ``Retrieve`` in the  :ref:`qrquerysummary`.
 
 .. _qrcommandlineinterface:
 
@@ -313,11 +314,52 @@ Once each series level response is processed:
 * If the study no longer has any series level responses the study level response is deleted.
 
 
+.. _qrquerysummary:
+
+*******************
+DICOM query summary
+*******************
+
+.. figure:: img/configDicomQuerySummary.png
+   :target: _images/configDicomQuerySummary.png
+   :figwidth: 50%
+   :align: right
+   :alt: Go to query summary
+
+   Figure 3: Go to query summary
+
+Either by clicking on the "Go to query details page" when executing a query or by going to 
+Config > DICOM query summary you can review the current and older queries, check which files
+were found on the remote, which  studies/files were ignored and why, 
+and review the result of importing files which were ``retrieved``.
+
+.. figure:: img/dicomQueryDetailsPage.png
+  :target: _images/dicomQueryDetailsPage.png
+  :alt: The query details page
+
+  Figure 4: The query details page
+
+By clicking on the studies of a query you can review the discovered DICOM series as well as
+to some extent the individual files that are part of those series. 
+If no import tasks are shown, even though the study is marked for downloading, that probably means
+that the query has not been ``retrived``, respectively was aborted before completion.
+In the example below the query was run with the setting to not ignore duplicates, 
+therefore the study was still downloaded but then thrown away by the import.
+
+.. figure:: img/dicomQueryStudyDetailsPage.png
+  :target: _images/dicomQueryStudyDetailsPage.png
+  :alt: The query study details page
+
+  Figure 5: The query study details page
+
 .. _qrtroubleshooting:
 
 *******************************
 Troubleshooting: openrem_qr.log
 *******************************
+
+Note that if a query does not work as expected the first location to check should be the :ref:`qrquerysummary`
+and the :doc:`task-management`. However if that does not clarify the issue looking at the logs will be a good idea.
 
 If the default logging settings haven't been changed then there will be a log files to refer to. The default
 location is within your ``logs`` folder:
