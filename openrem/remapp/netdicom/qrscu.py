@@ -1910,9 +1910,11 @@ def movescu(query_id):
     try:
         query = DicomQuery.objects.get(query_id=query_id)
     except ObjectDoesNotExist:
+        msg = "Move called with invalid query_id {0}. Move abandoned.".format(query_id)
         logger.warning(
-            "Move called with invalid query_id {0}. Move abandoned.".format(query_id)
+            msg
         )
+        record_task_error_exit(msg)
         return 0
     query.move_complete = False
     query.failed = False
@@ -2035,6 +2037,7 @@ def movescu(query_id):
 
             logger.debug("Query_id {0}: Releasing move association".format(query_id))
         else:
+            record_task_error_exit("Something went wrong, cannot move further. Aborting. (Probably lost connection for a short time)")
             return
 
     elif assoc.is_rejected:
@@ -2046,6 +2049,7 @@ def movescu(query_id):
                 remote["host"], remote["port"], remote["aet"], msg
             )
         )
+        record_task_error_exit(msg)
     elif assoc.is_aborted:
         msg = "Association aborted or never connected"
         logger.warning(
@@ -2053,6 +2057,7 @@ def movescu(query_id):
                 remote["host"], remote["port"], remote["aet"], msg
             )
         )
+        record_task_error_exit(msg)
     else:
         msg = "Association Failed"
         logger.warning(
@@ -2060,6 +2065,7 @@ def movescu(query_id):
                 remote["host"], remote["port"], remote["aet"], msg
             )
         )
+        record_task_error_exit(msg)
     query.move_summary = msg
     query.save()
 
