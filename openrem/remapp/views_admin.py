@@ -1907,8 +1907,6 @@ def _create_admin_dict(request):
 @login_required
 def display_tasks(request):
     """View to show tasks. Content generated using AJAX"""
-    #from remapp.models import GeneralStudyModuleAttr
-    #GeneralStudyModuleAttr.objects.all().delete()
     admin = _create_admin_dict(request)
     template = "remapp/task_admin.html"
     return render(request, template, {"admin": admin})
@@ -1920,14 +1918,17 @@ def tasks(request, stage=None):
         active_tasks = []
         recent_tasks = []
         older_tasks = []
-        tasks = BackgroundTask.objects.all()
+        tasks = BackgroundTask.objects.order_by("started_at").all()
         datetime_now = timezone.now()
 
         for task in tasks:
             recent_time_delta = timedelta(hours=6)
             if not task.complete:
                 active_tasks.append(task)
-            elif datetime_now - recent_time_delta < task.started_at:
+            elif (
+                task.started_at is not None
+                and datetime_now - recent_time_delta < task.started_at
+            ):
                 recent_tasks.append(task)
             else:
                 older_tasks.append(task)

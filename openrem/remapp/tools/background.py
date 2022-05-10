@@ -55,7 +55,7 @@ django.setup()
 from remapp.models import BackgroundTask, DicomQuery
 
 
-def run_as_task(func, task_type, taskuuid, *args, **kwargs):
+def run_as_task(func, task_type, num_proc, num_of_task_type, taskuuid, *args, **kwargs):
     """
     Runs func as a task. (Which means it runs normally, but a BackgroundTask
     object is created and hence the execution as well as occurred errors are
@@ -66,8 +66,18 @@ def run_as_task(func, task_type, taskuuid, *args, **kwargs):
     for which we would like to document that it was executed. (Has some not so nice
     parts, especially that user can terminate a bunch of sequentially running tasks)
 
+    Note that waiting here if it is ok to start is actually quite ugly, since running a lot
+    of processes with conditions will use a lot of RAM without any use. This however is the
+    simplest possible fix for making the run_in_background_with_limits non blocking, which
+    is a requirement for the docker import. A nice update would be to either have 1 process
+    managing the execution of the other processes, or at least do this based on signaling
+    from the exiting processes instead of polling.
+
     :param func: The function to run
     :param task_type: A string documenting what kind of task this is
+    :param num_proc: The maximum number of processes that should be executing
+    :param num_of_task_type: The maximum number of processes for multiple tasks type which are allowed to
+        run at the same time
     :param taskuuid: An uuid which will be used as uuid of the BackgroundTask object. If None will generate one itself
     :args: Args to func
     :kwargs: Args to func
@@ -76,22 +86,39 @@ def run_as_task(func, task_type, taskuuid, *args, **kwargs):
     if taskuuid is None:
         taskuuid = str(uuid.uuid4())
 
-    with transaction.atomic():
-        b = BackgroundTask.objects.filter(uuid=taskuuid).first()
-        if b is None:
-            b = BackgroundTask.objects.create(
-                uuid=taskuuid,
-                proc_id=os.getpid(),
-                task_type=task_type,
-                started_at=timezone.now(),
-            )
-        else:
-            if (
-                b.complete
-            ):  # Can happen when task was aborted before the process started
-                return b
-            b.proc_id = os.getpid()
-            b.started_at = timezone.now()
+    b = BackgroundTask.objects.create(
+        uuid=taskuuid,
+        proc_id=os.getpid(),
+        task_type=task_type,
+        started_at=None,
+    )
+    b.save()
+
+    import time
+
+    if num_proc > 0 or len(num_of_task_type) > 0:
+        while True:
+            with transaction.atomic():
+                qs = BackgroundTask.objects.filter(
+                    Q(complete__exact=False) & Q(started_at__isnull=False)
+                )
+                a = qs.count()
+                if num_proc == 0 or a < num_proc:
+                    ok = True
+                    for k, v in num_of_task_type.items():
+                        a = qs.filter(
+                            Q(task_type__exact=k) & Q(started_at__isnull=False)
+                        ).count()
+                        ok = ok and a < v
+                        if not ok:
+                            break
+                    if ok:
+                        b.started_at = timezone.now()
+                        b.save()
+                        break
+            time.sleep(0.3)
+    else:
+        b.started_at = timezone.now()
         b.save()
 
     try:
@@ -126,10 +153,7 @@ def run_in_background_with_limits(
     complete flag will be set to True.
     This function cannot be used with Django Tests, unless they use TransactionTestCase
     instead of TestCase (which is far slower, so use with caution).
-    num_proc and num_of_task_type can be used to give conditions on the start. Note that
-    using arguments other than 0 resp. {} can make this function block for an unspecified
-    amount of time, hence it should never be used like that on the webinterface. Use
-    run_in_background there.
+    num_proc and num_of_task_type can be used to give conditions on the start.
 
     :param func: The function to run. Note that you should set the status of the task yourself
         and mark as completed when exiting yourself e.g. via sys.exit(). Assuming the function
@@ -148,34 +172,14 @@ def run_in_background_with_limits(
     """
     taskuuid = str(uuid.uuid4())
 
-    if num_proc > 0 or len(num_of_task_type) > 0:
-        while True:
-            with transaction.atomic():
-                qs = BackgroundTask.objects.filter(complete__exact=False)
-                a = qs.count()
-                if num_proc == 0 or a < num_proc:
-                    ok = True
-                    for k, v in num_of_task_type.items():
-                        a = qs.filter(task_type__exact=k).count()
-                        ok = ok and a < v
-                        if not ok:
-                            break
-                    if ok:
-                        BackgroundTask.objects.create(
-                            uuid=taskuuid,
-                            proc_id=0,
-                            task_type=task_type,
-                            started_at=timezone.now(),
-                        )
-                        break
-            time.sleep(0.3)
-
     # On linux connection gets copied which leads to problems.
     # Close them so a new one is created for each process
     db.connections.close_all()
 
     p = Process(
-        target=run_as_task, args=(func, task_type, taskuuid, *args), kwargs=kwargs
+        target=run_as_task,
+        args=(func, task_type, num_proc, num_of_task_type, taskuuid, *args),
+        kwargs=kwargs,
     )
 
     p.start()

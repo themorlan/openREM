@@ -16,15 +16,25 @@
       <td>{{ task.task_type|safe }}</td>
       <td>{{ task.info|safe }}</td>
       <td>{{  task.error|safe }}</td>
-      <td>{{ task.started_at }}</td>
+      <td>
+        {% if task.started_at is not None %}
+          {{ task.started_at }}
+        {% endif %}
+      </td>
       {% if task.complete %} 
         {% if task.completed_successfully %} 
           <td>Success</td>
         {% else %} 
           <td>Failure</td>
         {% endif %} 
-      {% else %} 
-        <td>Running</td>
+      {% else %}
+        <td>
+          {% if task.started_at is None %}
+            Not yet started
+          {% else %}
+            Running
+          {% endif %}
+        </td>
       {% endif %}
       {% if type == 'active' %} 
         <td>
