@@ -94,8 +94,6 @@ def run_as_task(func, task_type, num_proc, num_of_task_type, taskuuid, *args, **
     )
     b.save()
 
-    import time
-
     if num_proc > 0 or len(num_of_task_type) > 0:
         while True:
             with transaction.atomic():

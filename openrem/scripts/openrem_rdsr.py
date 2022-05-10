@@ -16,8 +16,6 @@ import sys
 from glob import glob
 from openrem.remapp.extractors.rdsr import rdsr
 from openrem.remapp.tools.background import (
-    run_as_task,
-    run_in_background,
     run_in_background_with_limits,
     wait_task,
 )
