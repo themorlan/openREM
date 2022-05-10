@@ -73,7 +73,7 @@
                 <th>Status</th>
             </tr>
             {% for import in studyimports %} 
-                {% if import.completed_successfull %} 
+                {% if import.completed_successfully %} 
                     <tr class="success">
                 {% else %} 
                     {% if import.complete %}
@@ -85,13 +85,13 @@
                     <td>{{import.uuid}}</td>
                     <td>{{import.task_type}}</td>
                     <td>
-                        {% if not import.completed_successfull %}
+                        {% if not import.completed_successfully %}
                             {{import.error}}
                         {% endif %}
                     </td>
                     <td>
                         {% if import.complete %}
-                            {% if import.completed_successfull %}
+                            {% if import.completed_successfully %}
                                 Import finished successfull 
                             {% else %} 
                                 Error
