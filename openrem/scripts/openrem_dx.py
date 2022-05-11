@@ -13,25 +13,8 @@
 
 """
 
-import sys
-from glob import glob
-from openrem.remapp.extractors.dx import dx
-from openrem.remapp.tools.background import run_in_background_with_limits, wait_task
-
-if len(sys.argv) < 2:
-    sys.exit("Error: Supply at least one argument - the DICOM radiography image file")
-
-tasks = []
-for arg in sys.argv[1:]:
-    for filename in glob(arg):
-        b = run_in_background_with_limits(
-            dx,
-            "import_dx",
-            0,
-            {"import_dx": 1},
-            filename,
-        )
-        tasks.append(b)
-
-for t in tasks:
-    wait_task(t)
+if __name__ == "__main__":
+    from openrem.remapp.extractors.dx import dx
+    import default_import
+    
+    default_import.default_import(dx, "import_dx", "the DICOM radiography image file", 0, {"import_dx": 1})
