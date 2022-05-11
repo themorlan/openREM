@@ -17,6 +17,6 @@
 
 if __name__ == "__main__":
     from openrem.remapp.extractors.ct_toshiba import ct_toshiba
-    import default_import
-    
+    from openrem.remapp.extractors import default_import
+
     default_import.default_import(ct_toshiba, "import_ct_toshiba", "the folder containing the DICOM objects", 0, {"import_ct_toshiba": 1})
