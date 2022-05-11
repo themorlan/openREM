@@ -12,26 +12,8 @@
         * Fluoro: Siemens Artis Zee RDSR
 """
 
-import sys
-from glob import glob
-from openrem.remapp.extractors.rdsr import rdsr
-from openrem.remapp.tools.background import (
-    run_in_background_with_limits,
-    wait_task,
-)
-
-if len(sys.argv) < 2:
-    sys.exit(
-        "Error: Supply at least one argument - the radiation dose structured report"
-    )
-
-tasks = []
-for arg in sys.argv[1:]:
-    for filename in glob(arg):
-        b = run_in_background_with_limits(
-            rdsr, "import_rdsr", 0, {"import_rdsr": 1}, filename
-        )
-        tasks.append(b)
-
-for t in tasks:
-    wait_task(t)
+if __name__ == "__main__":
+    from openrem.remapp.extractors.rdsr import rdsr
+    import default_import
+    
+    default_import.default_import(rdsr, "import_rdsr", "the radiation dose structured report", 0, {"import_rdsr": 1})

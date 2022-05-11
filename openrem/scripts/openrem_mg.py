@@ -12,25 +12,9 @@
 
 """
 
-import sys
-from glob import glob
-from openrem.remapp.extractors.mam import mam
-from openrem.remapp.tools.background import run_in_background_with_limits, wait_task
 
-if len(sys.argv) < 2:
-    sys.exit("Error: Supply at least one argument - the DICOM mammography image file")
-
-tasks = []
-for arg in sys.argv[1:]:
-    for filename in glob(arg):
-        b = run_in_background_with_limits(
-            mam,
-            "import_mam",
-            0,
-            {"import_mam": 1},
-            filename,
-        )
-        tasks.append(b)
-
-for t in tasks:
-    wait_task(t)
+if __name__ == "__main__":
+    from openrem.remapp.extractors.mam import mam
+    import default_import
+    
+    default_import.default_import(mam, "import_mam", "the DICOM mammography image file", 0, {"import_mam": 1})

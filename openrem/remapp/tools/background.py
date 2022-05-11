@@ -35,6 +35,7 @@ import time
 import signal
 import sys
 import uuid
+import random
 from multiprocessing import Process
 
 import django
@@ -73,6 +74,9 @@ def run_as_task(func, task_type, num_proc, num_of_task_type, taskuuid, *args, **
     managing the execution of the other processes, or at least do this based on signalling
     from the exiting processes instead of polling.
 
+    This can sometimes lead to errors with sqlite, see (tasks keep hanging then)
+    https://stackoverflow.com/questions/28958580/django-sqlite-database-is-locked
+
     :param func: The function to run
     :param task_type: A string documenting what kind of task this is
     :param num_proc: The maximum number of processes that should be executing
@@ -98,9 +102,10 @@ def run_as_task(func, task_type, num_proc, num_of_task_type, taskuuid, *args, **
         while True:
             with transaction.atomic():
                 qs = BackgroundTask.objects.filter(
-                    Q(complete__exact=False) & Q(started_at__isnull=False)
+                    complete__exact=False
                 )
-                a = qs.count()
+                next_wait_time = qs.count()
+                a = qs.filter(started_at__isnull=False).count()
                 if num_proc == 0 or a < num_proc:
                     ok = True
                     for k, v in num_of_task_type.items():
@@ -114,7 +119,7 @@ def run_as_task(func, task_type, num_proc, num_of_task_type, taskuuid, *args, **
                         b.started_at = timezone.now()
                         b.save()
                         break
-            time.sleep(0.3)
+            time.sleep(0.2 + 0.4 * next_wait_time * random.random())
     else:
         b.started_at = timezone.now()
         b.save()
