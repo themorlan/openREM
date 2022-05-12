@@ -42,7 +42,7 @@ import django
 from django.db.models import Avg, Sum, ObjectDoesNotExist
 import pydicom
 
-from openrem.remapp.tools.background import record_task_error_exit, record_task_info
+from openrem.remapp.tools.background import record_task_error_exit, record_task_related_query, record_task_info
 
 # setup django/OpenREM.
 basepath = os.path.dirname(__file__)
@@ -2184,6 +2184,7 @@ def _rdsr2db(dataset):
     if "StudyInstanceUID" in dataset:
         study_uid = dataset.StudyInstanceUID
         record_task_info(f"Study UID: {study_uid.replace('.', '. ')}")
+        record_task_related_query(study_uid)
         existing_study_uid_match = GeneralStudyModuleAttr.objects.filter(
             study_instance_uid__exact=study_uid
         )
