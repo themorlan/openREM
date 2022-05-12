@@ -39,7 +39,7 @@ This has the abilty to read information from the DICOM Headers of PET and
 NM images. In contrast to the other import modules this may actually complement
 the data read from an RRDSR, because not all relevant data is included there.
 
-.. autotask:: openrem.remapp.extractors.nm_image.nm_image
+.. autofunction:: openrem.remapp.extractors.nm_image.nm_image
 
 CT non-standard modules
 +++++++++++++++++++++++
