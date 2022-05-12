@@ -14,6 +14,6 @@
 
 if __name__ == "__main__":
     from openrem.remapp.extractors.rdsr import rdsr
-    import default_import
+    import openrem.remapp.tools.default_import as default_import
     
     default_import.default_import(rdsr, "import_rdsr", "the radiation dose structured report", 0, {"import_rdsr": 1})
