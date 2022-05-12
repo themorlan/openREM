@@ -29,7 +29,7 @@ class ImportMGImgHologicPropProjection(TestCase):
             study.projectionxrayradiationdose_set.get()
             .irradeventxraydata_set.get()
             .laterality.code_meaning,
-            u"Right",
+            "Right",
         )
 
         # Test that accumulated AGD is recorded (see issue 411 again)

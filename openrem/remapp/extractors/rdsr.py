@@ -36,10 +36,13 @@ import os
 import sys
 from time import sleep
 
-from celery import shared_task
+from django.conf import settings
+from defusedxml.ElementTree import fromstring, ParseError
 import django
 from django.db.models import Sum, ObjectDoesNotExist
 import pydicom
+
+from openrem.remapp.tools.background import record_task_error_exit, record_task_related_query, record_task_info
 
 # setup django/OpenREM.
 basepath = os.path.dirname(__file__)
@@ -245,7 +248,6 @@ def _handle_study_already_existing(
     If dataset has more events than existing study (Events of existing are subset):
         Delete old study and reimport
     If dataset has different events than existing study: Create a second study and import
-    If old study has not finished importing: Wait a bit than retry calling this function
     If dataset is rrdsr and only images have been imported to the study: Complete study with data from the rrdsr
 
     :return: A dict with possible keys {status, existing_sop_instance_uids, study}, where
@@ -274,6 +276,7 @@ def _handle_study_already_existing(
                 "Import match on Study Instance UID {0} and object SOP Instance UID {1}. "
                 "Will not import.".format(study_uid, new_sop_instance_uid)
             )
+            record_task_error_exit("Study already in db")
             return {
                 "status": "abort",
                 "existing_sop_instance_uids": existing_sop_instance_uids,
@@ -310,6 +313,7 @@ def _handle_study_already_existing(
                 record_sop_instance_uid(
                     existing_study_uid_match[study_index], new_sop_instance_uid
                 )
+                record_task_error_exit("Study already in db")
                 return {
                     "status": "abort",
                     "existing_sop_instance_uids": existing_sop_instance_uids,
@@ -323,6 +327,7 @@ def _handle_study_already_existing(
                 record_sop_instance_uid(
                     existing_study_uid_match[study_index], new_sop_instance_uid
                 )
+                record_task_error_exit("Study already in db")
                 return {
                     "status": "abort",
                     "existing_sop_instance_uids": existing_sop_instance_uids,
@@ -330,63 +335,46 @@ def _handle_study_already_existing(
             elif uid_list.issubset(new_event_uids):
                 # New RDSR has the existing events and more
                 # Check existing one had finished importing
-                # uid_list == None can happen if we only imported NM Images previously
-                try:
-                    existing_study_uid_match[study_index].patientmoduleattr_set.get()
-                    # probably had, so
-
-                    logger.debug(
-                        "Import match on StudyInstUID {0}. Existing events are subset of new events. Will"
-                        " import.".format(study_uid)
-                    )
-                    return {
-                        "status": "drop_old_continue",
-                        "existing_sop_instance_uids": existing_sop_instance_uids,
-                        "study": existing_study_uid_match[study_index],
-                    }
-                except ObjectDoesNotExist:
-                    return {
-                        "status": "retry",
-                        "existing_sop_instance_uids": existing_sop_instance_uids,
-                    }
+                logger.debug(
+                    "Import match on StudyInstUID {0}. Existing events are subset of new events. Will"
+                    " import.".format(study_uid)
+                )
+                return {
+                    "status": "drop_old_continue",
+                    "existing_sop_instance_uids": existing_sop_instance_uids,
+                    "study": existing_study_uid_match[study_index],
+                }
             elif None in uid_list:
                 # This happens for NM studies where only images have been imported so far
                 # because they add a RadiopharmaceuticalAdministrationEventData Object without UID.
-                try:
-                    existing_study_uid_match[study_index].patientmoduleattr_set.get()
-                    logger.debug(
-                        f"Import match on StudyInstUID {study_uid}. There is already a NM study for"
-                        "which only Images where imported so far. Will delete the "
-                        "RadiopharmaceuticalAdministrationEventData and RadiopharmaceuticalRadioationDose"
-                        "and reimport, but keep the PET_Series data if present."
-                    )
-                    study = existing_study_uid_match[study_index]
-                    if study.modality_type == "NM" and (
-                        dataset.SOPClassUID
-                        == "1.2.840.10008.5.1.4.1.1.88.68"  # Radiopharmaceutical Radiation Dose SR
-                        and dataset.ConceptNameCodeSequence[0].CodeValue
-                        == "113500"  # Radiopharmaceutical Radiation Dose Report
-                    ):
-                        tmp = study.radiopharmaceuticalradiationdose_set.first()
+                logger.debug(
+                    f"Import match on StudyInstUID {study_uid}. There is already a NM study for"
+                    "which only Images where imported so far. Will delete the "
+                    "RadiopharmaceuticalAdministrationEventData and RadiopharmaceuticalRadioationDose"
+                    "and reimport, but keep the PET_Series data if present."
+                )
+                study = existing_study_uid_match[study_index]
+                if study.modality_type == "NM" and (
+                    dataset.SOPClassUID
+                    == "1.2.840.10008.5.1.4.1.1.88.68"  # Radiopharmaceutical Radiation Dose SR
+                    and dataset.ConceptNameCodeSequence[0].CodeValue
+                    == "113500"  # Radiopharmaceutical Radiation Dose Report
+                ):
+                    tmp = study.radiopharmaceuticalradiationdose_set.first()
+                    if tmp is not None:
+                        tmp = (
+                            tmp.radiopharmaceuticaladministrationeventdata_set.first()
+                        )
                         if tmp is not None:
-                            tmp = (
-                                tmp.radiopharmaceuticaladministrationeventdata_set.first()
-                            )
-                            if tmp is not None:
-                                if (
-                                    tmp.radiopharmaceutical_administration_event_uid
-                                    is None
-                                ):
-                                    return {
-                                        "status": "append_rrdsr",
-                                        "existing_sop_instance_uids": existing_sop_instance_uids,
-                                        "study": study,
-                                    }
-                except ObjectDoesNotExist:
-                    return {
-                        "status": "retry",
-                        "existing_sop_instance_uids": existing_sop_instance_uids,
-                    }
+                            if (
+                                tmp.radiopharmaceutical_administration_event_uid
+                                is None
+                            ):
+                                return {
+                                    "status": "append_rrdsr",
+                                    "existing_sop_instance_uids": existing_sop_instance_uids,
+                                    "study": study,
+                                }
 
     return {
         "status": "continue",
@@ -397,25 +385,12 @@ def _handle_study_already_existing(
 def _rdsr2db(dataset):
     if "StudyInstanceUID" in dataset:
         study_uid = dataset.StudyInstanceUID
+        study_uid = dataset.StudyInstanceUID
+        record_task_info(f"Study UID: {study_uid.replace('.', '. ')}")
+        record_task_related_query(study_uid)
         existing = _handle_study_already_existing(dataset)
-        if existing["status"] == "retry":
-            sleep_time = 20.0
-            logger.debug(
-                "Import match on StudyInstUID {0}. Existing events are subset of new events. "
-                "However, existing study appears not to have finished importing. Waiting {1} s"
-                "before trying again.".format(study_uid, sleep_time)
-            )
-            # Give existing one time to complete
-            sleep(sleep_time)
-            existing = _handle_study_already_existing(dataset)
 
         if existing["status"] == "abort":
-            return
-        elif existing["status"] == "retry":
-            logger.error(
-                "Failed to check wheter this study already exists in the database twice in a row "
-                f"for StudyInstUID {study_uid}. Giving up."
-            )
             return
         elif existing["status"] == "append_rrdsr":
             _update_recorded_objects(existing["study"], dataset)
@@ -608,7 +583,6 @@ def _fix_toshiba_vhp(dataset):
                                     )
 
 
-@shared_task(name="remapp.extractors.rdsr.rdsr")
 def rdsr(rdsr_file):
     """Extract radiation dose related data from DICOM Radiation SR objects.
 
@@ -663,16 +637,12 @@ def rdsr(rdsr_file):
                 rdsr_file
             )
         )
+        record_task_error_exit(
+            f"Not attempting to extract from {rdsr_file}, not an rdsr"
+        )
+        return 1
 
     if del_rdsr:
         os.remove(rdsr_file)
 
     return 0
-
-
-if __name__ == "__main__":
-
-    if len(sys.argv) != 2:
-        sys.exit("Error: Supply exactly one argument - the DICOM RDSR file")
-
-    sys.exit(rdsr(sys.argv[1]))

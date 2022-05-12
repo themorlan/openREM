@@ -32,9 +32,10 @@ import datetime
 import traceback
 import sys
 
-from celery import shared_task
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Max, Count
+
+from openrem.remapp.tools.background import get_or_generate_task_uuid, record_task_error_exit
 
 from ..interface.mod_filters import nm_filter
 from .export_common import (
@@ -57,11 +58,12 @@ def _exit_proc(task, date_stamp, error_msg=None, force_exit=True):
     if error_msg is not None:
         task.status = "ERROR"
         task.progress = error_msg
+        record_task_error_exit(error_msg)
     else:
         task.status = "COMPLETE"
     task.processtime = (datetime.datetime.now() - date_stamp).total_seconds()
     task.save()
-    if force_exit:
+    if error_msg is not None:
         exit(0)
 
 
@@ -378,7 +380,6 @@ def _extract_study_data(exams, pid, name, patid, statistics, header_lengths):
     return exam_data
 
 
-@shared_task
 def exportNM2csv(filterdict, pid=False, name=None, patid=None, user=None):
     """
     :param filterdict: Queryset of studies to export
@@ -391,8 +392,9 @@ def exportNM2csv(filterdict, pid=False, name=None, patid=None, user=None):
     logger.debug("Started csv export task for NM")
 
     date_stamp = datetime.datetime.now()
+    task_id = get_or_generate_task_uuid()
     task = create_export_task(
-        celery_uuid=exportNM2csv.request.id,
+        task_id=task_id,
         modality="NM",
         export_type="CSV export",
         date_stamp=date_stamp,
@@ -435,7 +437,7 @@ def exportNM2csv(filterdict, pid=False, name=None, patid=None, user=None):
 
     tmpfile.close()
     task.progress = "All data written."
-    _exit_proc(task, date_stamp, force_exit=False)
+    _exit_proc(task, date_stamp)
 
 
 def _write_nm_excel_sheet(
@@ -478,7 +480,6 @@ def _write_nm_excel_sheet(
         task.save()
 
 
-@shared_task
 def exportNM2excel(filterdict, pid=False, name=None, patid=None, user=None):
     """
     :param filterdict: Queryset of studies to export
@@ -491,8 +492,9 @@ def exportNM2excel(filterdict, pid=False, name=None, patid=None, user=None):
     logger.debug("Started XLSX export task for NM")
 
     date_stamp = datetime.datetime.now()
+    task_id = get_or_generate_task_uuid()
     task = create_export_task(
-        celery_uuid=exportNM2excel.request.id,
+        task_id=task_id,
         modality="NM",
         export_type="XLSX export",
         date_stamp=date_stamp,

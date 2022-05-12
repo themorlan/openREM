@@ -32,7 +32,6 @@ import os
 import sys
 import logging
 
-from celery import shared_task
 import django
 from django.core.exceptions import ObjectDoesNotExist
 import numpy as np
@@ -54,7 +53,6 @@ from ..version import __skin_map_version__
 logger = logging.getLogger("remapp.tools.make_skin_map")
 
 
-@shared_task(name="remapp.tools.make_skin_map", ignore_result=True)
 def make_skin_map(study_pk=None):
 
     if study_pk:

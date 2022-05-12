@@ -12,15 +12,11 @@
 
 """
 
-import sys
-from glob import glob
-from openrem.remapp.extractors.mam import mam
 
-if len(sys.argv) < 2:
-    sys.exit("Error: Supply at least one argument - the DICOM mammography image file")
+if __name__ == "__main__":
+    from openrem.remapp.extractors.mam import mam
+    import openrem.remapp.tools.default_import as default_import
 
-for arg in sys.argv[1:]:
-    for filename in glob(arg):
-        mam(filename)
-
-sys.exit()
+    default_import.default_import(
+        mam, "import_mam", "the DICOM mammography image file", 0, {"import_mam": 1}
+    )

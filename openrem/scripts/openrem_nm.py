@@ -9,17 +9,14 @@ Script to extract data from PET or NM images.
 :type filename: str.
 """
 
-import sys
-from glob import glob
-from openrem.remapp.extractors.nm_image import nm_image
+if __name__ == "__main__":
+    from openrem.remapp.extractors.nm_image import nm_image
+    import openrem.remapp.tools.default_import as default_import
 
-if len(sys.argv) < 2:
-    sys.exit(
-        "Error: Supply at least one argument - the nuclear medicine image"
+    default_import.default_import(
+        nm_image,
+        "import_nm",
+        "the nuclear medicine image",
+        0,
+        {"import_rdsr": 1, "import_nm": 1},
     )
-
-for arg in sys.argv[1:]:
-    for filename in glob(arg):
-        nm_image(arg)
-
-sys.exit()

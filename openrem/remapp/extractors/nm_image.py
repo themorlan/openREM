@@ -38,7 +38,6 @@ import logging
 import os
 import sys
 
-from celery import shared_task
 import django
 from django.db.models import Q, ObjectDoesNotExist
 import pydicom
@@ -78,6 +77,7 @@ from .extract_common import (
     patientstudymoduleattributes,
     patient_module_attributes,
 )
+from openrem.remapp.tools.background import record_task_error_exit, record_task_info, record_task_related_query
 
 logger = logging.getLogger(
     "remapp.extractors.nm_image"
@@ -357,6 +357,8 @@ def _nm2db(dataset):
     """Saves the dataset to the db."""
     is_nm_img = dataset.SOPClassUID == "1.2.840.10008.5.1.4.1.1.20"
     if "StudyInstanceUID" in dataset:
+        record_task_info(f"Study UID: {dataset.StudyInstanceUID.replace('.', '. ')}")
+        record_task_related_query(dataset.StudyInstanceUID)
         study = GeneralStudyModuleAttr.objects.filter(
             Q(study_instance_uid__exact=dataset.StudyInstanceUID)
             & Q(modality_type__exact="NM")
@@ -369,6 +371,7 @@ def _nm2db(dataset):
                 logger.info(
                     f"The Image with {dataset.SOPInstanceUID} was already imported. Will not import."
                 )
+                record_task_error_exit("Already in database")
                 return
 
             _nm_specific_imports(study, dataset, is_nm_img)
@@ -390,7 +393,6 @@ def _nm2db(dataset):
     _nm_specific_imports(study, dataset, is_nm_img)
 
 
-@shared_task(name="remapp.extractors.nm_image.nm_image")
 def nm_image(filename: str):
     """
     Extract radiation dose related data from DICOM PET/NM-Image.
@@ -418,10 +420,3 @@ def nm_image(filename: str):
         os.remove(filename)
 
     return 0
-
-
-if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        sys.exit("Error: Supply exactly one argument - the NM or PET Image")
-
-    sys.exit(nm_image(sys.argv[1]))

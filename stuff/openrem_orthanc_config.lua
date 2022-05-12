@@ -266,10 +266,12 @@ function OnStoredInstance(instanceId)
     target:close()
 
     -- Call OpenREM import script. Runs as orthanc user in linux, so log files must be writable by Orthanc
-    os.execute(python_executable .. ' ' .. python_scripts_path .. import_script .. ' ' .. temp_file_path)
+    -- Run in detached mode, so long imports don't lead to network problems
+    os.execute(python_executable .. ' ' .. python_scripts_path .. import_script .. ' ' .. temp_file_path .. ' &')
 
-    -- Remove the temporary DICOM file
-    os.remove(temp_file_path)
+    -- Do not remove the dicom file. It is read async (so probably still needed and if it should be deleted after 
+    -- import or not should be chosen by the user)
+    -- os.remove(temp_file_path)
 
     -- Remove study from Orthanc
     Delete(instanceId)

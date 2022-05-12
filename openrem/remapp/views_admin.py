@@ -36,7 +36,7 @@ from __future__ import absolute_import
 import os
 import json
 import logging
-from datetime import datetime, timedelta
+from datetime import timedelta
 import requests
 from builtins import map  # pylint: disable=redefined-builtin
 
@@ -56,6 +56,7 @@ from django.urls import reverse_lazy
 from django.utils.safestring import mark_safe
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.utils import timezone
 
 from .extractors.extract_common import populate_rf_delta_weeks_summary
 from .forms import (
@@ -76,6 +77,7 @@ from .forms import (
 from .models import (
     AccumIntegratedProjRadiogDose,
     AdminTaskQuestions,
+    BackgroundTask,
     DicomDeleteSettings,
     DicomQuery,
     Exports,
@@ -103,6 +105,7 @@ from .tools.populate_summary import (
     populate_summary_dx,
     populate_summary_rf,
 )
+from openrem.remapp.tools.background import run_in_background, terminate_background
 from .tools.send_high_dose_alert_emails import send_rf_high_dose_alert_email
 from .version import __version__, __docs_version__
 
@@ -1901,254 +1904,79 @@ def _create_admin_dict(request):
 
 
 @login_required
-def task_service_status(request):
-    """AJAX function to get task services statuses and RabbitMQ queued tasks"""
-    if request.is_ajax() and request.user.groups.filter(name="admingroup"):
-        try:
-            flower = requests.get(
-                f"{settings.FLOWER_URL}:{settings.FLOWER_PORT}/api/tasks"
-            )
-            if flower.status_code == 200:
-                flower_status = 200
-            else:
-                flower_status = 401
-        except requests.ConnectionError:
-            flower_status = 500
-        default_queue = {}
-        celery_queue = {}
-        try:
-            queues = requests.get(
-                f"{settings.BROKER_MGMT_URL}api/queues", auth=("guest", "guest")
-            )
-            if queues.status_code == 200:
-                rabbitmq_status = 200
-            else:
-                rabbitmq_status = queues.status_code
-            for queue in queues.json():
-                if queue["name"] == settings.CELERY_TASK_DEFAULT_QUEUE:
-                    default_queue = queue
-                elif "celery.pidbox" in queue["name"]:
-                    celery_queue = queue
-        except requests.ConnectionError:
-            rabbitmq_status = 500
-        template = "remapp/task_service_status.html"
-        admin = _create_admin_dict(request)
-        return render(
-            request,
-            template,
-            {
-                "default_queue": default_queue,
-                "celery_queue": celery_queue,
-                "flower_status": flower_status,
-                "rabbitmq_status": rabbitmq_status,
-                "admin": admin,
-            },
-        )
-
-
-@login_required
-def rabbitmq_purge(request, queue=None):
-    """Function to purge one of the RabbitMQ queues"""
-    if queue and request.user.groups.filter(name="admingroup"):
-        queue_url = f"{settings.BROKER_MGMT_URL}/api/queues/%2f/{queue}/contents"
-        requests.delete(queue_url, auth=("guest", "guest"))
-        return redirect(reverse_lazy("celery_admin"))
-
-
-@login_required
-def celery_admin(request):
-    """View to show Celery tasks. Content generated using AJAX"""
-
+def display_tasks(request):
+    """View to show tasks. Content generated using AJAX"""
     admin = _create_admin_dict(request)
-
-    template = "remapp/celery_admin.html"
+    template = "remapp/task_admin.html"
     return render(request, template, {"admin": admin})
 
 
-def celery_tasks(request, stage=None):
+def tasks(request, stage=None):
     """AJAX function to get current task details"""
     if request.is_ajax() and request.user.groups.filter(name="admingroup"):
-        try:
-            flower = requests.get(
-                f"{settings.FLOWER_URL}:{settings.FLOWER_PORT}/api/tasks"
-            )
-            if flower.status_code == 200:
-                tasks = []
-                recent_tasks = []
-                active_tasks = []
-                older_tasks = []
-                task_dict_list = flower.json()
-                datetime_now = datetime.now()
-                for task_uuid in list(task_dict_list.keys()):
-                    this_task = {
-                        "uuid": task_uuid,
-                        "name": task_dict_list[task_uuid]["name"],
-                        "state": task_dict_list[task_uuid]["state"],
-                        "message": "",
-                    }
-                    if isinstance(task_dict_list[task_uuid]["received"], float):
-                        this_task["received"] = datetime.fromtimestamp(
-                            task_dict_list[task_uuid]["received"]
-                        )
-                        this_task["received_delta_s"] = int(
-                            (datetime_now - this_task["received"]).total_seconds()
-                        )
-                    if isinstance(task_dict_list[task_uuid]["started"], float):
-                        this_task["started"] = datetime.fromtimestamp(
-                            task_dict_list[task_uuid]["started"]
-                        )
-                        this_task["started_delta_s"] = int(
-                            (datetime_now - this_task["started"]).total_seconds()
-                        )
-                    else:
-                        this_task["started"] = ""
-                    try:
-                        this_task["source"] = ""
-                        this_task["result"] = ""
-                        # print(f"task name is {this_task['name']}")
-                        if "exports" in this_task["name"].split("."):
-                            this_task["type"] = "export"
-                            try:
-                                export_task = Exports.objects.get(
-                                    task_id__exact=task_uuid
-                                )
-                                this_task["source"] = export_task.export_summary
-                                this_task["result"] = export_task.status
-                            except ObjectDoesNotExist:
-                                pass
-                        elif "websizeimport" in this_task["name"].split("."):
-                            this_task["type"] = "size"
-                        elif "qrscu.qrscu" in this_task["name"]:
-                            this_task["type"] = "netdicom"
-                            try:
-                                dicom_task = DicomQuery.objects.get(
-                                    query_uuid__exact=task_uuid
-                                )
-                                this_task["result"] = dicom_task.stage
-                                this_task["source"] = dicom_task.query_summary
-                            except ObjectDoesNotExist:
-                                pass
-                        elif "movescu" in this_task["name"].split("."):
-                            this_task["type"] = "netdicom"
-                            try:
-                                move_task = DicomQuery.objects.get(
-                                    move_uuid__exact=task_uuid
-                                )
-                                this_task["result"] = move_task.move_summary
-                                this_task["source"] = move_task.query_summary
-                            except ObjectDoesNotExist:
-                                pass
-                        elif "make_skin_map" in this_task["name"].split("."):
-                            this_task["type"] = "skin_map"
-                        else:
-                            this_task["type"] = None
-                    except AttributeError:
-                        this_task["type"] = None
-                    tasks += [this_task]
-                    recent_time_delta = 60 * 60 * 6  # six hours
-                    if "STARTED" in this_task["state"]:
-                        active_tasks += [this_task]
-                    elif (
-                        this_task["started"]
-                        and (datetime_now - this_task["started"]).total_seconds()
-                        < recent_time_delta
-                    ):
-                        recent_tasks += [this_task]
-                    else:
-                        older_tasks += [this_task]
-                dicom_tasks = DicomQuery.objects.order_by("pk")
-                if "active" in stage:
-                    return render(
-                        request,
-                        "remapp/celery_tasks.html",
-                        {"tasks": active_tasks, "type": "active"},
-                    )
-                elif "recent" in stage:
-                    return render(
-                        request,
-                        "remapp/celery_tasks_complete.html",
-                        {"tasks": recent_tasks, "type": "recent"},
-                    )
-                elif "older" in stage:
-                    return render(
-                        request,
-                        "remapp/celery_tasks_complete.html",
-                        {"tasks": older_tasks, "type": "older"},
-                    )
-        except requests.ConnectionError:
-            admin = _create_admin_dict(request)
-            template = "remapp/celery_connection_error.html"
-            return render(request, template, {"admin": admin})
+        active_tasks = []
+        recent_tasks = []
+        older_tasks = []
+        tasks = BackgroundTask.objects.order_by("started_at").all()
+        datetime_now = timezone.now()
+
+        for task in tasks:
+            recent_time_delta = timedelta(hours=6)
+            if not task.complete:
+                active_tasks.append(task)
+            elif (
+                task.started_at is not None
+                and datetime_now - recent_time_delta < task.started_at
+            ):
+                recent_tasks.append(task)
+            else:
+                older_tasks.append(task)
+
+        if "active" in stage:
+            tinfo = {"tasks": active_tasks, "type": "active"}
+        elif "recent" in stage:
+            tinfo = {"tasks": recent_tasks, "type": "recent"}
+        elif "older" in stage:
+            tinfo = {"tasks": older_tasks, "type": "older"}
+
+        return render(request, "remapp/tasks.html", tinfo)
 
 
-def celery_abort(request, task_id=None, type=None):
-    """Function to abort one of the Celery tasks"""
+def task_abort(request, task_id=None):
+    """Function to abort one of the tasks"""
     if task_id and request.user.groups.filter(name="admingroup"):
-        queue_url = (
-            f"{settings.FLOWER_URL}:{settings.FLOWER_PORT}/api/task/revoke/{task_id}"
+        task = get_object_or_404(BackgroundTask, uuid=task_id)
+
+        try:
+            if task.task_type == "query" or task.task_type == "move":
+                abort_logger = logging.getLogger("remapp.netdicom.qrscu")
+                abort_logger.info(
+                    "Query or move task {0} terminated from the Tasks interface".format(
+                        task_id
+                    )
+                )
+                if task.task_type == "query":
+                    DicomQuery.objects.filter(query_id__exact=task_id).delete()
+            else:
+                if task.task_type.startswith("export"):
+                    Exports.objects.filter(task_id__exact=task_id).delete()
+                elif task.task_type.startswith("import_size"):
+                    SizeUpload.objects.filter(task_id__exact=task_id).delete()
+                abort_logger = logging.getLogger("remapp")
+                abort_logger.info(
+                    "Task {0} of type {1} terminated from the Tasks interface".format(
+                        task_id, task.task_type
+                    )
+                )
+        except ObjectDoesNotExist:
+            pass
+        terminate_background(task)
+        messages.success(
+            request,
+            "Task {0} terminated".format(task_id),
         )
-        payload = {"terminate": "true"}
-        abort = requests.post(queue_url, data=payload)
-        if abort.status_code == 200:
-            try:
-                if type in "netdicom":
-                    description = "query or move"
-                    task = DicomQuery.objects.get(query_id__exact=task_id)
-                    abort_logger = logging.getLogger("remapp.netdicom.qrscu")
-                    abort_logger.info(
-                        "Query or move task {0} terminated from the Tasks interface".format(
-                            task_id
-                        )
-                    )
-                elif type in "export":
-                    description = "export"
-                    task = Exports.objects.get(task_id__exact=task_id)
-                    abort_logger = logging.getLogger("remapp")
-                    abort_logger.info(
-                        "Export task {0} terminated from the Tasks interface".format(
-                            task_id
-                        )
-                    )
-                elif type in "size":
-                    description = "size import"
-                    task = SizeUpload.objects.get(task_id__exact=task_id)
-                    task.logfile.delete()
-                    task.sizefile.delete()
-                    abort_logger = logging.getLogger("remapp")
-                    abort_logger.info(
-                        "Size import task {0} terminated from the Tasks interface".format(
-                            task_id
-                        )
-                    )
-                else:
-                    messages.success(
-                        request,
-                        "Success! Task {0} terminated. Type was '{1}' which didn't match".format(
-                            task_id, type
-                        ),
-                    )
-                    abort_logger = logging.getLogger("remapp")
-                    abort_logger.info(
-                        "Task {0} of type {1} terminated from the Tasks interface".format(
-                            task_id, type
-                        )
-                    )
-                    return redirect(reverse_lazy("celery_admin"))
-                task.delete()
-                messages.success(
-                    request,
-                    "Task {0} terminated, and matching {1} job in database deleted.".format(
-                        task_id, description
-                    ),
-                )
-            except ObjectDoesNotExist:
-                messages.warning(
-                    request,
-                    "Task {0} terminated, but matching {1} job not found in database!".format(
-                        task_id, description
-                    ),
-                )
-            return redirect(reverse_lazy("celery_admin"))
+
+    return redirect(reverse_lazy("task_admin"))
 
 
 class PatientIDSettingsUpdate(UpdateView):  # pylint: disable=unused-variable
@@ -2576,34 +2404,38 @@ def populate_summary(request):
         except ObjectDoesNotExist:
             task_ct = SummaryFields.objects.create(modality_type="CT")
         if not task_ct.complete:
-            populate_summary_ct.delay()
+            run_in_background(
+                populate_summary_ct,
+                "populate_summary_ct",
+            )
         try:
             task_mg = SummaryFields.objects.get(modality_type__exact="MG")
         except ObjectDoesNotExist:
             task_mg = SummaryFields.objects.create(modality_type="MG")
         if not task_mg.complete:
-            populate_summary_mg.delay()
+            run_in_background(
+                populate_summary_mg,
+                "populate_summary_mg",
+            )
         try:
             task_dx = SummaryFields.objects.get(modality_type__exact="DX")
         except ObjectDoesNotExist:
             task_dx = SummaryFields.objects.create(modality_type="DX")
         if not task_dx.complete:
-            populate_summary_dx.delay()
+            run_in_background(
+                populate_summary_dx,
+                "populate_summary_dx",
+            )
         try:
             task_rf = SummaryFields.objects.get(modality_type__exact="RF")
         except ObjectDoesNotExist:
             task_rf = SummaryFields.objects.create(modality_type="RF")
         if not task_rf.complete:
-            populate_summary_rf.delay()
+            run_in_background(
+                populate_summary_rf,
+                "populate_summary_rf",
+            )
 
-        # task = SummaryFields.get_solo()
-        # if task.complete:
-        #     messages.error(u"Populating summary fields already complete!")
-        #     return redirect(reverse_lazy('home'))
-        # task.status_message = u"Starting migration to populate summary fields"
-        # messages.info = u"Starting migration to populate summary fields"
-        # task.save()
-        # populate_summary.delay()
         return redirect(reverse_lazy("home"))
 
 

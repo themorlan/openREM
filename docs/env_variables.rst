@@ -165,10 +165,6 @@ Variables that should only be changed if you know what you are doing
     STATIC_ROOT=/home/app/openrem/staticfiles
     LOG_ROOT=/logs
 
-    ## RabbitMQ/Celery/Flower
-    BROKER_MGMT_URL=http://broker:15672/
-    FLOWER_URL=http://flower
-
 Variables that shouldn't be changed
 -----------------------------------
 

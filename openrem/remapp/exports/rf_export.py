@@ -30,8 +30,8 @@
 
 import datetime
 import logging
+from openrem.remapp.tools.background import get_or_generate_task_uuid
 
-from celery import shared_task
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Avg, Max, Min
 
@@ -201,7 +201,7 @@ def _get_series_data(event, filter_data):
         number_of_pulses,
         exposure_time,
         irradiation_duration,
-        str(event.convert_gym2_to_cgycm2()),
+        event.convert_gym2_to_cgycm2(),
         dose_rp,
         pos_primary_angle,
         pos_secondary_angle,
@@ -243,7 +243,6 @@ def _all_data_headers(pid=False, name=None, patid=None):
     return all_data_headers
 
 
-@shared_task
 def rfxlsx(filterdict, pid=False, name=None, patid=None, user=None):
     """Export filtered RF database data to multi-sheet Microsoft XSLX files.
 
@@ -256,8 +255,9 @@ def rfxlsx(filterdict, pid=False, name=None, patid=None, user=None):
     """
 
     datestamp = datetime.datetime.now()
+    task_id = get_or_generate_task_uuid()
     tsk = create_export_task(
-        celery_uuid=rfxlsx.request.id,
+        task_id=task_id,
         modality="RF",
         export_type="XLSX export",
         date_stamp=datestamp,
@@ -620,7 +620,6 @@ def rfxlsx(filterdict, pid=False, name=None, patid=None, user=None):
     write_export(tsk, xlsxfilename, tmpxlsx, datestamp)
 
 
-@shared_task
 def exportFL2excel(filterdict, pid=False, name=None, patid=None, user=None):
     """Export filtered fluoro database data to a single-sheet CSV file.
 
@@ -633,8 +632,9 @@ def exportFL2excel(filterdict, pid=False, name=None, patid=None, user=None):
     """
 
     datestamp = datetime.datetime.now()
+    task_id = get_or_generate_task_uuid()
     tsk = create_export_task(
-        celery_uuid=exportFL2excel.request.id,
+        task_id=task_id,
         modality="RF",
         export_type="CSV export",
         date_stamp=datestamp,
@@ -719,7 +719,6 @@ def exportFL2excel(filterdict, pid=False, name=None, patid=None, user=None):
     tsk.save()
 
 
-@shared_task
 def rfopenskin(studyid):
     """Export single RF study data to OpenSkin RF csv sheet.
 
@@ -729,8 +728,9 @@ def rfopenskin(studyid):
     """
 
     datestamp = datetime.datetime.now()
+    task_id = get_or_generate_task_uuid()
     tsk = create_export_task(
-        celery_uuid=rfopenskin.request.id,
+        task_id=task_id,
         modality="RF-OpenSkin",
         export_type="OpenSkin RF csv export",
         date_stamp=datestamp,
@@ -971,7 +971,6 @@ def rfopenskin(studyid):
     tsk.save()
 
 
-@shared_task
 def rf_phe_2019(filterdict, user=None):
     """Export filtered RF database data in the format for the 2019 Public Health England IR/fluoro dose survey
 
@@ -981,8 +980,9 @@ def rf_phe_2019(filterdict, user=None):
     """
 
     datestamp = datetime.datetime.now()
+    task_id = get_or_generate_task_uuid()
     tsk = create_export_task(
-        celery_uuid=rf_phe_2019.request.id,
+        task_id=task_id,
         modality="RF",
         export_type="PHE RF 2019 export",
         date_stamp=datestamp,

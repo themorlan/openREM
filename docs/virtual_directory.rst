@@ -83,8 +83,8 @@ Test!
 You should now be able to reach the OpenREM interface using the virtual directory address.
 
 
-Non-Docker Linux install
-========================
+Non-Docker install
+==================
 
 .. code-block:: console
 

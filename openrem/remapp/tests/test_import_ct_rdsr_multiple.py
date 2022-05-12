@@ -49,7 +49,7 @@ class ImportMultipleRDSRs(TestCase):  # pylint: disable=unused-variable
             self.assertEqual(
                 sop_instance_uid_list1,
                 Counter(
-                    [u"1.3.6.1.4.1.5962.99.1.792239193.1702185591.1516915727449.11.0"]
+                    ["1.3.6.1.4.1.5962.99.1.792239193.1702185591.1516915727449.11.0"]
                 ),
             )
 
@@ -70,8 +70,8 @@ class ImportMultipleRDSRs(TestCase):  # pylint: disable=unused-variable
             )
             uid_list2 = Counter(
                 [
-                    u"1.3.6.1.4.1.5962.99.1.792239193.1702185591.1516915727449.11.0",
-                    u"1.3.6.1.4.1.5962.99.1.792239193.1702185591.1516915727449.6.0",
+                    "1.3.6.1.4.1.5962.99.1.792239193.1702185591.1516915727449.11.0",
+                    "1.3.6.1.4.1.5962.99.1.792239193.1702185591.1516915727449.6.0",
                 ]
             )
 
@@ -97,9 +97,9 @@ class ImportMultipleRDSRs(TestCase):  # pylint: disable=unused-variable
             )
             uid_list3 = Counter(
                 [
-                    u"1.3.6.1.4.1.5962.99.1.792239193.1702185591.1516915727449.11.0",
-                    u"1.3.6.1.4.1.5962.99.1.792239193.1702185591.1516915727449.9.0",
-                    u"1.3.6.1.4.1.5962.99.1.792239193.1702185591.1516915727449.6.0",
+                    "1.3.6.1.4.1.5962.99.1.792239193.1702185591.1516915727449.11.0",
+                    "1.3.6.1.4.1.5962.99.1.792239193.1702185591.1516915727449.9.0",
+                    "1.3.6.1.4.1.5962.99.1.792239193.1702185591.1516915727449.6.0",
                 ]
             )
 
@@ -123,9 +123,9 @@ class ImportMultipleRDSRs(TestCase):  # pylint: disable=unused-variable
             sop_instance_uid_list4 = Counter(
                 study.objectuidsprocessed_set.values_list("sop_instance_uid", flat=True)
             )
-            study_uid = u"1.3.6.1.4.1.5962.99.1.792239193.1702185591.1516915727449.3.0"
+            study_uid = "1.3.6.1.4.1.5962.99.1.792239193.1702185591.1516915727449.3.0"
             new_sop_instance_uid = (
-                u"1.3.6.1.4.1.5962.99.1.792239193.1702185591.1516915727449.11.0"
+                "1.3.6.1.4.1.5962.99.1.792239193.1702185591.1516915727449.11.0"
             )
 
             # Test that there is one study, and it still has three events
@@ -137,8 +137,8 @@ class ImportMultipleRDSRs(TestCase):  # pylint: disable=unused-variable
                 (
                     "remapp.extractors.rdsr",
                     "DEBUG",
-                    u"Import match on Study Instance UID {0} and object SOP Instance UID {1}. "
-                    u"Will not import.".format(study_uid, new_sop_instance_uid),
+                    "Import match on Study Instance UID {0} and object SOP Instance UID {1}. "
+                    "Will not import.".format(study_uid, new_sop_instance_uid),
                 )
             )
             self.assertEqual(study.number_of_events, 3)
@@ -176,7 +176,7 @@ class ImportContinuedRDSRs(TestCase):
                 study.objectuidsprocessed_set.values_list("sop_instance_uid", flat=True)
             )
             uid_list1 = Counter(
-                [u"1.3.6.1.4.1.5962.99.1.64928122.996247427.1524778350970.8.0"]
+                ["1.3.6.1.4.1.5962.99.1.64928122.996247427.1524778350970.8.0"]
             )
 
             # Test that there is one study, and it has one event
@@ -207,7 +207,7 @@ class ImportContinuedRDSRs(TestCase):
                     "sop_instance_uid", flat=True
                 )
             )
-            uid_2 = u"1.3.6.1.4.1.5962.99.1.64928122.996247427.1524778350970.13.0"
+            uid_2 = "1.3.6.1.4.1.5962.99.1.64928122.996247427.1524778350970.13.0"
             uid_list2 = Counter([uid_2])
             self.assertEqual(sop_instance_uid_list1, uid_list1)
             self.assertEqual(sop_instance_uid_list2, uid_list2)
@@ -227,8 +227,8 @@ class ImportContinuedRDSRs(TestCase):
                 (
                     "remapp.extractors.rdsr",
                     "DEBUG",
-                    u"Import match on Study Instance UID {0} and object SOP Instance UID {1}. "
-                    u"Will not import.".format(study_uid, uid_2),
+                    "Import match on Study Instance UID {0} and object SOP Instance UID {1}. "
+                    "Will not import.".format(study_uid, uid_2),
                 )
             )
 

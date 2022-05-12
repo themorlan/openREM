@@ -61,20 +61,20 @@ class ExportRFxlsx(
         all_data_sheet = book.sheet_by_name("All data")
         headers = all_data_sheet.row(0)
 
-        patient_id_col = [i for i, x in enumerate(headers) if x.value == u"Patient ID"][
+        patient_id_col = [i for i, x in enumerate(headers) if x.value == "Patient ID"][
             0
         ]
         accession_number_col = [
-            i for i, x in enumerate(headers) if x.value == u"Accession number"
+            i for i, x in enumerate(headers) if x.value == "Accession number"
         ][0]
         a_dose_rp_col = [
-            i for i, x in enumerate(headers) if x.value == u"A Dose RP total (Gy)"
+            i for i, x in enumerate(headers) if x.value == "A Dose RP total (Gy)"
         ][0]
         manufacturer_col = [
-            i for i, x in enumerate(headers) if x.value == u"Manufacturer"
+            i for i, x in enumerate(headers) if x.value == "Manufacturer"
         ][0]
         manufacturers = all_data_sheet.col(manufacturer_col)
-        siemens_row = [i for i, x in enumerate(manufacturers) if x.value == u"Siemens"][
+        siemens_row = [i for i, x in enumerate(manufacturers) if x.value == "Siemens"][
             0
         ]
 
@@ -124,10 +124,10 @@ class ExportRFxlsx(
         headers = siemens_sheet.row(0)
 
         filter_material_col = [
-            i for i, x in enumerate(headers) if x.value == u"Filter material"
+            i for i, x in enumerate(headers) if x.value == "Filter material"
         ][0]
         filter_thickness_col = [
-            i for i, x in enumerate(headers) if x.value == u"Mean filter thickness (mm)"
+            i for i, x in enumerate(headers) if x.value == "Mean filter thickness (mm)"
         ][0]
 
         self.assertEqual(philips_sheet.cell_value(1, filter_material_col), "Cu | Al")
@@ -155,19 +155,17 @@ class ExportRFxlsx(
         task = Exports.objects.all()[0]
         book = xlrd.open_workbook(task.filename.path)
 
-        eurocolumbus_sheet = book.sheet_by_name(u"vascular-knee-scopy-dose_level_")
+        eurocolumbus_sheet = book.sheet_by_name("vascular-knee-scopy-dose_level_")
         eurocolumbus_headers = eurocolumbus_sheet.row(0)
-        kvp_col = [i for i, x in enumerate(eurocolumbus_headers) if x.value == u"kVp"][
-            0
-        ]
-        ma_col = [i for i, x in enumerate(eurocolumbus_headers) if x.value == u"mA"][0]
+        kvp_col = [i for i, x in enumerate(eurocolumbus_headers) if x.value == "kVp"][0]
+        ma_col = [i for i, x in enumerate(eurocolumbus_headers) if x.value == "mA"][0]
         pulse_width_col = [
             i
             for i, x in enumerate(eurocolumbus_headers)
-            if x.value == u"Pulse width (ms)"
+            if x.value == "Pulse width (ms)"
         ][0]
         exposure_time_col = [
-            i for i, x in enumerate(eurocolumbus_headers) if x.value == u"Time"
+            i for i, x in enumerate(eurocolumbus_headers) if x.value == "Time"
         ][0]
         target_row = 0
         for row_num in range(eurocolumbus_sheet.nrows):

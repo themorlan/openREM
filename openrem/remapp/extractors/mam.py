@@ -34,6 +34,8 @@ import django
 import logging
 from pydicom.charset import default_encoding
 
+from openrem.remapp.tools.background import record_task_error_exit, record_task_related_query, record_task_info
+
 logger = logging.getLogger("remapp.extractors.mam")
 
 # setup django/OpenREM
@@ -43,8 +45,6 @@ if projectpath not in sys.path:
     sys.path.insert(1, projectpath)
 os.environ["DJANGO_SETTINGS_MODULE"] = "openremproject.settings"
 django.setup()
-
-from celery import shared_task
 
 from .extract_common import (  # pylint: disable=wrong-import-order, wrong-import-position
     patient_module_attributes,
@@ -527,8 +527,13 @@ def _mammo2db(dataset):
 
     study_uid = get_value_kw("StudyInstanceUID", dataset)
     if not study_uid:
-        sys.exit("No UID returned")
+        error = "In mammo import no UID present. Stop import."
+        logger.error(error)
+        record_task_error_exit(error)
+        return
     study_in_db = check_uid.check_uid(study_uid)
+    record_task_info(f"UID: {study_uid.replace('.', '. ')}")
+    record_task_related_query(study_uid)
     logger.debug("In mam.py. Study_UID %s, study_in_db %s", study_uid, study_in_db)
 
     if study_in_db:
@@ -559,7 +564,10 @@ def _mammo2db(dataset):
         if study_in_db == 1:
             _generalstudymoduleattributes(dataset, g)
         elif not study_in_db:
-            sys.exit("Something went wrong, GeneralStudyModuleAttr wasn't created")
+            record_task_error_exit(
+                "Something went wrong, GeneralStudyModuleAttr wasn't created"
+            )
+            return
         elif study_in_db > 1:
             sleep(random())  # nosec - not being used for cryptography
             # Check if other instance(s) has deleted the study yet
@@ -618,7 +626,6 @@ def _mammo2db(dataset):
                         )
 
 
-@shared_task(name="remapp.extractors.mam.mam")
 def mam(mg_file):
     """Extract radiation dose structured report related data from mammography images
 
@@ -644,8 +651,9 @@ def mam(mg_file):
     ismammo = _test_if_mammo(dataset)
     if not ismammo:
         if del_no_match:
-            logger.debug("%s id not a mammo file, deleting", mg_file)
+            logger.debug("%s is not a mammo file, deleting", mg_file)
             os.remove(mg_file)
+        record_task_error_exit(f"{mg_file} is not a mammo file")
         return 1
 
     _mammo2db(dataset)
@@ -657,13 +665,3 @@ def mam(mg_file):
         logger.debug("Mammo %s processing complete, file remains", mg_file)
 
     return 0
-
-
-if __name__ == "__main__":
-
-    if len(sys.argv) != 2:
-        sys.exit(
-            "Error: Supply exactly one argument - the DICOM mammography image file"
-        )
-
-    sys.exit(mam(sys.argv[1]))

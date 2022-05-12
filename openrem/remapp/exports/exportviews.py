@@ -41,6 +41,7 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from django.urls import reverse_lazy
 import remapp
+from openrem.remapp.tools.background import run_in_background, terminate_background
 
 logger = logging.getLogger(__name__)
 
@@ -81,7 +82,7 @@ def include_pid(request, name, pat_id):
 @login_required
 def ctcsv1(request, name=None, pat_id=None):
     """
-    View to launch celery task to export CT studies to csv file
+    View to launch  task to export CT studies to csv file
 
     :param request: Contains the database filtering parameters. Also used to get user group.
     :param name: string, 0 or 1 from URL indicating if names should be exported
@@ -102,7 +103,9 @@ def ctcsv1(request, name=None, pat_id=None):
                 "ct_acquisition_type"
             )
 
-        job = ct_csv.delay(
+        job = run_in_background(
+            ct_csv,
+            "export_ct",
             filter_dict,
             pid["pidgroup"],
             pid["include_names"],
@@ -117,7 +120,7 @@ def ctcsv1(request, name=None, pat_id=None):
 @login_required
 def ctxlsx1(request, name=None, pat_id=None):
     """
-    View to launch celery task to export CT studies to xlsx file
+    View to launch  task to export CT studies to xlsx file
 
     :param request: Contains the database filtering parameters. Also used to get user group.
     :param name: string, 0 or 1 from URL indicating if names should be exported
@@ -138,14 +141,16 @@ def ctxlsx1(request, name=None, pat_id=None):
                 "ct_acquisition_type"
             )
 
-        job = ctxlsx.delay(
+        job = run_in_background(
+            ctxlsx,
+            "export_ct",
             filter_dict,
             pid["pidgroup"],
             pid["include_names"],
             pid["include_pat_id"],
             request.user.id,
         )
-        logger.debug("Export CT to XLSX job is {0}".format(job))
+        logger.debug("Export CT to XLSX job is {0}".format(job.uuid))
 
     return redirect(reverse_lazy("export"))
 
@@ -154,7 +159,7 @@ def ctxlsx1(request, name=None, pat_id=None):
 @login_required
 def ct_xlsx_phe2019(request):
     """
-    View to launch celery task to export CT studies to xlsx file in PHE 2019 CT survey format
+    View to launch  task to export CT studies to xlsx file in PHE 2019 CT survey format
 
     :param request: Contains the database filtering parameters and user details.
     """
@@ -162,8 +167,8 @@ def ct_xlsx_phe2019(request):
     from remapp.exports.ct_export import ct_phe_2019
 
     if request.user.groups.filter(name="exportgroup"):
-        job = ct_phe_2019.delay(request.GET, request.user.id)
-        logger.debug("Export CT to XLSX job is {0}".format(job))
+        job = run_in_background(ct_phe_2019, "export_ct", request.GET, request.user.id)
+        logger.debug("Export CT to XLSX job is {0}".format(job.uuid))
     return redirect(reverse_lazy("export"))
 
 
@@ -171,7 +176,7 @@ def ct_xlsx_phe2019(request):
 @login_required
 def nmcsv1(request, name=None, pat_id=None):
     """
-    View to launch celery task to export NM studies to csv file
+    View to launch task to export NM studies to csv file
 
     :param request: Contains the database filtering parameters. Also used to get user group.
     :param name: string, 0 or 1 from URL indicating if names should be exported
@@ -184,14 +189,16 @@ def nmcsv1(request, name=None, pat_id=None):
     pid = include_pid(request, name, pat_id)
 
     if request.user.groups.filter(name="exportgroup"):
-        job = exportNM2csv.delay(
+        job = run_in_background(
+            exportNM2csv,
+            "export_nm",
             request.GET,
             pid["pidgroup"],
             pid["include_names"],
             pid["include_pat_id"],
             request.user.id,
         )
-        logger.debug(f"Export NM to CSV job is {job}")
+        logger.debug(f"Export NM to CSV job is {job.uuid}")
 
     return redirect(reverse_lazy("export"))
 
@@ -213,14 +220,16 @@ def nmxlsx1(request, name=None, pat_id=None):
     pid = include_pid(request, name, pat_id)
 
     if request.user.groups.filter(name="exportgroup"):
-        job = exportNM2excel.delay(
+        job = run_in_background(
+            exportNM2excel,
+            "export_nm",
             request.GET,
             pid["pidgroup"],
             pid["include_names"],
             pid["include_pat_id"],
             request.user.id,
         )
-        logger.debug(f"Exprt NM to Excel job is {job}")
+        logger.debug(f"Exprt NM to Excel job is {job.uuid}")
 
     return redirect(reverse_lazy("export"))
 
@@ -229,7 +238,7 @@ def nmxlsx1(request, name=None, pat_id=None):
 @login_required
 def dxcsv1(request, name=None, pat_id=None):
     """
-    View to launch celery task to export DX and CR studies to csv file
+    View to launch  task to export DX and CR studies to csv file
 
     :param request: Contains the database filtering parameters. Also used to get user group.
     :param name: string, 0 or 1 from URL indicating if names should be exported
@@ -242,7 +251,9 @@ def dxcsv1(request, name=None, pat_id=None):
     pid = include_pid(request, name, pat_id)
 
     if request.user.groups.filter(name="exportgroup"):
-        job = exportDX2excel.delay(
+        job = run_in_background(
+            exportDX2excel,
+            "export_dx",
             request.GET,
             pid["pidgroup"],
             pid["include_names"],
@@ -258,7 +269,7 @@ def dxcsv1(request, name=None, pat_id=None):
 @login_required
 def dxxlsx1(request, name=None, pat_id=None):
     """
-    View to launch celery task to export DX and CR studies to xlsx file
+    View to launch  task to export DX and CR studies to xlsx file
 
     :param request: Contains the database filtering parameters. Also used to get user group.
     :param name: string, 0 or 1 from URL indicating if names should be exported
@@ -271,14 +282,16 @@ def dxxlsx1(request, name=None, pat_id=None):
     pid = include_pid(request, name, pat_id)
 
     if request.user.groups.filter(name="exportgroup"):
-        job = dxxlsx.delay(
+        job = run_in_background(
+            dxxlsx,
+            "export_dx",
             request.GET,
             pid["pidgroup"],
             pid["include_names"],
             pid["include_pat_id"],
             request.user.id,
         )
-        logger.debug("Export DX to XLSX job is {0}".format(job))
+        logger.debug("Export DX to XLSX job is {0}".format(job.uuid))
 
     return redirect(reverse_lazy("export"))
 
@@ -287,7 +300,7 @@ def dxxlsx1(request, name=None, pat_id=None):
 @login_required
 def dx_xlsx_phe2019(request, export_type=None):
     """
-    View to launch celery task to export DX studies to xlsx file in PHE 2019 DX survey format
+    View to launch  task to export DX studies to xlsx file in PHE 2019 DX survey format
 
     :param request: Contains the database filtering parameters and user details.
     :param export_type: string, 'projection' or 'exam'
@@ -324,8 +337,16 @@ def dx_xlsx_phe2019(request, export_type=None):
                     messages.info(
                         request, "PHE 2019 DX single projection export started."
                     )
-                job = dx_phe_2019.delay(request.GET, request.user.id, projection=True)
-                logger.debug("Export PHE 2019 DX survey format job is {0}".format(job))
+                job = run_in_background(
+                    dx_phe_2019,
+                    "export_dx",
+                    request.GET,
+                    request.user.id,
+                    projection=True,
+                )
+                logger.debug(
+                    "Export PHE 2019 DX survey format job is {0}".format(job.uuid)
+                )
                 return redirect(reverse_lazy("export"))
             elif "exam" in export_type:
                 if max_events > 6:
@@ -350,10 +371,17 @@ def dx_xlsx_phe2019(request, export_type=None):
                         )
                 else:
                     messages.info(request, "PHE 2019 DX Study export started.")
-                job = dx_phe_2019.delay(
-                    request.GET, request.user.id, projection=False, bespoke=bespoke
+                job = run_in_background(
+                    dx_phe_2019,
+                    "export_dx",
+                    request.GET,
+                    request.user.id,
+                    projection=False,
+                    bespoke=bespoke,
                 )
-                logger.debug("Export PHE 2019 DX survey format job is {0}".format(job))
+                logger.debug(
+                    "Export PHE 2019 DX survey format job is {0}".format(job.uuid)
+                )
                 return redirect(reverse_lazy("export"))
         else:
             messages.error(request, "Malformed export URL {0}".format(type))
@@ -376,7 +404,7 @@ def dx_xlsx_phe2019(request, export_type=None):
 @login_required
 def flcsv1(request, name=None, pat_id=None):
     """
-    View to launch celery task to export fluoroscopy studies to csv file
+    View to launch  task to export fluoroscopy studies to csv file
 
     :param request: Contains the database filtering parameters. Also used to get user group.
     :param name: string, 0 or 1 from URL indicating if names should be exported
@@ -389,14 +417,16 @@ def flcsv1(request, name=None, pat_id=None):
     pid = include_pid(request, name, pat_id)
 
     if request.user.groups.filter(name="exportgroup"):
-        job = exportFL2excel.delay(
+        job = run_in_background(
+            exportFL2excel,
+            "export_fl",
             request.GET,
             pid["pidgroup"],
             pid["include_names"],
             pid["include_pat_id"],
             request.user.id,
         )
-        logger.debug("Export Fluoro to CSV job is {0}".format(job))
+        logger.debug("Export Fluoro to CSV job is {0}".format(job.uuid))
 
     return redirect(reverse_lazy("export"))
 
@@ -405,7 +435,7 @@ def flcsv1(request, name=None, pat_id=None):
 @login_required
 def rfxlsx1(request, name=None, pat_id=None):
     """
-    View to launch celery task to export fluoroscopy studies to xlsx file
+    View to launch  task to export fluoroscopy studies to xlsx file
 
     :param request: Contains the database filtering parameters. Also used to get user group.
     :param name: string, 0 or 1 from URL indicating if names should be exported
@@ -418,14 +448,16 @@ def rfxlsx1(request, name=None, pat_id=None):
     pid = include_pid(request, name, pat_id)
 
     if request.user.groups.filter(name="exportgroup"):
-        job = rfxlsx.delay(
+        job = run_in_background(
+            rfxlsx,
+            "export_rf",
             request.GET,
             pid["pidgroup"],
             pid["include_names"],
             pid["include_pat_id"],
             request.user.id,
         )
-        logger.debug("Export Fluoro to XLSX job is {0}".format(job))
+        logger.debug("Export Fluoro to XLSX job is {0}".format(job.uuid))
 
     return redirect(reverse_lazy("export"))
 
@@ -445,8 +477,8 @@ def rfopenskin(request, pk):
     export = get_object_or_404(GeneralStudyModuleAttr, pk=pk)
 
     if request.user.groups.filter(name="exportgroup"):
-        job = rfopenskin.delay(export.pk)
-        logger.debug("Export Fluoro to openSkin CSV job is {0}".format(job))
+        job = run_in_background(rfopenskin, "export_rf", export.pk)
+        logger.debug("Export Fluoro to openSkin CSV job is {0}".format(job.uuid))
 
     return redirect(reverse_lazy("export"))
 
@@ -455,7 +487,7 @@ def rfopenskin(request, pk):
 @login_required
 def rf_xlsx_phe2019(request):
     """
-    View to launch celery task to export fluoro studies to xlsx file in PHE 2019 IR/fluoro survey format
+    View to launch  task to export fluoro studies to xlsx file in PHE 2019 IR/fluoro survey format
 
     :param request: Contains the database filtering parameters and user details.
     """
@@ -464,9 +496,10 @@ def rf_xlsx_phe2019(request):
     from remapp.exports.rf_export import rf_phe_2019
 
     if request.user.groups.filter(name="exportgroup"):
-        messages.info(request, "PHE 2019 IR/fluoro export started")
-        job = rf_phe_2019.delay(request.GET, request.user.id)
-        logger.debug("Export PHE 2019 IR/fluoro survey format job is {0}.".format(job))
+        job = run_in_background(rf_phe_2019, "export_rf", request.GET, request.user.id)
+        logger.debug(
+            "Export PHE 2019 IR/fluoro survey format job is {0}.".format(job.uuid)
+        )
         return redirect(reverse_lazy("export"))
     else:
         messages.error(request, "Only users in the Export group can launch exports")
@@ -493,14 +526,16 @@ def mgcsv1(request, name=None, pat_id=None):
     pid = include_pid(request, name, pat_id)
 
     if request.user.groups.filter(name="exportgroup"):
-        job = exportMG2excel.delay(
+        job = run_in_background(
+            exportMG2excel,
+            "export_mg",
             request.GET,
             pid["pidgroup"],
             pid["include_names"],
             pid["include_pat_id"],
             request.user.id,
         )
-        logger.debug("Export MG to CSV job is {0}".format(job))
+        logger.debug("Export MG to CSV job is {0}".format(job.uuid))
 
     return redirect(reverse_lazy("export"))
 
@@ -521,7 +556,9 @@ def mgxlsx1(request, name=None, pat_id=None):
     pid = include_pid(request, name, pat_id)
 
     if request.user.groups.filter(name="exportgroup"):
-        job = exportMG2excel.delay(
+        job = run_in_background(
+            exportMG2excel,
+            "export_mg",
             request.GET,
             pid=pid["pidgroup"],
             name=pid["include_names"],
@@ -529,7 +566,7 @@ def mgxlsx1(request, name=None, pat_id=None):
             user=request.user.id,
             xlsx=True,
         )
-        logger.debug("Export MG to xlsx job is {0}".format(job))
+        logger.debug("Export MG to xlsx job is {0}".format(job.uuid))
 
     return redirect(reverse_lazy("export"))
 
@@ -538,7 +575,7 @@ def mgxlsx1(request, name=None, pat_id=None):
 @login_required
 def mgnhsbsp(request):
     """
-    View to launch celery task to export mammography studies to csv file using a NHSBSP template
+    View to launch  task to export mammography studies to csv file using a NHSBSP template
 
     :param request: Contains the database filtering parameters. Also used to get user group.
     :type request: GET
@@ -547,8 +584,10 @@ def mgnhsbsp(request):
     from remapp.exports.mg_csv_nhsbsp import mg_csv_nhsbsp
 
     if request.user.groups.filter(name="exportgroup"):
-        job = mg_csv_nhsbsp.delay(request.GET, request.user.id)
-        logger.debug("Export MG to CSV NHSBSP job is {0}".format(job))
+        job = run_in_background(
+            mg_csv_nhsbsp, "export_mg", request.GET, request.user.id
+        )
+        logger.debug("Export MG to CSV NHSBSP job is {0}".format(job.uuid))
 
     return redirect(reverse_lazy("export"))
 
@@ -697,13 +736,13 @@ def export_abort(request, pk):
     """
     from django.http import HttpResponseRedirect
     from django.shortcuts import get_object_or_404
-    from remapp.models import Exports
-    from openremproject.celeryapp import app as celery_app
+    from remapp.models import Exports, BackgroundTask
 
     export_task = get_object_or_404(Exports, pk=pk)
+    task = get_object_or_404(BackgroundTask, uuid=export_task.task_id)
 
     if request.user.groups.filter(name="exportgroup"):
-        celery_app.control.revoke(export_task.task_id, terminate=True)
+        terminate_background(task)
         export_task.delete()
         logger.info(
             "Export task {0} terminated from the Exports interface".format(

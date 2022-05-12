@@ -36,7 +36,6 @@ import logging
 import traceback
 
 import django
-from celery import shared_task
 
 from .rdsr import rdsr
 from openrem.openremproject.settings import (
@@ -1707,7 +1706,6 @@ def _update_dicom_rdsr(
     return 1
 
 
-@shared_task(name="remapp.extractors.ct_toshiba.ct_toshiba")
 def ct_toshiba(folder_name):
     """Function to create radiation dose structured reports from a folder of dose images.
 
@@ -2108,12 +2106,3 @@ def ct_toshiba(folder_name):
     logger.debug("Removing study folder complete")
     logger.debug("Reached end of ct_toshiba routine")
     return 0
-
-
-if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        sys.exit(
-            "Error: supply exactly one argument - the folder containing the DICOM objects"
-        )
-
-    sys.exit(ct_toshiba(sys.argv[1]))

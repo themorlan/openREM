@@ -23,7 +23,6 @@
     <div class="row">
       <div class="col-md-8 col-md-offset-2">
         <h3>Task administration</h3>
-        <span id="service_status"></span>
       </div>
     </div>
 
@@ -33,6 +32,9 @@
             function updateSort(heading, source) {
                 if (typeof source === "undefined") {
                     source = null;
+                }
+                if(heading.indexOf("active") !== -1) {
+                  return;
                 }
 
                 if (heading.indexOf("recent") !== -1) sort_info_recent.heading = heading;
@@ -70,82 +72,67 @@
             }
 
             sort_info_recent = {
-                heading: "received_recent",
+                heading: "started_recent",
                 direction: "ascending"
             };
             sort_info_older = {
-                heading: "received_older",
+                heading: "started_older",
+                direction: "ascending"
+            };
+            sort_info_active = {
+                heading: "started_active",
                 direction: "ascending"
             };
 
+            function tasks_update_active() {
+                $.ajax({
+                    url: "{% url 'get_tasks' stage='active' %}",
+                    data: {
+                        csrfmiddlewaretoken: '{{ csrf_token }}'
+                    },
+                    type: "POST",
+                    success: function (data) {
+                        $('#activetasks').html(data);
+                    }
+                })
+            }
+
+            function tasks_update_recent() {
+                $.ajax({
+                    url: "{% url 'get_tasks' stage='recent' %}",
+                    data: {
+                        csrfmiddlewaretoken: '{{ csrf_token }}'
+                    },
+                    type: "POST",
+                    success: function (data) {
+                        $('#recenttasks').html(data);
+                    }
+                })
+            }
+
+            function tasks_update_older() {
+              $.ajax({
+                  url: "{% url 'get_tasks' stage='older' %}",
+                  data: {
+                      csrfmiddlewaretoken: '{{ csrf_token }}'
+                  },
+                  type: "POST",
+                  success: function (data) {
+                      $('#oldertasks').html(data);
+                  }
+              })
+            }
+            
             $(document).ready(
-                function tasks_update_active(json) {
-                    $.ajax({
-                        url: "{% url 'celery_tasks' stage='active' %}",
-                        data: {
-                            csrfmiddlewaretoken: '{{ csrf_token }}'
-                        },
-                        type: "POST",
-                        success: function (data) {
-                            $('#activetasks').html(data);
-                            setTimeout(function () {
-                                tasks_update_active();
-                            }, 2000);
-                        }
-                    })
+                function startUp() {
+                  tasks_update_active()
+                  tasks_update_recent()
+                  tasks_update_older()
+                  setInterval(tasks_update_active, 2000);
+                  setInterval(tasks_update_recent, 5000);
+                  setInterval(tasks_update_older, 11000);
                 }
             );
-            $(document).ready(
-                function tasks_update_recent(json) {
-                    $.ajax({
-                        url: "{% url 'celery_tasks' stage='recent' %}",
-                        data: {
-                            csrfmiddlewaretoken: '{{ csrf_token }}'
-                        },
-                        type: "POST",
-                        success: function (data) {
-                            $('#recenttasks').html(data);
-                            setTimeout(function () {
-                                tasks_update_recent();
-                            }, 5000);
-                        }
-                    })
-                }
-            );
-            $(document).ready(
-                function tasks_update_recent(json) {
-                    $.ajax({
-                        url: "{% url 'celery_tasks' stage='older' %}",
-                        data: {
-                            csrfmiddlewaretoken: '{{ csrf_token }}'
-                        },
-                        type: "POST",
-                        success: function (data) {
-                            $('#oldertasks').html(data);
-                            setTimeout(function () {
-                                tasks_update_recent();
-                            }, 11000);
-                        }
-                    })
-                }
-            );
-            $(document).ready(
-                function tasks_update_recent(json) {
-                    $.ajax({
-                        url: "{% url 'task_service_status' %}",
-                        data: {
-                            csrfmiddlewaretoken: '{{ csrf_token }}'
-                        },
-                        type: "POST",
-                        success: function (data) {
-                            $('#service_status').html(data);
-                            setTimeout(function () {
-                                tasks_update_recent();
-                            }, 2000);
-                        }
-                    })
-                }
-            )
         </script>
       </div>
     </div>
@@ -205,7 +192,7 @@
   {% else %}
 
     <div class="row col-md-offset-2">
-      <h3>Celery administration </h3>
+      <h3>Task administration </h3>
     </div>
 
     <div class="row">
