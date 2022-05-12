@@ -16,5 +16,7 @@
 if __name__ == "__main__":
     from openrem.remapp.extractors.mam import mam
     import openrem.remapp.tools.default_import as default_import
-    
-    default_import.default_import(mam, "import_mam", "the DICOM mammography image file", 0, {"import_mam": 1})
+
+    default_import.default_import(
+        mam, "import_mam", "the DICOM mammography image file", 0, {"import_mam": 1}
+    )

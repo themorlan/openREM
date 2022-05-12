@@ -15,5 +15,11 @@
 if __name__ == "__main__":
     from openrem.remapp.extractors.ct_philips import ct_philips
     import openrem.remapp.tools.default_import as default_import
-    
-    default_import.default_import(ct_philips, "import_ct_philips", "the Philips dose report image", 0, {"import_ct_philips": 1})
+
+    default_import.default_import(
+        ct_philips,
+        "import_ct_philips",
+        "the Philips dose report image",
+        0,
+        {"import_ct_philips": 1},
+    )
