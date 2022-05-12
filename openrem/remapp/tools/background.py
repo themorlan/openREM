@@ -57,7 +57,7 @@ from remapp.models import BackgroundTask, DicomQuery
 
 
 def _sleep_for_linear_increasing_time(x):
-    time.sleep(0.2 + 0.5 * x * random.random())
+    time.sleep(0.2 + 0.9 * x * random.random())
 
 
 def run_as_task(func, task_type, num_proc, num_of_task_type, taskuuid, *args, **kwargs):
