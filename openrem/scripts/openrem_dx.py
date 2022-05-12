@@ -13,15 +13,8 @@
 
 """
 
-import sys
-from glob import glob
-from openrem.remapp.extractors.dx import dx
-
-if len(sys.argv) < 2:
-    sys.exit("Error: Supply at least one argument - the DICOM radiography image file")
-
-for arg in sys.argv[1:]:
-    for filename in glob(arg):
-        dx(filename)
-
-sys.exit()
+if __name__ == "__main__":
+    from openrem.remapp.extractors.dx import dx
+    import openrem.remapp.tools.default_import as default_import
+    
+    default_import.default_import(dx, "import_dx", "the DICOM radiography image file", 0, {"import_dx": 1})

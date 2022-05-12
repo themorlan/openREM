@@ -727,7 +727,9 @@ def abort_if_zero_studies(num_studies, tsk):
         return False
 
 
-def create_export_task(task_id, modality, export_type, date_stamp, pid, user, filters_dict):
+def create_export_task(
+    task_id, modality, export_type, date_stamp, pid, user, filters_dict
+):
     """Create export task, add filter details and Task UUID to export table to track later
 
     :param id: The id allocated for this task

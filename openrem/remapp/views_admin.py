@@ -36,7 +36,7 @@ from __future__ import absolute_import
 import os
 import json
 import logging
-from datetime import datetime, timedelta
+from datetime import timedelta
 import requests
 from builtins import map  # pylint: disable=redefined-builtin
 
@@ -56,6 +56,7 @@ from django.urls import reverse_lazy
 from django.utils.safestring import mark_safe
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.utils import timezone
 
 from .extractors.extract_common import populate_rf_delta_weeks_summary
 from .forms import (
@@ -1917,14 +1918,17 @@ def tasks(request, stage=None):
         active_tasks = []
         recent_tasks = []
         older_tasks = []
-        tasks = BackgroundTask.objects.all()
-        datetime_now = datetime.now()
+        tasks = BackgroundTask.objects.order_by("started_at").all()
+        datetime_now = timezone.now()
 
         for task in tasks:
             recent_time_delta = timedelta(hours=6)
             if not task.complete:
                 active_tasks.append(task)
-            elif datetime_now - recent_time_delta < task.started_at:
+            elif (
+                task.started_at is not None
+                and datetime_now - recent_time_delta < task.started_at
+            ):
                 recent_tasks.append(task)
             else:
                 older_tasks.append(task)
@@ -1952,6 +1956,8 @@ def task_abort(request, task_id=None):
                         task_id
                     )
                 )
+                if task.task_type == "query":
+                    DicomQuery.objects.filter(query_id__exact=task_id).delete()
             else:
                 if task.task_type.startswith("export"):
                     Exports.objects.filter(task_id__exact=task_id).delete()

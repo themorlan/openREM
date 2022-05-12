@@ -353,11 +353,23 @@ class DicomRemoteQR(models.Model):
         return self.name
 
 
+class BackgroundTask(models.Model):
+    uuid = models.TextField()
+    proc_id = models.IntegerField()
+    task_type = models.TextField()
+    info = models.TextField(blank=True, null=True)
+    error = models.TextField(blank=True, null=True)
+    completed_successfully = models.BooleanField(default=False)
+    complete = models.BooleanField(default=False)
+    started_at = models.DateTimeField(blank=True, null=True)
+
+
 class DicomQuery(models.Model):
     """
     Table to store DICOM query settings
     """
 
+    started_at = models.DateTimeField(blank=True, null=True)
     complete = models.BooleanField(default=False)
     query_id = models.CharField(max_length=64)
     query_summary = models.TextField(blank=True, null=True)
@@ -376,6 +388,10 @@ class DicomQuery(models.Model):
     move_complete = models.BooleanField(default=False)
     move_summary = models.TextField(blank=True)
     move_uuid = models.UUIDField(null=True)
+    query_task = models.ForeignKey(BackgroundTask,
+        on_delete=models.SET_NULL, blank=True, null=True, related_name="query_part")
+    move_task = models.ForeignKey(BackgroundTask,
+        on_delete=models.SET_NULL, blank=True, null=True, related_name="move_part")
 
 
 class DicomQRRspStudy(models.Model):
@@ -388,6 +404,9 @@ class DicomQRRspStudy(models.Model):
     number_of_study_related_series = models.IntegerField(blank=True, null=True)
     sop_classes_in_study = models.TextField(blank=True, null=True)
     station_name = models.CharField(max_length=32, blank=True, null=True)
+    deleted_flag = models.BooleanField(default=False)
+    deleted_reason = models.TextField(default="Downloaded")
+    related_imports = models.ManyToManyField(BackgroundTask)
 
     def set_modalities_in_study(self, x):
         self.modalities_in_study = json.dumps(list(x or []))
@@ -417,6 +436,8 @@ class DicomQRRspSeries(models.Model):
     station_name = models.CharField(max_length=32, blank=True, null=True)
     sop_class_in_series = models.TextField(blank=True, null=True)
     image_level_move = models.BooleanField(default=False)
+    deleted_flag = models.BooleanField(default=False)
+    deleted_reason = models.TextField(default="Downloaded")
 
     class Meta:
         indexes = [
@@ -434,6 +455,8 @@ class DicomQRRspImage(models.Model):
     sop_instance_uid = models.TextField(blank=True, null=True)
     instance_number = models.IntegerField(blank=True, null=True)
     sop_class_uid = models.TextField(blank=True, null=True)
+    deleted_flag = models.BooleanField(default=False)
+    deleted_reason = models.TextField(default="Downloaded")
 
     class Meta:
         indexes = [
@@ -2816,14 +2839,3 @@ class UpgradeStatus(SingletonModel):
     """
 
     from_0_9_1_summary_fields = models.BooleanField(default=False)
-
-
-class BackgroundTask(models.Model):
-    uuid = models.TextField()
-    proc_id = models.IntegerField()
-    task_type = models.TextField()
-    info = models.TextField(blank=True, null=True)
-    error = models.TextField(blank=True, null=True)
-    completed_successfully = models.BooleanField(default=False)
-    complete = models.BooleanField(default=False)
-    started_at = models.DateTimeField()

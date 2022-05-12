@@ -2106,12 +2106,3 @@ def ct_toshiba(folder_name):
     logger.debug("Removing study folder complete")
     logger.debug("Reached end of ct_toshiba routine")
     return 0
-
-
-if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        sys.exit(
-            "Error: supply exactly one argument - the folder containing the DICOM objects"
-        )
-
-    sys.exit(ct_toshiba(sys.argv[1]))

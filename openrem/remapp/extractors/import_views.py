@@ -42,6 +42,7 @@ from django.urls import reverse, reverse_lazy
 from django.views.decorators.csrf import csrf_exempt
 from openrem.remapp.tools.background import (
     run_in_background,
+    run_in_background_with_limits,
     terminate_background,
 )
 
@@ -73,21 +74,49 @@ def import_from_docker(request):
         f"In import_from_docker, dicom_path is {dicom_path}, import type is {import_type}"
     )
 
+    # This violates the rules for running background processes at the moment (may block),
+    # but at least it ensures correctness
     if dicom_path:
         if import_type == "rdsr":
-            rdsr(dicom_path)
+            run_in_background_with_limits(
+                rdsr, "import_rdsr", 0, {"import_rdsr": 1}, dicom_path
+            )
             return_type = "RDSR"
         elif import_type == "dx":
-            dx(dicom_path)
+            run_in_background_with_limits(
+                dx,
+                "import_dx",
+                0,
+                {"import_dx": 1},
+                dicom_path,
+            )
             return_type = "DX"
         elif import_type == "mam":
-            mam(dicom_path)
+            run_in_background_with_limits(
+                mam,
+                "import_mam",
+                0,
+                {"import_mam": 1},
+                dicom_path,
+            )
             return_type = "Mammography"
         elif import_type == "ct_philips":
-            ct_philips(dicom_path)
+            run_in_background_with_limits(
+                ct_philips,
+                "import_ct_philips",
+                0,
+                {"import_ct_philips": 1},
+                dicom_path,
+            )
             return_type = "CT Philips"
         elif import_type == "ct_toshiba":
-            ct_toshiba(dicom_path)
+            run_in_background_with_limits(
+                ct_toshiba,
+                "import_ct_toshiba",
+                0,
+                {"import_ct_toshiba": 1},
+                dicom_path,
+            )
             return HttpResponse(f"{dicom_path} passed to CT Toshiba import")
         else:
             return HttpResponse("Import script name not recognised")
