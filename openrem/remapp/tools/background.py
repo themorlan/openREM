@@ -320,12 +320,15 @@ def record_task_related_query(study_instance_uid):
     b = get_current_task()
     if b is not None:
         if DicomQuery.objects.exists():
-            queries = (
-                DicomQuery.objects.filter(started_at__isnull=False)
-                .latest("started_at")
-                .dicomqrrspstudy_set.filter(study_instance_uid=study_instance_uid)
-                .all()
-            )
+            try:
+                queries = (
+                    DicomQuery.objects.filter(started_at__isnull=False)
+                    .latest("started_at")
+                    .dicomqrrspstudy_set.filter(study_instance_uid=study_instance_uid)
+                    .all()
+                )
 
-            for query in queries:
-                query.related_imports.add(b)
+                for query in queries:
+                    query.related_imports.add(b)
+            except DicomQuery.DoesNotExist:
+                pass
