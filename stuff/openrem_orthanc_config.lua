@@ -274,7 +274,7 @@ function ToAscii(s)
      -- Call OpenREM import script. Runs as orthanc user in linux, so log files must be writable by Orthanc
      -- Run in detached mode, so long imports don't lead to network problems
      if (use_windows_execute) then
-        os.execute('start /b' .. python_executable .. ' ' .. python_scripts_path .. import_script .. ' ' .. temp_file_path)
+        os.execute('start /b ' .. python_executable .. ' ' .. python_scripts_path .. import_script .. ' ' .. temp_file_path)
      else
         os.execute(python_executable .. ' ' .. python_scripts_path .. import_script .. ' ' .. temp_file_path .. ' &')
      end
