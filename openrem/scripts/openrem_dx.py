@@ -15,6 +15,6 @@
 
 if __name__ == "__main__":
     from openrem.remapp.extractors.dx import dx
-    import default_import
+    import openrem.remapp.tools.default_import as default_import
     
     default_import.default_import(dx, "import_dx", "the DICOM radiography image file", 0, {"import_dx": 1})
