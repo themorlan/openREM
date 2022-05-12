@@ -55,6 +55,8 @@ django.setup()
 
 from remapp.models import BackgroundTask, DicomQuery
 
+def _sleep_for_linear_increasing_time(x):
+    time.sleep(0.2 + 0.4 * x * random.random())
 
 def run_as_task(func, task_type, num_proc, num_of_task_type, taskuuid, *args, **kwargs):
     """
@@ -119,7 +121,7 @@ def run_as_task(func, task_type, num_proc, num_of_task_type, taskuuid, *args, **
                         b.started_at = timezone.now()
                         b.save()
                         break
-            time.sleep(0.2 + 0.4 * next_wait_time * random.random())
+            _sleep_for_linear_increasing_time(next_wait_time)
     else:
         b.started_at = timezone.now()
         b.save()
@@ -243,7 +245,10 @@ def wait_task(task: BackgroundTask):
         task.refresh_from_db()
         if task.complete:
             return
-        time.sleep(0.3)
+        qs = BackgroundTask.objects.filter(
+                complete__exact=False
+            ).count()
+        _sleep_for_linear_increasing_time(qs)
 
 
 def _get_task_via_uuid(task_uuid):
