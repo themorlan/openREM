@@ -33,6 +33,24 @@ from decimal import Decimal
 
 
 class ImportNMImage(ImportTest):
+    def _get_siemens_image_expected_radioadmin(self):
+        return {
+            "get": {
+                "radiopharmaceutical_agent": {
+                    "code_meaning": "Fluorodeoxyglucose F^18^"
+                },
+                "radionuclide": {"code_meaning": "^18^Fluorine"},
+                "radionuclide_half_life": Decimal(6586.2),
+                "administered_activity": Decimal(394.0),
+                "radiopharmaceutical_start_datetime": datetime(
+                    2022, 2, 24, 10, 48, 30, 0
+                ),
+                "radiopharmaceutical_stop_datetime": datetime(
+                    2022, 2, 24, 10, 48, 30, 0
+                ),
+            }
+        }
+
     def test_pet_image_siemens_alone(self):
         """
         Loads a single PET image
@@ -55,20 +73,34 @@ class ImportNMImage(ImportTest):
             },
             "radiopharmaceuticalradiationdose_set": {
                 "get": {
-                    "radiopharmaceuticaladministrationeventdata_set": {
-                        "get": {
-                            "radiopharmaceutical_agent": {
-                                "code_meaning": "Fluorodeoxyglucose F^18^"
+                    "radiopharmaceuticaladministrationeventdata_set": self._get_siemens_image_expected_radioadmin(),
+                    "petseries_set": {
+                        lambda x: x.get(): {
+                            "series_datetime": datetime(2022, 2, 24, 11, 56),
+                            "number_of_rr_intervals": None,
+                            "number_of_time_slots": None,
+                            "number_of_time_slices": None,
+                            "number_of_slices": Decimal(476),
+                            "reconstruction_method": "PSF+TOF 4i5s",
+                            "coincidence_window_width": None,
+                            "energy_window_lower_limit": Decimal(435),
+                            "energy_window_upper_limit": Decimal(585),
+                            "scan_progression_direction": None,
+                            "petseriescorrection_set": {
+                                "all": {
+                                    lambda x: x[0]: {"corrected_image": "NORM"},
+                                    lambda x: x[1]: {"corrected_image": "DTIM"},
+                                    lambda x: x[2]: {"corrected_image": "ATTN"},
+                                    lambda x: x[3]: {"corrected_image": "SCAT"},
+                                    lambda x: x[4]: {"corrected_image": "DECY"},
+                                    lambda x: x[5]: {"corrected_image": "RAN"},
+                                }
                             },
-                            "radionuclide": {"code_meaning": "^18^Fluorine"},
-                            "radionuclide_half_life": Decimal(6586.2),
-                            "administered_activity": Decimal(394.0),
-                            "radiopharmaceutical_start_datetime": datetime(
-                                2022, 2, 24, 10, 48, 30, 0
-                            ),
-                            "radiopharmaceutical_stop_datetime": datetime(
-                                2022, 2, 24, 10, 48, 30, 0
-                            ),
+                            "petseriestype_set": {
+                                "all": {
+                                    lambda x: x[0]: {"series_type": "WHOLE BODY"},
+                                }
+                            },
                         }
                     },
                 }
@@ -117,6 +149,30 @@ class ImportNMImage(ImportTest):
                             ),
                         }
                     },
+                    "petseries_set": {
+                        "get": {
+                            "series_datetime": datetime(2022, 3, 10, 13, 31, 55),
+                            "number_of_rr_intervals": None,
+                            "number_of_time_slots": None,
+                            "number_of_time_slices": None,
+                            "number_of_slices": Decimal(313),
+                            "reconstruction_method": "VPFXS",
+                            "coincidence_window_width": Decimal(0.0),
+                            "energy_window_lower_limit": Decimal(425),
+                            "energy_window_upper_limit": Decimal(650),
+                            "scan_progression_direction": None,
+                            "petseriescorrection_set": {
+                                "all": {
+                                    lambda x: x[0]: {"corrected_image": "DECY"},
+                                    "last": {"corrected_image": "NORM"},
+                                }
+                            },
+                            "petseriestype_set": {
+                                "first": {"series_type": "STATIC"},
+                                "last": {"series_type": "IMAGE"},
+                            },
+                        }
+                    },
                 }
             },
         }
@@ -124,19 +180,8 @@ class ImportNMImage(ImportTest):
         study = GeneralStudyModuleAttr.objects.get()
         self._check_values(study, expected)
 
-    @patch("remapp.extractors.nm_image.logger")
-    def test_rrdsr_pet_image(self, logger_mock):
-        """
-        Loads the rrdsr, followed by an associated PET-Image
-        """
-        rrdsr_file = self._get_dcm_file("test_files/NM-RRDSR-Siemens.dcm")
-        rdsr(rrdsr_file)
-        img_loc = self._get_dcm_file("test_files/NM-PetIm-Siemens.dcm")
-        nm_image(img_loc)
-
-        logger_mock.warning.assert_called()  # Dates are set differently, therefore logger warns
-
-        expected = {
+    def _get_pet_simens_rrdsr_one_img_combined(self):
+        return {
             "radiopharmaceuticalradiationdose_set": {
                 "get": {
                     "radiopharmaceuticaladministrationeventdata_set": {
@@ -156,12 +201,46 @@ class ImportNMImage(ImportTest):
                             ),
                         }
                     },
+                    "petseries_set": {
+                        lambda x: x.get(): {
+                            "series_datetime": datetime(2022, 2, 24, 11, 56),
+                            "number_of_rr_intervals": None,
+                            "number_of_time_slots": None,
+                            "number_of_time_slices": None,
+                            "number_of_slices": Decimal(476),
+                            "reconstruction_method": "PSF+TOF 4i5s",
+                            "coincidence_window_width": None,
+                            "energy_window_lower_limit": Decimal(435),
+                            "energy_window_upper_limit": Decimal(585),
+                            "scan_progression_direction": None,
+                            "petseriescorrection_set": {
+                                "first": {"corrected_image": "NORM"},
+                            },
+                            "petseriestype_set": {
+                                "all": {
+                                    lambda x: x[0]: {"series_type": "WHOLE BODY"},
+                                }
+                            },
+                        }
+                    },
                 }
             }
         }
 
+    @patch("remapp.extractors.nm_image.logger")
+    def test_rrdsr_pet_image(self, logger_mock):
+        """
+        Loads the rrdsr, followed by an associated PET-Image
+        """
+        rrdsr_file = self._get_dcm_file("test_files/NM-RRDSR-Siemens.dcm")
+        rdsr(rrdsr_file)
+        img_loc = self._get_dcm_file("test_files/NM-PetIm-Siemens.dcm")
+        nm_image(img_loc)
+
+        logger_mock.warning.assert_called()  # Dates are set differently, therefore logger warns
+
         study = GeneralStudyModuleAttr.objects.get()
-        self._check_values(study, expected)
+        self._check_values(study, self._get_pet_simens_rrdsr_one_img_combined())
 
     def test_pet_image_rrdsr(self):
         """
@@ -172,27 +251,8 @@ class ImportNMImage(ImportTest):
         rrdsr_file = self._get_dcm_file("test_files/NM-RRDSR-Siemens.dcm")
         rdsr(rrdsr_file)
 
-        expected = {
-            "radiopharmaceuticalradiationdose_set": {
-                "get": {
-                    "radiopharmaceuticaladministrationeventdata_set": {
-                        "get": {
-                            "organdose_set": {
-                                "first": {
-                                    "finding_site": {"code_meaning": "Adrenal gland"},
-                                    "laterality": {"code_meaning": "Right and left"},
-                                    "organ_dose": Decimal(4.73),
-                                    "reference_authority_text": "ICRP Publication 128",
-                                },
-                            }
-                        }
-                    },
-                }
-            }
-        }
-
         study = GeneralStudyModuleAttr.objects.get()
-        self._check_values(study, expected)
+        self._check_values(study, self._get_pet_simens_rrdsr_one_img_combined())
 
     @patch("remapp.extractors.nm_image.logger")
     def test_no_reloads_1(self, logger_mock):
@@ -254,6 +314,107 @@ class ImportNMImage(ImportTest):
                 }
             },
         }
+        study = GeneralStudyModuleAttr.objects.get()
+        self._check_values(study, expected)
+
+    @patch("remapp.extractors.nm_image.logger")
+    def test_pet_image_siemens_multiple(self, logger_mock):
+        nm_image(self._get_dcm_file("test_files/NM-PetIm-Siemens.dcm"))
+        nm_image(self._get_dcm_file("test_files/NM-PetIm-Siemens-3-sameseries.dcm"))
+        nm_image(self._get_dcm_file("test_files/NM-PetIm-Siemens-2.dcm"))
+        nm_image(self._get_dcm_file("test_files/NM-PetIm-Siemens-3.dcm"))
+
+        logger_mock.info.assert_called()  # 3 will not be loaded the second time, because it's already imported
 
         study = GeneralStudyModuleAttr.objects.get()
+        expected = {
+            "modality_type": "NM",
+            "patientmoduleattr_set": {
+                "get": {
+                    "not_patient_indicator": None,
+                    "patient_name": "REMOVED",
+                }
+            },
+            "patientstudymoduleattr_set": {
+                "get": {
+                    "patient_age": "063Y",
+                }
+            },
+            "radiopharmaceuticalradiationdose_set": {
+                "get": {
+                    "radiopharmaceuticaladministrationeventdata_set": self._get_siemens_image_expected_radioadmin(),
+                    "petseries_set": {
+                        "count": 3,
+                        "all": {
+                            lambda x: x[0]: {
+                                "series_datetime": datetime(2022, 2, 24, 11, 56),
+                                "number_of_rr_intervals": None,
+                                "number_of_time_slots": None,
+                                "number_of_time_slices": None,
+                                "number_of_slices": Decimal(476),
+                                "reconstruction_method": "PSF+TOF 4i5s",
+                                "energy_window_lower_limit": Decimal(435),
+                                "energy_window_upper_limit": Decimal(585),
+                                "scan_progression_direction": None,
+                                "petseriescorrection_set": {"count": 6},
+                                "petseriestype_set": {"count": 2},
+                            },
+                            lambda x: x[1]: {
+                                "series_datetime": datetime(2022, 2, 24, 11, 56),
+                                "number_of_slices": Decimal(476),
+                                "reconstruction_method": "PSF+TOF 7i5s",
+                                "energy_window_lower_limit": Decimal(435),
+                                "energy_window_upper_limit": Decimal(585),
+                                "scan_progression_direction": None,
+                                "petseriescorrection_set": {"count": 6},
+                                "petseriestype_set": {"count": 2},
+                            },
+                            lambda x: x[2]: {
+                                "petseriescorrection_set": {"count": 4},
+                                "petseriestype_set": {"count": 2},
+                            },
+                        },
+                    },
+                }
+            },
+        }
+        self._check_values(study, expected)
+
+    def test_nm_image_multiple(self):
+        nm_image(self._get_dcm_file("test_files/NM-NmIm-Siemens-s1-1.dcm"))
+        nm_image(self._get_dcm_file("test_files/NM-NmIm-Siemens-s1-2.dcm"))
+
+        study = GeneralStudyModuleAttr.objects.get()
+        expected = {
+            "modality_type": "NM",
+            "study_date": datetime(2022, 2, 18).date(),
+            "patientmoduleattr_set": {
+                "get": {
+                    "not_patient_indicator": None,
+                    "patient_name": "REMOVED",
+                    "patient_sex": "F",
+                }
+            },
+            "patientstudymoduleattr_set": {
+                "get": {
+                    "patient_age": "071Y",
+                }
+            },
+            "generalequipmentmoduleattr_set": {
+                "get": {
+                    "manufacturer": "SIEMENS NM",
+                }
+            },
+            "radiopharmaceuticalradiationdose_set": {
+                "get": {
+                    "radiopharmaceuticaladministrationeventdata_set": {
+                        "get": {
+                            "radiopharmaceutical_agent_string": "Sestamibi",
+                            "radionuclide": {"code_meaning": "99m Technetium"},
+                            "administered_activity": Decimal(320.0),
+                        }
+                    },
+                }
+            },
+        }
         self._check_values(study, expected)

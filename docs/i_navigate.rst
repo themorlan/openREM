@@ -21,7 +21,7 @@ populated with studies:
    OpenREM homepage screenshot
 
 By selecting the links in the navigation bar at the top, you can view all
-of the CT, fluoroscopy, mammography or radiographic studies. Alternatively, click on any row to filter by that system.
+of the CT, fluoroscopy, mammography, radiographic or nuclear medicine studies. Alternatively, click on any row to filter by that system.
 
 The modality tables can be sorted by any of the columns by clicking on the
 column header that you wish to sort by.

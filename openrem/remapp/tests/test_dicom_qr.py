@@ -1371,8 +1371,9 @@ class PruneSeriesResponseNM(TestCase):
         studies = query.dicomqrrspstudy_set.all()
         self.assertEqual(studies.count(), 1)
         series = studies[0].dicomqrrspseries_set.all()
-        self.assertEqual(series.count(), 1)
-        self.assertEqual(series.get().modality, "SR")
+        self.assertEqual(series.count(), 2)
+        for serie in series.all():
+            self.assertIn(serie.modality, ["SR", "PT"])
 
     @patch("remapp.netdicom.qrscu._query_images", _fake_image_query)
     def test_prune_ser_resp_pt_image(self):
@@ -1401,7 +1402,8 @@ class PruneSeriesResponseNM(TestCase):
         self.assertEqual(studies.count(), 1)
         series = studies[0].dicomqrrspseries_set.all()
         self.assertEqual(series.count(), 1)
-        self.assertEqual(series.get().modality, "PT")
+        for serie in series.all():
+            self.assertEqual(serie.modality, "PT")
 
     @patch("remapp.netdicom.qrscu._query_images", _fake_image_query)
     def test_prune_ser_resp_nm_image(self):

@@ -105,19 +105,40 @@ def _get_data(filterdict, pid, task):
             "glomerularfiltrationrate",
             distinct=True,
         ),
+        num_pet_series=Count(
+            "radiopharmaceuticalradiationdose__petseries",
+            distinct=True,
+        ),
     ).aggregate(
         max_person_participants=Max("num_person_participants"),
         max_organ_doses=Max("num_organ_doses"),
         max_patient_states=Max("num_patient_state"),
         max_glomerular_filtration_rates=Max("num_glomerular_filtration_rate"),
+        max_pet_series=Max("num_pet_series"),
     )
 
     return (data, statistics)
 
 
+def _build_block_header(
+    headings, get_header_block, header_block_name, header_lengths, statistics=None
+):
+    tmp = get_header_block(1)
+    header_lengths[header_block_name] = len(tmp)
+    if statistics is None:
+        until = 2  # 1 + 1
+    else:
+        until = statistics[header_block_name] + 1
+    for i in range(1, until):
+        headings += get_header_block(i)
+    return headings, header_lengths
+
+
 def _nm_headers(pid, name, patid, statistics):
     headings = common_headers("NM", pid, name, patid)
+    header_lengths = {}
     headings.remove("No. events")  # There is always just one event for a study
+    header_lengths["common_begin"] = len(headings)
     headings += [
         "Radiopharmaceutical Agent",
         "Radionuclide",
@@ -130,41 +151,83 @@ def _nm_headers(pid, name, patid, statistics):
         "Route of Administration",
         "Route of Administration Laterality",
     ]
-    for i in range(1, statistics["max_person_participants"] + 1):
-        headings += [f"Person participant name {i}", f"Person participant role {i}"]
+    headings, header_lengths = _build_block_header(
+        headings,
+        lambda i: [f"Person participant name {i}", f"Person participant role {i}"],
+        "max_person_participants",
+        header_lengths,
+        statistics,
+    )
     headings += ["Comment"]
-    for i in range(1, statistics["max_organ_doses"] + 1):
-        headings += [
+    headings, header_lengths = _build_block_header(
+        headings,
+        lambda i: [
             f"Organ Dose Finding Site {i}",
             f"Organ Laterality {i}",
             f"Organ Dose {i} (mGy)",
             f"Organ Mass {i}(g)",
             f"Organ Dose Measurement Method {i}",
             f"Organ Dose Reference Authority {i}",
-        ]
-    for i in range(1, statistics["max_patient_states"] + 1):
-        headings += [f"Patient state {i}"]
-    patcharac_headers = [
-        "Body Surface Area (m^2)",
-        "Body Surface Area Formula",
-        "Body Mass Index (kg/m^2)",
-        "Body Mass Index Equation",
-        "Glucose (mmol/l)",
-        "Fasting Duration (hours)",
-        "Hydration Volume (ml)",
-        "Recent Physical Activity",
-        "Serum Creatinine (mg/dl)",
-    ]
-    headings += patcharac_headers
-    statistics["max_patient_charac_header"] = len(patcharac_headers)
-    for i in range(1, statistics["max_glomerular_filtration_rates"] + 1):
-        headings += [
+        ],
+        "max_organ_doses",
+        header_lengths,
+        statistics,
+    )
+    headings, header_lengths = _build_block_header(
+        headings,
+        lambda i: [f"Patient state {i}"],
+        "max_patient_states",
+        header_lengths,
+        statistics,
+    )
+    headings, header_lengths = _build_block_header(
+        headings,
+        lambda i: [
+            "Body Surface Area (m^2)",
+            "Body Surface Area Formula",
+            "Body Mass Index (kg/m^2)",
+            "Body Mass Index Equation",
+            "Glucose (mmol/l)",
+            "Fasting Duration (hours)",
+            "Hydration Volume (ml)",
+            "Recent Physical Activity",
+            "Serum Creatinine (mg/dl)",
+        ],
+        "max_patient_charac_header",
+        header_lengths,
+        None,
+    )
+    headings, header_lengths = _build_block_header(
+        headings,
+        lambda i: [
             f"Glomerular Filtration Rate {i} (ml/min/1.73m^2)",
             f"Measurement Method {i}",
             f"Equivalent meaning of concept name {i}",
-        ]
+        ],
+        "max_glomerular_filtration_rates",
+        header_lengths,
+        statistics,
+    )
+    headings, header_lengths = _build_block_header(
+        headings,
+        lambda i: [
+            f"Series {i} date",
+            f"Series {i} number of slices",
+            f"Series {i} reconstruction method",
+            f"Series {i} coincidence window width",
+            f"Series {i} energy window lower limit",
+            f"Series {i} energy window upper limit",
+            f"Series {i} scan procession",
+            f"Series {i} number of RR intervals",
+            f"Series {i} number of time slots",
+            f"Series {i} number of time slices",
+        ],
+        "max_pet_series",
+        header_lengths,
+        statistics,
+    )
 
-    return (headings, statistics)
+    return (headings, header_lengths)
 
 
 def _get_code_not_none(code):
@@ -174,11 +237,16 @@ def _get_code_not_none(code):
         return code.code_meaning
 
 
-def _array_to_match_maximum(len_current, len_max):
-    return [None for _ in range(len_max - len_current)]
+def _array_to_match_maximum(len_current, len_max, current_header_length):
+    return [
+        None
+        for _ in range(
+            len_max * current_header_length - len_current * current_header_length
+        )
+    ]
 
 
-def _extract_study_data(exams, pid, name, patid, statistics):
+def _extract_study_data(exams, pid, name, patid, statistics, header_lengths):
     exam_data = get_common_data("NM", exams, pid, name, patid)
 
     try:
@@ -198,6 +266,7 @@ def _extract_study_data(exams, pid, name, patid, statistics):
             )
         else:
             patient_states, glomerular_filtration_rates = ([], [])
+        pet_series = radiopharm.petseries_set.all()
     except ObjectDoesNotExist:
         raise  # We handle this on the level of the export function
     if radiopharm_admin.radiopharmaceutical_agent is None:
@@ -224,7 +293,9 @@ def _extract_study_data(exams, pid, name, patid, statistics):
             _get_code_not_none(person_participant.person_role_in_procedure_cid),
         ]
     exam_data += _array_to_match_maximum(
-        len(person_participants), statistics["max_person_participants"]
+        len(person_participants),
+        statistics["max_person_participants"],
+        header_lengths["max_person_participants"],
     )
     exam_data += [radiopharm.comment]
     for organ_dose in organ_doses:
@@ -243,12 +314,16 @@ def _extract_study_data(exams, pid, name, patid, statistics):
             organ_dose_reference_authority,
         ]
     exam_data += _array_to_match_maximum(
-        len(organ_doses), statistics["max_organ_doses"]
+        len(organ_doses),
+        statistics["max_organ_doses"],
+        header_lengths["max_organ_doses"],
     )
     for patient_state in patient_states:
         exam_data += [_get_code_not_none(patient_state.patient_state)]
     exam_data += _array_to_match_maximum(
-        len(patient_states), statistics["max_patient_states"]
+        len(patient_states),
+        statistics["max_patient_states"],
+        header_lengths["max_patient_states"],
     )
     if patient_charac is not None:
         exam_data += [
@@ -263,7 +338,9 @@ def _extract_study_data(exams, pid, name, patid, statistics):
             patient_charac.serum_creatinine,
         ]
     else:
-        exam_data += _array_to_match_maximum(0, statistics["max_patient_charac_header"])
+        exam_data += _array_to_match_maximum(
+            0, 1, header_lengths["max_patient_charac_header"]
+        )
     for glomerular in glomerular_filtration_rates:
         exam_data += [
             glomerular.glomerular_filtration_rate,
@@ -271,7 +348,25 @@ def _extract_study_data(exams, pid, name, patid, statistics):
             _get_code_not_none(glomerular.equivalent_meaning_of_concept_name),
         ]
     exam_data += _array_to_match_maximum(
-        len(glomerular_filtration_rates), statistics["max_glomerular_filtration_rates"]
+        len(glomerular_filtration_rates),
+        statistics["max_glomerular_filtration_rates"],
+        header_lengths["max_glomerular_filtration_rates"],
+    )
+    for series in pet_series:
+        exam_data += [
+            series.series_datetime,
+            series.number_of_slices,
+            series.reconstruction_method,
+            series.coincidence_window_width,
+            series.energy_window_lower_limit,
+            series.energy_window_upper_limit,
+            series.scan_progression_direction,
+            series.number_of_rr_intervals,
+            series.number_of_time_slots,
+            series.number_of_time_slices,
+        ]
+    exam_data += _array_to_match_maximum(
+        len(pet_series), statistics["max_pet_series"], header_lengths["max_pet_series"]
     )
 
     for i, item in enumerate(exam_data):
@@ -312,7 +407,7 @@ def exportNM2csv(filterdict, pid=False, name=None, patid=None, user=None):
             _exit_proc(task, date_stamp, "Failed to create the export file")
 
         data, statistics = _get_data(filterdict, pid, task)
-        headings, statistics = _nm_headers(pid, name, patid, statistics)
+        headings, header_lengths = _nm_headers(pid, name, patid, statistics)
         writer.writerow(headings)
 
         task.progress = "CSV header row written."
@@ -320,7 +415,9 @@ def exportNM2csv(filterdict, pid=False, name=None, patid=None, user=None):
 
         for i, exam in enumerate(data):
             try:
-                exam_data = _extract_study_data(exam, pid, name, patid, statistics)
+                exam_data = _extract_study_data(
+                    exam, pid, name, patid, statistics, header_lengths
+                )
                 writer.writerow(exam_data)
             except ObjectDoesNotExist:
                 error_message = (
@@ -350,6 +447,7 @@ def _write_nm_excel_sheet(
     patid,
     headings,
     statistics,
+    header_lengths,
     sheet_index=1,
     sheet_total=1,
 ):
@@ -363,7 +461,9 @@ def _write_nm_excel_sheet(
 
     for i, exam in enumerate(data):
         try:
-            exam_data = _extract_study_data(exam, pid, name, patid, statistics)
+            exam_data = _extract_study_data(
+                exam, pid, name, patid, statistics, header_lengths
+            )
             sheet.write_row(i + 1, 0, exam_data)
         except ObjectDoesNotExist:
             error_message = (
@@ -407,7 +507,7 @@ def exportNM2excel(filterdict, pid=False, name=None, patid=None, user=None):
             _exit_proc(task, date_stamp, "Failed to create file")
 
         data, statistics = _get_data(filterdict, pid, task)
-        headings, statistics = _nm_headers(pid, name, patid, statistics)
+        headings, header_lengths = _nm_headers(pid, name, patid, statistics)
 
         summary = book.add_worksheet("Summary")
         create_summary_sheet(task, data, book, summary, None, False)
@@ -425,15 +525,25 @@ def exportNM2excel(filterdict, pid=False, name=None, patid=None, user=None):
         sheet_count = len(study_descriptions) + 1
 
         all_data = book.add_worksheet("All data")
-        book = text_and_date_formats(book, all_data, pid, name, patid)
+        book = text_and_date_formats(book, all_data, pid, name, patid, "NM", headings)
         _write_nm_excel_sheet(
-            task, all_data, data, pid, name, patid, headings, statistics, 1, sheet_count
+            task,
+            all_data,
+            data,
+            pid,
+            name,
+            patid,
+            headings,
+            statistics,
+            header_lengths,
+            1,
+            sheet_count,
         )
 
         for i, study_description in enumerate(study_descriptions):
             study_description, current_data = study_description
             current_sheet = book.add_worksheet(sheet_name(study_description))
-            book = text_and_date_formats(book, current_sheet, pid, name, patid)
+            book = text_and_date_formats(book, current_sheet, pid, name, patid, "NM", headings)
             _write_nm_excel_sheet(
                 task,
                 current_sheet,
@@ -443,6 +553,7 @@ def exportNM2excel(filterdict, pid=False, name=None, patid=None, user=None):
                 patid,
                 headings,
                 statistics,
+                header_lengths,
                 i,
                 sheet_count,
             )

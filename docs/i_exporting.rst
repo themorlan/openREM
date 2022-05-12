@@ -77,6 +77,13 @@ this information on a per pulse basis instead. In this circumstance, in the web 
 pulses, but in the export the mean value (after excluding any zero values) is calculated first and this value is then
 used.
 
+Nuclear medicine exports
+------------------------
+
+Nuclear medicine does not have a concept like different irradiation events. Therefore in contrast to the other modalities
+it the summary dose information does not show protocols, and the excel export has individual sheets per study description
+instead of per protocol names. 
+
 Exports page
 ------------
 

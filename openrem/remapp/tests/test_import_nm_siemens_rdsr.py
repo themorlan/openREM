@@ -54,6 +54,7 @@ class ImportTest(TestCase):
             or check_type == time
             or check_type == datetime
             or check_type == bool
+            or check_type == int
         ):
             self.assertEqual(value, expect_value, msg)
         elif check_type == Decimal:

@@ -34,15 +34,14 @@
 ..  moduleauthor:: Jannis Widmer
 """
 from datetime import datetime
-from decimal import Decimal
 import logging
 import os
 import sys
 
 from celery import shared_task
 import django
-import pydicom
 from django.db.models import Q, ObjectDoesNotExist
+import pydicom
 
 # setup django/OpenREM.
 basepath = os.path.dirname(__file__)
@@ -55,17 +54,23 @@ django.setup()
 from remapp.models import (
     GeneralStudyModuleAttr,
     ObjectUIDsProcessed,
+    PETSeries,
+    PETSeriesCorrection,
+    PETSeriesType,
     RadiopharmaceuticalAdministrationEventData,
     RadiopharmaceuticalRadiationDose,
-    DicomDeleteSettings
+    DicomDeleteSettings,
 )
 
-from ..tools.dcmdatetime import get_date_time, get_time
+from ..tools.dcmdatetime import get_date, get_date_time, get_time
 from ..tools.get_values import (
     get_value_kw,
     get_or_create_cid,
     get_seq_code_meaning,
     get_seq_code_value,
+    get_value_num,
+    test_numeric_value,
+    to_decimal_value,
 )
 from .extract_common import (
     generalequipmentmoduleattributes,
@@ -140,7 +145,6 @@ def _isotope(study, dataset):
     dataset = dataset[0x54, 0x16].value[0] # Radio​pharmaceutical​Information​Sequence
 
     float_not_equal = lambda x, y: abs(x - y) > 10e-5
-    float_convert = Decimal
 
     study_id = study.study_instance_uid
     radio = (
@@ -161,7 +165,7 @@ def _isotope(study, dataset):
         dataset,
         "RadionuclideHalfLife",
         study_id,
-        mod=float_convert,
+        mod=to_decimal_value,
         is_not_equal=float_not_equal,
     )
     for ds_name in [
@@ -190,7 +194,7 @@ def _isotope(study, dataset):
         dataset,
         "RadiopharmaceuticalSpecificActivity",
         study_id,
-        mod=float_convert,
+        mod=to_decimal_value,
         is_not_equal=float_not_equal,
     )
 
@@ -239,9 +243,14 @@ def _isotope(study, dataset):
     )
 
     if is_nm_img:
-        conversion_func = float_convert
+        conversion_func = to_decimal_value
     else:
-        conversion_func = lambda x: Decimal(x) / 10**6  # Convert to MBq from Bq
+        # Convert to MBq from Bq
+        conversion_func = (
+            lambda x: None
+            if to_decimal_value(x) is None
+            else to_decimal_value(x) / 10**6
+        )
     _try_set_value(
         radio,
         "administered_activity",
@@ -271,6 +280,65 @@ def _isotope(study, dataset):
     radio.save()
 
 
+def _pet_series(study, dataset):
+    radiodose = study.radiopharmaceuticalradiationdose_set.get()
+    if "SeriesInstanceUID" in dataset:  # Check if already imported
+        uid = dataset.SeriesInstanceUID
+        if radiodose.petseries_set.filter(series_uid__exact=uid).count() > 0:
+            logger.info(
+                f"PET Series {uid} was already loaded to database."
+                "Will not import again."
+            )
+            return
+    else:
+        uid = None
+    ser = PETSeries.objects.create(radiopharmaceutical_radiation_dose=radiodose)
+    ser.series_uid = uid
+    tmp_time = get_time("SeriesTime", dataset)
+    tmp_date = get_date("SeriesDate", dataset)
+    if tmp_date and tmp_time:
+        ser.series_datetime = datetime.combine(tmp_date.date(), tmp_time.time())
+    ser.number_of_rr_intervalls = test_numeric_value(
+        get_value_num(0x541004, dataset)  # Number of R-R Intervalls
+    )
+    ser.number_of_time_slots = test_numeric_value(
+        get_value_num(0x540061, dataset)  # Number of time slots
+    )
+    ser.number_of_time_slices = test_numeric_value(
+        get_value_num(0x540101, dataset)  # Number of time slices
+    )
+    ser.number_of_slices = test_numeric_value(
+        get_value_num(0x540081, dataset)  # Number of slices
+    )
+    ser.reconstruction_method = get_value_kw("ReconstructionMethod", dataset)
+    ser.coincidence_window_width = test_numeric_value(
+        get_value_kw("CoincidenceWindowWidth", dataset)  # In ns
+    )
+    energy_window_range = get_value_kw("EnergyWindowRangeSequence", dataset)
+    if energy_window_range:
+        ser.energy_window_lower_limit = test_numeric_value(
+            get_value_kw("EnergyWindowLowerLimit", energy_window_range[0])  # In KeV
+        )
+        ser.energy_window_upper_limit = test_numeric_value(
+            get_value_kw("EnergyWindowUpperLimit", energy_window_range[0])  # In KeV
+        )
+    ser.scan_progression_direction = get_value_kw("ScanProgressionDirection", dataset)
+    ser.save()
+
+    ser_type = get_value_kw("SeriesType", dataset)
+    if ser_type:
+        for x in ser_type:
+            s = PETSeriesType.objects.create(pet_series=ser)
+            s.series_type = x
+            s.save()
+    corr_type = get_value_kw("CorrectedImage", dataset)
+    if corr_type:
+        for x in corr_type:
+            s = PETSeriesCorrection.objects.create(pet_series=ser)
+            s.corrected_image = x
+            s.save()
+
+
 def _record_object_imported(dataset, study):
     """Saves that this object has been imported."""
     o = ObjectUIDsProcessed.objects.create(general_study_module_attributes=study)
@@ -278,8 +346,16 @@ def _record_object_imported(dataset, study):
     o.save()
 
 
+def _nm_specific_imports(study, dataset, is_nm_img):
+    _record_object_imported(dataset, study)
+    _isotope(study, dataset)
+    if not is_nm_img:
+        _pet_series(study, dataset)
+
+
 def _nm2db(dataset):
     """Saves the dataset to the db."""
+    is_nm_img = dataset.SOPClassUID == "1.2.840.10008.5.1.4.1.1.20"
     if "StudyInstanceUID" in dataset:
         study = GeneralStudyModuleAttr.objects.filter(
             Q(study_instance_uid__exact=dataset.StudyInstanceUID)
@@ -295,15 +371,13 @@ def _nm2db(dataset):
                 )
                 return
 
-            _record_object_imported(dataset, study)
-            _isotope(study, dataset)
+            _nm_specific_imports(study, dataset, is_nm_img)
             return
 
     study = GeneralStudyModuleAttr.objects.create()
     generalequipmentmoduleattributes(dataset, study)
     study.modality_type = "NM"  # will be saved by generalstudymoduleattributes call
     generalstudymoduleattributes(dataset, study, logger)
-    _record_object_imported(dataset, study)
     patientstudymoduleattributes(dataset, study)
     patient_module_attributes(dataset, study)
     t = RadiopharmaceuticalRadiationDose.objects.create(
@@ -313,7 +387,7 @@ def _nm2db(dataset):
     RadiopharmaceuticalAdministrationEventData.objects.create(
         radiopharmaceutical_radiation_dose=t
     ).save()
-    _isotope(study, dataset)
+    _nm_specific_imports(study, dataset, is_nm_img)
 
 
 @shared_task(name="remapp.extractors.nm_image.nm_image")

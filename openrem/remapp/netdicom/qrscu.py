@@ -6,6 +6,15 @@ Query/Retrieve SCU AE
 
 Specialised QR routine to get just the objects that might be useful for dose related metrics from a remote PACS or
 modality
+
+The qrscu routine does basically act using c-find queries to the remote PACS/DICOM node. It progressively asks
+for information about studies, then series, then images storing the (high level) info acquired about them
+in the database as a DicomQuery object.
+On each level data that we are not interested in for some reason (studies that are duplicates; series that are
+excluded by our filters; and so on) are removed from the DicomQuery object.
+The movescu routing in the end initiates a c-move of all the objects that were not deleted from the query, such that
+those objects are sent to the local DICOM node (e.g. Orthanc). The local dicom node has to be configured such that it
+uses the openrem extractor scripts on receive of DICOM files.
 """
 
 import argparse
@@ -21,6 +30,7 @@ from copy import deepcopy
 from celery import shared_task
 import django
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Q
 from django.utils.translation import gettext as _
 from pydicom.dataset import Dataset
 from pynetdicom import AE, _config  # , debug_logger
@@ -166,12 +176,14 @@ def _remove_duplicates(ae, remote, query, study_rsp, assoc):
                             study.study_instance_uid,
                             existing_sop_instance_uids,
                         )
-                    elif series_rsp.modality in ["MG", "DX", "CR", "PX"]:
+                    elif series_rsp.modality in ["MG", "DX", "CR", "PX", "PT", "NM"]:
                         logger.debug(
                             f"{query_id_8} Study {study_number} {study.study_instance_uid} about to query at "
                             f"image level to get SOPInstanceUID"
                         )
-                        _query_images(ae, remote, assoc, series_rsp, query)
+                        _query_images(
+                            ae, remote, assoc, series_rsp, query, True
+                        )  # Only check first image of series
                         _remove_image_sop_uids(
                             series_rsp,
                             query_id_8,
@@ -454,9 +466,10 @@ def _prune_series_responses(
         ):
             study.modality = "NM"
             study.save()
-            # SOP ids: RRDSR, PET Image, NM Image. Because of the order
-            # we will try to get them prioritized in the same order
-            # (and move on if they don't exist)
+            # SOP ids: RRDSR, PET Image, NM Image. We will try to
+            # get all of those (In case of NM and PT only the first
+            # object of the series). NM will not be taken unless
+            # nothing else present
             nm_img_sop_ids = [
                 "1.2.840.10008.5.1.4.1.1.88.68",
                 "1.2.840.10008.5.1.4.1.1.128",
@@ -468,45 +481,42 @@ def _prune_series_responses(
                 nm_img_sop_ids[2]: ["NM"],
             }
 
-            loaded_modalities = set()
-            selected_sop_class = None
+            loaded_sop_classes = set()
             for sop_class in nm_img_sop_ids:
                 logger.debug(f"{query_id_8} Now checking for {sop_class} available")
-                loaded_sop_classes = set()
-                for load_mod in set(possible_modalities[sop_class]).difference(
-                    loaded_modalities
-                ):
+                for load_mod in possible_modalities[sop_class]:
                     loaded_sop_classes = loaded_sop_classes.union(
                         _get_series_sop_class(
                             ae, remote, assoc, study, query, get_empty_sr, load_mod
                         )
                     )
-                if sop_class in loaded_sop_classes:
-                    selected_sop_class = sop_class
+                loaded_sop_classes.intersection_update(nm_img_sop_ids)
+                # Don't download NM images when anything else is available
+                if sop_class == nm_img_sop_ids[1] and len(loaded_sop_classes) > 0:
                     break
 
             series = study.dicomqrrspseries_set.all()
-            if selected_sop_class is not None:
-                series.exclude(sop_class_in_series__exact=selected_sop_class).delete()
-            else:
+            series.exclude(sop_class_in_series__in=nm_img_sop_ids).delete()
+            keep = series.filter(sop_class_in_series=nm_img_sop_ids[2]).first()
+            if keep is not None:
+                series.filter(
+                    Q(sop_class_in_series=nm_img_sop_ids[2]) &
+                    ~ Q(pk=keep.pk)
+                ).delete() # Only take the first NM imgage
+
+            if series.count() == 0:
                 logger.debug(
                     f"{query_id_8} No usable NM information available, deleting study from query"
                 )
                 study.delete()
                 continue
-            logger.debug(
-                f"{query_id_8} Found {selected_sop_class}. Keeping it, deleting all other series."
-            )
-            if selected_sop_class == nm_img_sop_ids[1] or selected_sop_class == nm_img_sop_ids[2]:
-                first = series.order_by("series_instance_uid").first()
-                if first is not None:
-                    series.exclude(
-                        series_instance_uid__exact=first.series_instance_uid
-                    ).delete()
-                    first.image_level_move = (
+            logger.debug(f"{query_id_8} Found {loaded_sop_classes}. Keeping them all.")
+            for serie in series:
+                if serie.sop_class_in_series in nm_img_sop_ids[1:2]:  # PET or NM Images
+                    serie.image_level_move = (
                         True  # We set this so only the first img of the series is moved
                     )
-                    first.save()
+                    serie.save()
 
         elif all_mods["SR"]["inc"]:
             sr_type = _check_sr_type_in_study(
@@ -841,7 +851,14 @@ def _get_responses(ae, remote, assoc, query, query_details):
 
 
 def _query_images(
-    ae, remote, assoc, seriesrsp, query, initial_image_only=False, msg_id=None
+    ae,
+    remote,
+    assoc,
+    seriesrsp,
+    query,
+    initial_image_only=False,
+    msg_id=None,
+    instance_number=None,
 ):
 
     query_id_8 = _query_id_8(query)
@@ -859,6 +876,8 @@ def _query_images(
 
     if initial_image_only:
         d3.InstanceNumber = "1"
+    if instance_number is not None:
+        d3.InstanceNumber = str(instance_number)
     if not msg_id:
         msg_id = 1
 
@@ -893,6 +912,15 @@ def _query_images(
                     "Image level matching for this study is complete (there many be more)"
                 )
                 query.save()
+
+                # Some older systems start their instance numbers with 0. If == 1 does not deliver, retry with 0
+                if initial_image_only and instance_number is None:
+                    image_count = seriesrsp.dicomqrrspimage_set.count()
+                    if image_count == 0:
+                        _query_images(
+                            ae, remote, assoc, seriesrsp, query, True, msg_id, 0
+                        )
+
                 return
             if status.Status in (0xFF00, 0xFF01):
                 logger.debug(
@@ -1961,6 +1989,20 @@ def _move_req(my_ae, assoc, d, study_no, series_no, query):
     return True
 
 
+def _remove_duplicate_images(series):
+    """
+    Removes duplicate images from a series. Duplication can happen if
+    for some reason the images for the same series are queried
+    multiple times.
+    """
+    # distinct with specific fields only works on postgres. Therefore not used here.
+    seen = set()
+    for img in series.dicomqrrspimage_set.all():
+        if img.sop_instance_uid in seen:
+            img.delete()
+        seen.add(img.sop_instance_uid)
+
+
 def _move_if_established(ae, assoc, d, study_no, series_no, query, remote):
     if assoc.is_established:
         move = _move_req(ae, assoc, d, study_no, series_no, query)
@@ -2100,6 +2142,7 @@ def movescu(query_id):
                 logger.debug("_move_req launched")
                 if series.image_level_move:
                     d.QueryRetrieveLevel = "IMAGE"
+                    _remove_duplicate_images(series)
                     for image in series.dicomqrrspimage_set.all():
                         d.SOPInstanceUID = image.sop_instance_uid
                         logger.debug("Image-level move - d is: {0}".format(d))
