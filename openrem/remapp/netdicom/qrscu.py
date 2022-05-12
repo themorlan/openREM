@@ -229,8 +229,10 @@ def _remove_duplicates(ae, remote, query, study_rsp, assoc):
                             existing_sop_instance_uids,
                         )
                     else:
-                        series_rsp.deleted_flag=True
-                        series_rsp.deleted_reason="Does not have modality SR, MG, DX, CR or PX"
+                        series_rsp.deleted_flag = True
+                        series_rsp.deleted_reason = (
+                            "Does not have modality SR, MG, DX, CR or PX"
+                        )
                         series_rsp.save()
         if not study.dicomqrrspseries_set.filter(deleted_flag=False):
             study.deleted_flag = True
@@ -573,16 +575,17 @@ def _prune_series_responses(
 
             series = study.dicomqrrspseries_set.filter(deleted_flag=False).all()
             series.exclude(sop_class_in_series__in=nm_img_sop_ids).update(
-                deleted_flag=True, deleted_reason="Excluding all series without SOP class we can use"
+                deleted_flag=True,
+                deleted_reason="Excluding all series without SOP class we can use",
             )
             keep = series.filter(sop_class_in_series=nm_img_sop_ids[2]).first()
             if keep is not None:
                 series.filter(
-                    Q(sop_class_in_series=nm_img_sop_ids[2]) &
-                    ~ Q(pk=keep.pk)
+                    Q(sop_class_in_series=nm_img_sop_ids[2]) & ~Q(pk=keep.pk)
                 ).update(
-                    deleted_flag=True, deleted_reason="All NM images of a series contain the same NM data. Only first downloaded."
-                ) # Only take the first NM imgage
+                    deleted_flag=True,
+                    deleted_reason="All NM images of a series contain the same NM data. Only first downloaded.",
+                )  # Only take the first NM imgage
 
             series = series.filter(deleted_flag=False)
 
@@ -701,8 +704,8 @@ def _get_toshiba_dose_images(ae, remote, study_series, assoc, query):
             logger.debug(
                 f"{query_id_8} Toshiba option: No images in series, deleting series."
             )
-            series.deleted_flag=True
-            series.deleted_reason="Searching for Toshiba: No images in series found."
+            series.deleted_flag = True
+            series.deleted_reason = "Searching for Toshiba: No images in series found."
             series.save()
         else:
             if images[0].sop_class_uid != "1.2.840.10008.5.1.4.1.1.7":
@@ -811,7 +814,9 @@ def _get_series_sop_class(ae, remote, assoc, study, query, get_empty_sr, modalit
     :return: set of SOP classes found for SR/All series
     """
     query_id_8 = _query_id_8(query)
-    series_selected = study.dicomqrrspseries_set.filter(deleted_flag=False).filter(modality__exact=modality)
+    series_selected = study.dicomqrrspseries_set.filter(deleted_flag=False).filter(
+        modality__exact=modality
+    )
     logger.debug(
         f"{query_id_8} Check {modality} type: Number of series with {modality} {series_selected.count()}"
     )
@@ -861,7 +866,9 @@ def _check_sr_type_in_study(ae, remote, assoc, study, query, get_empty_sr):
     """
     query_id_8 = _query_id_8(query)
     sop_classes = _get_series_sop_class(ae, remote, assoc, study, query, get_empty_sr)
-    series_sr = study.dicomqrrspseries_set.filter(deleted_flag=False).filter(modality__exact="SR")
+    series_sr = study.dicomqrrspseries_set.filter(deleted_flag=False).filter(
+        modality__exact="SR"
+    )
 
     logger.debug(f"{query_id_8} Check SR type: sop_classes: {sop_classes}")
     if "1.2.840.10008.5.1.4.1.1.88.67" in sop_classes:
@@ -2101,7 +2108,9 @@ def _remove_duplicate_images(series):
     for img in series.dicomqrrspimage_set.all():
         if img.sop_instance_uid in seen:
             img.deleted_flag = True
-            img.deleted_reason = "It seems like this image was found twice or somewhere duplicated"
+            img.deleted_reason = (
+                "It seems like this image was found twice or somewhere duplicated"
+            )
             img.save()
         seen.add(img.sop_instance_uid)
 
@@ -2150,9 +2159,7 @@ def movescu(query_id):
         query = DicomQuery.objects.get(query_id=query_id)
     except ObjectDoesNotExist:
         msg = "Move called with invalid query_id {0}. Move abandoned.".format(query_id)
-        logger.warning(
-            msg
-        )
+        logger.warning(msg)
         record_task_error_exit(msg)
         return 0
     query.move_complete = False
@@ -2280,8 +2287,10 @@ def movescu(query_id):
 
             logger.debug("Query_id {0}: Releasing move association".format(query_id))
         else:
-            record_task_error_exit("Something went wrong, cannot move further. "
-                "Aborting. (Probably lost connection for a short time)")
+            record_task_error_exit(
+                "Something went wrong, cannot move further. "
+                "Aborting. (Probably lost connection for a short time)"
+            )
             return
 
     elif assoc.is_rejected:
@@ -2551,7 +2560,8 @@ def _process_args(parser_args, parser):
         record_task_error_exit(
             "Query-retrieve aborted: DICOM nodes not ready. QR SCP echo is {0}, Store SCP echo is {1}".format(
                 qr_node_up, store_node_up
-            ))
+            )
+        )
         sys.exit()
 
     return_args = {

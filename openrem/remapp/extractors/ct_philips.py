@@ -38,7 +38,11 @@ import django
 from django.db.models import Max, Min, ObjectDoesNotExist
 import pydicom
 
-from openrem.remapp.tools.background import record_task_error_exit, record_task_related_query, record_task_info
+from openrem.remapp.tools.background import (
+    record_task_error_exit,
+    record_task_related_query,
+    record_task_info,
+)
 
 from ..tools.dcmdatetime import get_date_time, get_date, get_time
 from ..tools.get_values import (

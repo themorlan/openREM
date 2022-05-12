@@ -55,8 +55,10 @@ django.setup()
 
 from remapp.models import BackgroundTask, DicomQuery
 
+
 def _sleep_for_linear_increasing_time(x):
     time.sleep(0.2 + 0.4 * x * random.random())
+
 
 def run_as_task(func, task_type, num_proc, num_of_task_type, taskuuid, *args, **kwargs):
     """
@@ -103,9 +105,7 @@ def run_as_task(func, task_type, num_proc, num_of_task_type, taskuuid, *args, **
     if num_proc > 0 or len(num_of_task_type) > 0:
         while True:
             with transaction.atomic():
-                qs = BackgroundTask.objects.filter(
-                    complete__exact=False
-                )
+                qs = BackgroundTask.objects.filter(complete__exact=False)
                 next_wait_time = qs.count()
                 a = qs.filter(started_at__isnull=False).count()
                 if num_proc == 0 or a < num_proc:
@@ -245,9 +245,7 @@ def wait_task(task: BackgroundTask):
         task.refresh_from_db()
         if task.complete:
             return
-        qs = BackgroundTask.objects.filter(
-                complete__exact=False
-            ).count()
+        qs = BackgroundTask.objects.filter(complete__exact=False).count()
         _sleep_for_linear_increasing_time(qs)
 
 
@@ -322,13 +320,12 @@ def record_task_related_query(study_instance_uid):
     b = get_current_task()
     if b is not None:
         if DicomQuery.objects.exists():
-            queries = DicomQuery.objects.filter(
-                started_at__isnull=False
-            ).latest(
-                "started_at"
-            ).dicomqrrspstudy_set.filter(
-                study_instance_uid=study_instance_uid
-            ).all()
+            queries = (
+                DicomQuery.objects.filter(started_at__isnull=False)
+                .latest("started_at")
+                .dicomqrrspstudy_set.filter(study_instance_uid=study_instance_uid)
+                .all()
+            )
 
             for query in queries:
                 query.related_imports.add(b)

@@ -1305,7 +1305,9 @@ class PETCTStudyDuplication(TestCase):
         from ..netdicom.qrscu import _duplicate_ct_pet_studies
 
         _duplicate_ct_pet_studies(query, self.all_mods)
-        studies = query.dicomqrrspstudy_set.filter(deleted_flag=False).order_by("pk").all()
+        studies = (
+            query.dicomqrrspstudy_set.filter(deleted_flag=False).order_by("pk").all()
+        )
         self.assertEqual(studies.count(), 2)
         self.assertNotIn("NM", studies[0].get_modalities_in_study())
         self.assertNotIn("CT", studies[1].get_modalities_in_study())

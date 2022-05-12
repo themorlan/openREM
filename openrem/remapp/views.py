@@ -634,8 +634,11 @@ def nm_detail_view(request, pk=None):
     return render(
         request,
         "remapp/nmdetail.html",
-        {"generalstudymoduleattr": study, "admin": admin,
-        "associated_ct": associated_ct},
+        {
+            "generalstudymoduleattr": study,
+            "admin": admin,
+            "associated_ct": associated_ct,
+        },
     )
 
 
@@ -693,8 +696,12 @@ def ct_detail_view(request, pk=None):
     return render(
         request,
         "remapp/ctdetail.html",
-        {"generalstudymoduleattr": study, "admin": admin,
-        "events_all": events_all, "associated_nm": associated_nm},
+        {
+            "generalstudymoduleattr": study,
+            "admin": admin,
+            "events_all": events_all,
+            "associated_nm": associated_nm,
+        },
     )
 
 

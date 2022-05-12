@@ -2043,7 +2043,9 @@ def construct_over_time_charts(
             params["df_value_col"],
             df_date_col=params["df_date_col"],
             time_period=params["time_period"],
-            average_choices=list(set(params["average_choices"]).intersection(["mean", "median", "count"])),
+            average_choices=list(
+                set(params["average_choices"]).intersection(["mean", "median", "count"])
+            ),
             group_by_physician=group_by_physician,
         )
 
@@ -2094,7 +2096,9 @@ def construct_over_time_charts(
         df.set_index(params["df_date_col"], inplace=True)
         df = df.to_period(freq=params["time_period"], copy=False)
         df.reset_index(inplace=True)
-        df[params["df_date_col"]] = df[params["df_date_col"]].map(lambda x: x.start_time)
+        df[params["df_date_col"]] = df[params["df_date_col"]].map(
+            lambda x: x.start_time
+        )
         df.sort_values(params["df_date_col"], inplace=True)
 
         parameter_dict["df_name_col"] = params["df_date_col"]
@@ -2105,7 +2109,6 @@ def construct_over_time_charts(
             df,
             parameter_dict,
         )
-
 
     return return_value
 

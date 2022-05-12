@@ -541,7 +541,7 @@ def generalequipmentmoduleattributes(dataset, study):  # C.7.5.1
     try:
         equip.date_of_last_calibration = get_date("DateOfLastCalibration", dataset)
         equip.time_of_last_calibration = get_time("TimeOfLastCalibration", dataset)
-    except TypeError: # DICOM supports MultiValue for those fields, but we don't
+    except TypeError:  # DICOM supports MultiValue for those fields, but we don't
         pass
     if hasattr(dataset, "ContentSequence"):
         try:
@@ -550,7 +550,8 @@ def generalequipmentmoduleattributes(dataset, study):  # C.7.5.1
                 for content in dataset.ContentSequence
                 if (
                     content.ConceptNameCodeSequence[0].CodeValue == "121012"
-                    and content.ConceptNameCodeSequence[0].CodingSchemeDesignator == "DCM"
+                    and content.ConceptNameCodeSequence[0].CodingSchemeDesignator
+                    == "DCM"
                 )
             ][
                 0
@@ -561,7 +562,8 @@ def generalequipmentmoduleattributes(dataset, study):  # C.7.5.1
                 for content in dataset.ContentSequence
                 if (
                     content.ConceptNameCodeSequence[0].CodeValue == "121012"
-                    and content.ConceptNameCodeSequence[0].CodingSchemeDesignator == "DCM"
+                    and content.ConceptNameCodeSequence[0].CodingSchemeDesignator
+                    == "DCM"
                 )
             ][
                 0

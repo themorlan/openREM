@@ -1020,7 +1020,14 @@ class DicomDeleteSettingsForm(forms.ModelForm):
 
     class Meta(object):
         model = DicomDeleteSettings
-        fields = ["del_no_match", "del_rdsr", "del_mg_im", "del_dx_im", "del_ct_phil", "del_nm_im"]
+        fields = [
+            "del_no_match",
+            "del_rdsr",
+            "del_mg_im",
+            "del_dx_im",
+            "del_ct_phil",
+            "del_nm_im",
+        ]
 
 
 class DicomQRForm(forms.ModelForm):

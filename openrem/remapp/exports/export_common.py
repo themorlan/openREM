@@ -45,8 +45,9 @@ from remapp.models import Exports
 logger = logging.getLogger(__name__)
 
 
-def text_and_date_formats(book, sheet, pid=False, name=None, patid=None, modality=None,
-    headers = None):
+def text_and_date_formats(
+    book, sheet, pid=False, name=None, patid=None, modality=None, headers=None
+):
     """
     Function to write out the headings common to each sheet and modality and format the date, time, patient ID and
     accession number columns.
@@ -67,7 +68,9 @@ def text_and_date_formats(book, sheet, pid=False, name=None, patid=None, modalit
     textformat = book.add_format({"num_format": "@"})
     dateformat = book.add_format({"num_format": settings.XLSX_DATE})
     timeformat = book.add_format({"num_format": settings.XLSX_TIME})
-    datetimeformat = book.add_format({"num_format": f"{settings.XLSX_DATE} {settings.XLSX_TIME}"})
+    datetimeformat = book.add_format(
+        {"num_format": f"{settings.XLSX_DATE} {settings.XLSX_TIME}"}
+    )
 
     date_column = 7
     patid_column = 0
@@ -102,7 +105,7 @@ def text_and_date_formats(book, sheet, pid=False, name=None, patid=None, modalit
         t = headers.index("Radiopharmaceutical Stop Time")
         sheet.set_column(t, t, None, datetimeformat)
         c = 1
-        series_date = lambda i : f"Series {i} date"
+        series_date = lambda i: f"Series {i} date"
         while series_date(c) in headers:
             t = headers.index(series_date(c))
             sheet.set_column(t, t, None, datetimeformat)

@@ -46,7 +46,11 @@ from django.core.exceptions import ObjectDoesNotExist
 import pydicom
 from pydicom.valuerep import MultiValue
 
-from openrem.remapp.tools.background import record_task_error_exit, record_task_related_query, record_task_info
+from openrem.remapp.tools.background import (
+    record_task_error_exit,
+    record_task_related_query,
+    record_task_info,
+)
 
 from ..tools import check_uid
 from ..tools.dcmdatetime import get_date, get_time, make_date_time

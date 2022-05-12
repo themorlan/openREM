@@ -35,7 +35,10 @@ import sys
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Max, Count
 
-from openrem.remapp.tools.background import get_or_generate_task_uuid, record_task_error_exit
+from openrem.remapp.tools.background import (
+    get_or_generate_task_uuid,
+    record_task_error_exit,
+)
 
 from ..interface.mod_filters import nm_filter
 from .export_common import (
@@ -545,7 +548,9 @@ def exportNM2excel(filterdict, pid=False, name=None, patid=None, user=None):
         for i, study_description in enumerate(study_descriptions):
             study_description, current_data = study_description
             current_sheet = book.add_worksheet(sheet_name(study_description))
-            book = text_and_date_formats(book, current_sheet, pid, name, patid, "NM", headings)
+            book = text_and_date_formats(
+                book, current_sheet, pid, name, patid, "NM", headings
+            )
             _write_nm_excel_sheet(
                 task,
                 current_sheet,

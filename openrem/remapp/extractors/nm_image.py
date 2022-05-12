@@ -77,7 +77,11 @@ from .extract_common import (
     patientstudymoduleattributes,
     patient_module_attributes,
 )
-from openrem.remapp.tools.background import record_task_error_exit, record_task_info, record_task_related_query
+from openrem.remapp.tools.background import (
+    record_task_error_exit,
+    record_task_info,
+    record_task_related_query,
+)
 
 logger = logging.getLogger(
     "remapp.extractors.nm_image"
@@ -142,7 +146,7 @@ def _isotope(study, dataset):
     (such that SOPClassUID can be read)
     """
     is_nm_img = dataset.SOPClassUID == "1.2.840.10008.5.1.4.1.1.20"
-    dataset = dataset[0x54, 0x16].value[0] # Radio​pharmaceutical​Information​Sequence
+    dataset = dataset[0x54, 0x16].value[0]  # Radio​pharmaceutical​Information​Sequence
 
     float_not_equal = lambda x, y: abs(x - y) > 10e-5
 

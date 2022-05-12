@@ -1085,9 +1085,11 @@ def _get_review_study_data(study):
                 radionuclide_str = radio_admin.radionuclide.code_meaning
             else:
                 radionuclide_str = ""
-            study_data["radiopharm_dose"] = (f"{radio_admin.administered_activity:.2f} MBq,"
+            study_data["radiopharm_dose"] = (
+                f"{radio_admin.administered_activity:.2f} MBq,"
                 f" radiopharmaceutical {radio_agent_str}, "
-                f" radionuclide {radionuclide_str}")
+                f" radionuclide {radionuclide_str}"
+            )
         pet_series = radio_dose.petseries_set.count()
         if pet_series > 0:
             study_data["radiopharm_petseries"] = f"Yes, {pet_series}"

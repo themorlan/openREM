@@ -34,7 +34,11 @@ import django
 import logging
 from pydicom.charset import default_encoding
 
-from openrem.remapp.tools.background import record_task_error_exit, record_task_related_query, record_task_info
+from openrem.remapp.tools.background import (
+    record_task_error_exit,
+    record_task_related_query,
+    record_task_info,
+)
 
 logger = logging.getLogger("remapp.extractors.mam")
 

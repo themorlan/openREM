@@ -42,7 +42,11 @@ import django
 from django.db.models import Sum, ObjectDoesNotExist
 import pydicom
 
-from openrem.remapp.tools.background import record_task_error_exit, record_task_related_query, record_task_info
+from openrem.remapp.tools.background import (
+    record_task_error_exit,
+    record_task_related_query,
+    record_task_info,
+)
 
 # setup django/OpenREM.
 basepath = os.path.dirname(__file__)
@@ -362,14 +366,9 @@ def _handle_study_already_existing(
                 ):
                     tmp = study.radiopharmaceuticalradiationdose_set.first()
                     if tmp is not None:
-                        tmp = (
-                            tmp.radiopharmaceuticaladministrationeventdata_set.first()
-                        )
+                        tmp = tmp.radiopharmaceuticaladministrationeventdata_set.first()
                         if tmp is not None:
-                            if (
-                                tmp.radiopharmaceutical_administration_event_uid
-                                is None
-                            ):
+                            if tmp.radiopharmaceutical_administration_event_uid is None:
                                 return {
                                     "status": "append_rrdsr",
                                     "existing_sop_instance_uids": existing_sop_instance_uids,
