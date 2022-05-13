@@ -465,7 +465,8 @@ def observercontext(dataset, obs):  # TID 1002
 
 
 def person_participant(dataset, event_data_type, foreign_key, logger):
-    """Function to record people involved with study
+    """
+    Function to record people involved with study
 
     :param dataset: DICOM data being parsed
     :param event_data_type: Which function has called this function

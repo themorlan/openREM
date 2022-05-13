@@ -57,7 +57,7 @@ from .export_common import (
 logger = logging.getLogger(__name__)
 
 
-def _exit_proc(task, date_stamp, error_msg=None, force_exit=True):
+def _exit_proc(task, date_stamp, error_msg=None):
     if error_msg is not None:
         task.status = "ERROR"
         task.progress = error_msg
