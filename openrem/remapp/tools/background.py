@@ -42,6 +42,7 @@ import django
 from django import db
 from django.db.models import Q
 from django.db import transaction
+from django.db.utils import OperationalError
 from django.utils import timezone
 
 # Setup django. This is required on windows, because process is created via spawn and
@@ -57,7 +58,8 @@ from remapp.models import BackgroundTask, DicomQuery
 
 
 def _sleep_for_linear_increasing_time(x):
-    time.sleep(0.2 + 0.9 * x * random.random())
+    sleep_time = 0.4 + 2.0 * x * random.random()
+    time.sleep(sleep_time)
 
 
 def run_as_task(func, task_type, num_proc, num_of_task_type, taskuuid, *args, **kwargs):
@@ -104,23 +106,26 @@ def run_as_task(func, task_type, num_proc, num_of_task_type, taskuuid, *args, **
 
     if num_proc > 0 or len(num_of_task_type) > 0:
         while True:
-            with transaction.atomic():
-                qs = BackgroundTask.objects.filter(complete__exact=False)
-                next_wait_time = qs.count()
-                a = qs.filter(started_at__isnull=False).count()
-                if num_proc == 0 or a < num_proc:
-                    ok = True
-                    for k, v in num_of_task_type.items():
-                        a = qs.filter(
-                            Q(task_type__exact=k) & Q(started_at__isnull=False)
-                        ).count()
-                        ok = ok and a < v
-                        if not ok:
+            try:
+                with transaction.atomic():
+                    qs = BackgroundTask.objects.filter(complete__exact=False)
+                    next_wait_time = qs.count()
+                    a = qs.filter(started_at__isnull=False).count()
+                    if num_proc == 0 or a < num_proc:
+                        ok = True
+                        for k, v in num_of_task_type.items():
+                            a = qs.filter(
+                                Q(task_type__exact=k) & Q(started_at__isnull=False)
+                            ).count()
+                            ok = ok and a < v
+                            if not ok:
+                                break
+                        if ok:
+                            b.started_at = timezone.now()
+                            b.save()
                             break
-                    if ok:
-                        b.started_at = timezone.now()
-                        b.save()
-                        break
+            except OperationalError:
+                pass
             _sleep_for_linear_increasing_time(next_wait_time)
     else:
         b.started_at = timezone.now()
