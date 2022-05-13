@@ -324,9 +324,10 @@ def record_task_related_query(study_instance_uid):
     """
     b = get_current_task()
     if b is not None:
-        if DicomQuery.objects.exists():
+        qs = DicomQuery.objects.filter(started_at__isnull=False).all()
+        if qs.exists():
             queries = (
-                DicomQuery.objects.filter(started_at__isnull=False)
+                qs
                 .latest("started_at")
                 .dicomqrrspstudy_set.filter(study_instance_uid=study_instance_uid)
                 .all()
