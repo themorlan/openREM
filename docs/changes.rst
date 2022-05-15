@@ -5,6 +5,7 @@ OpenREM version history
 
 1.0.0b1 (2021-xx-xx)
 --------------------
+* :issue:`936`  Tasks: Added make_skin_map to background tasks on RF RDSR import
 * :issue:`931`  Exports: export RF DAP as float instead of text
 * :issue:`925`  Docker: docs and config file for enabling bind mounts with SELinux
 * :issue:`922`  Database: optimise indexes and duplicate queries
