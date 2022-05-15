@@ -46,6 +46,7 @@ from openrem.remapp.tools.background import (
     record_task_error_exit,
     record_task_related_query,
     record_task_info,
+    run_in_background_with_limits,
 )
 
 # setup django/OpenREM.
@@ -438,7 +439,13 @@ def _rdsr2db(dataset):
         "calc_on_import", flat=True
     )[0]
     if g.modality_type == "RF" and enable_skin_dose_maps and calc_on_import:
-        make_skin_map.delay(g.pk)
+        run_in_background_with_limits(
+            make_skin_map,
+            "make_skin_map",
+            0,
+            {"make_skin_map": 1},
+            g.pk,
+        )
 
     # Calculate summed total DAP and dose at RP for studies that have this study's patient ID, going back week_delta
     # weeks in time from this study date. Only do this if activated in the fluoro alert settings (check whether
