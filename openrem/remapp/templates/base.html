@@ -65,7 +65,7 @@
                 {% endif %}
                 {% if request.user.userprofile.displayNM %}
                   {% block navnm %}
-                    <li>{% endblock %}<a href="{% url 'nm_summary_list_filter' %}">{% trans "Nuclear Medicine" %}</a></li>
+                    <li>{% endblock %}<a href="{% url 'nm_summary_list_filter' %}">{% trans "NM/PET" %}</a></li>
                 {% endif %}
             {% endblock %}
           </ul>
