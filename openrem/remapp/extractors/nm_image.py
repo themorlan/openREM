@@ -22,6 +22,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 """
+
 ..module:: nm_image.
     :synopsis: Module to extract nm specific radiation information from PET/NM Images. Those methods
         are 'careful' in the sense of not ever overwriting any data that is already present. If
@@ -33,6 +34,7 @@
         are (assumed to be) more complete and therefore take precedence.
 ..  moduleauthor:: Jannis Widmer
 """
+
 from datetime import datetime
 import logging
 import os

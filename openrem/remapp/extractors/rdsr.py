@@ -1,4 +1,3 @@
-# This Python file uses the following encoding: utf-8
 #    OpenREM - Radiation Exposure Monitoring tools for the physicist
 #    Copyright (C) 2012,2013  The Royal Marsden NHS Foundation Trust
 #
@@ -34,10 +33,7 @@ from datetime import timedelta
 import logging
 import os
 import sys
-from time import sleep
 
-from django.conf import settings
-from defusedxml.ElementTree import fromstring, ParseError
 import django
 from django.db.models import Sum, ObjectDoesNotExist
 import pydicom
