@@ -61,7 +61,7 @@
                 <h3 class="panel-title">Exam filter</h3>
             </div>
             <div class="panel-body">
-                <i>Date format yyyy-mm-dd</i>
+                <em>Date format yyyy-mm-dd</em>
                 {% for field in filter.form.visible_fields %}
                     <div class="form-group">
                         <div class="col-xs-4">
@@ -217,7 +217,7 @@
 
         <script src="{{ STATIC_URL }}js/django_reverse/reverse.js"></script>
 
-        <div class="ajax-progress"><img src="{{ STATIC_URL }}img/ajax-loader.gif"></div>
+        <div class="ajax-progress"><img src="{{ STATIC_URL }}img/ajax-loader.gif" alt="ajax loading spinner"></div>
 
         <!-- JavaScript to enable Plotly charts -->
         <script src="{{ STATIC_URL }}js/charts/plotly-2.4.2.min.js"></script>
