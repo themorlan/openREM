@@ -435,7 +435,7 @@ def exportNM2csv(filterdict, pid=False, name=None, patid=None, user=None):
                 writer.writerow([error_message])
             task.progress = f"{i+1} of {task.num_records} written."
             task.save()
-    except Exception:
+    except Exception:  # pylint: disable=broad-except
         unknown_error(task, date_stamp)
 
     tmpfile.close()
@@ -472,9 +472,9 @@ def _write_nm_excel_sheet(
             sheet.write_row(i + 1, 0, exam_data)
         except ObjectDoesNotExist:
             error_message = (
-                f"DoesNotExist error whilst exporting study {i + 1} of {task.num_records},  study UID {exam.study_instance_uid}, accession number"
-                f" {exam.accession_number} - maybe database entry was deleted as part of importing later version of same"
-                " study?"
+                f"DoesNotExist error whilst exporting study {i + 1} of {task.num_records},"
+                f" study UID {exam.study_instance_uid}, accession number {exam.accession_number} - maybe database "
+                "entry was deleted as part of importing later version of same study?"
             )
             logger.error(error_message)
             sheet.write_row(i + 1, 0, [error_message])

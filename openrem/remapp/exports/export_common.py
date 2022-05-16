@@ -753,7 +753,7 @@ def create_export_task(
 ):
     """Create export task, add filter details and Task UUID to export table to track later
 
-    :param id: The id allocated for this task
+    :param task_id: The id allocated for this task
     :param modality: export modality
     :param export_type: CSV, XLSX or special
     :param date_stamp: datetime export started

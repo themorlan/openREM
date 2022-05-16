@@ -1907,14 +1907,14 @@ def _create_admin_dict(request):
 
 @login_required
 def display_tasks(request):
-    """View to show tasks. Content generated using AJAX"""
+    """View to show tasks. Content generated using AJAX."""
     admin = _create_admin_dict(request)
     template = "remapp/task_admin.html"
     return render(request, template, {"admin": admin})
 
 
 def tasks(request, stage=None):
-    """AJAX function to get current task details"""
+    """AJAX function to get current task details."""
     if request.is_ajax() and request.user.groups.filter(name="admingroup"):
         active_tasks = []
         recent_tasks = []

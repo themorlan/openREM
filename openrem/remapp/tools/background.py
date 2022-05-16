@@ -58,7 +58,9 @@ from remapp.models import BackgroundTask, DicomQuery
 
 
 def _sleep_for_linear_increasing_time(x):
-    sleep_time = 0.4 + 2.0 * x * random.random()
+    sleep_time = (
+        0.4 + 2.0 * x * random.random()  # nosec - not being used for cryptography
+    )
     time.sleep(sleep_time)
 
 
@@ -133,7 +135,8 @@ def run_as_task(func, task_type, num_proc, num_of_task_type, taskuuid, *args, **
 
     try:
         func(*args, **kwargs)
-    except Exception:  # Literally anything could happen here
+    except Exception:  # pylint: disable=broad-except
+        # Literally anything could happen here
         b = _get_task_via_uuid(taskuuid)
         b.complete = True
         b.completed_successfully = False
@@ -327,8 +330,7 @@ def record_task_related_query(study_instance_uid):
         qs = DicomQuery.objects.filter(started_at__isnull=False).all()
         if qs.exists():
             queries = (
-                qs
-                .latest("started_at")
+                qs.latest("started_at")
                 .dicomqrrspstudy_set.filter(study_instance_uid=study_instance_uid)
                 .all()
             )

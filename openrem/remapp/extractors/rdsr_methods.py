@@ -1,4 +1,3 @@
-# This Python file uses the following encoding: utf-8
 #    OpenREM - Radiation Exposure Monitoring tools for the physicist
 #    Copyright (C) 2012,2013  The Royal Marsden NHS Foundation Trust
 #
@@ -22,6 +21,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 """
+
 ..  module:: rdsr_methods
     :synopsis: methods used to read the standard irradiation part of rdsr
         objects. This is used by rdsr.py.

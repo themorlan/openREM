@@ -77,11 +77,7 @@ def import_from_docker(request):
     if dicom_path:
         if import_type == "rdsr":
             run_in_background_with_limits(
-                rdsr,
-                "import_rdsr",
-                0,
-                {"import_rdsr": 1},
-                dicom_path
+                rdsr, "import_rdsr", 0, {"import_rdsr": 1}, dicom_path
             )
             return_type = "RDSR"
         elif import_type == "dx":
