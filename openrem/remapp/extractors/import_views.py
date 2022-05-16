@@ -50,6 +50,7 @@ from remapp.models import BackgroundTask, SizeUpload
 from .rdsr import rdsr
 from .dx import dx
 from .mam import mam
+from .nm_image import nm_image
 from .ct_philips import ct_philips
 from .ct_toshiba import ct_toshiba
 from .. import __docs_version__, __version__
@@ -70,16 +71,17 @@ def import_from_docker(request):
     data = request.POST
     dicom_path = data.get("dicom_path")
     import_type = data.get("import_type")
-    print(
-        f"In import_from_docker, dicom_path is {dicom_path}, import type is {import_type}"
-    )
 
     # This violates the rules for running background processes at the moment (may block),
     # but at least it ensures correctness
     if dicom_path:
         if import_type == "rdsr":
             run_in_background_with_limits(
-                rdsr, "import_rdsr", 0, {"import_rdsr": 1}, dicom_path
+                rdsr,
+                "import_rdsr",
+                0,
+                {"import_rdsr": 1},
+                dicom_path
             )
             return_type = "RDSR"
         elif import_type == "dx":
@@ -91,6 +93,15 @@ def import_from_docker(request):
                 dicom_path,
             )
             return_type = "DX"
+        elif import_type == "nm":
+            run_in_background_with_limits(
+                nm_image,
+                "import_nm",
+                0,
+                {"import_nm": 1},
+                dicom_path,
+            )
+            return_type = "NM image"
         elif import_type == "mam":
             run_in_background_with_limits(
                 mam,
