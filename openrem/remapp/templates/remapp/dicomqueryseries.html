@@ -29,7 +29,7 @@
 </div>
 <div class="row">
     <div class="col-md-8">
-        <table class="table table-bordered table-hover table-sortable row-clickable">
+        <table class="table table-bordered table-hover table-sortable row-clickable" aria-describedby="Table of series in query response">
             <tr>
                 <th>Series UID</th>
                 <th>Series description</th>
@@ -65,7 +65,7 @@
 </div>
 <div class="row">
     <div class="col-md-8">
-        <table class="table table-bordered table-hover table-sortable">
+        <table class="table table-bordered table-hover table-sortable" aria-describedby="Table of import tasks run for this study.">
             <tr>
                 <th>Task UUID</th>
                 <th>Task type</th>
@@ -92,7 +92,7 @@
                     <td>
                         {% if import.complete %}
                             {% if import.completed_successfully %}
-                                Import finished successfull 
+                                Import finished successfully
                             {% else %} 
                                 Error
                             {% endif %} 

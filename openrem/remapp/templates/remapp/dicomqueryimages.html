@@ -31,7 +31,7 @@
                 study <a href=" {% url 'get_query_details' queryseries.dicom_qr_rsp_study.dicom_query.pk %}">study {{queryseries.dicom_qr_rsp_study.study_instance_uid}}</a>.
             </p>
         </h4>
-        <table class="table table-bordered table-hover table-sortable">
+        <table class="table table-bordered table-hover table-sortable" aria-describedby="Table of images in query response.">
             <tr>
                 <th>SOP class</th>
                 <th>Downloaded?</th>

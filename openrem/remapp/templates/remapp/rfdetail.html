@@ -17,7 +17,7 @@
                     {% if not study.accession_hashed %}
                         {{ study.accession_number }}
                     {% else %}
-                        <i>hidden</i>
+                        <em>hidden</em>
                     {% endif %}
                 </li>
                 <li>Study date: {{ study.study_date }}</li>

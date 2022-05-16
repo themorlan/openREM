@@ -22,7 +22,7 @@
                 considered for downloading (moving). Click on any study to see the series that were found for this study.
             </p><p>
                 Note that studies that are present on the remote 
-                will not be shown here if their modality type was not selected for downloading. Similarly
+                will not be shown here if their modality type was not selected for downloading. Similarly,
                 they will not be shown if they were filtered because their date does not match,
                 since those things are filtered already on the remote node. To see all studies sent by the
                 remote hence enable all modalities and set no date at all.
@@ -32,7 +32,8 @@
                 </a>
             </p>
         </h4>
-        <table class="table table-bordered table-hover row-clickable table-sortable">
+        <table class="table table-bordered table-hover row-clickable table-sortable"
+               aria-describedby="Table of studies sent in response to DICOM query">
             <tr>
                 <th>Study UID</th>
                 <th>Study description</th>
