@@ -327,8 +327,7 @@ def record_task_related_query(study_instance_uid):
         qs = DicomQuery.objects.filter(started_at__isnull=False).all()
         if qs.exists():
             queries = (
-                qs
-                .latest("started_at")
+                qs.latest("started_at")
                 .dicomqrrspstudy_set.filter(study_instance_uid=study_instance_uid)
                 .all()
             )
