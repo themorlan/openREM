@@ -59,8 +59,8 @@ from remapp.models import BackgroundTask, DicomQuery
 
 def _sleep_for_linear_increasing_time(x):
     sleep_time = (
-        0.4 + 2.0 * x * random.random()
-    )  # nosec - not being used for cryptography
+        0.4 + 2.0 * x * random.random()  # nosec - not being used for cryptography
+    )
     time.sleep(sleep_time)
 
 
