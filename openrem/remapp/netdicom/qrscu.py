@@ -2161,7 +2161,7 @@ def movescu(query_id):
         msg = "Move called with invalid query_id {0}. Move abandoned.".format(query_id)
         logger.warning(msg)
         record_task_error_exit(msg)
-        return
+        return 0
     query.move_complete = False
     query.move_task = get_current_task()
     query.failed = False
@@ -2291,7 +2291,7 @@ def movescu(query_id):
                 "Something went wrong, cannot move further. "
                 "Aborting. (Probably lost connection for a short time)"
             )
-            return
+            return 0
 
     elif assoc.is_rejected:
         msg = "{0}: {1}".format(
