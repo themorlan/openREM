@@ -31,7 +31,7 @@ import logging
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.translation import gettext as _
-from celery import shared_task
+from openrem.remapp.tools.background import get_or_generate_task_uuid
 
 from remapp.models import StandardNameSettings
 
@@ -49,7 +49,6 @@ from .export_common import (
 logger = logging.getLogger(__name__)
 
 
-@shared_task
 def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
     """Export filtered CT database data to multi-sheet Microsoft XSLX files
 
@@ -74,8 +73,9 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
     enable_standard_names = StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[0]
 
     datestamp = datetime.datetime.now()
+    task_id = get_or_generate_task_uuid()
     tsk = create_export_task(
-        celery_uuid=ctxlsx.request.id,
+        task_id=task_id,
         modality="CT",
         export_type="XLSX_export",
         date_stamp=datestamp,
@@ -240,7 +240,6 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
     write_export(tsk, xlsxfilename, tmpxlsx, datestamp)
 
 
-@shared_task
 def ct_csv(filterdict, pid=False, name=None, patid=None, user=None):
     """Export filtered CT database data to a single-sheet CSV file.
 
@@ -257,8 +256,9 @@ def ct_csv(filterdict, pid=False, name=None, patid=None, user=None):
     from ..interface.mod_filters import ct_acq_filter
 
     datestamp = datetime.datetime.now()
+    task_id = get_or_generate_task_uuid()
     tsk = create_export_task(
-        celery_uuid=ct_csv.request.id,
+        task_id=task_id,
         modality="CT",
         export_type="CSV export",
         date_stamp=datestamp,
@@ -584,7 +584,6 @@ def _ct_get_series_data(s):
     return seriesdata
 
 
-@shared_task
 def ct_phe_2019(filterdict, user=None):
     """Export filtered CT database data in the format required for the 2019 Public Health England
     CT dose survey
@@ -599,8 +598,9 @@ def ct_phe_2019(filterdict, user=None):
     from ..interface.mod_filters import ct_acq_filter
 
     datestamp = datetime.datetime.now()
+    task_id = get_or_generate_task_uuid()
     tsk = create_export_task(
-        celery_uuid=ct_phe_2019.request.id,
+        task_id=task_id,
         modality="CT",
         export_type="PHE CT 2019 export",
         date_stamp=datestamp,

@@ -32,7 +32,6 @@ import os
 import sys
 import logging
 
-from celery import shared_task
 import django
 from django.core.exceptions import ObjectDoesNotExist
 import numpy as np
@@ -46,6 +45,7 @@ os.environ["DJANGO_SETTINGS_MODULE"] = "openremproject.settings"
 django.setup()
 
 from remapp.models import GeneralStudyModuleAttr, SkinDoseMapResults, OpenSkinSafeList
+from .background import record_task_info
 from .save_skin_map_structure import save_openskin_structure
 from .openskin.calc_exp_map import CalcExpMap
 from ..version import __skin_map_version__
@@ -54,11 +54,14 @@ from ..version import __skin_map_version__
 logger = logging.getLogger("remapp.tools.make_skin_map")
 
 
-@shared_task(name="remapp.tools.make_skin_map", ignore_result=True)
 def make_skin_map(study_pk=None):
 
     if study_pk:
         study = GeneralStudyModuleAttr.objects.get(pk=study_pk)
+        record_task_info(
+            f"Unit: {study.generalequipmentmoduleattr_set.get().unique_equipment_name.display_name} | "
+            f"PK: {study_pk} | Study UID: {study.study_instance_uid.replace('.', '. ')}"
+        )
         try:
             entry = OpenSkinSafeList.objects.get(
                 manufacturer=study.generalequipmentmoduleattr_set.get().manufacturer,

@@ -6,6 +6,15 @@ Query/Retrieve SCU AE
 
 Specialised QR routine to get just the objects that might be useful for dose related metrics from a remote PACS or
 modality
+
+The qrscu routine does basically act using c-find queries to the remote PACS/DICOM node. It progressively asks
+for information about studies, then series, then images storing the (high level) info acquired about them
+in the database as a DicomQuery object.
+On each level data that we are not interested in for some reason (studies that are duplicates; series that are
+excluded by our filters; and so on) are removed from the DicomQuery object.
+The movescu routing in the end initiates a c-move of all the objects that were not deleted from the query, such that
+those objects are sent to the local DICOM node (e.g. Orthanc). The local dicom node has to be configured such that it
+uses the openrem extractor scripts on receive of DICOM files.
 """
 
 import argparse
@@ -15,11 +24,12 @@ import logging
 import os
 import sys
 import uuid
+from copy import deepcopy
 
 
-from celery import shared_task
 import django
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Q
 from django.utils.translation import gettext as _
 from pydicom.dataset import Dataset
 from pynetdicom import AE, _config  # , debug_logger
@@ -51,6 +61,13 @@ from remapp.models import (  # pylint: disable=wrong-import-order, wrong-import-
     DicomRemoteQR,
     DicomStoreSCP,
     GeneralStudyModuleAttr,
+)
+from openrem.remapp.tools.background import (
+    get_current_task,
+    get_or_generate_task_uuid,
+    record_task_error_exit,
+    run_in_background,
+    wait_task,
 )
 
 _config.LOG_RESPONSE_IDENTIFIERS = False
@@ -84,10 +101,33 @@ def _generate_modalities_in_study(study_rsp, query_id):
     study_rsp.save()
 
 
+def _make_query_deleted_reasons_consistent(query):
+    """
+    When the parent of an object is marked as deleted all it's children
+    still exist and are potentially not marked as deleted. This routine marks
+    those children as deleted.
+    """
+
+    DicomQRRspSeries.objects.filter(
+        dicom_qr_rsp_study__deleted_flag=True,
+        deleted_flag=False,
+        dicom_qr_rsp_study__dicom_query__pk=query.pk,
+    ).update(
+        deleted_flag=True, deleted_reason="Ignored, since parent study was ignored"
+    )
+    DicomQRRspImage.objects.filter(
+        dicom_qr_rsp_series__deleted_flag=True,
+        deleted_flag=False,
+        dicom_qr_rsp_series__dicom_qr_rsp_study__dicom_query__pk=query.pk,
+    ).update(
+        deleted_flag=True, deleted_reason="Ignored, since parent series was ignored"
+    )
+
+
 def _remove_image_sop_uids(
     series_rsp, query_id_8, study_number, study_instance_uid, existing_sop_instance_uids
 ):
-    for image_rsp in series_rsp.dicomqrrspimage_set.all():
+    for image_rsp in series_rsp.dicomqrrspimage_set.filter(deleted_flag=False).all():
         logger.debug(
             f"{query_id_8} Study {study_number} {study_instance_uid} Checking for"
             f"SOPInstanceUID {image_rsp.sop_instance_uid}"
@@ -97,13 +137,27 @@ def _remove_image_sop_uids(
                 f"{query_id_8} Study {study_number} {study_instance_uid} Found "
                 f"SOPInstanceUID processed before, won't ask for this one"
             )
-            image_rsp.delete()
+            image_rsp.deleted_flag = True
+            image_rsp.deleted_reason = (
+                "SOP instance of this object is present in database"
+            )
+            image_rsp.save()
             series_rsp.image_level_move = (
                 True  # If we have deleted images we need to set this flag
             )
             series_rsp.save()
-    if not series_rsp.dicomqrrspimage_set.order_by("pk"):
-        series_rsp.delete()
+    if not series_rsp.dicomqrrspimage_set.filter(deleted_flag=False):
+        series_rsp.deleted_flag = True
+        series_rsp.deleted_reason = "All files of this series ignored"
+        series_rsp.save()
+
+
+def _query_id_8(query):
+    try:
+        query_id_8 = query.query_id.hex[:8]
+    except AttributeError:
+        query_id_8 = query.query_id[:8]
+    return query_id_8
 
 
 def _remove_duplicates(ae, remote, query, study_rsp, assoc):
@@ -115,10 +169,7 @@ def _remove_duplicates(ae, remote, query, study_rsp, assoc):
     :return: Study, series and image level responses deleted if not useful
     """
 
-    try:
-        query_id_8 = query.query_id.hex[:8]
-    except AttributeError:
-        query_id_8 = query.query_id[:8]
+    query_id_8 = _query_id_8(query)
     logger.debug(
         f"{query_id_8} About to remove any studies we already have in the database"
     )
@@ -151,7 +202,9 @@ def _remove_duplicates(ae, remote, query, study_rsp, assoc):
                     f"{query_id_8} Study {study_number} {study.study_instance_uid} has previously processed "
                     f"the following SOPInstanceUIDs: {existing_sop_instance_uids}"
                 )
-                for series_rsp in study.dicomqrrspseries_set.all():
+                for series_rsp in study.dicomqrrspseries_set.filter(
+                    deleted_flag=False
+                ).all():
                     if series_rsp.modality == "SR":
                         _remove_image_sop_uids(
                             series_rsp,
@@ -160,12 +213,14 @@ def _remove_duplicates(ae, remote, query, study_rsp, assoc):
                             study.study_instance_uid,
                             existing_sop_instance_uids,
                         )
-                    elif series_rsp.modality in ["MG", "DX", "CR", "PX"]:
+                    elif series_rsp.modality in ["MG", "DX", "CR", "PX", "PT", "NM"]:
                         logger.debug(
                             f"{query_id_8} Study {study_number} {study.study_instance_uid} about to query at "
                             f"image level to get SOPInstanceUID"
                         )
-                        _query_images(ae, remote, assoc, series_rsp, query)
+                        _query_images(
+                            ae, remote, assoc, series_rsp, query, True
+                        )  # Only check first image of series
                         _remove_image_sop_uids(
                             series_rsp,
                             query_id_8,
@@ -174,13 +229,19 @@ def _remove_duplicates(ae, remote, query, study_rsp, assoc):
                             existing_sop_instance_uids,
                         )
                     else:
-                        series_rsp.delete()
-        if not study.dicomqrrspseries_set.order_by("pk"):
-            study.delete()
+                        series_rsp.deleted_flag = True
+                        series_rsp.deleted_reason = (
+                            "Does not have modality SR, MG, DX, CR or PX"
+                        )
+                        series_rsp.save()
+        if not study.dicomqrrspseries_set.filter(deleted_flag=False):
+            study.deleted_flag = True
+            study.deleted_reason = "Study does not have any series left"
+            study.save()
 
-    study_rsp = query.dicomqrrspstudy_set.all()
     logger.info(
-        f"{query_id_8} After removing studies we already have in the db, {study_rsp.count()} studies are left"
+        f"{query_id_8} After removing studies we already have in the db, "
+        f"{query.dicomqrrspstudy_set.filter(deleted_flag=False).count()} studies are left"
     )
 
 
@@ -195,10 +256,7 @@ def _filter(query, level, filter_name, filter_list, filter_type):
     :param filter_type: 'exclude', 'include'
     :return: None
     """
-    try:
-        query_id_8 = query.query_id.hex[:8]
-    except AttributeError:
-        query_id_8 = query.query_id[:8]
+    query_id_8 = _query_id_8(query)
     if filter_type == "exclude":
         filtertype = True
     elif filter_type == "include":
@@ -232,7 +290,11 @@ def _filter(query, level, filter_name, filter_list, filter_type):
                     is filtertype
                 )
             ):
-                study.delete()
+                study.deleted_flag = True
+                study.deleted_reason = (
+                    f"Filter {filter_name} {filter_type} active and matched here"
+                )
+                study.save()
         elif level == "series":
             series = study.dicomqrrspseries_set.all()
             for s in series:
@@ -247,12 +309,21 @@ def _filter(query, level, filter_name, filter_list, filter_type):
                         is filtertype
                     )
                 ):
-                    s.delete()
+                    s.deleted_flag = True
+                    s.deleted_reason = (
+                        f"Filter {filter_name} {filter_type} active and matched here"
+                    )
+                    s.save()
             nr_series_remaining = study.dicomqrrspseries_set.all().count()
             if nr_series_remaining == 0:
-                study.delete()
-    study_rsp = query.dicomqrrspstudy_set.all()
-    logger.info(f"{query_id_8} Now have {study_rsp.count()} studies")
+                study.deleted_flag = True
+                study.deleted_reason = (
+                    "All Series of this studies where ignored due to some active filter"
+                )
+                study.save()
+    logger.info(
+        f"{query_id_8} Now have {query.dicomqrrspstudy_set.filter(deleted_flag=False).count()} studies"
+    )
 
 
 def _prune_series_responses(
@@ -272,21 +343,17 @@ def _prune_series_responses(
     )
     query.save()
     query_id = query.query_id
-    try:
-        query_id_8 = query_id.hex[:8]
-    except AttributeError:
-        query_id_8 = query_id[:8]
+    query_id_8 = _query_id_8(query)
     logger.debug(
         f"{query_id_8} Getting series and image level information and deleting series we can't use"
     )
 
-    study_rsp = query.dicomqrrspstudy_set.all()
     deleted_studies = {"RF": 0, "CT": 0, "SR": 0}
     kept_ct = {"SR": 0, "philips": 0, "toshiba": 0, "maybe_philips": 0}
     deleted_studies_filters = {"stationname_inc": 0, "stationname_exc": 0}
 
     if filters["stationname_inc"] and not filters["stationname_study"]:
-        before_count = query.dicomqrrspstudy_set.all().count()
+        before_count = query.dicomqrrspstudy_set.filter(deleted_flag=False).count()
         _filter(
             query,
             level="series",
@@ -294,7 +361,7 @@ def _prune_series_responses(
             filter_list=filters["stationname_inc"],
             filter_type="include",
         )
-        after_count = query.dicomqrrspstudy_set.all().count()
+        after_count = query.dicomqrrspstudy_set.filter(deleted_flag=False).count()
         if after_count < before_count:
             deleted_studies_filters["stationname_inc"] = before_count - after_count
             logger.debug(
@@ -302,7 +369,7 @@ def _prune_series_responses(
             )
 
     if filters["stationname_exc"] and not filters["stationname_study"]:
-        before_count = query.dicomqrrspstudy_set.all().count()
+        before_count = query.dicomqrrspstudy_set.filter(deleted_flag=False).count()
         _filter(
             query,
             level="series",
@@ -310,12 +377,14 @@ def _prune_series_responses(
             filter_list=filters["stationname_exc"],
             filter_type="exclude",
         )
-        after_count = query.dicomqrrspstudy_set.all().count()
+        after_count = query.dicomqrrspstudy_set.filter(deleted_flag=False).count()
         if after_count < before_count:
             deleted_studies_filters["stationname_exc"] = before_count - after_count
             logger.debug(
                 f"{query_id_8} stationname_exc removed {deleted_studies_filters['stationname_exc']} studies"
             )
+
+    study_rsp = query.dicomqrrspstudy_set.filter(deleted_flag=False).all()
 
     for study in study_rsp:
         logger.debug(
@@ -337,14 +406,20 @@ def _prune_series_responses(
                     logger.debug(
                         f"{query_id_8} RDSR in MG study, keep SR, delete all other series"
                     )
-                    series = study.dicomqrrspseries_set.all()
-                    series.exclude(modality__exact="SR").delete()
+                    series = study.dicomqrrspseries_set.filter(deleted_flag=False).all()
+                    series.exclude(modality__exact="SR").update(
+                        deleted_flag=True,
+                        deleted_reason="RDSR present, all other series ignored",
+                    )
                 else:
                     logger.debug(
                         f"{query_id_8} no RDSR in MG study, deleting other SR series"
                     )
-                    series = study.dicomqrrspseries_set.all()
-                    series.filter(modality__exact="SR").delete()
+                    series = study.dicomqrrspseries_set.filter(deleted_flag=False).all()
+                    series.filter(modality__exact="SR").update(
+                        deleted_flag=True,
+                        deleted_reason="No RDSR, ignored all SR series",
+                    )
             # ToDo: see if there is a mechanism to remove duplicate 'for processing' 'for presentation' images.
 
         elif all_mods["DX"]["inc"] and any(
@@ -365,14 +440,20 @@ def _prune_series_responses(
                     logger.debug(
                         f"{query_id_8} RDSR in DX study, keep SR, delete all other series"
                     )
-                    series = study.dicomqrrspseries_set.all()
-                    series.exclude(modality__exact="SR").delete()
+                    series = study.dicomqrrspseries_set.filter(deleted_flag=False).all()
+                    series.exclude(modality__exact="SR").update(
+                        deleted_flag=True,
+                        deleted_reason="RDSR present, all non SR series ignored",
+                    )
                 else:
                     logger.debug(
                         f"{query_id_8} no RDSR in DX study, deleting other SR series"
                     )
-                    series = study.dicomqrrspseries_set.all()
-                    series.filter(modality__exact="SR").delete()
+                    series = study.dicomqrrspseries_set.filter(deleted_flag=False).all()
+                    series.filter(modality__exact="SR").update(
+                        deleted_flag=True,
+                        deleted_reason="No RDSR, ignored all SR series",
+                    )
 
         elif all_mods["FL"]["inc"] and any(
             mod in study.get_modalities_in_study() for mod in ("XA", "RF")
@@ -387,14 +468,19 @@ def _prune_series_responses(
                 logger.debug(
                     f"{query_id_8} No usable SR in RF study. Deleting from query."
                 )
-                study.delete()
+                study.deleted_flag = True
+                study.deleted_reason = "No usable SR in study"
+                study.save()
                 deleted_studies["RF"] += 1
             else:
                 logger.debug(
                     f"{query_id_8} {sr_type} in RF study, keep SR, delete all other series"
                 )
-                series = study.dicomqrrspseries_set.all()
-                series.exclude(modality__exact="SR").delete()
+                series = study.dicomqrrspseries_set.filter(deleted_flag=False).all()
+                series.exclude(modality__exact="SR").update(
+                    deleted_flag=True,
+                    deleted_reason="RDSR present, all not SR series ignored",
+                )
 
         elif all_mods["CT"]["inc"] and "CT" in study.get_modalities_in_study():
             # If _check_sr_type_in_study returns RDSR, all other SR series responses will have been deleted and then all
@@ -405,17 +491,20 @@ def _prune_series_responses(
             # series and optionally get samples from each series for the Toshiba RDSR creation routine.
             study.modality = "CT"
             study.save()
-            series = study.dicomqrrspseries_set.all()
+            series = study.dicomqrrspseries_set.filter(deleted_flag=False).all()
             sr_type = None
             if "SR" in study.get_modalities_in_study():
                 sr_type = _check_sr_type_in_study(
                     ae, remote, assoc, study, query, get_empty_sr
                 )
-            if "SR" and sr_type in ("RDSR", "ESR", "null_response"):
+            if sr_type in ("RDSR", "ESR", "null_response"):
                 logger.debug(
                     f"{query_id_8} {sr_type} in CT study, keep SR, delete all other series"
                 )
-                series.exclude(modality__exact="SR").delete()
+                series.exclude(modality__exact="SR").update(
+                    deleted_flag=True,
+                    deleted_reason="RDSR present, all not SR series ignored",
+                )
                 kept_ct["SR"] += 1
             else:
                 logger.debug(
@@ -443,8 +532,75 @@ def _prune_series_responses(
                     logger.debug(
                         f"{query_id_8} No usable CT information available, deleting study from query"
                     )
-                    study.delete()
+                    study.deleted_flag = True
+                    study.deleted_reason = "Found no usuable information in this study"
+                    study.save()
                     deleted_studies["CT"] += 1
+
+        elif all_mods["NM"]["inc"] and (
+            any(
+                mod in study.get_modalities_in_study() for mod in all_mods["NM"]["mods"]
+            )
+        ):
+            study.modality = "NM"
+            study.save()
+            # SOP ids: RRDSR, PET Image, NM Image. We will try to
+            # get all of those (In case of NM and PT only the first
+            # object of the series). NM will not be taken unless
+            # nothing else present
+            nm_img_sop_ids = [
+                "1.2.840.10008.5.1.4.1.1.88.68",
+                "1.2.840.10008.5.1.4.1.1.128",
+                "1.2.840.10008.5.1.4.1.1.20",
+            ]
+            possible_modalities = {
+                nm_img_sop_ids[0]: ["SR"],
+                nm_img_sop_ids[1]: ["PT"],
+                nm_img_sop_ids[2]: ["NM"],
+            }
+
+            loaded_sop_classes = set()
+            for sop_class in nm_img_sop_ids:
+                logger.debug(f"{query_id_8} Now checking for {sop_class} available")
+                for load_mod in possible_modalities[sop_class]:
+                    loaded_sop_classes = loaded_sop_classes.union(
+                        _get_series_sop_class(
+                            ae, remote, assoc, study, query, get_empty_sr, load_mod
+                        )
+                    )
+                loaded_sop_classes.intersection_update(nm_img_sop_ids)
+                # Don't download NM images when anything else is available
+                if sop_class == nm_img_sop_ids[1] and len(loaded_sop_classes) > 0:
+                    break
+
+            series = study.dicomqrrspseries_set.filter(deleted_flag=False).all()
+            series.exclude(sop_class_in_series__in=nm_img_sop_ids).update(
+                deleted_flag=True,
+                deleted_reason="Excluding all series without SOP class we can use",
+            )
+            keep = series.filter(sop_class_in_series=nm_img_sop_ids[2]).first()
+            if keep is not None:
+                series.filter(
+                    Q(sop_class_in_series=nm_img_sop_ids[2]) & ~Q(pk=keep.pk)
+                ).update(
+                    deleted_flag=True,
+                    deleted_reason="All NM images of a series contain the same NM data. Only first downloaded.",
+                )  # Only take the first NM imgage
+
+            series = series.filter(deleted_flag=False)
+
+            if series.count() == 0:
+                logger.debug(
+                    f"{query_id_8} No usable NM information available, deleting study from query"
+                )
+                continue
+            logger.debug(f"{query_id_8} Found {loaded_sop_classes}. Keeping them all.")
+            for serie in series:
+                if serie.sop_class_in_series in nm_img_sop_ids[1:2]:  # PET or NM Images
+                    serie.image_level_move = (
+                        True  # We set this so only the first img of the series is moved
+                    )
+                    serie.save()
 
         elif all_mods["SR"]["inc"]:
             sr_type = _check_sr_type_in_study(
@@ -464,14 +620,21 @@ def _prune_series_responses(
                 logger.debug(
                     f"{query_id_8} No RDSR or ESR found. Study will be deleted."
                 )
-                study.delete()
+                study.deleted_flag = True
+                study.deleted_reason = "No RDSR or ESR found."
+                study.save()
                 deleted_studies["SR"] += 1
 
-        if study.id is not None and study.dicomqrrspseries_set.all().count() == 0:
+        if (
+            study.id is not None
+            and study.dicomqrrspseries_set.filter(deleted_flag=False).all().count() == 0
+        ):
             logger.debug(
                 f"{query_id_8} Deleting empty study with suid {study.study_instance_uid}"
             )
-            study.delete()
+            study.deleted_flag = True
+            study.deleted_reason = "There are no series left"
+            study.save()
 
     return deleted_studies, deleted_studies_filters, kept_ct
 
@@ -500,7 +663,10 @@ def _get_philips_dose_images(series, get_toshiba_images, query_id):
             logger.debug(
                 f"{query_id_8} Get Philips: found likely Philips dose image, no SR, delete all other series"
             )
-            series.exclude(series_description__iexact="dose info").delete()
+            series.exclude(series_description__iexact="dose info").update(
+                deleted_flag=True,
+                deleted_reason="Found what is probably Philips dose image, no SR, all other series ignored",
+            )
             return True, True
         else:
             logger.debug(f"{query_id_8} Get Philips: not matched Philips dose image")
@@ -512,7 +678,11 @@ def _get_philips_dose_images(series, get_toshiba_images, query_id):
             f"{query_id_8} Get Philips: no series descriptions, keeping only series with < 6 images in "
             f"case we might get a Philips dose info image"
         )
-        series.filter(number_of_series_related_instances__gt=5).delete()
+        series.filter(number_of_series_related_instances__gt=5).update(
+            deleted_flag=True,
+            deleted_reason="No series descriptions when checking for philips dose image."
+            "Keeping only series with < 6 images.",
+        )
         return False, True
 
 
@@ -523,10 +693,7 @@ def _get_toshiba_dose_images(ae, remote, study_series, assoc, query):
     :return: None. Non-useful entries will be removed from database
     """
 
-    try:
-        query_id_8 = query.query_id.hex[:8]
-    except AttributeError:
-        query_id_8 = query.query_id[:8]
+    query_id_8 = _query_id_8(query)
 
     for index, series in enumerate(study_series):
         _query_images(
@@ -537,7 +704,9 @@ def _get_toshiba_dose_images(ae, remote, study_series, assoc, query):
             logger.debug(
                 f"{query_id_8} Toshiba option: No images in series, deleting series."
             )
-            series.delete()
+            series.deleted_flag = True
+            series.deleted_reason = "Searching for Toshiba: No images in series found."
+            series.save()
         else:
             if images[0].sop_class_uid != "1.2.840.10008.5.1.4.1.1.7":
                 logger.debug(
@@ -546,26 +715,28 @@ def _get_toshiba_dose_images(ae, remote, study_series, assoc, query):
                 )
                 images.exclude(
                     sop_instance_uid__exact=images[0].sop_instance_uid
-                ).delete()
+                ).update(
+                    deleted_flag=True,
+                    deleted_reason="Toshiba option selected. Ignoring all but the first image.",
+                )
                 logger.debug(
-                    f"{query_id_8} Toshiba option: Deleted other images, now {images.count()} "
+                    f"{query_id_8} Toshiba option: Deleted other images, "
+                    f"now {images.filter(deleted_flag=False).count()} "
                     f"remaining (should be 1)"
                 )
                 series.image_level_move = True
                 series.save()
             else:
                 logger.debug(
-                    f"{query_id_8} Toshiba option: Secondary capture series, keep the {images.count()} "
+                    f"{query_id_8} Toshiba option: Secondary capture series, "
+                    f"keep the {images.filter(deleted_flag=False).count()} "
                     f"images in this series."
                 )
 
 
 def _prune_study_responses(query, filters):
 
-    try:
-        query_id_8 = query.query_id.hex[:8]
-    except AttributeError:
-        query_id_8 = query.query_id[:8]
+    query_id_8 = _query_id_8(query)
 
     deleted_studies_filters = {
         "study_desc_inc": 0,
@@ -573,84 +744,108 @@ def _prune_study_responses(query, filters):
         "stationname_inc": 0,
         "stationname_exc": 0,
     }
-    if filters["study_desc_inc"]:
-        before_count = query.dicomqrrspstudy_set.all().count()
-        logger.debug(
-            f"{query_id_8} About to filter on study_desc_inc: {filters['study_desc_inc']}, "
-            f"currently have {query.dicomqrrspstudy_set.all().count()} studies."
-        )
-        _filter(
-            query,
-            level="study",
-            filter_name="study_description",
-            filter_list=filters["study_desc_inc"],
-            filter_type="include",
-        )
-        after_count = query.dicomqrrspstudy_set.all().count()
-        if after_count < before_count:
-            deleted_studies_filters["study_desc_inc"] = before_count - after_count
+    for (
+        apply_current_filter,
+        current_filter,
+        current_filter_name,
+        current_filter_type,
+        short_name,
+    ) in [
+        (
+            filters["study_desc_inc"],
+            filters["study_desc_inc"],
+            "study_description",
+            "include",
+            "study_desc_inc",
+        ),
+        (
+            filters["study_desc_exc"],
+            filters["study_desc_exc"],
+            "study_description",
+            "exclude",
+            "study_desc_exc",
+        ),
+        (
+            filters["stationname_inc"] and filters["stationname_study"],
+            filters["stationname_inc"],
+            "station_name",
+            "include",
+            "stationname_inc",
+        ),
+        (
+            filters["stationname_exc"] and filters["stationname_study"],
+            filters["stationname_exc"],
+            "station_name",
+            "exclude",
+            "stationname_exc",
+        ),
+    ]:
+        if apply_current_filter:
+            before_count = query.dicomqrrspstudy_set.filter(deleted_flag=False).count()
             logger.debug(
-                f"{query_id_8} study_desc_inc removed {deleted_studies_filters['study_desc_inc']} studies"
+                f"{query_id_8} About to filter on {current_filter_name} with {current_filter_type}: {current_filter}, "
+                f"currently have {before_count} studies."
             )
-    if filters["study_desc_exc"]:
-        before_count = query.dicomqrrspstudy_set.all().count()
-        logger.debug(
-            f"{query_id_8} About to filter on study_desc_exc: {filters['study_desc_exc']}, "
-            f"currently have {query.dicomqrrspstudy_set.all().count()} studies."
-        )
-        _filter(
-            query,
-            level="study",
-            filter_name="study_description",
-            filter_list=filters["study_desc_exc"],
-            filter_type="exclude",
-        )
-        after_count = query.dicomqrrspstudy_set.all().count()
-        if after_count < before_count:
-            deleted_studies_filters["study_desc_exc"] = before_count - after_count
-            logger.debug(
-                f"{query_id_8} study_desc_exc removed "
-                f"{deleted_studies_filters['study_desc_exc']} studies"
+            _filter(
+                query,
+                level="study",
+                filter_name=current_filter_name,
+                filter_list=current_filter,
+                filter_type=current_filter_type,
             )
-    if filters["stationname_inc"] and filters["stationname_study"]:
-        before_count = query.dicomqrrspstudy_set.all().count()
-        logger.debug(
-            f"{query_id_8} About to filter on stationname_inc: {filters['stationname_inc']}, "
-            f"currently have {query.dicomqrrspstudy_set.all().count()} studies."
-        )
-        _filter(
-            query,
-            level="study",
-            filter_name="station_name",
-            filter_list=filters["stationname_inc"],
-            filter_type="include",
-        )
-        after_count = query.dicomqrrspstudy_set.all().count()
-        if after_count < before_count:
-            deleted_studies_filters["stationname_inc"] = before_count - after_count
-            logger.debug(
-                f"{query_id_8} stationname_inc removed {deleted_studies_filters['stationname_inc']} studies"
-            )
-    if filters["stationname_exc"] and filters["stationname_study"]:
-        before_count = query.dicomqrrspstudy_set.all().count()
-        logger.debug(
-            f"{query_id_8} About to filter on stationname_exc: {filters['stationname_exc']}, "
-            f"currently have {query.dicomqrrspstudy_set.all().count()} studies."
-        )
-        _filter(
-            query,
-            level="study",
-            filter_name="station_name",
-            filter_list=filters["stationname_exc"],
-            filter_type="exclude",
-        )
-        after_count = query.dicomqrrspstudy_set.all().count()
-        if after_count < before_count:
-            deleted_studies_filters["stationname_exc"] = before_count - after_count
-            logger.debug(
-                f"{query_id_8} stationname_exc removed {deleted_studies_filters['stationname_exc']} studies"
-            )
+            after_count = query.dicomqrrspstudy_set.filter(deleted_flag=False).count()
+            if after_count < before_count:
+                deleted_studies_filters[short_name] = before_count - after_count
+                logger.debug(
+                    f"{query_id_8} study_desc_inc removed {deleted_studies_filters[short_name]} studies"
+                )
+
     return deleted_studies_filters
+
+
+def _get_series_sop_class(ae, remote, assoc, study, query, get_empty_sr, modality="SR"):
+    """
+    Checks for all SR (or other modality) Series what their SOP-Class is and stores it to their DB entry.
+
+    :param assoc: Current DICOM query object
+    :param study: study level C-Find response object in database
+    :param get_empty_sr: Whether to get SR series that return empty at image level query
+    :param modality: Basically a filter, the method will only check the SOP classes of series with this modality
+    :return: set of SOP classes found for SR/All series
+    """
+    query_id_8 = _query_id_8(query)
+    series_selected = study.dicomqrrspseries_set.filter(deleted_flag=False).filter(
+        modality__exact=modality
+    )
+    logger.debug(
+        f"{query_id_8} Check {modality} type: Number of series with {modality} {series_selected.count()}"
+    )
+
+    sop_classes = set()
+    for sr in series_selected:
+        _query_images(ae, remote, assoc, sr, query, initial_image_only=True)
+        images = sr.dicomqrrspimage_set.all()
+        if images.count() == 0:
+            if get_empty_sr and modality == "SR":
+                logger.debug(
+                    f"{query_id_8} Check SR type: studyuid: {study.study_instance_uid} "
+                    f"seriesuid: {sr.series_instance_uid}. Image level response returned null, "
+                    f"-emptysr=True so assuming SR is RDSR"
+                )
+                sop_classes.add("null_response")
+            logger.warning(
+                f"{query_id_8} Check SR type: Oops, series {sr.series_number} of study instance "
+                f"UID {study.study_instance_uid} returned null at image level query. Try '-emptysr' option?"
+            )
+            continue
+        sop_classes.add(images[0].sop_class_uid)
+        sr.sop_class_in_series = images[0].sop_class_uid
+        sr.save()
+        logger.debug(
+            f"{query_id_8} Check {modality} type: studyuid: {study.study_instance_uid}   "
+            f"seriesuid: {sr.series_instance_uid}  sop_classes: {sop_classes}"
+        )
+    return sop_classes
 
 
 # returns SR-type: RDSR or ESR; otherwise returns 'no_dose_report'
@@ -669,40 +864,12 @@ def _check_sr_type_in_study(ae, remote, assoc, study, query, get_empty_sr):
     :param get_empty_sr: Whether to get SR series that return empty at image level query
     :return: string indicating SR type remaining in study
     """
-
-    try:
-        query_id_8 = query.query_id.hex[:8]
-    except AttributeError:
-        query_id_8 = query.query_id[:8]
-
-    series_sr = study.dicomqrrspseries_set.filter(modality__exact="SR")
-    logger.debug(
-        f"{query_id_8} Check SR type: Number of series with SR {series_sr.count()}"
+    query_id_8 = _query_id_8(query)
+    sop_classes = _get_series_sop_class(ae, remote, assoc, study, query, get_empty_sr)
+    series_sr = study.dicomqrrspseries_set.filter(deleted_flag=False).filter(
+        modality__exact="SR"
     )
-    sop_classes = set()
-    for sr in series_sr:
-        _query_images(ae, remote, assoc, sr, query)
-        images = sr.dicomqrrspimage_set.all()
-        if images.count() == 0:
-            if get_empty_sr:
-                logger.debug(
-                    f"{query_id_8} Check SR type: studyuid: {study.study_instance_uid} "
-                    f"seriesuid: {sr.series_instance_uid}. Image level response returned null, "
-                    f"-emptysr=True so assuming SR is RDSR"
-                )
-                sop_classes.add("null_response")
-            logger.warning(
-                f"{query_id_8} Check SR type: Oops, series {sr.series_number} of study instance "
-                f"UID {study.study_instance_uid} returned null at image level query. Try '-emptysr' option?"
-            )
-            continue
-        sop_classes.add(images[0].sop_class_uid)
-        sr.sop_class_in_series = images[0].sop_class_uid
-        sr.save()
-        logger.debug(
-            f"{query_id_8} Check SR type: studyuid: {study.study_instance_uid}   "
-            f"seriesuid: {sr.series_instance_uid}   nrimages: {images.count()}   sop_classes: {sop_classes}"
-        )
+
     logger.debug(f"{query_id_8} Check SR type: sop_classes: {sop_classes}")
     if "1.2.840.10008.5.1.4.1.1.88.67" in sop_classes:
         for sr in series_sr:
@@ -710,7 +877,9 @@ def _check_sr_type_in_study(ae, remote, assoc, study, query, get_empty_sr):
                 logger.debug(
                     f"{query_id_8} Chesk SR type: Have RDSR, deleting non-RDSR SR"
                 )
-                sr.delete()
+                sr.deleted_flag = True
+                sr.deleted_reason = "RDSR present, ignoring all non-RDSR SR"
+                sr.save()
         return "RDSR"
     elif "1.2.840.10008.5.1.4.1.1.88.22" in sop_classes:
         for sr in series_sr:
@@ -718,7 +887,11 @@ def _check_sr_type_in_study(ae, remote, assoc, study, query, get_empty_sr):
                 logger.debug(
                     f"{query_id_8} Check SR type: Have ESR, deleting non-RDSR, non-ESR SR"
                 )
-                sr.delete()
+                sr.deleted_flag = True
+                sr.deleted_reason = (
+                    "ESR present, no RDSR found, all other SR series ignored"
+                )
+                sr.save()
         return "ESR"
     elif "null_response" in sop_classes:
         logger.debug(
@@ -728,7 +901,8 @@ def _check_sr_type_in_study(ae, remote, assoc, study, query, get_empty_sr):
         return "null_response"
     else:
         logger.debug(
-            f"{query_id_8} Check SR type: {series_sr.count()} non-RDSR, non-ESR SR series remain"
+            f"{query_id_8} Check SR type: {series_sr.filter(deleted_flag=False).count()} "
+            f"non-RDSR, non-ESR SR series remain"
         )
         return "no_dose_report"
 
@@ -768,17 +942,22 @@ def _get_responses(ae, remote, assoc, query, query_details):
     query.stage = msg
     query.failed = True
     query.save()
+    record_task_error_exit(msg)
     sys.exit()
 
 
 def _query_images(
-    ae, remote, assoc, seriesrsp, query, initial_image_only=False, msg_id=None
+    ae,
+    remote,
+    assoc,
+    seriesrsp,
+    query,
+    initial_image_only=False,
+    msg_id=None,
+    instance_number=None,
 ):
 
-    try:
-        query_id_8 = query.query_id.hex[:8]
-    except AttributeError:
-        query_id_8 = query.query_id[:8]
+    query_id_8 = _query_id_8(query)
 
     logger.debug(f"Query_id {query_id_8}: In _query_images")
 
@@ -793,6 +972,8 @@ def _query_images(
 
     if initial_image_only:
         d3.InstanceNumber = "1"
+    if instance_number is not None:
+        d3.InstanceNumber = str(instance_number)
     if not msg_id:
         msg_id = 1
 
@@ -827,6 +1008,15 @@ def _query_images(
                     "Image level matching for this study is complete (there many be more)"
                 )
                 query.save()
+
+                # Some older systems start their instance numbers with 0. If == 1 does not deliver, retry with 0
+                if initial_image_only and instance_number is None:
+                    image_count = seriesrsp.dicomqrrspimage_set.count()
+                    if image_count == 0:
+                        _query_images(
+                            ae, remote, assoc, seriesrsp, query, True, msg_id, 0
+                        )
+
                 return
             if status.Status in (0xFF00, 0xFF01):
                 logger.debug(
@@ -894,10 +1084,7 @@ def _query_series(ae, remote, assoc, d2, studyrsp, query):
     d2.SpecificCharacterSet = ""
     d2.SeriesTime = ""
 
-    try:
-        query_id_8 = query.query_id.hex[:8]
-    except AttributeError:
-        query_id_8 = query.query_id[:8]
+    query_id_8 = _query_id_8(query)
 
     logger.debug(f"{query_id_8} In _query_series")
     logger.debug(f"{query_id_8} series query is {d2}")
@@ -1004,10 +1191,7 @@ def _query_study(ae, remote, assoc, d, query, study_query_id):
     d.StationName = ""
     d.SpecificCharacterSet = ""
 
-    try:
-        query_id_8 = query.query_id.hex[:8]
-    except AttributeError:
-        query_id_8 = query.query_id[:8]
+    query_id_8 = _query_id_8(query)
 
     logger.debug(
         f"{query_id_8}/{study_query_id.hex[:8]} Study level association requested"
@@ -1122,10 +1306,7 @@ def _query_for_each_modality(all_mods, query, d, assoc, ae, remote):
     # If not, 1 query is sufficient to retrieve all relevant studies
     modality_matching = True
     modalities_returned = False
-    try:
-        query_id_8 = query.query_id.hex[:8]
-    except AttributeError:
-        query_id_8 = query.query_id[:8]
+    query_id_8 = _query_id_8(query)
 
     # query for all requested studies
     # if ModalitiesInStudy is not supported by the PACS set modality_matching to False and stop querying further
@@ -1222,9 +1403,11 @@ def _remove_duplicates_in_study_response(query, initial_count):
                 pk__in=query.dicomqrrspstudy_set.filter(
                     study_instance_uid=study_rsp
                 ).values_list("id", flat=True)[1:]
-            ).delete()
+            ).update(
+                deleted_flag=True, deleted_reason="Somehow this study was sent twice"
+            )
         query.save()
-        current_count = query.dicomqrrspstudy_set.count()
+        current_count = query.dicomqrrspstudy_set.filter(deleted_flag=False).count()
         logger.info(
             f"{query_id_8} Removed {initial_count - current_count} duplicates from response, {current_count} remain."
         )
@@ -1236,9 +1419,39 @@ def _remove_duplicates_in_study_response(query, initial_count):
         return initial_count
 
 
-@shared_task(
-    name="remapp.netdicom.qrscu.qrscu"
-)  # (name='remapp.netdicom.qrscu.qrscu', queue='qr')
+def _duplicate_ct_pet_studies(query, all_mods):
+    """
+    CT and Radipharmaceutical Studies (i.e PET/CT) often occur in the same study.
+    Even though it's the same study, it has completly different data and is stored as 2
+    studies with same id in openREM. We start this already here by duplicating studies which
+    contain both modalities.
+    """
+    study_rsp = query.dicomqrrspstudy_set.all()
+    for study in study_rsp:
+        has_ct = all_mods["CT"]["inc"] and "CT" in study.get_modalities_in_study()
+        has_nm = all_mods["NM"]["inc"] and (
+            any(
+                mod in study.get_modalities_in_study() for mod in all_mods["NM"]["mods"]
+            )
+        )
+        if has_ct and has_nm:
+            if "SR" in study.get_modalities_in_study():
+                base = ["SR"]
+            else:
+                base = []
+            study.set_modalities_in_study(base + ["CT"])
+            study.save()
+            study_nm = deepcopy(study)
+            study_nm.pk = None
+            study_nm.set_modalities_in_study(base + ["NM"])
+            study_nm.save()
+            for series in study.dicomqrrspseries_set.all():
+                series_nm = deepcopy(series)
+                series_nm.dicom_qr_rsp_study = study_nm
+                series_nm.pk = None
+                series_nm.save()
+
+
 def qrscu(
     qr_scp_pk=None,
     store_scp_pk=None,
@@ -1290,7 +1503,7 @@ def qrscu(
 
     debug_timer = datetime.now()
     if not query_id:
-        query_id = uuid.uuid4()
+        query_id = get_or_generate_task_uuid()
     try:
         query_id_8 = query_id.hex[:8]
     except AttributeError:
@@ -1325,10 +1538,12 @@ def qrscu(
             query_id,
         )
     )
-    celery_task_uuid = qrscu.request.id
-    if celery_task_uuid is None:
-        celery_task_uuid = uuid.uuid4()
-    logger.debug(f"Celery task UUID is {celery_task_uuid}")
+
+    task = get_current_task()
+    if task is None:
+        logger.debug("qrscu is running in synchronous mode (no task id)")
+    else:
+        logger.debug(f"task id is {task.uuid}")
 
     # Currently, if called from qrscu_script modalities will either be a list of modalities or it will be "SR".
     # Web interface hasn't changed, so will be a list of modalities and or the inc_sr flag
@@ -1368,14 +1583,15 @@ def qrscu(
     logger.debug(f"{query_id_8} Remote AE is {remote['aet']}")
 
     query = DicomQuery.objects.create()
+    query.started_at = datetime.now()
     query.query_id = query_id
-    query.query_uuid = celery_task_uuid
     query.complete = False
     query.store_scp_fk = DicomStoreSCP.objects.get(pk=store_scp_pk)
     query.qr_scp_fk = qr_scp
     query.move_completed_sub_ops = 0
     query.move_warning_sub_ops = 0
     query.move_failed_sub_ops = 0
+    query.query_task = task
     study_date = str(
         make_dcm_date_range(date1=date_from, date2=date_until, single_date=single_date)
         or ""
@@ -1411,12 +1627,8 @@ def qrscu(
 
     if assoc.is_established:
 
-        try:
-            celery_task_uuid_8 = celery_task_uuid.hex[:8]
-        except AttributeError:
-            celery_task_uuid_8 = celery_task_uuid[:8]
         logger.info(
-            f"{query_id_8} Celery {celery_task_uuid_8} "
+            f"{query_id_8} "
             f"DICOM FindSCU: {query_summary_1} \n    {query_summary_2} \n    {query_summary_3}"
         )
         d = Dataset()
@@ -1428,6 +1640,7 @@ def qrscu(
         all_mods["MG"] = {"inc": False, "mods": ["MG"]}
         all_mods["FL"] = {"inc": False, "mods": ["RF", "XA"]}
         all_mods["DX"] = {"inc": False, "mods": ["DX", "CR", "PX"]}
+        all_mods["NM"] = {"inc": False, "mods": ["NM", "PT"]}
         all_mods["SR"] = {"inc": False, "mods": ["SR"]}
 
         # Reasoning regarding PET-CT: Some PACS allocate study modality PT, some CT, some depending on order received.
@@ -1448,17 +1661,20 @@ def qrscu(
             remote,
         )
 
-        # Now we have all our studies. Time to throw duplicates and away any we don't want
-
-        study_numbers = {"initial": query.dicomqrrspstudy_set.count()}
-        study_numbers["current"] = _remove_duplicates_in_study_response(
-            query, study_numbers["initial"]
+        study_count = query.dicomqrrspstudy_set.count()
+        removed_study = study_count - _remove_duplicates_in_study_response(
+            query, study_count
         )
+
+        _duplicate_ct_pet_studies(query, all_mods)
+        study_rsp = query.dicomqrrspstudy_set.all()
+        study_numbers = {"initial": query.dicomqrrspstudy_set.count()}
+        study_numbers["current"] = study_numbers["initial"] - removed_study
 
         # Performing some cleanup if modality_matching=True (prevents having to retrieve unnecessary series)
         # We are assuming that if remote matches on modality it will populate ModalitiesInStudy and conversely
         # if remote doesn't match on modality it won't return a populated ModalitiesInStudy.
-        study_rsp = query.dicomqrrspstudy_set.all()
+        study_rsp = query.dicomqrrspstudy_set.filter(deleted_flag=False).all()
         if modalities_returned and inc_sr:
             logger.debug(
                 f"{query_id_8} Modalities_returned is true and we only want studies with only SR in;"
@@ -1467,7 +1683,12 @@ def qrscu(
             for study in study_rsp:
                 mods = study.get_modalities_in_study()
                 if mods != ["SR"]:
-                    study.delete()
+                    study.deleted_flag = True
+                    study.deleted_reason = (
+                        f"SR only checked, but this study contains {mods}"
+                    )
+                    study.save()
+            study_rsp = study_rsp.filter(deleted_flag=False)
             study_numbers["current"] = study_rsp.count()
             study_numbers["sr_only_removed"] = (
                 study_numbers["initial"] - study_numbers["current"]
@@ -1511,7 +1732,7 @@ def qrscu(
             )
             before_study_prune = study_numbers["current"]
             deleted_studies_filters = _prune_study_responses(query, filters)
-            study_rsp = query.dicomqrrspstudy_set.all()
+            study_rsp = query.dicomqrrspstudy_set.filter(deleted_flag=False).all()
             study_numbers["current"] = study_rsp.count()
             study_numbers["inc_exc_removed"] = (
                 before_study_prune - study_numbers["current"]
@@ -1575,7 +1796,11 @@ def qrscu(
                             if inc_sr and mod_set == ["SR"]:
                                 delete = False
                 if delete:
-                    study_rsp.filter(modalities_in_study__exact=mod_set).delete()
+                    study_rsp.filter(modalities_in_study__exact=mod_set).update(
+                        deleted_flag=True,
+                        deleted_reason=f"The study only contained modalities we do not care about ({mod_set})",
+                    )
+            study_rsp = study_rsp.filter(deleted_flag=False).all()
             study_numbers["current"] = study_rsp.count()
             study_numbers["wrong_modality_removed"] = (
                 before_not_modality_matching - study_numbers["current"]
@@ -1638,7 +1863,7 @@ def qrscu(
             )
         logger.debug(f"{query_id_8} {series_pruning_log}")
 
-        study_rsp = query.dicomqrrspstudy_set.all()
+        study_rsp = query.dicomqrrspstudy_set.filter(deleted_flag=False).all()
         study_numbers["current"] = study_rsp.count()
         study_numbers["series_pruning_removed"] = (
             before_series_pruning - study_numbers["current"]
@@ -1649,7 +1874,7 @@ def qrscu(
         )
 
         if remove_duplicates:
-            study_rsp = query.dicomqrrspstudy_set.all()
+            study_rsp = query.dicomqrrspstudy_set.filter(deleted_flag=False).all()
             before_remove_duplicates = study_rsp.count()
             query.stage = _(
                 "Removing any responses that match data we already have in the database"
@@ -1659,7 +1884,9 @@ def qrscu(
             )
             query.save()
             _remove_duplicates(ae, remote, query, study_rsp, assoc)
-            study_numbers["current"] = query.dicomqrrspstudy_set.all().count()
+            study_numbers["current"] = query.dicomqrrspstudy_set.filter(
+                deleted_flag=False
+            ).count()
             study_numbers["duplicates_removed"] = (
                 before_remove_duplicates - study_numbers["current"]
             )
@@ -1671,10 +1898,13 @@ def qrscu(
 
         # done
         assoc.release()
+        _make_query_deleted_reasons_consistent(query)
         query.complete = True
 
         time_took = (datetime.now() - debug_timer).total_seconds()
-        study_numbers["current"] = query.dicomqrrspstudy_set.all().count()
+        study_numbers["current"] = query.dicomqrrspstudy_set.filter(
+            deleted_flag=False
+        ).count()
         query.stage = _(
             "Query complete. Query took {time} and we are left with {studies_left} studies to move.<br>"
             "Of the original {studies_initial} study responses, ".format(
@@ -1741,7 +1971,7 @@ def qrscu(
         )
 
         if move:
-            movescu.delay(str(query.query_id))
+            movescu(str(query.query_id))
 
     else:
         if assoc.is_rejected:
@@ -1867,6 +2097,24 @@ def _move_req(my_ae, assoc, d, study_no, series_no, query):
     return True
 
 
+def _remove_duplicate_images(series):
+    """
+    Removes duplicate images from a series. Duplication can happen if
+    for some reason the images for the same series are queried
+    multiple times.
+    """
+    # distinct with specific fields only works on postgres. Therefore not used here.
+    seen = set()
+    for img in series.dicomqrrspimage_set.all():
+        if img.sop_instance_uid in seen:
+            img.deleted_flag = True
+            img.deleted_reason = (
+                "It seems like this image was found twice or somewhere duplicated"
+            )
+            img.save()
+        seen.add(img.sop_instance_uid)
+
+
 def _move_if_established(ae, assoc, d, study_no, series_no, query, remote):
     if assoc.is_established:
         move = _move_req(ae, assoc, d, study_no, series_no, query)
@@ -1898,13 +2146,10 @@ def _move_if_established(ae, assoc, d, study_no, series_no, query, remote):
     return False, msg
 
 
-@shared_task(
-    name="remapp.netdicom.qrscu.movescu"
-)  # (name='remapp.netdicom.qrscu.movescu', queue='qr')
 def movescu(query_id):
     """
     C-Move request element of query-retrieve service class user
-    :param query_id: UUID of query in the DicomQuery table
+    :param query_id: ID of query in the DicomQuery table
     :return: None
     """
     # debug_logger()
@@ -1913,18 +2158,16 @@ def movescu(query_id):
     try:
         query = DicomQuery.objects.get(query_id=query_id)
     except ObjectDoesNotExist:
-        logger.warning(
-            "Move called with invalid query_id {0}. Move abandoned.".format(query_id)
-        )
+        msg = "Move called with invalid query_id {0}. Move abandoned.".format(query_id)
+        logger.warning(msg)
+        record_task_error_exit(msg)
         return 0
     query.move_complete = False
+    query.move_task = get_current_task()
     query.failed = False
-    query.move_uuid = movescu.request.id
     query.save()
     qr_scp = query.qr_scp_fk
     store_scp = query.store_scp_fk
-
-    logger.debug(f"movescu uuid is {movescu.request.id}")
 
     ae = AE()
     ae.add_requested_context(StudyRootQueryRetrieveInformationModelMove)
@@ -1948,7 +2191,7 @@ def movescu(query_id):
     query.save()
     logger.debug("Query_id {0}: Preparing to start move request".format(query_id))
 
-    studies = query.dicomqrrspstudy_set.all()
+    studies = query.dicomqrrspstudy_set.filter(deleted_flag=False).all()
     query.move_summary = "Requesting move of {0} studies".format(studies.count())
     query.save()
     logger.info(
@@ -1967,7 +2210,7 @@ def movescu(query_id):
             study_no += 1
             logger.debug("Mv: study_no {0}".format(study_no))
             series_no = 0
-            for series in study.dicomqrrspseries_set.all():
+            for series in study.dicomqrrspseries_set.filter(deleted_flag=False).all():
                 if not move:
                     break
                 series_no += 1
@@ -1989,7 +2232,7 @@ def movescu(query_id):
                     study_no,
                     studies.count(),
                     series_no,
-                    study.dicomqrrspseries_set.all().count(),
+                    study.dicomqrrspseries_set.filter(deleted_flag=False).count(),
                     num_objects,
                 )
                 logger.info(
@@ -1998,7 +2241,7 @@ def movescu(query_id):
                         study_no,
                         studies.count(),
                         series_no,
-                        study.dicomqrrspseries_set.all().count(),
+                        study.dicomqrrspseries_set.filter(deleted_flag=False).count(),
                         num_objects,
                     )
                 )
@@ -2006,7 +2249,10 @@ def movescu(query_id):
                 logger.debug("_move_req launched")
                 if series.image_level_move:
                     d.QueryRetrieveLevel = "IMAGE"
-                    for image in series.dicomqrrspimage_set.all():
+                    _remove_duplicate_images(series)
+                    for image in series.dicomqrrspimage_set.filter(
+                        deleted_flag=False
+                    ).all():
                         d.SOPInstanceUID = image.sop_instance_uid
                         logger.debug("Image-level move - d is: {0}".format(d))
                         move, msg = _move_if_established(
@@ -2041,7 +2287,11 @@ def movescu(query_id):
 
             logger.debug("Query_id {0}: Releasing move association".format(query_id))
         else:
-            return
+            record_task_error_exit(
+                "Something went wrong, cannot move further. "
+                "Aborting. (Probably lost connection for a short time)"
+            )
+            return 0
 
     elif assoc.is_rejected:
         msg = "{0}: {1}".format(
@@ -2052,6 +2302,7 @@ def movescu(query_id):
                 remote["host"], remote["port"], remote["aet"], msg
             )
         )
+        record_task_error_exit(msg)
     elif assoc.is_aborted:
         msg = "Association aborted or never connected"
         logger.warning(
@@ -2059,6 +2310,7 @@ def movescu(query_id):
                 remote["host"], remote["port"], remote["aet"], msg
             )
         )
+        record_task_error_exit(msg)
     else:
         msg = "Association Failed"
         logger.warning(
@@ -2066,6 +2318,7 @@ def movescu(query_id):
                 remote["host"], remote["port"], remote["aet"], msg
             )
         )
+        record_task_error_exit(msg)
     query.move_summary = msg
     query.save()
 
@@ -2096,6 +2349,11 @@ def _create_parser():
         "-dx",
         action="store_true",
         help="Query for planar X-ray studies (includes panoramic X-ray studies). Cannot be used with -sr",
+    )
+    parser.add_argument(
+        "-nm",
+        action="store_true",
+        help="Query for nuclear medicine studies. Cannot be used with -sr",
     )
     parser.add_argument(
         "-f",
@@ -2196,6 +2454,8 @@ def _process_args(parser_args, parser):
         modalities += ["FL"]
     if parser_args.dx:
         modalities += ["DX"]
+    if parser_args.nm:
+        modalities += ["NM"]
     if parser_args.sr:
         if modalities:
             parser.error("The sr option can not be combined with any other modalities")
@@ -2297,11 +2557,12 @@ def _process_args(parser_args, parser):
                 qr_node_up, store_node_up
             )
         )
-        sys.exit(
+        record_task_error_exit(
             "Query-retrieve aborted: DICOM nodes not ready. QR SCP echo is {0}, Store SCP echo is {1}".format(
                 qr_node_up, store_node_up
             )
         )
+        sys.exit()
 
     return_args = {
         "qr_id": parser_args.qr_id,
@@ -2331,38 +2592,22 @@ def qrscu_script():
     parser = _create_parser()
     args = parser.parse_args()
     processed_args = _process_args(args, parser)
-    sys.exit(
-        qrscu.delay(
-            qr_scp_pk=processed_args["qr_id"],
-            store_scp_pk=processed_args["store_id"],
-            move=True,
-            modalities=processed_args["modalities"],
-            remove_duplicates=processed_args["remove_duplicates"],
-            date_from=processed_args["dfrom"],
-            date_until=processed_args["duntil"],
-            single_date=processed_args["single_date"],
-            time_from=processed_args["tfrom"],
-            time_until=processed_args["tuntil"],
-            filters=processed_args["filters"],
-            get_toshiba_images=processed_args["get_toshiba"],
-            get_empty_sr=processed_args["get_empty_sr"],
-        )
+    b = run_in_background(
+        qrscu,
+        "query",
+        qr_scp_pk=processed_args["qr_id"],
+        store_scp_pk=processed_args["store_id"],
+        move=True,
+        modalities=processed_args["modalities"],
+        remove_duplicates=processed_args["remove_duplicates"],
+        date_from=processed_args["dfrom"],
+        date_until=processed_args["duntil"],
+        single_date=processed_args["single_date"],
+        time_from=processed_args["tfrom"],
+        time_until=processed_args["tuntil"],
+        filters=processed_args["filters"],
+        get_toshiba_images=processed_args["get_toshiba"],
+        get_empty_sr=processed_args["get_empty_sr"],
     )
-
-
-# if __name__ == "__main__":
-#     parser = _create_parser()
-#     args = parser.parse_args()
-#     processed_args = _process_args(args, parser)
-#     sys.exit(
-#         qrscu.delay(qr_scp_pk=processed_args['qr_id'],
-#                     store_scp_pk=processed_args['store_id'],
-#                     move=True,
-#                     modalities=processed_args['modalities'],
-#                     remove_duplicates=processed_args['remove_duplicates'],
-#                     date_from=processed_args['dfrom'],
-#                     date_until=processed_args['duntil'],
-#                     filters=processed_args['filters'],
-#                     get_toshiba_images=processed_args['get_toshiba']
-#                     )
-#     )
+    print("Running Query")
+    wait_task(b)

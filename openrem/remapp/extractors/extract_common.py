@@ -27,6 +27,7 @@
     :synopsis: Module of functions common to multiple extractor routines
 """
 
+from datetime import datetime
 from decimal import Decimal
 import logging
 
@@ -35,6 +36,7 @@ from django.db.models import (
     ObjectDoesNotExist,
     Q,
 )
+from django.conf import settings
 
 from remapp.models import (
     GeneralStudyModuleAttr,
@@ -42,9 +44,25 @@ from remapp.models import (
     PatientModuleAttr,
     PatientStudyModuleAttr,
     StandardNames,
+    PersonParticipant,
+    GeneralEquipmentModuleAttr,
+    UniqueEquipmentNames,
+    MergeOnDeviceObserverUIDSettings,
 )
-from ..tools.dcmdatetime import get_date, make_date_time
-from ..tools.get_values import get_value_kw
+from ..tools.dcmdatetime import (
+    get_date,
+    make_date_time,
+    get_time,
+    make_date,
+    make_time,
+)
+from ..tools.get_values import (
+    get_value_kw,
+    get_or_create_cid,
+    list_to_string,
+    get_seq_code_meaning,
+    get_seq_code_value,
+)
 from ..tools.not_patient_indicators import get_not_pt
 from ..tools.hash_id import hash_id
 from ..tools.check_uid import record_sop_instance_uid
@@ -463,3 +481,324 @@ def add_standard_names(g):
 
     except ObjectDoesNotExist:
         pass
+
+
+def observercontext(dataset, obs):  # TID 1002
+    for cont in dataset.ContentSequence:
+        if cont.ConceptNameCodeSequence[0].CodeMeaning == "Observer Type":
+            obs.observer_type = get_or_create_cid(
+                cont.ConceptCodeSequence[0].CodeValue,
+                cont.ConceptCodeSequence[0].CodeMeaning,
+            )
+        elif cont.ConceptNameCodeSequence[0].CodeMeaning == "Device Observer UID":
+            try:
+                obs.device_observer_uid = cont.UID
+            except AttributeError:
+                obs.device_observer_uid = cont.TextValue
+        elif cont.ConceptNameCodeSequence[0].CodeMeaning == "Device Observer Name":
+            obs.device_observer_name = cont.TextValue
+        elif (
+            cont.ConceptNameCodeSequence[0].CodeMeaning
+            == "Device Observer Manufacturer"
+        ):
+            obs.device_observer_manufacturer = cont.TextValue
+        elif (
+            cont.ConceptNameCodeSequence[0].CodeMeaning == "Device Observer Model Name"
+        ):
+            obs.device_observer_model_name = cont.TextValue
+        elif (
+            cont.ConceptNameCodeSequence[0].CodeMeaning
+            == "Device Observer Serial Number"
+        ):
+            obs.device_observer_serial_number = cont.TextValue
+        elif (
+            cont.ConceptNameCodeSequence[0].CodeMeaning
+            == "Device Observer Physical Location during observation"
+        ):
+            obs.device_observer_physical_location_during_observation = cont.TextValue
+        elif cont.ConceptNameCodeSequence[0].CodeMeaning == "Device Role in Procedure":
+            obs.device_role_in_procedure = get_or_create_cid(
+                cont.ConceptCodeSequence[0].CodeValue,
+                cont.ConceptCodeSequence[0].CodeMeaning,
+            )
+    obs.save()
+
+
+def person_participant(dataset, event_data_type, foreign_key, logger):
+    """
+    Function to record people involved with study
+
+    :param dataset: DICOM data being parsed
+    :param event_data_type: Which function has called this function
+    :param foreign_key: object of model this modal will link to
+    :param logger: The logger that should be used by this function
+    :return: None
+    """
+
+    if event_data_type == "ct_dose_check_alert":
+        person = PersonParticipant.objects.create(
+            ct_dose_check_details_alert=foreign_key
+        )
+    elif event_data_type == "ct_dose_check_notification":
+        person = PersonParticipant.objects.create(
+            ct_dose_check_details_notification=foreign_key
+        )
+    elif event_data_type == "radiopharmaceutical_administration_event_data":
+        person = PersonParticipant.objects.create(
+            radiopharmaceutical_administration_event_data=foreign_key
+        )
+    else:
+        return
+    try:
+        person.person_name = dataset.PersonName
+    except AttributeError:
+        logger.debug("Person Name ConceptNameCodeSequence, but no PersonName element")
+    try:
+        for cont in dataset.ContentSequence:
+            if (
+                cont.ConceptNameCodeSequence[0].CodeMeaning
+                == "Person Role in Procedure"
+            ):
+                person.person_role_in_procedure_cid = get_or_create_cid(
+                    cont.ConceptCodeSequence[0].CodeValue,
+                    cont.ConceptCodeSequence[0].CodeMeaning,
+                )
+            elif cont.ConceptNameCodeSequence[0].CodeMeaning == "Person ID":
+                person.person_id = cont.TextValue
+            elif cont.ConceptNameCodeSequence[0].CodeMeaning == "Person ID Issue":
+                person.person_id_issuer = cont.TextValue
+            elif cont.ConceptNameCodeSequence[0].CodeMeaning == "Organization Name":
+                person.organization_name = cont.TextValue
+            elif (
+                cont.ConceptNameCodeSequence[0].CodeMeaning
+                == "Person Role in Organization"
+            ):
+                person.person_role_in_organization_cid = get_or_create_cid(
+                    cont.ConceptCodeSequence[0].CodeValue,
+                    cont.ConceptCodeSequence[0].CodeMeaning,
+                )
+    except AttributeError:
+        logger.debug("Person Name sequence malformed")
+    person.save()
+
+
+def generalequipmentmoduleattributes(dataset, study):  # C.7.5.1
+
+    equip = GeneralEquipmentModuleAttr.objects.create(
+        general_study_module_attributes=study
+    )
+    equip.manufacturer = get_value_kw("Manufacturer", dataset)
+    equip.institution_name = get_value_kw("InstitutionName", dataset)
+    equip.institution_address = get_value_kw("InstitutionAddress", dataset)
+    equip.station_name = get_value_kw("StationName", dataset)
+    equip.institutional_department_name = get_value_kw(
+        "InstitutionalDepartmentName", dataset
+    )
+    equip.manufacturer_model_name = get_value_kw("ManufacturerModelName", dataset)
+    equip.device_serial_number = get_value_kw("DeviceSerialNumber", dataset)
+    equip.software_versions = get_value_kw("SoftwareVersions", dataset)
+    equip.gantry_id = get_value_kw("GantryID", dataset)
+    equip.spatial_resolution = get_value_kw("SpatialResolution", dataset)
+    try:
+        equip.date_of_last_calibration = get_date("DateOfLastCalibration", dataset)
+        equip.time_of_last_calibration = get_time("TimeOfLastCalibration", dataset)
+    except TypeError:  # DICOM supports MultiValue for those fields, but we don't
+        pass
+    if hasattr(dataset, "ContentSequence"):
+        try:
+            device_observer_uid = [
+                content.UID
+                for content in dataset.ContentSequence
+                if (
+                    content.ConceptNameCodeSequence[0].CodeValue == "121012"
+                    and content.ConceptNameCodeSequence[0].CodingSchemeDesignator
+                    == "DCM"
+                )
+            ][
+                0
+            ]  # 121012 = DeviceObserverUID
+        except AttributeError:
+            device_observer_uid = [
+                content.TextValue
+                for content in dataset.ContentSequence
+                if (
+                    content.ConceptNameCodeSequence[0].CodeValue == "121012"
+                    and content.ConceptNameCodeSequence[0].CodingSchemeDesignator
+                    == "DCM"
+                )
+            ][
+                0
+            ]  # 121012 = DeviceObserverUID
+        except IndexError:
+            device_observer_uid = None
+    else:
+        device_observer_uid = None
+
+    if (
+        equip.manufacturer_model_name
+        in settings.IGNORE_DEVICE_OBSERVER_UID_FOR_THESE_MODELS
+    ):
+        device_observer_uid = None
+
+    equip_display_name, created = UniqueEquipmentNames.objects.get_or_create(
+        manufacturer=equip.manufacturer,
+        manufacturer_hash=hash_id(equip.manufacturer),
+        institution_name=equip.institution_name,
+        institution_name_hash=hash_id(equip.institution_name),
+        station_name=equip.station_name,
+        station_name_hash=hash_id(equip.station_name),
+        institutional_department_name=equip.institutional_department_name,
+        institutional_department_name_hash=hash_id(equip.institutional_department_name),
+        manufacturer_model_name=equip.manufacturer_model_name,
+        manufacturer_model_name_hash=hash_id(equip.manufacturer_model_name),
+        device_serial_number=equip.device_serial_number,
+        device_serial_number_hash=hash_id(equip.device_serial_number),
+        software_versions=equip.software_versions,
+        software_versions_hash=hash_id(equip.software_versions),
+        gantry_id=equip.gantry_id,
+        gantry_id_hash=hash_id(equip.gantry_id),
+        hash_generated=True,
+        device_observer_uid=device_observer_uid,
+        device_observer_uid_hash=hash_id(device_observer_uid),
+    )
+
+    if created:
+        # If we have a device_observer_uid and it is desired, merge this "new" device with an existing one based on the
+        # device observer uid.
+        try:
+            match_on_device_observer_uid = (
+                MergeOnDeviceObserverUIDSettings.objects.values_list(
+                    "match_on_device_observer_uid", flat=True
+                )[0]
+            )
+        except IndexError:
+            match_on_device_observer_uid = False
+        if match_on_device_observer_uid and device_observer_uid:
+            matched_equip_display_name = UniqueEquipmentNames.objects.filter(
+                device_observer_uid=device_observer_uid
+            )
+            # We just inserted UniqueEquipmentName, so there should be more than one to match on another
+            if len(matched_equip_display_name) > 1:
+                # check if the first is the same as the just inserted. If it is, take the second object
+                object_nr = 0
+                if equip_display_name == matched_equip_display_name[object_nr]:
+                    object_nr = 1
+                equip_display_name.display_name = matched_equip_display_name[
+                    object_nr
+                ].display_name
+                equip_display_name.user_defined_modality = matched_equip_display_name[
+                    object_nr
+                ].user_defined_modality
+        if not equip_display_name.display_name:
+            # if no display name, either new unit, existing unit with changes and match on UID False, or existing and
+            # first import since match_on_uid added. Code below should then apply name from last version of unit.
+            match_without_observer_uid = UniqueEquipmentNames.objects.filter(
+                manufacturer_hash=hash_id(equip.manufacturer),
+                institution_name_hash=hash_id(equip.institution_name),
+                station_name_hash=hash_id(equip.station_name),
+                institutional_department_name_hash=hash_id(
+                    equip.institutional_department_name
+                ),
+                manufacturer_model_name_hash=hash_id(equip.manufacturer_model_name),
+                device_serial_number_hash=hash_id(equip.device_serial_number),
+                software_versions_hash=hash_id(equip.software_versions),
+                gantry_id_hash=hash_id(equip.gantry_id),
+            ).order_by("-pk")
+            if match_without_observer_uid.count() > 1:
+                # ordered by -pk; 0 is the new entry, 1 will be the last one before that
+                equip_display_name.display_name = match_without_observer_uid[
+                    1
+                ].display_name
+        if not equip_display_name.display_name:
+            if equip.institution_name and equip.station_name:
+                equip_display_name.display_name = (
+                    equip.institution_name + " " + equip.station_name
+                )
+            elif equip.institution_name:
+                equip_display_name.display_name = equip.institution_name
+            elif equip.station_name:
+                equip_display_name.display_name = equip.station_name
+            else:
+                equip_display_name.display_name = "Blank"
+        equip_display_name.save()
+
+    equip.unique_equipment_name = UniqueEquipmentNames(pk=equip_display_name.pk)
+
+    equip.save()
+
+
+def patientstudymoduleattributes(dataset, g):  # C.7.2.2
+
+    patientatt = PatientStudyModuleAttr.objects.create(
+        general_study_module_attributes=g
+    )
+    patientatt.patient_age = get_value_kw("PatientAge", dataset)
+    patientatt.patient_weight = get_value_kw("PatientWeight", dataset)
+    patientatt.patient_size = get_value_kw("PatientSize", dataset)
+    patientatt.save()
+
+
+def generalstudymoduleattributes(dataset, g, logger):  # C.7.2.1
+    g.study_instance_uid = get_value_kw("StudyInstanceUID", dataset)
+    g.series_instance_uid = get_value_kw("SeriesInstanceUID", dataset)
+    g.study_date = get_date("StudyDate", dataset)
+    if not g.study_date:
+        g.study_date = get_date("ContentDate", dataset)
+    if not g.study_date:
+        g.study_date = get_date("SeriesDate", dataset)
+    if not g.study_date:
+        logger.error(
+            f"Study UID {g.study_instance_uid} of modality {get_value_kw('ManufacturerModelName', dataset)} has no date"
+            f" information which is needed in the interface - date has been set to 1900!"
+        )
+        g.study_date = make_date("19000101")
+    g.study_time = get_time("StudyTime", dataset)
+    g.series_time = get_time("SeriesTime", dataset)
+    g.content_time = get_time("ContentTime", dataset)
+    if not g.study_time:
+        if g.content_time:
+            g.study_time = g.content_time
+        elif g.series_time:
+            g.study_time = g.series_time
+        else:
+            logger.warning(
+                "Study UID {0} of modality {1} has no time information which is needed in the interface - "
+                "time has been set to midnight.".format(
+                    g.study_instance_uid, get_value_kw("ManufacturerModelName", dataset)
+                )
+            )
+            g.study_time = make_time(000000)
+    g.study_workload_chart_time = datetime.combine(
+        datetime.date(datetime(1900, 1, 1)), datetime.time(g.study_time)
+    )
+    g.referring_physician_name = list_to_string(
+        get_value_kw("ReferringPhysicianName", dataset)
+    )
+    g.referring_physician_identification = list_to_string(
+        get_value_kw("ReferringPhysicianIdentification", dataset)
+    )
+    g.study_id = get_value_kw("StudyID", dataset)
+    accession_number = get_value_kw("AccessionNumber", dataset)
+    patient_id_settings = PatientIDSettings.objects.get()
+    if accession_number and patient_id_settings.accession_hashed:
+        accession_number = hash_id(accession_number)
+        g.accession_hashed = True
+    g.accession_number = accession_number
+    g.study_description = get_value_kw("StudyDescription", dataset)
+    g.physician_of_record = list_to_string(get_value_kw("PhysicianOfRecord", dataset))
+    g.name_of_physician_reading_study = list_to_string(
+        get_value_kw("NameOfPhysiciansReadingStudy", dataset)
+    )
+    g.performing_physician_name = list_to_string(
+        get_value_kw("PerformingPhysicianName", dataset)
+    )
+    g.operator_name = list_to_string(get_value_kw("OperatorsName", dataset))
+    g.procedure_code_value = get_seq_code_value("ProcedureCodeSequence", dataset)
+    g.procedure_code_meaning = get_seq_code_meaning("ProcedureCodeSequence", dataset)
+    g.requested_procedure_code_value = get_seq_code_value(
+        "RequestedProcedureCodeSequence", dataset
+    )
+    g.requested_procedure_code_meaning = get_seq_code_meaning(
+        "RequestedProcedureCodeSequence", dataset
+    )
+    g.save()

@@ -10,7 +10,8 @@ Headline changes
 
 * Python 3
 * Django 2.2
-* Docker
+* Docker or direct install on Windows and Linux
+* Celery, Flower and RabbitMQ removed from requirements
 
 * Performing physician added to standard fluoroscopy exports (:issue:`840`)
 * Station name checked at series level only, option to check at study level only instead (:issue:`772`)
@@ -32,6 +33,35 @@ Upgrade preparation
 ******************************************
 Upgrade process from a PostgresQL database
 ******************************************
+
+Stop the existing services
+==========================
+
+* Linux: assuming an Ubuntu install that followed the instructions in the previous releases, with the *openrem-function*
+  format that changed in the 0.9.1 release (:ref:`service_name_change`).
+
+    .. code-block:: console
+
+        $ sudo systemctl stop orthanc
+        $ sudo systemctl stop nginx
+        $ sudo systemctl stop openrem-gunicorn
+        $ sudo systemctl stop openrem-flower
+        $ sudo systemctl stop openrem-celery
+        $ sudo systemctl stop rabbitmq-server
+        $ sudo systemctl disable orthanc
+        $ sudo systemctl disable nginx
+        $ sudo systemctl disable openrem-gunicorn
+        $ sudo systemctl disable openrem-flower
+        $ sudo systemctl disable openrem-celery
+        $ sudo systemctl disable_qr rabbitmq-server
+
+* Windows: stop the following services
+
+    * Orthanc or Conquest
+    * IIS OpenREM site or other webserver
+    * Flower
+    * Celery
+    * RabbitMQ
 
 Establish existing database details
 ===================================
@@ -171,11 +201,11 @@ Upgrading an OpenREM server that uses a different database
 
 
 
-*******************************************
-Upgrading without using Docker - linux only
-*******************************************
+******************************
+Upgrading without using Docker
+******************************
 
-Upgrading without using Docker is not recommended, and not supported on Windows. Instructions are only provided for
+Upgrading without using Docker is not recommended. Instructions are only provided for
 Linux and assume a configuration similar to the 'One page complete Ubuntu install' provided with release 0.8.1 and
 later.
 
@@ -318,35 +348,6 @@ Edit the Gunicorn systemd file ``WorkingDirectory`` and ``ExecStart``:
         --bind unix:/tmp/openrem-server.socket \
         openremproject.wsgi:application --timeout 300 --workers 4
 
-Edit the Celery configuration file ``CELERY_BIN``:
-
-.. code-block:: console
-
-    $ nano /var/dose/celery/celery.conf
-
-.. code-block:: none
-
-    CELERY_BIN="/var/dose/veopenrem3/bin/celery"
-
-Edit the Celery systemd file ``WorkingDirectory``:
-
-.. code-block:: console
-
-    $ sudo nano /etc/systemd/system/openrem-celery.service
-
-.. code-block:: none
-
-    WorkingDirectory=/var/dose/veopenrem3/lib/python3.8/site-packages/openrem
-
-Edit the Flower systemd file ``WorkingDirectory``:
-
-.. code-block:: console
-
-    $ sudo nano /etc/systemd/system/openrem-flower.service
-
-.. code-block:: none
-
-    WorkingDirectory=/var/dose/veopenrem3/lib/python3.8/site-packages/openrem
 
 Reload systemd and restart the services
 =======================================
@@ -356,8 +357,6 @@ Reload systemd and restart the services
     $ sudo systemctl daemon-reload
     $ sudo systemctl restart openrem-gunicorn.service
     $ sudo systemctl restart nginx.service
-    $ sudo systemctl start openrem-celery.service
-    $ sudo systemctl start openrem-flower.service
     $ sudo systemctl start orthanc.service
 
 

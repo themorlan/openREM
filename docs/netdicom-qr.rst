@@ -81,15 +81,13 @@ When you have finished the query parameters, click ``Submit``
 Review and retrieve
 ===================
 
-The progress of the query is reported on the right hand side. If nothing happens, ask the administrator to check if the
-celery queue is running.
-
 Once all the responses have been purged of unwanted modalities, study descriptions or study UIDs, the number of studies
 of each type will be displayed and a button appears. Click ``Retrieve`` to request the remote server send the selected
 objects to your selected Store node. This will be based on your original selection - changing the node on the left hand
 side at this stage will have no effect.
 
-The progress of the retrieve is displayed in the same place until the retrieve is complete.
+The progress of the retrieve is displayed in the same place until the retrieve is complete. You can also see the query
+and start the ``Retrieve`` in the  :ref:`qrquerysummary`.
 
 .. _qrcommandlineinterface:
 
@@ -169,12 +167,13 @@ If you want to do this regularly to catch new studies, you might like to use a s
 
     ONEHOURAGO=$(date -d "1 hour ago" "+%Y-%m-%d")
 
-    docker-compose -f /path/to/docker-compose.yml exec openrem openrem_qr.py 2 1 -dx -f $ONEHOURAGO -t $ONEHOURAGO  -e "Imported"
+    /usr/local/bin/docker-compose -f /path/to/docker-compose.yml exec -T openrem openrem_qr.py 2 1 -dx -f $ONEHOURAGO -t $ONEHOURAGO  -e "Imported"
 
 
 This script could be run once an hour using a cron job. By asking for the date an hour ago, you shouldn't miss exams
 taking place in the last hour of the day. As the script won't run from the folder containing ``docker-compose.yml``
-the location of that file needs to be passed to ``docker-compose`` with the ``-f`` option.
+the location of that file needs to be passed to ``docker-compose`` with the ``-f`` option. You can check the path to
+``docker-compose`` on your system using ``which docker-compose``.
 
 A similar script could be created as a batch file or PowerShell script on Windows and run using the scheduler. An
 example PowerShell script is shown below:
@@ -189,7 +188,7 @@ example PowerShell script is shown below:
 
     # Run the openrem_qr.py script with yesterday's date as the to and from date
 
-    docker-compose -f C:\Path\To\docker-compose.yml exec openrem openrem_qr.py 2 1 -ct -f $dateString -t $dateString
+    docker-compose -f C:\Path\To\docker-compose.yml exec -T openrem openrem_qr.py 2 1 -ct -f $dateString -t $dateString
 
 The above PowerShell script could be run on a regular basis by adding a task to the Windows ``Task Scheduler`` that
 executes the ``powershell`` program with an argument of ``-file C:\path\to\script.ps1``.
@@ -315,11 +314,52 @@ Once each series level response is processed:
 * If the study no longer has any series level responses the study level response is deleted.
 
 
+.. _qrquerysummary:
+
+*******************
+DICOM query summary
+*******************
+
+.. figure:: img/configDicomQuerySummary.png
+   :target: _images/configDicomQuerySummary.png
+   :figwidth: 50%
+   :align: right
+   :alt: Go to query summary
+
+   Figure 3: Go to query summary
+
+Either by clicking on the "Go to query details page" when executing a query or by going to 
+Config > DICOM query summary you can review the current and older queries, check which files
+were found on the remote, which  studies/files were ignored and why, 
+and review the result of importing files which were retrieved.
+
+.. figure:: img/dicomQueryDetailsPage.png
+  :target: _images/dicomQueryDetailsPage.png
+  :alt: The query details page
+
+  Figure 4: The query details page
+
+By clicking on the studies of a query you can review the discovered DICOM series as well as
+to some extent the individual files that are part of those series. 
+If no import tasks are shown, even though the study is marked for downloading, that probably means
+that the query has not been retrieved, i.e. was aborted before completion.
+In the example below the query was run with the setting to not ignore duplicates, 
+therefore the study was still downloaded but then thrown away by the import.
+
+.. figure:: img/dicomQueryStudyDetailsPage.png
+  :target: _images/dicomQueryStudyDetailsPage.png
+  :alt: The query study details page
+
+  Figure 5: The query study details page
+
 .. _qrtroubleshooting:
 
 *******************************
 Troubleshooting: openrem_qr.log
 *******************************
+
+Note that if a query does not work as expected the first location to check should be the :ref:`qrquerysummary`
+and the :doc:`task-management`. However if that does not clarify the issue looking at the logs will be a good idea.
 
 If the default logging settings haven't been changed then there will be a log files to refer to. The default
 location is within your ``logs`` folder:

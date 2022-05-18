@@ -26,6 +26,7 @@ setup(
         "openrem/scripts/openrem_cttoshiba.py",
         "openrem/scripts/openrem_ptsizecsv.py",
         "openrem/scripts/openrem_qr.py",
+        "openrem/scripts/openrem_nm.py",
     ],
     license="GPLv3 with additional permissions",
     description="Open source patient radiation dose monitoring software",

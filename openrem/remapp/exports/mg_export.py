@@ -30,8 +30,8 @@
 
 import datetime
 import logging
+from openrem.remapp.tools.background import get_or_generate_task_uuid
 
-from celery import shared_task
 from django.core.exceptions import ObjectDoesNotExist
 
 from remapp.models import StandardNameSettings
@@ -222,9 +222,9 @@ def _mg_get_series_data(event):
     return series_data
 
 
-@shared_task
 def exportMG2excel(filterdict, pid=False, name=None, patid=None, user=None, xlsx=False):
-    """Export filtered mammography database data to a single-sheet CSV file or a multi sheet xlsx file.
+    """
+    Export filtered mammography database data to a single-sheet CSV file or a multi sheet xlsx file.
 
     :param filterdict: Queryset of studies to export
     :param pid: does the user have patient identifiable data permission
@@ -255,8 +255,9 @@ def exportMG2excel(filterdict, pid=False, name=None, patid=None, user=None, xlsx
         export_type = "XLSX export"
     else:
         export_type = "CSV export"
+    task_id = get_or_generate_task_uuid()
     tsk = create_export_task(
-        celery_uuid=exportMG2excel.request.id,
+        task_id=task_id,
         modality="MG",
         export_type=export_type,
         date_stamp=datestamp,

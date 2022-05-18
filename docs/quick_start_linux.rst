@@ -12,31 +12,13 @@ This install is based on Ubuntu 18.04 using:
 * Database: PostgreSQL
 * DICOM Store SCP: Orthanc running on port 104
 * Webserver: NGINX with Gunicorn
-* Daemonisation: systemd scripts for Celery and Gunicorn
 * All OpenREM files in ``/var/dose/`` with group owner of ``openrem``
 * Collects any Physics (QA) images and zips them
 
 The instructions should work for Ubuntu 20.04 too, references to bionic will be focal instead.
 
-
 Initial prep
 ^^^^^^^^^^^^
-
-**Host file**
-
-First edit ``/etc/hosts`` to add the local server name -- else ``rabbitmq-server`` will not start when installed:
-
-.. code-block:: console
-
-    $ sudo nano /etc/hosts
-
-Modify the content to ensure the following two lines are present -- **substitute the correct server hostname on the
-second line**::
-
-    127.0.0.1 localhost
-    127.0.1.1 openremserver
-
-``Ctrl-o`` (write-[o]ut), ``Return`` to accept, then ``Ctrl-x`` to e[x]it
 
 **Apt sources**
 
@@ -84,7 +66,6 @@ be added to the ``openrem`` group, and the 'sticky' group setting below will ena
 .. code-block:: console
 
     $ cd /var/dose
-    $ mkdir celery
     $ mkdir log
     $ mkdir media
     $ mkdir -p orthanc/dicom
@@ -107,7 +88,7 @@ Install apt packages and direct downloads
 
     $ sudo apt update && sudo apt upgrade
     $ sudo apt install python3.8 python3.8-dev python3.8-distutils python3.8-venv \
-    install rabbitmq-server postgresql nginx orthanc dcmtk default-jre zip
+    install postgresql nginx orthanc dcmtk default-jre zip
 
 .. code-block:: console
 
@@ -415,111 +396,6 @@ You can check that NGINX and Gunicorn are running with the following two command
     $ sudo systemctl status nginx.service
 
 
-.. _one_page_linux_celery:
-
-Celery and Flower
-^^^^^^^^^^^^^^^^^
-
-First, create a Celery configuration file:
-
-.. code-block:: console
-
-    $ nano /var/dose/celery/celery.conf
-
-.. code-block:: bash
-
-    # Name of nodes to start
-    CELERYD_NODES="default"
-
-    # Absolute or relative path to the 'celery' command:
-    CELERY_BIN="/var/dose/veopenrem3/bin/celery"
-
-    # App instance to use
-    CELERY_APP="openremproject"
-
-    # How to call manage.py
-    CELERYD_MULTI="multi"
-
-    # Extra command-line arguments to the worker
-    CELERYD_OPTS="-O=fair --queues=default"
-
-    # - %n will be replaced with the first part of the nodename.
-    # - %I will be replaced with the current child process index
-    #   and is important when using the prefork pool to avoid race conditions.
-    CELERYD_PID_FILE="/var/dose/celery/%n.pid"
-    CELERYD_LOG_FILE="/var/dose/log/%n%I.log"
-    CELERYD_LOG_LEVEL="INFO"
-
-    # Flower configuration options
-    FLOWER_PORT=5555
-    FLOWER_LOG_PREFIX="/var/dose/log/flower.log"
-    FLOWER_LOG_LEVEL="INFO"
-
-Now create the systemd service files:
-
-.. code-block:: console
-
-    $ sudo nano /etc/systemd/system/openrem-celery.service
-
-.. code-block:: bash
-
-    [Unit]
-    Description=Celery Service
-    After=network.target
-
-    [Service]
-    Type=forking
-    Restart=on-failure
-    User=www-data
-    Group=www-data
-    EnvironmentFile=/var/dose/celery/celery.conf
-    WorkingDirectory=/var/dose/veopenrem3/lib/python3.8/site-packages/openrem
-    ExecStart=/bin/sh -c '${CELERY_BIN} multi start ${CELERYD_NODES} \
-      -A ${CELERY_APP} --pidfile=${CELERYD_PID_FILE} \
-      --logfile=${CELERYD_LOG_FILE} --loglevel=${CELERYD_LOG_LEVEL} ${CELERYD_OPTS}'
-    ExecStop=/bin/sh -c '${CELERY_BIN} multi stopwait ${CELERYD_NODES} \
-      --pidfile=${CELERYD_PID_FILE}'
-    ExecReload=/bin/sh -c '${CELERY_BIN} multi restart ${CELERYD_NODES} \
-      -A ${CELERY_APP} --pidfile=${CELERYD_PID_FILE} \
-      --logfile=${CELERYD_LOG_FILE} --loglevel=${CELERYD_LOG_LEVEL} ${CELERYD_OPTS}'
-
-    [Install]
-    WantedBy=multi-user.target
-
-.. code-block:: console
-
-    $ sudo nano /etc/systemd/system/openrem-flower.service
-
-.. code-block:: bash
-
-    [Unit]
-    Description=Flower Celery Service
-    After=network.target
-
-    [Service]
-    User=www-data
-    Group=www-data
-    EnvironmentFile=/var/dose/celery/celery.conf
-    WorkingDirectory=/var/dose/veopenrem3/lib/python3.8/site-packages/openrem
-    ExecStart=/bin/sh -c '${CELERY_BIN} flower -A ${CELERY_APP} --port=${FLOWER_PORT} \
-      --address=127.0.0.1 --log-file-prefix=${FLOWER_LOG_PREFIX} --loglevel=${FLOWER_LOG_LEVEL}'
-    Restart=on-failure
-    Type=simple
-
-    [Install]
-    WantedBy=multi-user.target
-
-Now register, set to start on boot, and start the services:
-
-.. code-block:: console
-
-    $ sudo systemctl daemon-reload
-    $ sudo systemctl enable openrem-celery.service
-    $ sudo systemctl start openrem-celery.service
-    $ sudo systemctl enable openrem-flower.service
-    $ sudo systemctl start openrem-flower.service
-
-
 DICOM Store SCP
 ^^^^^^^^^^^^^^^
 
@@ -634,6 +510,9 @@ Restart Orthanc:
 
 New users, and quick access to physics folder
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. _`WinSCP`: https://winscp.net
+
 This is for new Linux users; for new OpenREM users, refer to :ref:`user-settings`
 
 If you left ``local use_physics_filtering = true`` in the Orthanc configuration, you might like to give your colleagues
@@ -662,29 +541,3 @@ Now add a 'sym-link' to the new users home directory (again, replace the user na
 
 The new user should now be able to get to the physics folder by clicking on the ``physicsimages`` link when they log in,
 and should be able to browse, copy and delete the zip files and folders.
-
-Enable RadbbitMQ queue management interface
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. code-block:: console
-
-    $ sudo rabbitmq-plugins enable rabbitmq_management
-
-**Optional -- RabbitMQ Administrator**
-
-This is not required unless you wish to interact with the RabbitMQ management interface directly. Most
-functions can be carried out in the OpenREM interface instead. If you do wish to create a user for this
-purpose, see the general instructions to :ref:`enableRabbitMQ`.
-
-Log locations
-^^^^^^^^^^^^^
-
-* OpenREM: ``/var/dose/log/``
-* Celery: ``/var/dose/log/default.log``
-* Celery systemd: ``sudo journalctl -u openrem-celery``
-* NGINX: ``/var/log/nginx/``
-* Orthanc: ``/var/log/orthanc/Orthanc.log``
-* Gunicorn systemd: ``sudo journalctl -u openrem-gunicorn``
-
-
-.. _`WinSCP`: https://winscp.net

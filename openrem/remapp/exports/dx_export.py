@@ -29,8 +29,8 @@
 """
 import datetime
 import logging
+from openrem.remapp.tools.background import get_or_generate_task_uuid
 
-from celery import shared_task
 from django.core.exceptions import ObjectDoesNotExist
 
 from remapp.models import StandardNameSettings
@@ -260,7 +260,6 @@ def _dx_get_series_data(s):
     return series_data
 
 
-@shared_task
 def exportDX2excel(filterdict, pid=False, name=None, patid=None, user=None):
     """Export filtered DX database data to a single-sheet CSV file.
 
@@ -275,8 +274,9 @@ def exportDX2excel(filterdict, pid=False, name=None, patid=None, user=None):
     from ..interface.mod_filters import dx_acq_filter
 
     datestamp = datetime.datetime.now()
+    task_id = get_or_generate_task_uuid()
     tsk = create_export_task(
-        celery_uuid=exportDX2excel.request.id,
+        task_id=task_id,
         modality="DX",
         export_type="CSV export",
         date_stamp=datestamp,
@@ -370,7 +370,6 @@ def exportDX2excel(filterdict, pid=False, name=None, patid=None, user=None):
     tsk.save()
 
 
-@shared_task
 def dxxlsx(filterdict, pid=False, name=None, patid=None, user=None):
     """Export filtered DX and CR database data to multi-sheet Microsoft XSLX files.
 
@@ -392,8 +391,9 @@ def dxxlsx(filterdict, pid=False, name=None, patid=None, user=None):
     enable_standard_names = StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[0]
 
     datestamp = datetime.datetime.now()
+    task_id = get_or_generate_task_uuid()
     tsk = create_export_task(
-        celery_uuid=dxxlsx.request.id,
+        task_id=task_id,
         modality="DX",
         export_type="XLSX export",
         date_stamp=datestamp,
@@ -561,7 +561,6 @@ def dxxlsx(filterdict, pid=False, name=None, patid=None, user=None):
     write_export(tsk, xlsxfilename, tmpxlsx, datestamp)
 
 
-@shared_task
 def dx_phe_2019(filterdict, user=None, projection=True, bespoke=False):
     """Export filtered DX database data in the format for the 2019 Public Health England DX dose survey
 
@@ -576,8 +575,9 @@ def dx_phe_2019(filterdict, user=None, projection=True, bespoke=False):
     from ..interface.mod_filters import dx_acq_filter
 
     datestamp = datetime.datetime.now()
+    task_id = get_or_generate_task_uuid()
     tsk = create_export_task(
-        celery_uuid=dx_phe_2019.request.id,
+        task_id=task_id,
         modality="DX",
         export_type="PHE DX 2019 export",
         date_stamp=datestamp,

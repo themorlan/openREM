@@ -3,8 +3,11 @@ OpenREM version history
 =======================
 
 
-1.0.0b1 (2021-xx-xx)
+1.0.0b1 (2022-xx-xx)
 --------------------
+* :issue:`936`  Tasks: Added make_skin_map to background tasks on RF RDSR import
+* :issue:`934`  DICOM Networking: QR queries are now logged and can be analysed through the web interface
+* :issue:`931`  Exports: export RF DAP as float instead of text
 * :issue:`925`  Docker: docs and config file for enabling bind mounts with SELinux
 * :issue:`922`  Database: optimise indexes and duplicate queries
 * :issue:`917`  Interface: added horizintal lines between chart option groups and shaded chart option CheckboxSelectMultiple items
@@ -85,7 +88,7 @@ OpenREM version history
 * :issue:`791`  Exports: prevented error when trying to export DX data that has no filter information
 * :issue:`790`  Python 3: remove basestring type
 * :issue:`789`  Python 3: Median function aggregation code simplified; works with Python 3.7
-* :issue:`788`  Python 3: Docker only installs for Windows fixes Celery 3/Python 3.7 incompatibility
+* :issue:`788`  Tasks: Celery and RabbitMQ dropped, background task processing now managed within Python/OpenREM
 * :issue:`787`  Interface: fixed login error
 * :issue:`777`  Updated OpenREM to use pydicom 1.3
 * :issue:`772`  DICOM Networking: check for station name at series level or study, not both
@@ -100,6 +103,7 @@ OpenREM version history
 * :issue:`433`  Import: Siemens Arcadis Varic dose reports are now imported
 * :issue:`404`  Ported OpenREM to Python 3
 * :issue:`233`  Charts: added charts of average CTDI and DLP over time
+* :issue:`94`   Nuclear medicine: added nuclear medicine SPECT and PET functionality including RRSDR imports
 
 0.10.0 (2019-11-08)
 -------------------

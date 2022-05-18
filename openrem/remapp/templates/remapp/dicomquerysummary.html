@@ -1,0 +1,49 @@
+{% extends "remapp/base.html" %}
+
+{% block headextras %}
+  <script src="{{ STATIC_URL }}js/sorttable.js"></script>
+  <script>
+    function delete_all() {
+      x = "This will delete all queries. The imported studies will not change in any way.\nDo you want to do this?"
+      w = window.confirm(x)
+      if (w) {
+        $.ajax({ 
+          type: "POST",
+          url: "{% url 'delete_queries' %}",
+          error: function( xhr, status, errorThrown ) {
+              alert( "Sorry, there was a problem sending the request!");
+          },
+          success: function (json) {
+            if (json.status != "success") {
+              alert("Sorry, there was a problem!");
+            }
+            else {
+              location.reload()
+            }
+          }
+        });
+      }
+    }
+  </script>
+{% endblock %}
+
+{% block mainblock %} 
+
+<input type="button" onclick="delete_all();" class="btn btn-danger" 
+  value="Delete queries" style="margin-bottom: 3mm;">
+<table class="table sortable table-bordered table-hover row-clickable" aria-describedby="Study summary table">
+    <tr>
+      <th id="query_id">Query ID</th>
+      <th id="started_at">Started at</th>
+      <th id="complete">Complete</th>
+    </tr>
+    {% for query in queries %}
+            <tr class="clickable-row" data-href="{% url 'get_query_details' query.pk %}">
+                <td><a href="{% url 'get_query_details' query.pk %}">{{ query.query_id }}</a></td>
+                <td><a href="{% url 'get_query_details' query.pk %}">{{ query.started_at }}</a></td>
+                <td><a href="{% url 'get_query_details' query.pk %}">{{ query.complete }}</a></td>
+            </tr>
+    {% endfor %}
+  </table>
+  
+{% endblock %}

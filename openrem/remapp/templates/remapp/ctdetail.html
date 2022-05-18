@@ -14,7 +14,7 @@
         {% if not generalstudymoduleattr.accession_hashed %}
             {{ generalstudymoduleattr.accession_number }}
         {% else %}
-            <i>hidden</i>
+            <em>hidden</em>
         {% endif %}
     </li>
     <li>Study date: {{ generalstudymoduleattr.study_date }}</li>
@@ -58,6 +58,20 @@
         <th scope="col">Total DLP </th>
         <td>{{ accum_dose.ct_dose_length_product_total|floatformat:2 }} mGy&middot;cm</td>
       </tr>
+      {% if associated_nm is not None %} 
+      <tr>
+        <th scope="col">Associated NM study</th>
+        <td>
+          <a href="{% url 'nm_detail_view' pk=associated_nm.pk %}">
+          {% with radiopharm=associated_nm.radiopharmaceuticalradiationdose_set.get %}
+          {% with radioadmin=radiopharm.radiopharmaceuticaladministrationeventdata_set.get %}
+          NM study with {{radioadmin.radiopharmaceutical_agent.code_meaning}}
+          {% endwith %}
+          {% endwith %}
+          </a>
+        </td>
+      </tr>
+      {% endif %}
     </table>
   </div>
 </div>
