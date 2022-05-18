@@ -12,15 +12,14 @@
         * Brilliance BigBore v3.5.4.17001.
 """
 
-import sys
-from glob import glob
-from openrem.remapp.extractors.ct_philips import ct_philips
+if __name__ == "__main__":
+    from openrem.remapp.extractors.ct_philips import ct_philips
+    import openrem.remapp.tools.default_import as default_import
 
-if len(sys.argv) < 2:
-    sys.exit("Error: Supply at least one argument - the Philips dose report image")
-
-for arg in sys.argv[1:]:
-    for filename in glob(arg):
-        ct_philips(filename)
-
-sys.exit()
+    default_import.default_import(
+        ct_philips,
+        "import_ct_philips",
+        "the Philips dose report image",
+        0,
+        {"import_ct_philips": 1},
+    )

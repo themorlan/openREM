@@ -162,7 +162,7 @@ class ExportMammoCSVNHSBSP(TestCase):
         import pandas as pd
 
         filter_set = {
-            u"o": "-projectionxrayradiationdose__accumxraydose__accummammographyxraydose__accumulated_"
+            "o": "-projectionxrayradiationdose__accumxraydose__accummammographyxraydose__accumulated_"
             "average_glandular_dose"
         }
 

@@ -248,6 +248,9 @@ class DicomDeleteSettings(SingletonModel):
         default=False,
         verbose_name="delete Philips CT dose info images after processing?",
     )
+    del_nm_im = models.BooleanField(
+        default=False, verbose_name="delete nuclear medicine images after processing?"
+    )
 
     def __unicode__(self):
         return "Delete DICOM objects settings"
@@ -353,11 +356,23 @@ class DicomRemoteQR(models.Model):
         return self.name
 
 
+class BackgroundTask(models.Model):
+    uuid = models.TextField()
+    proc_id = models.IntegerField()
+    task_type = models.TextField()
+    info = models.TextField(blank=True, null=True)
+    error = models.TextField(blank=True, null=True)
+    completed_successfully = models.BooleanField(default=False)
+    complete = models.BooleanField(default=False)
+    started_at = models.DateTimeField(blank=True, null=True)
+
+
 class DicomQuery(models.Model):
     """
     Table to store DICOM query settings
     """
 
+    started_at = models.DateTimeField(blank=True, null=True)
     complete = models.BooleanField(default=False)
     query_id = models.CharField(max_length=64)
     query_summary = models.TextField(blank=True, null=True)
@@ -375,8 +390,21 @@ class DicomQuery(models.Model):
     move_warning_sub_ops = models.IntegerField(default=0)
     move_complete = models.BooleanField(default=False)
     move_summary = models.TextField(blank=True)
-    query_uuid = models.UUIDField(null=True)
     move_uuid = models.UUIDField(null=True)
+    query_task = models.ForeignKey(
+        BackgroundTask,
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        related_name="query_part",
+    )
+    move_task = models.ForeignKey(
+        BackgroundTask,
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        related_name="move_part",
+    )
 
 
 class DicomQRRspStudy(models.Model):
@@ -389,6 +417,9 @@ class DicomQRRspStudy(models.Model):
     number_of_study_related_series = models.IntegerField(blank=True, null=True)
     sop_classes_in_study = models.TextField(blank=True, null=True)
     station_name = models.CharField(max_length=32, blank=True, null=True)
+    deleted_flag = models.BooleanField(default=False)
+    deleted_reason = models.TextField(default="Downloaded")
+    related_imports = models.ManyToManyField(BackgroundTask)
 
     def set_modalities_in_study(self, x):
         self.modalities_in_study = json.dumps(list(x or []))
@@ -418,6 +449,8 @@ class DicomQRRspSeries(models.Model):
     station_name = models.CharField(max_length=32, blank=True, null=True)
     sop_class_in_series = models.TextField(blank=True, null=True)
     image_level_move = models.BooleanField(default=False)
+    deleted_flag = models.BooleanField(default=False)
+    deleted_reason = models.TextField(default="Downloaded")
 
     class Meta:
         indexes = [
@@ -435,6 +468,8 @@ class DicomQRRspImage(models.Model):
     sop_instance_uid = models.TextField(blank=True, null=True)
     instance_number = models.IntegerField(blank=True, null=True)
     sop_class_uid = models.TextField(blank=True, null=True)
+    deleted_flag = models.BooleanField(default=False)
+    deleted_reason = models.TextField(default="Downloaded")
 
     class Meta:
         indexes = [
@@ -611,6 +646,22 @@ class UserProfile(models.Model, CommonVariables):
         default=CommonVariables.FREQ,
     )
 
+    plotNMStudyFreq = models.BooleanField(default=False)
+    plotNMStudyPerDayAndHour = models.BooleanField(default=False)
+    plotNMInjectedDosePerStudy = models.BooleanField(default=False)
+    plotNMInjectedDoseOverTime = models.BooleanField(default=False)
+    plotNMInjectedDoseOverWeight = models.BooleanField(default=False)
+    plotNMOverTimePeriod = models.CharField(
+        max_length=13,
+        choices=CommonVariables.TIME_PERIOD,
+        default=CommonVariables.MONTHS,
+    )
+    plotNMInitialSortingChoice = models.CharField(
+        max_length=9,
+        choices=CommonVariables.SORTING_CHOICES,
+        default=CommonVariables.FREQ,
+    )
+
     plotCTAcquisitionMeanDLP = models.BooleanField(default=True)
     plotCTAcquisitionMeanCTDI = models.BooleanField(default=True)
     plotCTAcquisitionFreq = models.BooleanField(default=False)
@@ -687,6 +738,7 @@ class UserProfile(models.Model, CommonVariables):
     displayRF = models.BooleanField(default=True)
     displayMG = models.BooleanField(default=True)
     displayDX = models.BooleanField(default=True)
+    displayNM = models.BooleanField(default=True)
 
     plotSeriesPerSystem = models.BooleanField(default=False)
 
@@ -2082,6 +2134,375 @@ class GeneralEquipmentModuleAttr(models.Model):  # C.7.5.1
         ]
 
 
+# Radiopharmaca
+
+
+class RadiopharmaceuticalRadiationDose(models.Model):  # TID 10021
+
+    """
+    Radiopharmaceutical Radiation Dose TID 10021
+
+    From DICOM Part 16:
+       This Template defines a container (the root) with subsidiary Content Items, each of which corresponds to a
+       single Radiopharmaceutical Administration Dose event entry. There is a defined recording observer (the
+       system and/or person responsible for recording the assay of the radiopharmaceutical, and the person
+       administered the radiopharmaceutical). Multiple Radiopharmaceutical Radiation Dose objects may be created
+       for one study. Radiopharmaceutical Start DateTime in TID 10022 “Radiopharmaceutical Administration Event
+       Data” will convey the order of administrations.
+    """
+
+    general_study_module_attributes = models.ForeignKey(
+        GeneralStudyModuleAttr, on_delete=models.CASCADE
+    )
+    associated_procedure = models.ForeignKey(
+        ContextID,
+        blank=True,
+        null=True,
+        related_name="tid10021_procedure",
+        on_delete=models.CASCADE,
+    )  # CID 3108
+    has_intent = models.ForeignKey(
+        ContextID,
+        blank=True,
+        null=True,
+        related_name="tid10021_intent",
+        on_delete=models.CASCADE,
+    )  # CID 3629
+    comment = models.TextField(blank=True, null=True)
+
+
+class LanguageofContentItemandDescendants(models.Model):  # TID 1204
+    radiopharmaceutical_radiation_dose = models.ForeignKey(
+        RadiopharmaceuticalRadiationDose, on_delete=models.CASCADE
+    )
+    language_of_contentitem_and_descendants = models.ForeignKey(
+        ContextID,
+        blank=True,
+        null=True,
+        related_name="tid1204_language",
+        on_delete=models.CASCADE,
+    )  # CID 5000
+    country_of_language = models.ForeignKey(
+        ContextID,
+        blank=True,
+        null=True,
+        related_name="tid1204_country",
+        on_delete=models.CASCADE,
+    )  # CID 5001
+
+
+class RadiopharmaceuticalAdministrationEventData(models.Model):  # TID 10022
+    radiopharmaceutical_radiation_dose = models.ForeignKey(
+        RadiopharmaceuticalRadiationDose, on_delete=models.CASCADE
+    )
+    radiopharmaceutical_agent = models.ForeignKey(
+        ContextID,
+        blank=True,
+        null=True,
+        related_name="tid10022_agent",
+        on_delete=models.CASCADE,
+    )  # CID 25 & CID 4021
+    radiopharmaceutical_agent_string = models.TextField(
+        blank=True, null=True
+    )  # In NM Images the radiopharmaceutical may only be present as string
+    radionuclide = models.ForeignKey(
+        ContextID,
+        blank=True,
+        null=True,
+        related_name="tid10022_radionuclide",
+        on_delete=models.CASCADE,
+    )  # CID 18 & CID 4020
+    radionuclide_half_life = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+    radiopharmaceutical_specific_activity = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+    radiopharmaceutical_administration_event_uid = models.TextField(
+        blank=True, null=True
+    )
+    estimated_extravasation_activity = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+    radiopharmaceutical_start_datetime = models.DateTimeField(blank=True, null=True)
+    radiopharmaceutical_stop_datetime = models.DateTimeField(blank=True, null=True)
+    administered_activity = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+    effective_dose = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+    radiopharmaceutical_volume = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+    pre_administration_measured_activity = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+    pre_activity_measurement_device = models.ForeignKey(
+        ContextID,
+        blank=True,
+        null=True,
+        related_name="tid10022_device_pre",
+        on_delete=models.CASCADE,
+    )  # CID 10041
+    post_administration_measured_activity = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+    post_activity_measurement_device = models.ForeignKey(
+        ContextID,
+        blank=True,
+        null=True,
+        related_name="tid10022_device_post",
+        on_delete=models.CASCADE,
+    )  # CID 10041
+    route_of_administration = models.ForeignKey(
+        ContextID,
+        blank=True,
+        null=True,
+        related_name="tid10022_route",
+        on_delete=models.CASCADE,
+    )  # CID 11
+    site_of = models.ForeignKey(
+        ContextID,
+        blank=True,
+        null=True,
+        related_name="tid10022_site",
+        on_delete=models.CASCADE,
+    )  # CID 3746
+    laterality = models.ForeignKey(
+        ContextID,
+        blank=True,
+        null=True,
+        related_name="tid10022_laterality",
+        on_delete=models.CASCADE,
+    )  # CID 244
+    brand_name = models.TextField(blank=True, null=True)
+    radiopharmaceutical_dispense_unit_identifier = models.TextField(
+        blank=True, null=True
+    )
+    prescription_identifier = models.TextField(blank=True, null=True)
+    comment = models.TextField(blank=True, null=True)
+
+
+class IntravenousExtravasationSymptoms(models.Model):
+    radiopharmaceutical_administration_event_data = models.ForeignKey(
+        RadiopharmaceuticalAdministrationEventData, on_delete=models.CASCADE
+    )
+    intravenous_extravasation_symptoms = models.ForeignKey(
+        ContextID,
+        blank=True,
+        null=True,
+        related_name="tid10022_symptoms",
+        on_delete=models.CASCADE,
+    )  # CID 10043
+
+
+class BillingCode(models.Model):
+    radiopharmaceutical_administration_event_data = models.ForeignKey(
+        RadiopharmaceuticalAdministrationEventData, on_delete=models.CASCADE
+    )
+    billing_code = models.ForeignKey(
+        ContextID, blank=True, null=True, on_delete=models.CASCADE
+    )
+
+
+class DrugProductIdentifier(models.Model):
+    radiopharmaceutical_administration_event_data = models.ForeignKey(
+        RadiopharmaceuticalAdministrationEventData, on_delete=models.CASCADE
+    )
+    drug_product_identifier = models.ForeignKey(
+        ContextID, blank=True, null=True, on_delete=models.CASCADE
+    )
+
+
+class RadiopharmaceuticalLotIdentifier(models.Model):
+    radiopharmaceutical_administration_event_data = models.ForeignKey(
+        RadiopharmaceuticalAdministrationEventData, on_delete=models.CASCADE
+    )
+    radiopharmaceutical_lot_identifier = models.TextField(blank=True, null=True)
+
+
+class ReagentVialIdentifier(models.Model):
+    radiopharmaceutical_administration_event_data = models.ForeignKey(
+        RadiopharmaceuticalAdministrationEventData, on_delete=models.CASCADE
+    )
+    reagent_vial_identifier = models.TextField(blank=True, null=True)
+
+
+class RadionuclideIdentifier(models.Model):
+    radiopharmaceutical_administration_event_data = models.ForeignKey(
+        RadiopharmaceuticalAdministrationEventData, on_delete=models.CASCADE
+    )
+    radionuclide_identifier = models.TextField(blank=True, null=True)
+
+
+class OrganDose(models.Model):  # TID 10023
+    radiopharmaceutical_administration_event_data = models.ForeignKey(
+        RadiopharmaceuticalAdministrationEventData, on_delete=models.CASCADE
+    )
+    finding_site = models.ForeignKey(
+        ContextID,
+        blank=True,
+        null=True,
+        related_name="tid10023_site",
+        on_delete=models.CASCADE,
+    )  # CID 10044
+    laterality = models.ForeignKey(
+        ContextID,
+        blank=True,
+        null=True,
+        related_name="tid10023_laterality",
+        on_delete=models.CASCADE,
+    )  # CID 244
+    mass = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
+    measurement_method = models.TextField(blank=True, null=True)
+    organ_dose = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+    reference_authority_code = models.ForeignKey(
+        ContextID,
+        blank=True,
+        null=True,
+        related_name="tid10023_authority",
+        on_delete=models.CASCADE,
+    )  # CID 10040
+    reference_authority_text = models.TextField(blank=True, null=True)
+    type_of_detector_motion = models.TextField(blank=True, null=True)
+
+
+class PETSeries(models.Model):
+    radiopharmaceutical_radiation_dose = models.ForeignKey(
+        RadiopharmaceuticalRadiationDose, on_delete=models.CASCADE
+    )
+    series_uid = models.TextField(blank=True, null=True)
+    series_datetime = models.DateTimeField(blank=True, null=True)
+    number_of_rr_intervals = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+    number_of_time_slots = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+    number_of_time_slices = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+    number_of_slices = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+    reconstruction_method = models.TextField(blank=True, null=True)
+    coincidence_window_width = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+    energy_window_lower_limit = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+    energy_window_upper_limit = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+    scan_progression_direction = models.TextField(blank=True, null=True)
+
+
+class PETSeriesCorrection(models.Model):
+    pet_series = models.ForeignKey(PETSeries, on_delete=models.CASCADE)
+    corrected_image = models.TextField(blank=True, null=True)
+
+
+class PETSeriesType(models.Model):
+    pet_series = models.ForeignKey(PETSeries, on_delete=models.CASCADE)
+    series_type = models.TextField(blank=True, null=True)
+
+
+class RadiopharmaceuticalAdministrationPatientCharacteristics(models.Model):
+    radiopharmaceutical_radiation_dose = models.ForeignKey(
+        RadiopharmaceuticalRadiationDose, on_delete=models.CASCADE
+    )
+    subject_age = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+    subject_sex = models.ForeignKey(
+        ContextID,
+        blank=True,
+        null=True,
+        related_name="tid10023_sex",
+        on_delete=models.CASCADE,
+    )  # CID 7455
+    patient_height = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+    patient_weight = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+    body_surface_area = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+    body_surface_area_formula = models.ForeignKey(
+        ContextID,
+        blank=True,
+        null=True,
+        related_name="tid10023_body_surface_area",
+        on_delete=models.CASCADE,
+    )  # CID 3663
+    body_mass_index = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+    equation = models.ForeignKey(
+        ContextID,
+        blank=True,
+        null=True,
+        related_name="tid10023_equation",
+        on_delete=models.CASCADE,
+    )
+    glucose = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+    fasting_duration = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+    hydration_volume = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+    recent_physical_activity = models.TextField(blank=True, null=True)
+    serum_creatinine = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+
+
+class PatientState(models.Model):  # CID 10045
+    radiopharmaceutical_administration_patient_characteristics = models.ForeignKey(
+        RadiopharmaceuticalAdministrationPatientCharacteristics,
+        on_delete=models.CASCADE,
+    )
+    patient_state = models.ForeignKey(
+        ContextID, blank=True, null=True, on_delete=models.CASCADE
+    )
+
+
+class GlomerularFiltrationRate(models.Model):
+    radiopharmaceutical_administration_patient_characteristics = models.ForeignKey(
+        RadiopharmaceuticalAdministrationPatientCharacteristics,
+        on_delete=models.CASCADE,
+    )
+    glomerular_filtration_rate = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+    measurement_method = models.ForeignKey(
+        ContextID,
+        blank=True,
+        null=True,
+        related_name="tid10023_measurement_method",
+        on_delete=models.CASCADE,
+    )  # CID 10047
+    equivalent_meaning_of_concept_name = models.ForeignKey(
+        ContextID,
+        blank=True,
+        null=True,
+        related_name="tid10023_equivalent_meaning_of_concept",
+        on_delete=models.CASCADE,
+    )  # CID 10046
+
+
+# CT
+
+
 class CtRadiationDose(models.Model):  # TID 10011
     """CT Radiation Dose TID 10011
 
@@ -2563,6 +2984,15 @@ class ObserverContext(models.Model):  # TID 1002
     ct_radiation_dose = models.ForeignKey(
         CtRadiationDose, blank=True, null=True, on_delete=models.CASCADE
     )
+    radiopharmaceutical_administration_event_data = models.ForeignKey(
+        RadiopharmaceuticalAdministrationEventData,
+        blank=True,
+        null=True,
+        on_delete=models.CASCADE,
+    )
+    radiopharmaceutical_administration_is_pre_observer = models.BooleanField(
+        blank=True, null=True
+    )
     observer_type = models.ForeignKey(
         ContextID,
         blank=True,
@@ -2723,6 +3153,12 @@ class PersonParticipant(models.Model):  # TID 1020
         blank=True,
         null=True,
         related_name="tid1020_notification",
+        on_delete=models.CASCADE,
+    )
+    radiopharmaceutical_administration_event_data = models.ForeignKey(
+        RadiopharmaceuticalAdministrationEventData,
+        blank=True,
+        null=True,
         on_delete=models.CASCADE,
     )
     person_name = models.TextField(blank=True, null=True)

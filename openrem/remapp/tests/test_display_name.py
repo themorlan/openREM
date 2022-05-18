@@ -38,7 +38,7 @@ class DislayNamesAndMatchOnObsUID(TestCase):
         display_name = (
             study.generalequipmentmoduleattr_set.get().unique_equipment_name.display_name
         )
-        self.assertEqual(display_name, u"OpenREM CANONDaRt")
+        self.assertEqual(display_name, "OpenREM CANONDaRt")
         # Check that matching is currently false
         self.assertEqual(
             MergeOnDeviceObserverUIDSettings.get_solo().match_on_device_observer_uid,
@@ -58,21 +58,21 @@ class DislayNamesAndMatchOnObsUID(TestCase):
         display_name_2 = (
             study_2.generalequipmentmoduleattr_set.get().unique_equipment_name.display_name
         )
-        self.assertEqual(display_name_2, u"OpenREM StnName2")
+        self.assertEqual(display_name_2, "OpenREM StnName2")
 
         # Set a customised display name
         unique_equipment_names = UniqueEquipmentNames.objects.order_by("pk")
         # Test there are two entries, and set them both to the same display name
         self.assertEqual(unique_equipment_names.count(), 2)
         for display_name_data in unique_equipment_names:
-            display_name_data.display_name = u"Custom Display Name"
+            display_name_data.display_name = "Custom Display Name"
             display_name_data.save()
         # Test that study_2 has the new name
         study_2 = GeneralStudyModuleAttr.objects.order_by("id")[1]
         display_name_2 = (
             study_2.generalequipmentmoduleattr_set.get().unique_equipment_name.display_name
         )
-        self.assertEqual(display_name_2, u"Custom Display Name")
+        self.assertEqual(display_name_2, "Custom Display Name")
 
         # Import a third dataset with a different department name, should create new display name again
         dataset_3 = dataset
@@ -86,7 +86,7 @@ class DislayNamesAndMatchOnObsUID(TestCase):
         display_name_3 = (
             study_3.generalequipmentmoduleattr_set.get().unique_equipment_name.display_name
         )
-        self.assertEqual(display_name_3, u"OpenREM StnName2")
+        self.assertEqual(display_name_3, "OpenREM StnName2")
 
         # Set match on device observer UID as True and import again
         device_uid_settings = MergeOnDeviceObserverUIDSettings.get_solo()
@@ -109,7 +109,7 @@ class DislayNamesAndMatchOnObsUID(TestCase):
         display_name_4 = (
             study_4.generalequipmentmoduleattr_set.get().unique_equipment_name.display_name
         )
-        self.assertEqual(display_name_4, u"Custom Display Name")
+        self.assertEqual(display_name_4, "Custom Display Name")
 
     def test_0_9_0_upgrade(self):
         """
@@ -135,13 +135,13 @@ class DislayNamesAndMatchOnObsUID(TestCase):
         display_name_0 = UniqueEquipmentNames.objects.order_by("pk")[0]
         display_name_0.device_observer_uid = None
         display_name_0.device_observer_uid_hash = None
-        display_name_0.display_name = u"System One"
+        display_name_0.display_name = "System One"
         display_name_0.save()
 
         display_name_1 = UniqueEquipmentNames.objects.order_by("pk")[1]
         display_name_1.device_observer_uid = None
         display_name_1.device_observer_uid_hash = None
-        display_name_1.display_name = u"System Two"
+        display_name_1.display_name = "System Two"
         display_name_1.save()
 
         dataset_1_a = dataset_1
@@ -153,7 +153,7 @@ class DislayNamesAndMatchOnObsUID(TestCase):
         display_name_1_a = (
             study_1_a.generalequipmentmoduleattr_set.get().unique_equipment_name.display_name
         )
-        self.assertEqual(display_name_1_a, u"System One")
+        self.assertEqual(display_name_1_a, "System One")
 
         # Set match on device observer UID as True and import second study
         device_uid_settings = MergeOnDeviceObserverUIDSettings.get_solo()
@@ -173,7 +173,7 @@ class DislayNamesAndMatchOnObsUID(TestCase):
         display_name_2_a = (
             study_2_a.generalequipmentmoduleattr_set.get().unique_equipment_name.display_name
         )
-        self.assertEqual(display_name_2_a, u"System Two")
+        self.assertEqual(display_name_2_a, "System Two")
 
     def test_0_9_0_rdsr_images(self):
         """
@@ -195,28 +195,28 @@ class DislayNamesAndMatchOnObsUID(TestCase):
         rdsr.decode()
 
         # Reset all matching values to match between image and RDSR from two different systems!
-        img.Manufacturer = u"Manufacturer"
-        img.InstitutionName = u"Institution"
-        img.StationName = u"Station Name"
-        img.InstitutionalDepartmentName = u"Institutional Department Name"
-        img.ManufacturerModelName = u"Manufacturer Model Name"
-        img.DeviceSerialNumber = u"Device Serial Number"
-        img.SoftwareVersions = u"Software Versions"
-        img.GantryID = u"GantryID"
+        img.Manufacturer = "Manufacturer"
+        img.InstitutionName = "Institution"
+        img.StationName = "Station Name"
+        img.InstitutionalDepartmentName = "Institutional Department Name"
+        img.ManufacturerModelName = "Manufacturer Model Name"
+        img.DeviceSerialNumber = "Device Serial Number"
+        img.SoftwareVersions = "Software Versions"
+        img.GantryID = "GantryID"
 
-        rdsr.Manufacturer = u"Manufacturer"
-        rdsr.InstitutionName = u"Institution"
-        rdsr.StationName = u"Station Name"
-        rdsr.InstitutionalDepartmentName = u"Institutional Department Name"
-        rdsr.ManufacturerModelName = u"Manufacturer Model Name"
-        rdsr.DeviceSerialNumber = u"Device Serial Number"
-        rdsr.SoftwareVersions = u"Software Versions"
-        rdsr.GantryID = u"GantryID"
+        rdsr.Manufacturer = "Manufacturer"
+        rdsr.InstitutionName = "Institution"
+        rdsr.StationName = "Station Name"
+        rdsr.InstitutionalDepartmentName = "Institutional Department Name"
+        rdsr.ManufacturerModelName = "Manufacturer Model Name"
+        rdsr.DeviceSerialNumber = "Device Serial Number"
+        rdsr.SoftwareVersions = "Software Versions"
+        rdsr.GantryID = "GantryID"
 
         _dx2db(img)
 
         display_name_img = UniqueEquipmentNames.objects.order_by("pk")[0]
-        display_name_img.display_name = u"Custom name for img"
+        display_name_img.display_name = "Custom name for img"
         display_name_img.save()
 
         _rdsr2db(rdsr)
@@ -239,20 +239,20 @@ class DislayNamesAndMatchOnObsUID(TestCase):
         # RDSR import won't know the difference between img entry and pre-0.9.0 RDSR entry, so will adopt same name
         name_1 = UniqueEquipmentNames.objects.order_by("pk")[0].display_name
         name_2 = UniqueEquipmentNames.objects.order_by("pk")[1].display_name
-        self.assertEqual(name_1, u"Custom name for img")
-        self.assertEqual(name_2, u"Custom name for img")
+        self.assertEqual(name_1, "Custom name for img")
+        self.assertEqual(name_2, "Custom name for img")
 
         # Now do the same, but RDSR first, expect two different names
         rdsr_2 = rdsr
-        rdsr_2.DeviceSerialNumber = u"0003"
+        rdsr_2.DeviceSerialNumber = "0003"
         rdsr_2.SOPInstanceUID = "1.1.2.1"
         rdsr_2.StudyInstanceUID = "1.1.2.1"
         img_3 = img
-        img_3.DeviceSerialNumber = u"0003"
+        img_3.DeviceSerialNumber = "0003"
         img_3.SOPInstanceUID = "1.1.3.2"
         img_3.StudyInstanceUID = "1.1.3.2"
         img_4 = img
-        img_4.DeviceSerialNumber = u"0003"
+        img_4.DeviceSerialNumber = "0003"
         img_4.SOPInstanceUID = "1.1.3.3"
         img_4.StudyInstanceUID = "1.1.3.3"
 
@@ -260,8 +260,8 @@ class DislayNamesAndMatchOnObsUID(TestCase):
 
         self.assertEqual(UniqueEquipmentNames.objects.all().count(), 3)
         display_name_3 = UniqueEquipmentNames.objects.order_by("pk")[2]
-        self.assertEqual(display_name_3.display_name, u"Institution Station Name")
-        display_name_3.display_name = u"Custom RDSR name"
+        self.assertEqual(display_name_3.display_name, "Institution Station Name")
+        display_name_3.display_name = "Custom RDSR name"
         display_name_3.save()
 
         _dx2db(img_3)
@@ -270,5 +270,5 @@ class DislayNamesAndMatchOnObsUID(TestCase):
         self.assertEqual(UniqueEquipmentNames.objects.all().count(), 4)
         display_name_3 = UniqueEquipmentNames.objects.order_by("pk")[2]
         display_name_4 = UniqueEquipmentNames.objects.order_by("pk")[3]
-        self.assertEqual(display_name_3.display_name, u"Custom RDSR name")
-        self.assertEqual(display_name_4.display_name, u"Institution Station Name")
+        self.assertEqual(display_name_3.display_name, "Custom RDSR name")
+        self.assertEqual(display_name_4.display_name, "Institution Station Name")

@@ -58,7 +58,6 @@ extensions = [
     "sphinxarg.ext",
     "sphinx_issues",
     "sphinx_copybutton",
-    "celery.contrib.sphinx",
 ]
 
 # Add any paths that contain templates here, relative to this directory.

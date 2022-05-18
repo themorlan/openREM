@@ -29,7 +29,6 @@
 """
 import json
 import os
-import uuid
 
 from django.conf import settings
 from django.contrib import messages
@@ -37,19 +36,122 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Count
 from django.http import HttpResponse
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 
-from remapp.models import DicomDeleteSettings, DicomQuery, DicomStoreSCP, DicomRemoteQR
+from remapp.models import (
+    DicomDeleteSettings,
+    DicomQRRspSeries,
+    DicomQRRspStudy,
+    DicomQuery,
+    DicomStoreSCP,
+    DicomRemoteQR,
+)
 from .qrscu import movescu, qrscu
 from .tools import echoscu
 from .. import __docs_version__, __version__
 from ..forms import DicomQueryForm, DicomQRForm, DicomStoreForm
 from ..views_admin import _create_admin_dict
 
+from openrem.remapp.tools.background import run_in_background
+
 os.environ["DJANGO_SETTINGS_MODULE"] = "openremproject.settings"
+
+
+def create_admin_info(request):
+    admin = {
+        "openremversion": __version__,
+        "docsversion": __docs_version__,
+    }
+
+    for group in request.user.groups.all():
+        admin[group.name] = True
+    return admin
+
+
+@csrf_exempt
+@login_required
+def delete_queries(request):
+    """Delete all queries."""
+    resp = {}
+    resp["status"] = "fail"
+    if request.method == "POST":
+        DicomQuery.objects.all().delete()
+        resp["status"] = "success"
+
+    return HttpResponse(json.dumps(resp), content_type="application/json")
+
+
+@csrf_exempt
+@login_required
+def get_query_images(request, pk):
+    """View to show the images of a queried series."""
+    queryseries = get_object_or_404(DicomQRRspSeries, pk=pk)
+    images = queryseries.dicomqrrspimage_set.all()
+    admin = create_admin_info(request)
+
+    return render(
+        request,
+        "remapp/dicomqueryimages.html",
+        {
+            "queryseries": queryseries,
+            "queryimages": images,
+            "admin": admin,
+        },
+    )
+
+
+@csrf_exempt
+@login_required
+def get_query_series(request, pk):
+    """View to show the series of a queried study."""
+    querystudy = get_object_or_404(DicomQRRspStudy, pk=pk)
+    series = querystudy.dicomqrrspseries_set.all()
+    admin = create_admin_info(request)
+    studyimports = querystudy.related_imports.all()
+
+    return render(
+        request,
+        "remapp/dicomqueryseries.html",
+        {
+            "queryseries": series,
+            "admin": admin,
+            "studyimports": studyimports,
+        },
+    )
+
+
+@csrf_exempt
+@login_required
+def get_query_details(request, pk):
+    """View to show all query studies."""
+    query = get_object_or_404(DicomQuery, pk=pk)
+    querystudies = query.dicomqrrspstudy_set.all()
+    admin = create_admin_info(request)
+
+    return render(
+        request,
+        "remapp/dicomquerydetails.html",
+        {
+            "query": query,
+            "admin": admin,
+            "querystudies": querystudies,
+        },
+    )
+
+
+@csrf_exempt
+@login_required
+def get_query_summary(request):
+    """View to show all queries from the past."""
+    queries = DicomQuery.objects.order_by("started_at").reverse().all()
+    admin = create_admin_info(request)
+
+    return render(
+        request, "remapp/dicomquerysummary.html", {"queries": queries, "admin": admin}
+    )
 
 
 @csrf_exempt
@@ -90,11 +192,12 @@ def status_update_store(request):
 @csrf_exempt
 def q_update(request):
     """View to update query status"""
-
     resp = {}
     data = request.POST
     query_id = data.get("queryID")
+    show_details_link = data.get("showDetailsLink")
     resp["queryID"] = query_id
+    resp["showDetailsLink"] = show_details_link
     try:
         query = DicomQuery.objects.get(query_id=query_id)
     except ObjectDoesNotExist:
@@ -109,7 +212,15 @@ def q_update(request):
         resp["subops"] = ""
         return HttpResponse(json.dumps(resp), content_type="application/json")
 
-    study_rsp = query.dicomqrrspstudy_set.all()
+    if show_details_link:
+        query_details_link = (
+            f'<a href="{reverse_lazy("get_query_details", None, [query.pk])}">'
+            f"Go to query details page</a>"
+        )
+    else:
+        query_details_link = ""
+
+    study_rsp = query.dicomqrrspstudy_set.filter(deleted_flag=False).all()
     if not query.complete:
         modalities = study_rsp.values("modalities_in_study").annotate(count=Count("pk"))
         table = [
@@ -128,8 +239,8 @@ def q_update(request):
         table.append("</table>")
         tablestr = "".join(table)
         resp["status"] = "not complete"
-        resp["message"] = "<h4>{0}</h4><p>Responses so far:</p> {1}".format(
-            query.stage, tablestr
+        resp["message"] = "<h4>{0}</h4><p>{2}</p><p>Responses so far:</p> {1}".format(
+            query.stage, tablestr, query_details_link
         )
         resp["subops"] = ""
     else:
@@ -159,7 +270,9 @@ def q_update(request):
             "</a></h4></div>"
             "<div id='query-details' class='panel-collapse collapse'>"
             "<div class='panel-body'>"
-            "<p>{0}</p></div></div></div></div>".format(query.stage)
+            "<p>{0}</p><p>{1}</p></div></div></div></div>".format(
+                query.stage, query_details_link
+            )
         )
         not_as_expected_help_text = (
             "<div class='panel-group' id='accordion'>"
@@ -175,7 +288,9 @@ def q_update(request):
             "Reports, or images if the RDSR is not available. For Fluoroscopy, RDSRs are "
             "required. For CT RDSRs are preferred, but Philips dose images can be used and "
             "for some scanners, particularly older Toshiba scanners that can't create RDSR "
-            "OpenREM can process the data to create an RDSR to import.</p>"
+            "OpenREM can process the data to create an RDSR to import. For Nuclear Medicine "
+            "OpenREM will try to use the RRDSR if present, otherwise it will fall back to "
+            "reading from PET or NM images.</p>"
             "<p>If you haven't got the results you expect, it may be that the imaging system"
             " is not creating RDSRs or not sending them to the PACS you are querying. In "
             "either case you will need to have the system reconfigured to create and/or send"
@@ -223,8 +338,6 @@ def q_process(request, *args, **kwargs):
             get_toshiba_images = form.cleaned_data.get("get_toshiba_images_field")
             get_empty_sr = form.cleaned_data.get("get_empty_sr_field")
 
-            query_id = str(uuid.uuid4())
-
             if date_from:
                 date_from = date_from.isoformat()
             if date_until:
@@ -263,10 +376,11 @@ def q_process(request, *args, **kwargs):
                 "stationname_study": stationname_study_level,
             }
 
-            qrscu.delay(
+            b = run_in_background(
+                qrscu,
+                "query",
                 qr_scp_pk=rh_pk,
                 store_scp_pk=store_pk,
-                query_id=query_id,
                 date_from=date_from,
                 date_until=date_until,
                 modalities=modalities,
@@ -280,7 +394,7 @@ def q_process(request, *args, **kwargs):
             resp = {}
             resp["message"] = "Request created"
             resp["status"] = "not complete"
-            resp["queryID"] = query_id
+            resp["queryID"] = b.uuid
 
             return HttpResponse(json.dumps(resp), content_type="application/json")
         else:
@@ -347,7 +461,11 @@ def r_start(request):
     query_id = data.get("queryID")
     resp["queryID"] = query_id
 
-    movescu.delay(query_id)
+    run_in_background(
+        movescu,
+        "move",
+        query_id,
+    )
 
     return HttpResponse(json.dumps(resp), content_type="application/json")
 
@@ -360,10 +478,18 @@ def r_update(request):
     data = request.POST
     query_id = data.get("queryID")
     resp["queryID"] = query_id
+    has_started = True
     try:
         query = DicomQuery.objects.get(query_id=query_id)
     except ObjectDoesNotExist:
-        resp["status"] = "not complete"
+        has_started = False
+
+    if has_started:
+        task = query.move_task
+        has_started = task is not None
+
+    if not has_started:
+        resp["status"] = "not started"
         resp["message"] = f"<h4>Move request {query_id} not yet started</h4>"
         resp["subops"] = ""
         return HttpResponse(json.dumps(resp), content_type="application/json")

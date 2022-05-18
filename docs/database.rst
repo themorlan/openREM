@@ -124,7 +124,7 @@ To access the database directly by pgAdmin or other software, the ports must be 
     $ docker-compose up -d
 
 ********************************
-Linux-only non-Docker PostgreSQL
+non-Docker PostgreSQL
 ********************************
 
 .. _backup-psql-db:
@@ -177,12 +177,10 @@ Database restore
 
 .. _database-windows:
 
-*****************************
-Legacy - databases on Windows
-*****************************
+********************
+Databases on Windows
+********************
 
-Windows is only a supported platform for OpenREM v1 and later when using Docker. Therefore there
-are no instructions for maintenance of databases on that platform, except in the upgrade guide in
-the release notes: :ref:`release1-0upgrade`.
+TODO
 
 For upgrades between older versions, please refer to the docs that accompany those versions.

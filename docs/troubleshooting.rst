@@ -40,8 +40,7 @@ To see logs of all the containers in follow mode (``-f``) and with timestamps (`
     $ docker-compose logs -ft
 
 To see logs of just one container in follow mode - use the service name from the ``docker-compose.yml`` file, choose
-from ``openrem``, ``worker`` (Celery), ``flower`` (Flower), ``db`` (PostgreSQL), ``nginx`` (web server),
-``broker`` (RabbitMQ), ``orthanc_1`` (DICOM server):
+from ``openrem``, ``db`` (PostgreSQL), ``nginx`` (web server), ``orthanc_1`` (DICOM server):
 
 .. code-block:: console
 
@@ -106,9 +105,9 @@ For DICOM networking:
 * :ref:`qrtroubleshooting` for query retrieve
 * :ref:`storetroubleshooting` for DICOM store
 
-For RabbitMQ/task management:
+For task management:
 
-* :doc:`rabbitmq_management`
+* :doc:`task-management`
 
 Log files
 =========

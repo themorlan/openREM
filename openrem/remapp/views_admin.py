@@ -36,11 +36,9 @@ from __future__ import absolute_import
 import os
 import json
 import logging
-from datetime import datetime, timedelta
-import requests
+from datetime import timedelta
 from builtins import map  # pylint: disable=redefined-builtin
 
-from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User  # pylint: disable=all
@@ -56,6 +54,7 @@ from django.urls import reverse_lazy
 from django.utils.safestring import mark_safe
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.utils import timezone
 
 from .extractors.extract_common import populate_rf_delta_weeks_summary
 from .forms import (
@@ -71,10 +70,12 @@ from .forms import (
     RFChartOptionsDisplayForm,
     RFHighDoseFluoroAlertsForm,
     UpdateDisplayNamesForm,
+    NMChartOptionsDisplayForm,
 )
 from .models import (
     AccumIntegratedProjRadiogDose,
     AdminTaskQuestions,
+    BackgroundTask,
     DicomDeleteSettings,
     DicomQuery,
     Exports,
@@ -102,6 +103,7 @@ from .tools.populate_summary import (
     populate_summary_dx,
     populate_summary_rf,
 )
+from openrem.remapp.tools.background import run_in_background, terminate_background
 from .tools.send_high_dose_alert_emails import send_rf_high_dose_alert_email
 from .version import __version__, __docs_version__
 
@@ -211,69 +213,6 @@ def display_names_view(request):
                     )
         return HttpResponseRedirect(reverse_lazy("display_names_view"))
 
-    f = UniqueEquipmentNames.objects.order_by("display_name")
-
-    # if user_defined_modality is filled, we should use this value, otherwise the value of modality type in the
-    # general_study module. So we look if the concatenation of the user_defined_modality (empty if not used) and
-    # modality_type starts with a specific modality type
-    ct_names = f.filter(
-        generalequipmentmoduleattr__general_study_module_attributes__modality_type="CT"
-    ).distinct()
-    mg_names = f.filter(
-        generalequipmentmoduleattr__general_study_module_attributes__modality_type="MG"
-    ).distinct()
-    dx_names = f.filter(
-        Q(user_defined_modality="DX")
-        | Q(user_defined_modality="dual")
-        | (
-            Q(user_defined_modality__isnull=True)
-            & (
-                Q(
-                    generalequipmentmoduleattr__general_study_module_attributes__modality_type="DX"
-                )
-                | Q(
-                    generalequipmentmoduleattr__general_study_module_attributes__modality_type="CR"
-                )
-                | Q(
-                    generalequipmentmoduleattr__general_study_module_attributes__modality_type="PX"
-                )
-            )
-        )
-    ).distinct()
-    rf_names = f.filter(
-        Q(user_defined_modality="RF")
-        | Q(user_defined_modality="dual")
-        | (
-            Q(user_defined_modality__isnull=True)
-            & Q(
-                generalequipmentmoduleattr__general_study_module_attributes__modality_type="RF"
-            )
-        )
-    ).distinct()
-    ot_names = f.filter(
-        ~Q(user_defined_modality__isnull=True)
-        | (
-            ~Q(
-                generalequipmentmoduleattr__general_study_module_attributes__modality_type="RF"
-            )
-            & ~Q(
-                generalequipmentmoduleattr__general_study_module_attributes__modality_type="MG"
-            )
-            & ~Q(
-                generalequipmentmoduleattr__general_study_module_attributes__modality_type="CT"
-            )
-            & ~Q(
-                generalequipmentmoduleattr__general_study_module_attributes__modality_type="DX"
-            )
-            & ~Q(
-                generalequipmentmoduleattr__general_study_module_attributes__modality_type="CR"
-            )
-            & ~Q(
-                generalequipmentmoduleattr__general_study_module_attributes__modality_type="PX"
-            )
-        )
-    ).distinct()
-
     admin = {
         "openremversion": __version__,
         "docsversion": __docs_version__,
@@ -287,15 +226,9 @@ def display_names_view(request):
         admin[group.name] = True
 
     return_structure = {
-        "name_list": f,
         "admin": admin,
         "MergeOptionsForm": merge_options_form,
-        "ct_names": ct_names,
-        "mg_names": mg_names,
-        "dx_names": dx_names,
-        "rf_names": rf_names,
-        "ot_names": ot_names,
-        "modalities": ["CT", "RF", "MG", "DX", "OT"],
+        "modalities": ["CT", "RF", "MG", "DX", "OT", "NM"],
     }
 
     return render(request, "remapp/displaynameview.html", return_structure)
@@ -337,7 +270,7 @@ def display_name_update(request):
                     )[0].modality_type
                 except:
                     modality = ""
-                if modality in {"DX", "CR", "RF", "dual", "OT"}:
+                if modality in {"DX", "CR", "RF", "dual", "OT", "NM"}:
                     display_name_data.user_defined_modality = new_user_defined_modality
                     # We can't reimport as new modality type, instead we just change the modality type value
                     if new_user_defined_modality == "dual":
@@ -423,7 +356,7 @@ def display_name_populate(request):
         }
         for group in request.user.groups.all():
             admin[group.name] = True
-        if modality in ["MG", "CT"]:
+        if modality in ["MG", "CT", "NM"]:
             name_set = f.filter(
                 generalequipmentmoduleattr__general_study_module_attributes__modality_type=modality
             ).distinct()
@@ -480,6 +413,9 @@ def display_name_populate(request):
                 & ~Q(
                     generalequipmentmoduleattr__general_study_module_attributes__modality_type="PX"
                 )
+                & ~Q(
+                    generalequipmentmoduleattr__general_study_module_attributes__modality_type="NM"
+                )
             ).distinct()
             dual = False
         else:
@@ -505,7 +441,7 @@ def display_name_modality_filter(equip_name_pk=None, modality=None):
             "Display name modality filter function called without a primary key ID for the unique names table"
         )
         return
-    if not modality or modality not in ["CT", "RF", "MG", "DX", "OT"]:
+    if not modality or modality not in ["CT", "RF", "MG", "DX", "OT", "NM"]:
         logger.error(
             "Display name modality filter function called without an appropriate modality specified"
         )
@@ -515,7 +451,7 @@ def display_name_modality_filter(equip_name_pk=None, modality=None):
         generalequipmentmoduleattr__unique_equipment_name__pk=equip_name_pk
     )
     count_all = studies_all.count()
-    if modality in ["CT", "MG", "RF"]:
+    if modality in ["CT", "MG", "RF", "NM"]:
         studies = studies_all.filter(modality_type__exact=modality)
     elif modality == "DX":
         studies = studies_all.filter(
@@ -537,6 +473,7 @@ def display_name_modality_filter(equip_name_pk=None, modality=None):
             .exclude(modality_type__exact="CR")
             .exclude(modality_type__exact="PX")
             .exclude(modality_type__exact="RF")
+            .exclude(modality_type__exact="NM")
         )
     return studies, count_all
 
@@ -774,16 +711,19 @@ def reset_dual(pk=None):
         .exclude(modality_type__exact="CR")
         .exclude(modality_type__exact="PX")
     )
-    message_start = "Reprocessing dual for {0}. Number of studies is {1}, of which {2} are " "DX, {3} are CR, {4} are PX, {5} are RF and {6} are something else before processing,".format(  # pylint: disable=line-too-long
-        studies[0]
-        .generalequipmentmoduleattr_set.get()
-        .unique_equipment_name.display_name,
-        studies.count(),
-        studies.filter(modality_type__exact="DX").count(),
-        studies.filter(modality_type__exact="CR").count(),
-        studies.filter(modality_type__exact="PX").count(),
-        studies.filter(modality_type__exact="RF").count(),
-        not_dx_rf_cr.count(),
+    message_start = (
+        "Reprocessing dual for {0}. Number of studies is {1}, of which {2} are "
+        "DX, {3} are CR, {4} are PX, {5} are RF and {6} are something else before processing,".format(  # pylint: disable=line-too-long
+            studies[0]
+            .generalequipmentmoduleattr_set.get()
+            .unique_equipment_name.display_name,
+            studies.count(),
+            studies.filter(modality_type__exact="DX").count(),
+            studies.filter(modality_type__exact="CR").count(),
+            studies.filter(modality_type__exact="PX").count(),
+            studies.filter(modality_type__exact="RF").count(),
+            not_dx_rf_cr.count(),
+        )
     )
 
     logger.debug(message_start)
@@ -1127,6 +1067,30 @@ def _get_review_study_data(study):
         study_data["eventsource"] = ""
         study_data["eventmech"] = ""
         study_data["eventmech"] = ""
+    radio_dose = study.radiopharmaceuticalradiationdose_set.first()
+    study_data["radiopharm_template"] = ""
+    study_data["radiopharm_dose"] = ""
+    study_data["radiopharm_petseries"] = ""
+    if radio_dose:
+        study_data["radiopharm_template"] = "Yes"
+        radio_admin = radio_dose.radiopharmaceuticaladministrationeventdata_set.first()
+        if radio_admin:
+            if radio_admin.radiopharmaceutical_agent:
+                radio_agent_str = radio_admin.radiopharmaceutical_agent.code_meaning
+            else:
+                radio_agent_str = radio_admin.radiopharmaceutical_agent_string
+            if radio_admin.radionuclide:
+                radionuclide_str = radio_admin.radionuclide.code_meaning
+            else:
+                radionuclide_str = ""
+            study_data["radiopharm_dose"] = (
+                f"{radio_admin.administered_activity:.2f} MBq,"
+                f" radiopharmaceutical {radio_agent_str}, "
+                f" radionuclide {radionuclide_str}"
+            )
+        pet_series = radio_dose.petseries_set.count()
+        if pet_series > 0:
+            study_data["radiopharm_petseries"] = f"Yes, {pet_series}"
     return study_data
 
 
@@ -1210,7 +1174,7 @@ def failed_list_populate(request):
 
     if request.is_ajax():
         failed = {}
-        for modality in ["CT", "RF", "MG", "DX"]:
+        for modality in ["CT", "RF", "MG", "DX", "NM"]:
             failed[modality] = _get_broken_studies(modality).count()
         template = "remapp/failed_summary_list.html"
         return render(request, template, {"failed": failed})
@@ -1224,7 +1188,7 @@ def review_failed_imports(request, modality=None):
     :param modality: modality to filter by
     :return:
     """
-    if not modality in ["CT", "RF", "MG", "DX"]:
+    if not modality in ["CT", "RF", "MG", "DX", "NM"]:
         logger.error("Attempt to load review_failed_imports without suitable modality")
         messages.error(
             request,
@@ -1298,12 +1262,14 @@ def chart_options_view(request):
         dx_form = DXChartOptionsDisplayForm(request.POST)
         rf_form = RFChartOptionsDisplayForm(request.POST)
         mg_form = MGChartOptionsDisplayForm(request.POST)
+        nm_form = NMChartOptionsDisplayForm(request.POST)
         if (
             general_form.is_valid()
             and ct_form.is_valid()
             and dx_form.is_valid()
             and rf_form.is_valid()
             and mg_form.is_valid()
+            and nm_form.is_valid()
         ):
             try:
                 # See if the user has plot settings in userprofile
@@ -1350,6 +1316,8 @@ def chart_options_view(request):
             set_rf_chart_options(rf_form, user_profile)
 
             set_mg_chart_options(mg_form, user_profile)
+
+            set_nm_chart_options(nm_form, user_profile)
 
             user_profile.save()
 
@@ -1399,11 +1367,14 @@ def chart_options_view(request):
 
     mg_form_data = initialise_mg_form_data(user_profile)
 
+    nm_form_data = initialise_nm_form_data(user_profile)
+
     general_chart_options_form = GeneralChartOptionsDisplayForm(general_form_data)
     ct_chart_options_form = CTChartOptionsDisplayForm(ct_form_data)
     dx_chart_options_form = DXChartOptionsDisplayForm(dx_form_data)
     rf_chart_options_form = RFChartOptionsDisplayForm(rf_form_data)
     mg_chart_options_form = MGChartOptionsDisplayForm(mg_form_data)
+    nm_chart_options_form = NMChartOptionsDisplayForm(nm_form_data)
 
     return_structure = {
         "admin": admin,
@@ -1412,6 +1383,7 @@ def chart_options_view(request):
         "DXChartOptionsForm": dx_chart_options_form,
         "RFChartOptionsForm": rf_chart_options_form,
         "MGChartOptionsForm": mg_chart_options_form,
+        "NMChartOptionsForm": nm_chart_options_form,
     }
 
     return render(request, "remapp/displaychartoptions.html", return_structure)
@@ -1575,6 +1547,39 @@ def set_average_chart_options(general_form, user_profile):
         user_profile.plotBoxplots = True
     else:
         user_profile.plotBoxplots = False
+
+
+def set_nm_chart_options(nm_form, user_profile):
+    user_profile.plotNMStudyFreq = nm_form.cleaned_data["plotNMStudyFreq"]
+    user_profile.plotNMStudyPerDayAndHour = nm_form.cleaned_data[
+        "plotNMStudyPerDayAndHour"
+    ]
+    user_profile.plotNMInjectedDosePerStudy = nm_form.cleaned_data[
+        "plotNMInjectedDosePerStudy"
+    ]
+    user_profile.plotNMInjectedDoseOverTime = nm_form.cleaned_data[
+        "plotNMInjectedDoseOverTime"
+    ]
+    user_profile.plotNMInjectedDoseOverWeight = nm_form.cleaned_data[
+        "plotNMInjectedDoseOverWeight"
+    ]
+    user_profile.plotNMOverTimePeriod = nm_form.cleaned_data["plotNMOverTimePeriod"]
+    user_profile.plotNMInitialSortingChoice = nm_form.cleaned_data[
+        "plotNMInitialSortingChoice"
+    ]
+
+
+def initialise_nm_form_data(user_profile):
+    nm_form_data = {
+        "plotNMStudyFreq": user_profile.plotNMStudyFreq,
+        "plotNMStudyPerDayAndHour": user_profile.plotNMStudyPerDayAndHour,
+        "plotNMInjectedDosePerStudy": user_profile.plotNMInjectedDosePerStudy,
+        "plotNMInjectedDoseOverTime": user_profile.plotNMInjectedDoseOverTime,
+        "plotNMInjectedDoseOverWeight": user_profile.plotNMInjectedDoseOverWeight,
+        "plotNMOverTimePeriod": user_profile.plotNMOverTimePeriod,
+        "plotNMInitialSortingChoice": user_profile.plotNMInitialSortingChoice,
+    }
+    return nm_form_data
 
 
 def set_ct_chart_options(ct_form, user_profile):
@@ -1899,254 +1904,79 @@ def _create_admin_dict(request):
 
 
 @login_required
-def task_service_status(request):
-    """AJAX function to get task services statuses and RabbitMQ queued tasks"""
-    if request.is_ajax() and request.user.groups.filter(name="admingroup"):
-        try:
-            flower = requests.get(
-                f"{settings.FLOWER_URL}:{settings.FLOWER_PORT}/api/tasks"
-            )
-            if flower.status_code == 200:
-                flower_status = 200
-            else:
-                flower_status = 401
-        except requests.ConnectionError:
-            flower_status = 500
-        default_queue = {}
-        celery_queue = {}
-        try:
-            queues = requests.get(
-                f"{settings.BROKER_MGMT_URL}api/queues", auth=("guest", "guest")
-            )
-            if queues.status_code == 200:
-                rabbitmq_status = 200
-            else:
-                rabbitmq_status = queues.status_code
-            for queue in queues.json():
-                if queue["name"] == settings.CELERY_TASK_DEFAULT_QUEUE:
-                    default_queue = queue
-                elif "celery.pidbox" in queue["name"]:
-                    celery_queue = queue
-        except requests.ConnectionError:
-            rabbitmq_status = 500
-        template = "remapp/task_service_status.html"
-        admin = _create_admin_dict(request)
-        return render(
-            request,
-            template,
-            {
-                "default_queue": default_queue,
-                "celery_queue": celery_queue,
-                "flower_status": flower_status,
-                "rabbitmq_status": rabbitmq_status,
-                "admin": admin,
-            },
-        )
-
-
-@login_required
-def rabbitmq_purge(request, queue=None):
-    """Function to purge one of the RabbitMQ queues"""
-    if queue and request.user.groups.filter(name="admingroup"):
-        queue_url = f"{settings.BROKER_MGMT_URL}/api/queues/%2f/{queue}/contents"
-        requests.delete(queue_url, auth=("guest", "guest"))
-        return redirect(reverse_lazy("celery_admin"))
-
-
-@login_required
-def celery_admin(request):
-    """View to show Celery tasks. Content generated using AJAX"""
-
+def display_tasks(request):
+    """View to show tasks. Content generated using AJAX."""
     admin = _create_admin_dict(request)
-
-    template = "remapp/celery_admin.html"
+    template = "remapp/task_admin.html"
     return render(request, template, {"admin": admin})
 
 
-def celery_tasks(request, stage=None):
-    """AJAX function to get current task details"""
+def tasks(request, stage=None):
+    """AJAX function to get current task details."""
     if request.is_ajax() and request.user.groups.filter(name="admingroup"):
-        try:
-            flower = requests.get(
-                f"{settings.FLOWER_URL}:{settings.FLOWER_PORT}/api/tasks"
-            )
-            if flower.status_code == 200:
-                tasks = []
-                recent_tasks = []
-                active_tasks = []
-                older_tasks = []
-                task_dict_list = flower.json()
-                datetime_now = datetime.now()
-                for task_uuid in list(task_dict_list.keys()):
-                    this_task = {
-                        "uuid": task_uuid,
-                        "name": task_dict_list[task_uuid]["name"],
-                        "state": task_dict_list[task_uuid]["state"],
-                        "message": "",
-                    }
-                    if isinstance(task_dict_list[task_uuid]["received"], float):
-                        this_task["received"] = datetime.fromtimestamp(
-                            task_dict_list[task_uuid]["received"]
-                        )
-                        this_task["received_delta_s"] = int(
-                            (datetime_now - this_task["received"]).total_seconds()
-                        )
-                    if isinstance(task_dict_list[task_uuid]["started"], float):
-                        this_task["started"] = datetime.fromtimestamp(
-                            task_dict_list[task_uuid]["started"]
-                        )
-                        this_task["started_delta_s"] = int(
-                            (datetime_now - this_task["started"]).total_seconds()
-                        )
-                    else:
-                        this_task["started"] = ""
-                    try:
-                        this_task["source"] = ""
-                        this_task["result"] = ""
-                        # print(f"task name is {this_task['name']}")
-                        if "exports" in this_task["name"].split("."):
-                            this_task["type"] = "export"
-                            try:
-                                export_task = Exports.objects.get(
-                                    task_id__exact=task_uuid
-                                )
-                                this_task["source"] = export_task.export_summary
-                                this_task["result"] = export_task.status
-                            except ObjectDoesNotExist:
-                                pass
-                        elif "websizeimport" in this_task["name"].split("."):
-                            this_task["type"] = "size"
-                        elif "qrscu.qrscu" in this_task["name"]:
-                            this_task["type"] = "netdicom"
-                            try:
-                                dicom_task = DicomQuery.objects.get(
-                                    query_uuid__exact=task_uuid
-                                )
-                                this_task["result"] = dicom_task.stage
-                                this_task["source"] = dicom_task.query_summary
-                            except ObjectDoesNotExist:
-                                pass
-                        elif "movescu" in this_task["name"].split("."):
-                            this_task["type"] = "netdicom"
-                            try:
-                                move_task = DicomQuery.objects.get(
-                                    move_uuid__exact=task_uuid
-                                )
-                                this_task["result"] = move_task.move_summary
-                                this_task["source"] = move_task.query_summary
-                            except ObjectDoesNotExist:
-                                pass
-                        elif "make_skin_map" in this_task["name"].split("."):
-                            this_task["type"] = "skin_map"
-                        else:
-                            this_task["type"] = None
-                    except AttributeError:
-                        this_task["type"] = None
-                    tasks += [this_task]
-                    recent_time_delta = 60 * 60 * 6  # six hours
-                    if "STARTED" in this_task["state"]:
-                        active_tasks += [this_task]
-                    elif (
-                        this_task["started"]
-                        and (datetime_now - this_task["started"]).total_seconds()
-                        < recent_time_delta
-                    ):
-                        recent_tasks += [this_task]
-                    else:
-                        older_tasks += [this_task]
-                dicom_tasks = DicomQuery.objects.order_by("pk")
-                if "active" in stage:
-                    return render(
-                        request,
-                        "remapp/celery_tasks.html",
-                        {"tasks": active_tasks, "type": "active"},
-                    )
-                elif "recent" in stage:
-                    return render(
-                        request,
-                        "remapp/celery_tasks_complete.html",
-                        {"tasks": recent_tasks, "type": "recent"},
-                    )
-                elif "older" in stage:
-                    return render(
-                        request,
-                        "remapp/celery_tasks_complete.html",
-                        {"tasks": older_tasks, "type": "older"},
-                    )
-        except requests.ConnectionError:
-            admin = _create_admin_dict(request)
-            template = "remapp/celery_connection_error.html"
-            return render(request, template, {"admin": admin})
+        active_tasks = []
+        recent_tasks = []
+        older_tasks = []
+        tasks = BackgroundTask.objects.order_by("started_at").all()
+        datetime_now = timezone.now()
+
+        for task in tasks:
+            recent_time_delta = timedelta(hours=6)
+            if not task.complete:
+                active_tasks.append(task)
+            elif (
+                task.started_at is not None
+                and datetime_now - recent_time_delta < task.started_at
+            ):
+                recent_tasks.append(task)
+            else:
+                older_tasks.append(task)
+
+        if "active" in stage:
+            tinfo = {"tasks": active_tasks, "type": "active"}
+        elif "recent" in stage:
+            tinfo = {"tasks": recent_tasks, "type": "recent"}
+        elif "older" in stage:
+            tinfo = {"tasks": older_tasks, "type": "older"}
+
+        return render(request, "remapp/tasks.html", tinfo)
 
 
-def celery_abort(request, task_id=None, type=None):
-    """Function to abort one of the Celery tasks"""
+def task_abort(request, task_id=None):
+    """Function to abort one of the tasks"""
     if task_id and request.user.groups.filter(name="admingroup"):
-        queue_url = (
-            f"{settings.FLOWER_URL}:{settings.FLOWER_PORT}/api/task/revoke/{task_id}"
+        task = get_object_or_404(BackgroundTask, uuid=task_id)
+
+        try:
+            if task.task_type == "query" or task.task_type == "move":
+                abort_logger = logging.getLogger("remapp.netdicom.qrscu")
+                abort_logger.info(
+                    "Query or move task {0} terminated from the Tasks interface".format(
+                        task_id
+                    )
+                )
+                if task.task_type == "query":
+                    DicomQuery.objects.filter(query_id__exact=task_id).delete()
+            else:
+                if task.task_type.startswith("export"):
+                    Exports.objects.filter(task_id__exact=task_id).delete()
+                elif task.task_type.startswith("import_size"):
+                    SizeUpload.objects.filter(task_id__exact=task_id).delete()
+                abort_logger = logging.getLogger("remapp")
+                abort_logger.info(
+                    "Task {0} of type {1} terminated from the Tasks interface".format(
+                        task_id, task.task_type
+                    )
+                )
+        except ObjectDoesNotExist:
+            pass
+        terminate_background(task)
+        messages.success(
+            request,
+            "Task {0} terminated".format(task_id),
         )
-        payload = {"terminate": "true"}
-        abort = requests.post(queue_url, data=payload)
-        if abort.status_code == 200:
-            try:
-                if type in "netdicom":
-                    description = "query or move"
-                    task = DicomQuery.objects.get(query_id__exact=task_id)
-                    abort_logger = logging.getLogger("remapp.netdicom.qrscu")
-                    abort_logger.info(
-                        "Query or move task {0} terminated from the Tasks interface".format(
-                            task_id
-                        )
-                    )
-                elif type in "export":
-                    description = "export"
-                    task = Exports.objects.get(task_id__exact=task_id)
-                    abort_logger = logging.getLogger("remapp")
-                    abort_logger.info(
-                        "Export task {0} terminated from the Tasks interface".format(
-                            task_id
-                        )
-                    )
-                elif type in "size":
-                    description = "size import"
-                    task = SizeUpload.objects.get(task_id__exact=task_id)
-                    task.logfile.delete()
-                    task.sizefile.delete()
-                    abort_logger = logging.getLogger("remapp")
-                    abort_logger.info(
-                        "Size import task {0} terminated from the Tasks interface".format(
-                            task_id
-                        )
-                    )
-                else:
-                    messages.success(
-                        request,
-                        "Success! Task {0} terminated. Type was '{1}' which didn't match".format(
-                            task_id, type
-                        ),
-                    )
-                    abort_logger = logging.getLogger("remapp")
-                    abort_logger.info(
-                        "Task {0} of type {1} terminated from the Tasks interface".format(
-                            task_id, type
-                        )
-                    )
-                    return redirect(reverse_lazy("celery_admin"))
-                task.delete()
-                messages.success(
-                    request,
-                    "Task {0} terminated, and matching {1} job in database deleted.".format(
-                        task_id, description
-                    ),
-                )
-            except ObjectDoesNotExist:
-                messages.warning(
-                    request,
-                    "Task {0} terminated, but matching {1} job not found in database!".format(
-                        task_id, description
-                    ),
-                )
-            return redirect(reverse_lazy("celery_admin"))
+
+    return redirect(reverse_lazy("task_admin"))
 
 
 class PatientIDSettingsUpdate(UpdateView):  # pylint: disable=unused-variable
@@ -2574,34 +2404,38 @@ def populate_summary(request):
         except ObjectDoesNotExist:
             task_ct = SummaryFields.objects.create(modality_type="CT")
         if not task_ct.complete:
-            populate_summary_ct.delay()
+            run_in_background(
+                populate_summary_ct,
+                "populate_summary_ct",
+            )
         try:
             task_mg = SummaryFields.objects.get(modality_type__exact="MG")
         except ObjectDoesNotExist:
             task_mg = SummaryFields.objects.create(modality_type="MG")
         if not task_mg.complete:
-            populate_summary_mg.delay()
+            run_in_background(
+                populate_summary_mg,
+                "populate_summary_mg",
+            )
         try:
             task_dx = SummaryFields.objects.get(modality_type__exact="DX")
         except ObjectDoesNotExist:
             task_dx = SummaryFields.objects.create(modality_type="DX")
         if not task_dx.complete:
-            populate_summary_dx.delay()
+            run_in_background(
+                populate_summary_dx,
+                "populate_summary_dx",
+            )
         try:
             task_rf = SummaryFields.objects.get(modality_type__exact="RF")
         except ObjectDoesNotExist:
             task_rf = SummaryFields.objects.create(modality_type="RF")
         if not task_rf.complete:
-            populate_summary_rf.delay()
+            run_in_background(
+                populate_summary_rf,
+                "populate_summary_rf",
+            )
 
-        # task = SummaryFields.get_solo()
-        # if task.complete:
-        #     messages.error(u"Populating summary fields already complete!")
-        #     return redirect(reverse_lazy('home'))
-        # task.status_message = u"Starting migration to populate summary fields"
-        # messages.info = u"Starting migration to populate summary fields"
-        # task.save()
-        # populate_summary.delay()
         return redirect(reverse_lazy("home"))
 
 

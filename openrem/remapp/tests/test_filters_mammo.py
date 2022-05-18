@@ -43,7 +43,7 @@ class FilterViewTests(TestCase):
         self.client.login(username="temporary", password="temporary")
         response = self.client.get(reverse("mg_summary_list_filter"), follow=True)
         self.assertEqual(response.status_code, 200)
-        three_responses_text = u"There are 4 studies in this list."
+        three_responses_text = "There are 4 studies in this list."
         self.assertContains(response, three_responses_text)
 
     def test_filter_study_desc(self):
@@ -56,10 +56,10 @@ class FilterViewTests(TestCase):
             follow=True,
         )
         self.assertEqual(response.status_code, 200)
-        one_responses_text = u"There are 1 studies in this list."
+        one_responses_text = "There are 1 studies in this list."
         self.assertContains(response, one_responses_text)
         accession_number = (
-            u"AJSKDL1234"  # Accession number of study with matching study description
+            "AJSKDL1234"  # Accession number of study with matching study description
         )
         self.assertContains(response, accession_number)
 
@@ -74,10 +74,10 @@ class FilterViewTests(TestCase):
             follow=True,
         )
         self.assertEqual(response.status_code, 200)
-        one_responses_text = u"There are 1 studies in this list."
+        one_responses_text = "There are 1 studies in this list."
         self.assertContains(response, one_responses_text)
         accession_number = (
-            u"90002314523"  # Accession number of study with matching procedure code
+            "90002314523"  # Accession number of study with matching procedure code
         )
         self.assertContains(response, accession_number)
 
@@ -92,10 +92,10 @@ class FilterViewTests(TestCase):
             follow=True,
         )
         self.assertEqual(response.status_code, 200)
-        one_responses_text = u"There are 1 studies in this list."
+        one_responses_text = "There are 1 studies in this list."
         self.assertContains(response, one_responses_text)
         accession_number = (
-            u"AAAA9876"  # Accession number of study with matching acquisition protocol
+            "AAAA9876"  # Accession number of study with matching acquisition protocol
         )
         self.assertContains(response, accession_number)
 
@@ -110,9 +110,9 @@ class FilterViewTests(TestCase):
             follow=True,
         )
         self.assertEqual(response.status_code, 200)
-        one_responses_text = u"There are 1 studies in this list."
+        one_responses_text = "There are 1 studies in this list."
         self.assertContains(response, one_responses_text)
-        accession_number = u"AAAA9876"  # Accession number of the only study with a matching exposure control mode
+        accession_number = "AAAA9876"  # Accession number of the only study with a matching exposure control mode
         self.assertContains(response, accession_number)
 
     def test_filter_compressed_breast_thickness_a(self):
@@ -127,9 +127,9 @@ class FilterViewTests(TestCase):
             follow=True,
         )
         self.assertEqual(response.status_code, 200)
-        one_responses_text = u"There are 1 studies in this list."
+        one_responses_text = "There are 1 studies in this list."
         self.assertContains(response, one_responses_text)
-        accession_number = u"90002314523"  # Accession number of the only study with a compressed breast thickness in the range
+        accession_number = "90002314523"  # Accession number of the only study with a compressed breast thickness in the range
         self.assertContains(response, accession_number)
 
     def test_filter_compressed_breast_thickness_b(self):
@@ -144,9 +144,9 @@ class FilterViewTests(TestCase):
             follow=True,
         )
         self.assertEqual(response.status_code, 200)
-        one_responses_text = u"There are 1 studies in this list."
+        one_responses_text = "There are 1 studies in this list."
         self.assertContains(response, one_responses_text)
-        accession_number = u"AJSKDL1234"  # Accession number of the only study with a compressed breast thickness in the range
+        accession_number = "AJSKDL1234"  # Accession number of the only study with a compressed breast thickness in the range
         self.assertContains(response, accession_number)
 
     def test_filter_compressed_breast_thickness_c(self):
@@ -161,9 +161,9 @@ class FilterViewTests(TestCase):
             follow=True,
         )
         self.assertEqual(response.status_code, 200)
-        one_responses_text = u"There are 1 studies in this list."
+        one_responses_text = "There are 1 studies in this list."
         self.assertContains(response, one_responses_text)
-        accession_number = u"AAAA9876"  # Accession number of the only study with a compressed breast thickness in the range
+        accession_number = "AAAA9876"  # Accession number of the only study with a compressed breast thickness in the range
         self.assertContains(response, accession_number)
 
     def test_filter_view_code_meaning(self):
@@ -177,7 +177,7 @@ class FilterViewTests(TestCase):
             follow=True,
         )
         self.assertEqual(response.status_code, 200)
-        one_responses_text = u"There are 1 studies in this list."
+        one_responses_text = "There are 1 studies in this list."
         self.assertContains(response, one_responses_text)
-        accession_number = u"6414000490125177"  # Accession number of the only study with an acquisition that has a matching view code
+        accession_number = "6414000490125177"  # Accession number of the only study with an acquisition that has a matching view code
         self.assertContains(response, accession_number)

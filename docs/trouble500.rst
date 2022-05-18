@@ -27,8 +27,8 @@ If the webserver fails, then restart all the containers:
     docker-compose down
     docker-compose up -d
 
-Non-Docker Linux installs
--------------------------
+Non-Docker installs
+-------------------
 
 Locate and edit your local_settings file
 
@@ -59,7 +59,7 @@ Docker:
 * Edit ``.env.prod`` to set ``DEBUG=0``
 * Restart ``docker-compose``
 
-Non-docker Linux:
+Non-docker:
 
 * Edit ``local_settings.py`` again to comment out the ``DEBUG`` line (add a ``#`` to the start) or set it to ``False``
 * Reload the web service

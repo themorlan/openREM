@@ -6,9 +6,8 @@
         <div class="panel-body">
 
             <p>
-                Progress stopped? Check the <a href="{% url 'celery_admin' %}">Tasks admin page</a> and if Celery and
-                RabbitMQ are
-                running and there are no tasks being processed, try launching the migration again:
+                Progress stopped? Check the <a href="{% url 'task_admin' %}">Tasks admin page</a> 
+                there are no tasks being processed, try launching the migration again:
                 <a href="{% url 'populate_summary' %}">Populate Summary fields</a>
             </p>
 
