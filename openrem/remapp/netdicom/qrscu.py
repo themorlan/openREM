@@ -2161,7 +2161,7 @@ def movescu(query_id):
         msg = "Move called with invalid query_id {0}. Move abandoned.".format(query_id)
         logger.warning(msg)
         record_task_error_exit(msg)
-        return 0
+        return
     query.move_complete = False
     query.move_task = get_current_task()
     query.failed = False
