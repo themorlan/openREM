@@ -10,7 +10,7 @@ Headline changes
 
 * Python 3
 * Django 2.2
-* Docker
+* Docker or direct install on Windows and Linux
 * Celery, Flower and RabbitMQ removed from requirements
 
 * Performing physician added to standard fluoroscopy exports (:issue:`840`)
