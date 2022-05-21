@@ -5,12 +5,13 @@ OpenREM version history
 
 1.0.0b1 (2022-xx-xx)
 --------------------
-* :issue:`936`  Tasks: Added make_skin_map to background tasks on RF RDSR import
+* :issue:`937`  Interface: correcting bottom row of exports table
+* :issue:`936`  Tasks: added make_skin_map to background tasks on RF RDSR import
 * :issue:`934`  DICOM Networking: QR queries are now logged and can be analysed through the web interface
 * :issue:`931`  Exports: export RF DAP as float instead of text
 * :issue:`925`  Docker: docs and config file for enabling bind mounts with SELinux
 * :issue:`922`  Database: optimise indexes and duplicate queries
-* :issue:`917`  Interface: added horizintal lines between chart option groups and shaded chart option CheckboxSelectMultiple items
+* :issue:`917`  Interface: added horizontal lines between chart option groups and shaded chart option CheckboxSelectMultiple items
 * :issue:`913`  SkinDose: made 2d skin dose map overlay visible by default
 * :issue:`911`  Charts: fixed issue with chart data sorting and added label wrap option
 * :issue:`910`  SkinDose: fixed rendering of 2d skin dose map with head
