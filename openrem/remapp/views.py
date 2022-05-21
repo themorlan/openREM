@@ -180,7 +180,7 @@ def create_admin_info(request):
 
 
 def standard_name_settings():
-    """Obtain the system-level enable_standard_names setting"""
+    """Obtain the system-level enable_standard_names setting."""
     try:
         StandardNameSettings.objects.get()
     except ObjectDoesNotExist:
@@ -220,7 +220,7 @@ def generate_return_structure(request, f):
 
 @login_required
 def dx_summary_list_filter(request):
-    """Obtain data for radiographic summary view"""
+    """Obtain data for radiographic summary view."""
     pid = bool(request.user.groups.filter(name="pidgroup"))
     f = dx_acq_filter(request.GET, pid=pid)
 
