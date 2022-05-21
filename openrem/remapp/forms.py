@@ -129,8 +129,8 @@ class DXChartOptionsForm(forms.Form):
         widget=forms.CheckboxSelectMultiple(attrs={"class": "CheckboxSelectMultiple"}),
     )
     plotAverageChoice.group = "General"
-    plotGrouping = forms.ChoiceField(  # nosec
-        label=mark_safe("Grouping choice"),
+    plotGrouping = forms.ChoiceField(
+        label=mark_safe("Grouping choice"),  # nosec
         choices=CommonVariables.CHART_GROUPING,
         required=False,
     )
@@ -279,8 +279,8 @@ class CTChartOptionsForm(forms.Form):
         widget=forms.CheckboxSelectMultiple(attrs={"class": "CheckboxSelectMultiple"}),
     )
     plotAverageChoice.group = "General"
-    plotGrouping = forms.ChoiceField(  # nosec
-        label=mark_safe(_("Grouping choice")),
+    plotGrouping = forms.ChoiceField(
+        label=mark_safe(_("Grouping choice")),  # nosec
         choices=CommonVariables.CHART_GROUPING,
         required=False,
     )
@@ -314,28 +314,28 @@ class CTChartOptionsForm(forms.Form):
         label=_("Acquisition DLP"), required=False
     )
     plotCTAcquisitionMeanDLP.group = "Acquisition protocol"
-    plotCTAcquisitionMeanCTDI = forms.BooleanField(  # nosec
-        label=mark_safe(_("Acquisition CTDI<sub>vol</sub>")), required=False
+    plotCTAcquisitionMeanCTDI = forms.BooleanField(
+        label=mark_safe(_("Acquisition CTDI<sub>vol</sub>")), required=False  # nosec
     )
     plotCTAcquisitionMeanCTDI.group = "Acquisition protocol"
     plotCTAcquisitionDLPOverTime = forms.BooleanField(
         label=_("Acquisition DLP over time"), required=False
     )
     plotCTAcquisitionDLPOverTime.group = "Acquisition protocol"
-    plotCTAcquisitionCTDIOverTime = forms.BooleanField(  # nosec
-        label=mark_safe(_("Acquisition CTDI<sub>vol</sub> over time")), required=False
+    plotCTAcquisitionCTDIOverTime = forms.BooleanField(
+        label=mark_safe(_("Acquisition CTDI<sub>vol</sub> over time")), required=False  # nosec
     )
     plotCTAcquisitionCTDIOverTime.group = "Acquisition protocol"
     plotCTAcquisitionDLPvsMass = forms.BooleanField(
         label=_("Acquisition DLP vs mass"), required=False
     )
     plotCTAcquisitionDLPvsMass.group = "Acquisition protocol"
-    plotCTAcquisitionCTDIvsMass = forms.BooleanField(  # nosec
-        label=mark_safe(_("Acquisition CTDI<sub>vol</sub> vs mass")), required=False
+    plotCTAcquisitionCTDIvsMass = forms.BooleanField(
+        label=mark_safe(_("Acquisition CTDI<sub>vol</sub> vs mass")), required=False  # nosec
     )
     plotCTAcquisitionCTDIvsMass.group = "Acquisition protocol"
-    plotCTAcquisitionTypes = forms.MultipleChoiceField(  # nosec
-        label=mark_safe(
+    plotCTAcquisitionTypes = forms.MultipleChoiceField(
+        label=mark_safe(  # nosec
             _(
                 "Acquisition types to include<br/>in acquisition-level chart<br/>calculations"
             )
@@ -350,8 +350,8 @@ class CTChartOptionsForm(forms.Form):
     plotCTStudyFreq.group = "Study description"
     plotCTStudyMeanDLP = forms.BooleanField(label="Study DLP", required=False)
     plotCTStudyMeanDLP.group = "Study description"
-    plotCTStudyMeanCTDI = forms.BooleanField(  # nosec
-        label=mark_safe(_("Study CTDI<sub>vol</sub>")), required=False
+    plotCTStudyMeanCTDI = forms.BooleanField(
+        label=mark_safe(_("Study CTDI<sub>vol</sub>")), required=False  # nosec
     )
     plotCTStudyMeanCTDI.group = "Study description"
     plotCTStudyNumEvents = forms.BooleanField(label="Study events", required=False)
@@ -466,8 +466,8 @@ class NMChartOptionsForm(forms.Form):
         required=False,
         widget=forms.CheckboxSelectMultiple(attrs={"class": "CheckboxSelectMultiple"}),
     )
-    plotGrouping = forms.ChoiceField(  # nosec
-        label=mark_safe(_("Grouping choice")),
+    plotGrouping = forms.ChoiceField(
+        label=mark_safe(_("Grouping choice")),  # nosec
         choices=CommonVariables.CHART_GROUPING,
         required=False,
     )
@@ -537,8 +537,8 @@ class RFChartOptionsForm(forms.Form):
         label="Split plots by physician", required=False
     )
     plotRFSplitByPhysician.group = "General"
-    plotGrouping = forms.ChoiceField(  # nosec
-        label=mark_safe(_("Grouping choice")),
+    plotGrouping = forms.ChoiceField(
+        label=mark_safe(_("Grouping choice")),  # nosec
         choices=CommonVariables.CHART_GROUPING_RF,
         required=False,
     )
@@ -689,8 +689,8 @@ class MGChartOptionsForm(forms.Form):
         widget=forms.CheckboxSelectMultiple(attrs={"class": "CheckboxSelectMultiple"}),
     )
     plotAverageChoice.group = "General"
-    plotGrouping = forms.ChoiceField(  # nosec
-        label=mark_safe(_("Grouping choice")),
+    plotGrouping = forms.ChoiceField(
+        label=mark_safe(_("Grouping choice")),  # nosec
         choices=CommonVariables.CHART_GROUPING,
         required=False,
     )
@@ -1005,14 +1005,14 @@ class CTChartOptionsDisplayForm(forms.Form):
     plotCTAcquisitionMeanDLP = forms.BooleanField(
         label=_("Acquisition DLP"), required=False
     )
-    plotCTAcquisitionMeanCTDI = forms.BooleanField(  # nosec
-        label=mark_safe(_("Acquisition CTDI<sub>vol</sub>")), required=False
+    plotCTAcquisitionMeanCTDI = forms.BooleanField(
+        label=mark_safe(_("Acquisition CTDI<sub>vol</sub>")), required=False  # nosec
     )
     plotCTAcquisitionDLPOverTime = forms.BooleanField(
         label=_("Acquisition DLP over time"), required=False
     )
-    plotCTAcquisitionCTDIOverTime = forms.BooleanField(  # nosec
-        label=mark_safe(_("Acquisition CTDI<sub>vol</sub> over time")), required=False
+    plotCTAcquisitionCTDIOverTime = forms.BooleanField(
+        label=mark_safe(_("Acquisition CTDI<sub>vol</sub> over time")), required=False  # nosec
     )
     plotCTAcquisitionDLPvsMass = forms.BooleanField(
         label=_("Acquisition DLP vs mass"), required=False
@@ -1020,8 +1020,8 @@ class CTChartOptionsDisplayForm(forms.Form):
     plotCTAcquisitionCTDIvsMass = forms.BooleanField(
         label=_("Acquisition CTDI vs mass"), required=False
     )
-    plotCTAcquisitionTypes = forms.MultipleChoiceField(  # nosec
-        label=mark_safe(
+    plotCTAcquisitionTypes = forms.MultipleChoiceField(
+        label=mark_safe(  # nosec
             _(
                 "Acquisition types to include<br/>in acquisition-level chart<br/>calculations"
             )
@@ -1032,8 +1032,8 @@ class CTChartOptionsDisplayForm(forms.Form):
     )
     plotCTStudyFreq = forms.BooleanField(label=_("Study frequency"), required=False)
     plotCTStudyMeanDLP = forms.BooleanField(label=_("Study DLP"), required=False)
-    plotCTStudyMeanCTDI = forms.BooleanField(  # nosec
-        label=mark_safe(_("Study CTDI<sub>vol</sub>")), required=False
+    plotCTStudyMeanCTDI = forms.BooleanField(
+        label=mark_safe(_("Study CTDI<sub>vol</sub>")), required=False  # nosec
     )
     plotCTStudyNumEvents = forms.BooleanField(label=_("Study events"), required=False)
     plotCTStudyMeanDLPOverTime = forms.BooleanField(
@@ -1071,20 +1071,20 @@ class CTChartOptionsDisplayFormIncStandard(CTChartOptionsDisplayForm):
     plotCTStandardAcquisitionMeanDLP = forms.BooleanField(
         label="Standard acquisition DLP", required=False
     )
-    plotCTStandardAcquisitionMeanCTDI = forms.BooleanField(  # nosec
-        label=mark_safe("Standard acquisition CTDI<sub>vol</sub>"), required=False
+    plotCTStandardAcquisitionMeanCTDI = forms.BooleanField(
+        label=mark_safe("Standard acquisition CTDI<sub>vol</sub>"), required=False  # nosec
     )
     plotCTStandardAcquisitionDLPOverTime = forms.BooleanField(
         label="Standard acquisition name DLP over time", required=False
     )
     plotCTStandardAcquisitionCTDIOverTime = forms.BooleanField(
-        label=mark_safe("Standard acquisition name CTDI<sub>vol</sub> over time"),
+        label=mark_safe("Standard acquisition name CTDI<sub>vol</sub> over time"),  # nosec
         required=False,
-    )  # nosec
+    )
     plotCTStandardAcquisitionCTDIvsMass = forms.BooleanField(
-        label=mark_safe("Standard acquisition name CTDI<sub>vol</sub> vs mass"),
+        label=mark_safe("Standard acquisition name CTDI<sub>vol</sub> vs mass"),  # nosec
         required=False,
-    )  # nosec
+    )
     plotCTStandardAcquisitionDLPvsMass = forms.BooleanField(
         label="Standard acquisition name DLP vs mass", required=False
     )
