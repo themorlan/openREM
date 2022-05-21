@@ -200,27 +200,31 @@ def create_paginated_study_list(request, f, user_profile):
     return study_list
 
 
+def generate_return_structure(request, f):
+    user_profile = get_or_create_user(request)
+    items_per_page_form = update_items_per_page_form(request, user_profile)
+    admin = create_admin_info(request)
+    study_list = create_paginated_study_list(request, f, user_profile)
+    enable_standard_names = standard_name_settings()
+    return_structure = {
+        "filter": f,
+        "study_list": study_list,
+        "admin": admin,
+        "itemsPerPageForm": items_per_page_form,
+        "showStandardNames": enable_standard_names,
+    }
+    return user_profile, return_structure
+
+
 @login_required
 def dx_summary_list_filter(request):
     """Obtain data for radiographic summary view"""
     pid = bool(request.user.groups.filter(name="pidgroup"))
     f = dx_acq_filter(request.GET, pid=pid)
 
-    user_profile = get_or_create_user(request)
+    user_profile, return_structure = generate_return_structure(request, f)
     chart_options_form = dx_chart_form_processing(request, user_profile)
-    items_per_page_form = update_items_per_page_form(request, user_profile)
-    admin = create_admin_info(request)
-    study_list = create_paginated_study_list(request, f, user_profile)
-    enable_standard_names = standard_name_settings()
-
-    return_structure = {
-        "filter": f,
-        "study_list": study_list,
-        "admin": admin,
-        "chartOptionsForm": chart_options_form,
-        "itemsPerPageForm": items_per_page_form,
-        "showStandardNames": enable_standard_names,
-    }
+    return_structure["chartOptionsForm"] = chart_options_form
 
     if user_profile.plotCharts:
         return_structure["required_charts"] = generate_required_dx_charts_list(
@@ -275,7 +279,6 @@ def rf_summary_list_filter(request):
     """Obtain data for radiographic summary view."""
 
     enable_standard_names = standard_name_settings()
-
     queryset = GeneralStudyModuleAttr.objects.filter(modality_type__exact="RF").order_by("-study_date", "-study_time").distinct()
 
     if request.user.groups.filter(name="pidgroup"):
@@ -301,9 +304,8 @@ def rf_summary_list_filter(request):
                 queryset=queryset,
             )
 
-    user_profile = get_or_create_user(request)
+    user_profile, return_structure = generate_return_structure(request, f)
     chart_options_form = rf_chart_form_processing(request, user_profile)
-    items_per_page_form = update_items_per_page_form(request, user_profile)
 
     # Import total DAP and total dose at reference point alert levels. Create with default values if not found.
     try:
@@ -317,19 +319,8 @@ def rf_summary_list_filter(request):
         "accum_dose_delta_weeks",
     )[0]
 
-    admin = create_admin_info(request)
-
-    study_list = create_paginated_study_list(request, f, user_profile)
-
-    return_structure = {
-        "filter": f,
-        "study_list": study_list,
-        "admin": admin,
-        "chartOptionsForm": chart_options_form,
-        "itemsPerPageForm": items_per_page_form,
-        "alertLevels": alert_levels,
-        "showStandardNames": enable_standard_names,
-    }
+    return_structure["chartOptionsForm"] = chart_options_form
+    return_structure["alertLevels"] = alert_levels
 
     if user_profile.plotCharts:
         return_structure["required_charts"] = generate_required_rf_charts_list(
@@ -639,21 +630,10 @@ def nm_summary_list_filter(request):
     """Obtain data for NM summary view."""
     pid = bool(request.user.groups.filter(name="pidgroup"))
     f = nm_filter(request.GET, pid=pid)
-    user_profile = get_or_create_user(request)
-    chart_options_form = nm_chart_form_processing(request, user_profile)
-    items_per_page_form = update_items_per_page_form(request, user_profile)
-    admin = create_admin_info(request)
-    study_list = create_paginated_study_list(request, f, user_profile)
-    enable_standard_names = standard_name_settings()
 
-    return_structure = {
-        "filter": f,
-        "study_list": study_list,
-        "admin": admin,
-        "chartOptionsForm": chart_options_form,
-        "itemsPerPageForm": items_per_page_form,
-        "showStandardNames": enable_standard_names,
-    }
+    user_profile, return_structure = generate_return_structure(request, f)
+    chart_options_form = nm_chart_form_processing(request, user_profile)
+    return_structure["chartOptionsForm"] = chart_options_form
 
     if user_profile.plotCharts:
         return_structure["required_charts"] = generate_required_nm_charts_list(
@@ -697,22 +677,10 @@ def ct_summary_list_filter(request):
     """Obtain data for CT summary view."""
     pid = bool(request.user.groups.filter(name="pidgroup"))
     f = ct_acq_filter(request.GET, pid=pid)
-    user_profile = get_or_create_user(request)
+
+    user_profile, return_structure = generate_return_structure(request, f)
     chart_options_form = ct_chart_form_processing(request, user_profile)
-    items_per_page_form = update_items_per_page_form(request, user_profile)
-    admin = create_admin_info(request)
-    study_list = create_paginated_study_list(request, f, user_profile)
-
-    enable_standard_names = standard_name_settings()
-
-    return_structure = {
-        "filter": f,
-        "study_list": study_list,
-        "admin": admin,
-        "chartOptionsForm": chart_options_form,
-        "itemsPerPageForm": items_per_page_form,
-        "showStandardNames": enable_standard_names,
-    }
+    return_structure["chartOptionsForm"] = chart_options_form
 
     if user_profile.plotCharts:
         return_structure["required_charts"] = generate_required_ct_charts_list(
@@ -767,7 +735,6 @@ def mg_summary_list_filter(request):
     """Mammography data for summary view."""
 
     enable_standard_names = standard_name_settings()
-
     filter_data = request.GET.copy()
     if "page" in filter_data:
         del filter_data["page"]
@@ -797,20 +764,9 @@ def mg_summary_list_filter(request):
                 queryset=queryset,
             )
 
-    user_profile = get_or_create_user(request)
+    user_profile, return_structure = generate_return_structure(request, f)
     chart_options_form = mg_chart_form_processing(request, user_profile)
-    items_per_page_form = update_items_per_page_form(request, user_profile)
-    admin = create_admin_info(request)
-    study_list = create_paginated_study_list(request, f, user_profile)
-
-    return_structure = {
-        "filter": f,
-        "study_list": study_list,
-        "admin": admin,
-        "chartOptionsForm": chart_options_form,
-        "itemsPerPageForm": items_per_page_form,
-        "showStandardNames": enable_standard_names,
-    }
+    return_structure["chartOptionsForm"] = chart_options_form
 
     if user_profile.plotCharts:
         return_structure["required_charts"] = generate_required_mg_charts_list(
