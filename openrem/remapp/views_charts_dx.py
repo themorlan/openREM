@@ -51,7 +51,9 @@ def generate_required_dx_charts_list(profile):
         StandardNameSettings.objects.get()
     except ObjectDoesNotExist:
         StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[0]
+    enable_standard_names = StandardNameSettings.objects.values_list(
+        "enable_standard_names", flat=True
+    )[0]
 
     required_charts = []
 
@@ -342,8 +344,8 @@ def generate_required_dx_charts_list(profile):
                 required_charts.append(
                     {
                         "title": "Chart of mean DAP per standard acquisition name over time ("
-                                 + time_period
-                                 + ")",
+                        + time_period
+                        + ")",
                         "var_name": "standardAcquisitionMeanDAPOverTime",
                     }
                 )
@@ -351,8 +353,8 @@ def generate_required_dx_charts_list(profile):
                 required_charts.append(
                     {
                         "title": "Chart of median DAP per standard acquisition name over time ("
-                                 + time_period
-                                 + ")",
+                        + time_period
+                        + ")",
                         "var_name": "standardAcquisitionMedianDAPOverTime",
                     }
                 )
@@ -362,8 +364,8 @@ def generate_required_dx_charts_list(profile):
                 required_charts.append(
                     {
                         "title": "Chart of mean kVp per standard acquisition name over time ("
-                                 + time_period
-                                 + ")",
+                        + time_period
+                        + ")",
                         "var_name": "standardAcquisitionMeankVpOverTime",
                     }
                 )
@@ -371,8 +373,8 @@ def generate_required_dx_charts_list(profile):
                 required_charts.append(
                     {
                         "title": "Chart of median kVp per standard acquisition name over time ("
-                                 + time_period
-                                 + ")",
+                        + time_period
+                        + ")",
                         "var_name": "standardAcquisitionMediankVpOverTime",
                     }
                 )
@@ -382,8 +384,8 @@ def generate_required_dx_charts_list(profile):
                 required_charts.append(
                     {
                         "title": "Chart of mean mAs per standard acquisition name over time ("
-                                 + time_period
-                                 + ")",
+                        + time_period
+                        + ")",
                         "var_name": "standardAcquisitionMeanmAsOverTime",
                     }
                 )
@@ -391,8 +393,8 @@ def generate_required_dx_charts_list(profile):
                 required_charts.append(
                     {
                         "title": "Chart of median mAs per standard acquisition name over time ("
-                                 + time_period
-                                 + ")",
+                        + time_period
+                        + ")",
                         "var_name": "standardAcquisitionMedianmAsOverTime",
                     }
                 )
@@ -601,7 +603,9 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
         StandardNameSettings.objects.get()
     except ObjectDoesNotExist:
         StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[0]
+    enable_standard_names = StandardNameSettings.objects.values_list(
+        "enable_standard_names", flat=True
+    )[0]
 
     # Set the Plotly chart theme
     plotly_set_default_theme(user_profile.plotThemeChoice)
@@ -662,7 +666,9 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
             user_profile.plotDXAcquisitionDAPvsMass,
         ]
         if any(charts_of_interest):
-            name_fields.append("projectionxrayradiationdose__irradeventxraydata__acquisition_protocol")
+            name_fields.append(
+                "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
+            )
 
         if enable_standard_names:
             charts_of_interest = [
@@ -676,7 +682,9 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                 user_profile.plotDXStandardAcquisitionDAPvsMass,
             ]
             if any(charts_of_interest):
-                name_fields.append("projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name")
+                name_fields.append(
+                    "projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name"
+                )
 
         value_fields = []
         value_multipliers = []
@@ -687,7 +695,9 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
         ]
         if enable_standard_names:
             charts_of_interest.append(user_profile.plotDXStandardAcquisitionMeanDAP)
-            charts_of_interest.append(user_profile.plotDXStandardAcquisitionMeanDAPOverTime)
+            charts_of_interest.append(
+                user_profile.plotDXStandardAcquisitionMeanDAPOverTime
+            )
             charts_of_interest.append(user_profile.plotDXStandardAcquisitionDAPvsMass)
         if any(charts_of_interest):
             value_fields.append(
@@ -701,7 +711,9 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
         ]
         if enable_standard_names:
             charts_of_interest.append(user_profile.plotDXStandardAcquisitionMeankVp)
-            charts_of_interest.append(user_profile.plotDXStandardAcquisitionMeankVpOverTime)
+            charts_of_interest.append(
+                user_profile.plotDXStandardAcquisitionMeankVpOverTime
+            )
         if any(charts_of_interest):
             value_fields.append(
                 "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__kvp__kvp"
@@ -714,7 +726,9 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
         ]
         if enable_standard_names:
             charts_of_interest.append(user_profile.plotDXStandardAcquisitionMeanmAs)
-            charts_of_interest.append(user_profile.plotDXStandardAcquisitionMeanmAsOverTime)
+            charts_of_interest.append(
+                user_profile.plotDXStandardAcquisitionMeanmAsOverTime
+            )
         if any(charts_of_interest):
             value_fields.append(
                 "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure__exposure"
@@ -736,9 +750,15 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
             user_profile.plotDXAcquisitionMeanmAsOverTime,
         ]
         if enable_standard_names:
-            charts_of_interest.append(user_profile.plotDXStandardAcquisitionMeanDAPOverTime)
-            charts_of_interest.append(user_profile.plotDXStandardAcquisitionMeankVpOverTime)
-            charts_of_interest.append(user_profile.plotDXStandardAcquisitionMeanmAsOverTime)
+            charts_of_interest.append(
+                user_profile.plotDXStandardAcquisitionMeanDAPOverTime
+            )
+            charts_of_interest.append(
+                user_profile.plotDXStandardAcquisitionMeankVpOverTime
+            )
+            charts_of_interest.append(
+                user_profile.plotDXStandardAcquisitionMeanmAsOverTime
+            )
         if any(charts_of_interest):
             date_fields.append("study_date")
 
@@ -769,8 +789,12 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
 
         if user_profile.plotDXAcquisitionMeanDAP:
 
-            name_field = "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
-            value_field = "projectionxrayradiationdose__irradeventxraydata__dose_area_product"
+            name_field = (
+                "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
+            )
+            value_field = (
+                "projectionxrayradiationdose__irradeventxraydata__dose_area_product"
+            )
             value_text = "DAP"
             units_text = "(cGy.cm<sup>2</sup>)"
             name_text = "Acquisition protocol"
@@ -779,17 +803,31 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
             modality_text = "DX"
             chart_message = ""
 
-            new_charts = generate_average_chart_group(average_choices, chart_message, df, modality_text,
-                                                      name_field, name_text, return_as_dict, return_structure,
-                                                      units_text, user_profile, value_field, value_text,
-                                                      variable_name_start, variable_value_name,
-                                                      user_profile.plotDXInitialSortingChoice)
+            new_charts = generate_average_chart_group(
+                average_choices,
+                chart_message,
+                df,
+                modality_text,
+                name_field,
+                name_text,
+                return_as_dict,
+                return_structure,
+                units_text,
+                user_profile,
+                value_field,
+                value_text,
+                variable_name_start,
+                variable_value_name,
+                user_profile.plotDXInitialSortingChoice,
+            )
 
             return_structure = {**return_structure, **new_charts}
 
         if user_profile.plotDXAcquisitionMeankVp:
 
-            name_field = "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
+            name_field = (
+                "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
+            )
             value_field = "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__kvp__kvp"
             value_text = "kVp"
             units_text = ""
@@ -799,17 +837,31 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
             modality_text = "DX"
             chart_message = ""
 
-            new_charts = generate_average_chart_group(average_choices, chart_message, df, modality_text,
-                                                      name_field, name_text, return_as_dict, return_structure,
-                                                      units_text, user_profile, value_field, value_text,
-                                                      variable_name_start, variable_value_name,
-                                                      user_profile.plotDXInitialSortingChoice)
+            new_charts = generate_average_chart_group(
+                average_choices,
+                chart_message,
+                df,
+                modality_text,
+                name_field,
+                name_text,
+                return_as_dict,
+                return_structure,
+                units_text,
+                user_profile,
+                value_field,
+                value_text,
+                variable_name_start,
+                variable_value_name,
+                user_profile.plotDXInitialSortingChoice,
+            )
 
             return_structure = {**return_structure, **new_charts}
 
         if user_profile.plotDXAcquisitionMeanmAs:
 
-            name_field = "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
+            name_field = (
+                "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
+            )
             value_field = "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure__exposure"
             value_text = "mAs"
             units_text = ""
@@ -819,11 +871,23 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
             modality_text = "DX"
             chart_message = ""
 
-            new_charts = generate_average_chart_group(average_choices, chart_message, df, modality_text,
-                                                      name_field, name_text, return_as_dict, return_structure,
-                                                      units_text, user_profile, value_field, value_text,
-                                                      variable_name_start, variable_value_name,
-                                                      user_profile.plotDXInitialSortingChoice)
+            new_charts = generate_average_chart_group(
+                average_choices,
+                chart_message,
+                df,
+                modality_text,
+                name_field,
+                name_text,
+                return_as_dict,
+                return_structure,
+                units_text,
+                user_profile,
+                value_field,
+                value_text,
+                variable_name_start,
+                variable_value_name,
+                user_profile.plotDXInitialSortingChoice,
+            )
 
             return_structure = {**return_structure, **new_charts}
 
@@ -1000,10 +1064,27 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
             if any(charts_of_interest):
 
                 # Exclude "Blank" and "blank" standard_acqusition_name data
-                df_without_blanks = df[(df["projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name"] != "blank") & (df["projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name"] != "Blank")].copy()
+                df_without_blanks = df[
+                    (
+                        df[
+                            "projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name"
+                        ]
+                        != "blank"
+                    )
+                    & (
+                        df[
+                            "projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name"
+                        ]
+                        != "Blank"
+                    )
+                ].copy()
                 # Remove any unused categories (this will include "Blank" or "blank")
-                df_without_blanks["projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name"] = df_without_blanks["projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name"].cat.remove_unused_categories()
-    
+                df_without_blanks[
+                    "projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name"
+                ] = df_without_blanks[
+                    "projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name"
+                ].cat.remove_unused_categories()
+
                 if user_profile.plotDXStandardAcquisitionMeanDAP:
                     name_field = "projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name"
                     value_field = "projectionxrayradiationdose__irradeventxraydata__dose_area_product"
@@ -1014,15 +1095,27 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     variable_value_name = "DAP"
                     modality_text = "DX"
                     chart_message = ""
-    
-                    new_charts = generate_average_chart_group(average_choices, chart_message, df_without_blanks,
-                                                              modality_text, name_field, name_text, return_as_dict,
-                                                              return_structure, units_text, user_profile, value_field,
-                                                              value_text, variable_name_start, variable_value_name,
-                                                              user_profile.plotDXInitialSortingChoice)
-    
+
+                    new_charts = generate_average_chart_group(
+                        average_choices,
+                        chart_message,
+                        df_without_blanks,
+                        modality_text,
+                        name_field,
+                        name_text,
+                        return_as_dict,
+                        return_structure,
+                        units_text,
+                        user_profile,
+                        value_field,
+                        value_text,
+                        variable_name_start,
+                        variable_value_name,
+                        user_profile.plotDXInitialSortingChoice,
+                    )
+
                     return_structure = {**return_structure, **new_charts}
-    
+
                 if user_profile.plotDXStandardAcquisitionMeankVp:
                     name_field = "projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name"
                     value_field = "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__kvp__kvp"
@@ -1033,15 +1126,27 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     variable_value_name = "kVp"
                     modality_text = "DX"
                     chart_message = ""
-    
-                    new_charts = generate_average_chart_group(average_choices, chart_message, df_without_blanks, modality_text,
-                                                              name_field, name_text, return_as_dict, return_structure,
-                                                              units_text, user_profile, value_field, value_text,
-                                                              variable_name_start, variable_value_name,
-                                                              user_profile.plotDXInitialSortingChoice)
-    
+
+                    new_charts = generate_average_chart_group(
+                        average_choices,
+                        chart_message,
+                        df_without_blanks,
+                        modality_text,
+                        name_field,
+                        name_text,
+                        return_as_dict,
+                        return_structure,
+                        units_text,
+                        user_profile,
+                        value_field,
+                        value_text,
+                        variable_name_start,
+                        variable_value_name,
+                        user_profile.plotDXInitialSortingChoice,
+                    )
+
                     return_structure = {**return_structure, **new_charts}
-    
+
                 if user_profile.plotDXStandardAcquisitionMeanmAs:
                     name_field = "projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name"
                     value_field = "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure__exposure"
@@ -1052,15 +1157,27 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     variable_value_name = "mAs"
                     modality_text = "DX"
                     chart_message = ""
-    
-                    new_charts = generate_average_chart_group(average_choices, chart_message, df_without_blanks,
-                                                              modality_text, name_field, name_text, return_as_dict,
-                                                              return_structure, units_text, user_profile, value_field,
-                                                              value_text, variable_name_start, variable_value_name,
-                                                              user_profile.plotDXInitialSortingChoice)
-    
+
+                    new_charts = generate_average_chart_group(
+                        average_choices,
+                        chart_message,
+                        df_without_blanks,
+                        modality_text,
+                        name_field,
+                        name_text,
+                        return_as_dict,
+                        return_structure,
+                        units_text,
+                        user_profile,
+                        value_field,
+                        value_text,
+                        variable_name_start,
+                        variable_value_name,
+                        user_profile.plotDXInitialSortingChoice,
+                    )
+
                     return_structure = {**return_structure, **new_charts}
-    
+
                 if user_profile.plotDXStandardAcquisitionFreq:
                     parameter_dict = {
                         "df_name_col": "projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name",
@@ -1087,13 +1204,13 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                         parameter_dict,
                         csv_name="standardAcquisitionFrequencyData.csv",
                     )
-    
+
                 if user_profile.plotDXStandardAcquisitionMeanDAPOverTime:
                     facet_title = "System"
-    
+
                     if user_profile.plotGroupingChoice == "series":
                         facet_title = "Standard acquisition name"
-    
+
                     parameter_dict = {
                         "df_name_col": "projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name",
                         "df_value_col": "projectionxrayradiationdose__irradeventxraydata__dose_area_product",
@@ -1118,18 +1235,22 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                         df_without_blanks,
                         parameter_dict,
                     )
-    
+
                     if user_profile.plotMean:
-                        return_structure["standardAcquisitionMeanDAPOverTime"] = result["mean"]
+                        return_structure["standardAcquisitionMeanDAPOverTime"] = result[
+                            "mean"
+                        ]
                     if user_profile.plotMedian:
-                        return_structure["standardAcquisitionMedianDAPOverTime"] = result["median"]
-    
+                        return_structure[
+                            "standardAcquisitionMedianDAPOverTime"
+                        ] = result["median"]
+
                 if user_profile.plotDXStandardAcquisitionMeankVpOverTime:
                     facet_title = "System"
-    
+
                     if user_profile.plotGroupingChoice == "series":
                         facet_title = "Standard acquisition name"
-    
+
                     parameter_dict = {
                         "df_name_col": "projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name",
                         "df_value_col": "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__kvp__kvp",
@@ -1154,18 +1275,22 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                         df_without_blanks,
                         parameter_dict,
                     )
-    
+
                     if user_profile.plotMean:
-                        return_structure["standardAcquisitionMeankVpOverTime"] = result["mean"]
+                        return_structure["standardAcquisitionMeankVpOverTime"] = result[
+                            "mean"
+                        ]
                     if user_profile.plotMedian:
-                        return_structure["standardAcquisitionMediankVpOverTime"] = result["median"]
-    
+                        return_structure[
+                            "standardAcquisitionMediankVpOverTime"
+                        ] = result["median"]
+
                 if user_profile.plotDXStandardAcquisitionMeanmAsOverTime:
                     facet_title = "System"
-    
+
                     if user_profile.plotGroupingChoice == "series":
                         facet_title = "Standard acquisition name"
-    
+
                     parameter_dict = {  # pylint: disable=line-too-long
                         "df_name_col": "projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name",
                         "df_value_col": "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure__exposure",
@@ -1190,12 +1315,16 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                         df_without_blanks,
                         parameter_dict,
                     )
-    
+
                     if user_profile.plotMean:
-                        return_structure["standardAcquisitionMeanmAsOverTime"] = result["mean"]
+                        return_structure["standardAcquisitionMeanmAsOverTime"] = result[
+                            "mean"
+                        ]
                     if user_profile.plotMedian:
-                        return_structure["standardAcquisitionMedianmAsOverTime"] = result["median"]
-    
+                        return_structure[
+                            "standardAcquisitionMedianmAsOverTime"
+                        ] = result["median"]
+
                 if user_profile.plotDXStandardAcquisitionDAPvsMass:
                     parameter_dict = {
                         "df_name_col": "projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name",
@@ -1218,7 +1347,6 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                         df_without_blanks,
                         parameter_dict,
                     )
-
 
     #######################################################################
     # Prepare study- and request-level Pandas DataFrame to use for charts
@@ -1285,7 +1413,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
 
         charts_of_interest = [
             user_profile.plotDXStudyDAPvsMass,
-            user_profile.plotDXRequestDAPvsMass
+            user_profile.plotDXRequestDAPvsMass,
         ]
         if enable_standard_names:
             charts_of_interest.append(user_profile.plotDXStandardStudyDAPvsMass)
@@ -1296,9 +1424,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
 
         date_fields = []
         time_fields = []
-        charts_of_interest = [
-            user_profile.plotDXStudyPerDayAndHour
-        ]
+        charts_of_interest = [user_profile.plotDXStudyPerDayAndHour]
         if enable_standard_names:
             charts_of_interest.append(user_profile.plotDXStandardStudyPerDayAndHour)
 
@@ -1349,11 +1475,23 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
             modality_text = "DX"
             chart_message = ""
 
-            new_charts = generate_average_chart_group(average_choices, chart_message, df, modality_text,
-                                                      name_field, name_text, return_as_dict, return_structure,
-                                                      units_text, user_profile, value_field, value_text,
-                                                      variable_name_start, variable_value_name,
-                                                      user_profile.plotDXInitialSortingChoice)
+            new_charts = generate_average_chart_group(
+                average_choices,
+                chart_message,
+                df,
+                modality_text,
+                name_field,
+                name_text,
+                return_as_dict,
+                return_structure,
+                units_text,
+                user_profile,
+                value_field,
+                value_text,
+                variable_name_start,
+                variable_value_name,
+                user_profile.plotDXInitialSortingChoice,
+            )
 
             return_structure = {**return_structure, **new_charts}
 
@@ -1396,11 +1534,23 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
             modality_text = "DX"
             chart_message = ""
 
-            new_charts = generate_average_chart_group(average_choices, chart_message, df, modality_text,
-                                                      name_field, name_text, return_as_dict, return_structure,
-                                                      units_text, user_profile, value_field, value_text,
-                                                      variable_name_start, variable_value_name,
-                                                      user_profile.plotDXInitialSortingChoice)
+            new_charts = generate_average_chart_group(
+                average_choices,
+                chart_message,
+                df,
+                modality_text,
+                name_field,
+                name_text,
+                return_as_dict,
+                return_structure,
+                units_text,
+                user_profile,
+                value_field,
+                value_text,
+                variable_name_start,
+                variable_value_name,
+                user_profile.plotDXInitialSortingChoice,
+            )
 
             return_structure = {**return_structure, **new_charts}
 
@@ -1510,17 +1660,16 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
 
                 # Create a standard name data frame - remove any blank standard names
                 standard_name_df = df[
-                    (df["standard_names__standard_name"] != "blank") &
-                    (df["standard_names__standard_name"] != "Blank")].copy()
+                    (df["standard_names__standard_name"] != "blank")
+                    & (df["standard_names__standard_name"] != "Blank")
+                ].copy()
                 # Remove any unused categories (this will include "Blank" or "blank")
-                standard_name_df[
-                    "standard_names__standard_name"
-                ] = standard_name_df[
+                standard_name_df["standard_names__standard_name"] = standard_name_df[
                     "standard_names__standard_name"
                 ].cat.remove_unused_categories()
 
                 if user_profile.plotDXStandardStudyMeanDAP:
-        
+
                     name_field = "standard_names__standard_name"
                     value_field = "total_dap"
                     value_text = "DAP"
@@ -1530,15 +1679,27 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     variable_value_name = "DAP"
                     modality_text = "DX"
                     chart_message = ""
-        
-                    new_charts = generate_average_chart_group(average_choices, chart_message, standard_name_df,
-                                                              modality_text, name_field, name_text, return_as_dict,
-                                                              return_structure, units_text, user_profile, value_field,
-                                                              value_text, variable_name_start, variable_value_name,
-                                                              user_profile.plotDXInitialSortingChoice)
-        
+
+                    new_charts = generate_average_chart_group(
+                        average_choices,
+                        chart_message,
+                        standard_name_df,
+                        modality_text,
+                        name_field,
+                        name_text,
+                        return_as_dict,
+                        return_structure,
+                        units_text,
+                        user_profile,
+                        value_field,
+                        value_text,
+                        variable_name_start,
+                        variable_value_name,
+                        user_profile.plotDXInitialSortingChoice,
+                    )
+
                     return_structure = {**return_structure, **new_charts}
-        
+
                 if user_profile.plotDXStandardStudyFreq:
                     parameter_dict = {
                         "df_name_col": "standard_names__standard_name",
@@ -1568,10 +1729,14 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
 
                 if user_profile.plotDXStandardStudyPerDayAndHour:
                     df_time_series_per_weekday = create_dataframe_weekdays(
-                        standard_name_df, "standard_names__standard_name", df_date_col="study_date"
+                        standard_name_df,
+                        "standard_names__standard_name",
+                        df_date_col="study_date",
                     )
-        
-                    return_structure["standardStudyWorkloadData"] = plotly_barchart_weekdays(
+
+                    return_structure[
+                        "standardStudyWorkloadData"
+                    ] = plotly_barchart_weekdays(
                         df_time_series_per_weekday,
                         "weekday",
                         "standard_names__standard_name",
@@ -1586,7 +1751,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                         ],
                         return_as_dict=return_as_dict,
                     )
-        
+
                 if user_profile.plotDXStandardStudyDAPvsMass:
                     parameter_dict = {
                         "df_name_col": "standard_names__standard_name",
@@ -1621,7 +1786,9 @@ def dx_chart_form_processing(request, user_profile):
         StandardNameSettings.objects.get()
     except ObjectDoesNotExist:
         StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[0]
+    enable_standard_names = StandardNameSettings.objects.values_list(
+        "enable_standard_names", flat=True
+    )[0]
 
     # Obtain the chart options from the request
     chart_options_form = None

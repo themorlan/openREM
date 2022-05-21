@@ -1278,7 +1278,9 @@ def chart_options_view(request):
         StandardNameSettings.objects.get()
     except ObjectDoesNotExist:
         StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[0]
+    enable_standard_names = StandardNameSettings.objects.values_list(
+        "enable_standard_names", flat=True
+    )[0]
 
     if request.method == "POST":
         general_form = GeneralChartOptionsDisplayForm(request.POST)
@@ -1450,7 +1452,9 @@ def set_rf_chart_options(rf_form, user_profile):
         StandardNameSettings.objects.get()
     except ObjectDoesNotExist:
         StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[0]
+    enable_standard_names = StandardNameSettings.objects.values_list(
+        "enable_standard_names", flat=True
+    )[0]
 
     user_profile.plotRFStudyPerDayAndHour = rf_form.cleaned_data[
         "plotRFStudyPerDayAndHour"
@@ -1469,10 +1473,18 @@ def set_rf_chart_options(rf_form, user_profile):
         "plotRFInitialSortingChoice"
     ]
     if enable_standard_names:
-        user_profile.plotRFStandardStudyFreq = rf_form.cleaned_data["plotRFStandardStudyFreq"]
-        user_profile.plotRFStandardStudyDAP = rf_form.cleaned_data["plotRFStandardStudyDAP"]
-        user_profile.plotRFStandardStudyDAPOverTime = rf_form.cleaned_data["plotRFStandardStudyDAPOverTime"]
-        user_profile.plotRFStandardStudyPerDayAndHour = rf_form.cleaned_data["plotRFStandardStudyPerDayAndHour"]
+        user_profile.plotRFStandardStudyFreq = rf_form.cleaned_data[
+            "plotRFStandardStudyFreq"
+        ]
+        user_profile.plotRFStandardStudyDAP = rf_form.cleaned_data[
+            "plotRFStandardStudyDAP"
+        ]
+        user_profile.plotRFStandardStudyDAPOverTime = rf_form.cleaned_data[
+            "plotRFStandardStudyDAPOverTime"
+        ]
+        user_profile.plotRFStandardStudyPerDayAndHour = rf_form.cleaned_data[
+            "plotRFStandardStudyPerDayAndHour"
+        ]
 
 
 def initialise_rf_form_data(user_profile):
@@ -1494,13 +1506,19 @@ def initialise_rf_form_data(user_profile):
         StandardNameSettings.objects.get()
     except ObjectDoesNotExist:
         StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[0]
+    enable_standard_names = StandardNameSettings.objects.values_list(
+        "enable_standard_names", flat=True
+    )[0]
 
     if enable_standard_names:
         rf_form_data["plotRFStandardStudyFreq"] = user_profile.plotRFStandardStudyFreq
         rf_form_data["plotRFStandardStudyDAP"] = user_profile.plotRFStandardStudyDAP
-        rf_form_data["plotRFStandardStudyDAPOverTime"] = user_profile.plotRFStandardStudyDAPOverTime
-        rf_form_data["plotRFStandardStudyPerDayAndHour"] = user_profile.plotRFStandardStudyPerDayAndHour
+        rf_form_data[
+            "plotRFStandardStudyDAPOverTime"
+        ] = user_profile.plotRFStandardStudyDAPOverTime
+        rf_form_data[
+            "plotRFStandardStudyPerDayAndHour"
+        ] = user_profile.plotRFStandardStudyPerDayAndHour
 
     return rf_form_data
 
@@ -1512,7 +1530,9 @@ def set_mg_chart_options(mg_form, user_profile):
         StandardNameSettings.objects.get()
     except ObjectDoesNotExist:
         StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[0]
+    enable_standard_names = StandardNameSettings.objects.values_list(
+        "enable_standard_names", flat=True
+    )[0]
 
     user_profile.plotMGacquisitionFreq = mg_form.cleaned_data["plotMGacquisitionFreq"]
     user_profile.plotMGaverageAGD = mg_form.cleaned_data["plotMGaverageAGD"]
@@ -1533,14 +1553,30 @@ def set_mg_chart_options(mg_form, user_profile):
         "plotMGInitialSortingChoice"
     ]
     if enable_standard_names:
-        user_profile.plotMGStandardAcquisitionFreq = mg_form.cleaned_data["plotMGStandardAcquisitionFreq"]
-        user_profile.plotMGStandardAverageAGD = mg_form.cleaned_data["plotMGStandardAverageAGD"]
-        user_profile.plotMGStandardAverageAGDvsThickness = mg_form.cleaned_data["plotMGStandardAverageAGDvsThickness"]
-        user_profile.plotMGStandardAcquisitionAGDOverTime = mg_form.cleaned_data["plotMGStandardAcquisitionAGDOverTime"]
-        user_profile.plotMGStandardAGDvsThickness = mg_form.cleaned_data["plotMGStandardAGDvsThickness"]
-        user_profile.plotMGStandardkVpvsThickness = mg_form.cleaned_data["plotMGStandardkVpvsThickness"]
-        user_profile.plotMGStandardmAsvsThickness = mg_form.cleaned_data["plotMGStandardmAsvsThickness"]
-        user_profile.plotMGStandardStudyPerDayAndHour = mg_form.cleaned_data["plotMGStandardStudyPerDayAndHour"]
+        user_profile.plotMGStandardAcquisitionFreq = mg_form.cleaned_data[
+            "plotMGStandardAcquisitionFreq"
+        ]
+        user_profile.plotMGStandardAverageAGD = mg_form.cleaned_data[
+            "plotMGStandardAverageAGD"
+        ]
+        user_profile.plotMGStandardAverageAGDvsThickness = mg_form.cleaned_data[
+            "plotMGStandardAverageAGDvsThickness"
+        ]
+        user_profile.plotMGStandardAcquisitionAGDOverTime = mg_form.cleaned_data[
+            "plotMGStandardAcquisitionAGDOverTime"
+        ]
+        user_profile.plotMGStandardAGDvsThickness = mg_form.cleaned_data[
+            "plotMGStandardAGDvsThickness"
+        ]
+        user_profile.plotMGStandardkVpvsThickness = mg_form.cleaned_data[
+            "plotMGStandardkVpvsThickness"
+        ]
+        user_profile.plotMGStandardmAsvsThickness = mg_form.cleaned_data[
+            "plotMGStandardmAsvsThickness"
+        ]
+        user_profile.plotMGStandardStudyPerDayAndHour = mg_form.cleaned_data[
+            "plotMGStandardStudyPerDayAndHour"
+        ]
 
 
 def initialise_mg_form_data(user_profile):
@@ -1562,17 +1598,33 @@ def initialise_mg_form_data(user_profile):
         StandardNameSettings.objects.get()
     except ObjectDoesNotExist:
         StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[0]
+    enable_standard_names = StandardNameSettings.objects.values_list(
+        "enable_standard_names", flat=True
+    )[0]
 
     if enable_standard_names:
-        mg_form_data["plotMGStandardAcquisitionFreq"] = user_profile.plotMGStandardAcquisitionFreq
+        mg_form_data[
+            "plotMGStandardAcquisitionFreq"
+        ] = user_profile.plotMGStandardAcquisitionFreq
         mg_form_data["plotMGStandardAverageAGD"] = user_profile.plotMGStandardAverageAGD
-        mg_form_data["plotMGStandardAverageAGDvsThickness"] = user_profile.plotMGStandardAverageAGDvsThickness
-        mg_form_data["plotMGStandardAcquisitionAGDOverTime"] = user_profile.plotMGStandardAcquisitionAGDOverTime
-        mg_form_data["plotMGStandardAGDvsThickness"] = user_profile.plotMGStandardAGDvsThickness
-        mg_form_data["plotMGStandardkVpvsThickness"] = user_profile.plotMGStandardkVpvsThickness
-        mg_form_data["plotMGStandardmAsvsThickness"] = user_profile.plotMGStandardmAsvsThickness
-        mg_form_data["plotMGStandardStudyPerDayAndHour"] = user_profile.plotMGStandardStudyPerDayAndHour
+        mg_form_data[
+            "plotMGStandardAverageAGDvsThickness"
+        ] = user_profile.plotMGStandardAverageAGDvsThickness
+        mg_form_data[
+            "plotMGStandardAcquisitionAGDOverTime"
+        ] = user_profile.plotMGStandardAcquisitionAGDOverTime
+        mg_form_data[
+            "plotMGStandardAGDvsThickness"
+        ] = user_profile.plotMGStandardAGDvsThickness
+        mg_form_data[
+            "plotMGStandardkVpvsThickness"
+        ] = user_profile.plotMGStandardkVpvsThickness
+        mg_form_data[
+            "plotMGStandardmAsvsThickness"
+        ] = user_profile.plotMGStandardmAsvsThickness
+        mg_form_data[
+            "plotMGStandardStudyPerDayAndHour"
+        ] = user_profile.plotMGStandardStudyPerDayAndHour
 
     return mg_form_data
 
@@ -1584,7 +1636,9 @@ def set_dx_chart_options(dx_form, user_profile):
         StandardNameSettings.objects.get()
     except ObjectDoesNotExist:
         StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[0]
+    enable_standard_names = StandardNameSettings.objects.values_list(
+        "enable_standard_names", flat=True
+    )[0]
 
     user_profile.plotDXAcquisitionMeanDAP = dx_form.cleaned_data[
         "plotDXAcquisitionMeanDAP"
@@ -1624,18 +1678,42 @@ def set_dx_chart_options(dx_form, user_profile):
         "plotDXInitialSortingChoice"
     ]
     if enable_standard_names:
-        user_profile.plotDXStandardAcquisitionFreq = dx_form.cleaned_data["plotDXStandardAcquisitionFreq"]
-        user_profile.plotDXStandardAcquisitionMeanDAP = dx_form.cleaned_data["plotDXStandardAcquisitionMeanDAP"]
-        user_profile.plotDXStandardAcquisitionMeanmAs = dx_form.cleaned_data["plotDXStandardAcquisitionMeanmAs"]
-        user_profile.plotDXStandardAcquisitionMeankVp = dx_form.cleaned_data["plotDXStandardAcquisitionMeankVp"]
-        user_profile.plotDXStandardAcquisitionMeanDAPOverTime = dx_form.cleaned_data["plotDXStandardAcquisitionMeanDAPOverTime"]
-        user_profile.plotDXStandardAcquisitionMeanmAsOverTime = dx_form.cleaned_data["plotDXStandardAcquisitionMeanmAsOverTime"]
-        user_profile.plotDXStandardAcquisitionMeankVpOverTime = dx_form.cleaned_data["plotDXStandardAcquisitionMeankVpOverTime"]
-        user_profile.plotDXStandardAcquisitionDAPvsMass = dx_form.cleaned_data["plotDXStandardAcquisitionDAPvsMass"]
-        user_profile.plotDXStandardStudyMeanDAP = dx_form.cleaned_data["plotDXStandardStudyMeanDAP"]
-        user_profile.plotDXStandardStudyFreq = dx_form.cleaned_data["plotDXStandardStudyFreq"]
-        user_profile.plotDXStandardStudyDAPvsMass = dx_form.cleaned_data["plotDXStandardStudyDAPvsMass"]
-        user_profile.plotDXStandardStudyPerDayAndHour = dx_form.cleaned_data["plotDXStandardStudyPerDayAndHour"]
+        user_profile.plotDXStandardAcquisitionFreq = dx_form.cleaned_data[
+            "plotDXStandardAcquisitionFreq"
+        ]
+        user_profile.plotDXStandardAcquisitionMeanDAP = dx_form.cleaned_data[
+            "plotDXStandardAcquisitionMeanDAP"
+        ]
+        user_profile.plotDXStandardAcquisitionMeanmAs = dx_form.cleaned_data[
+            "plotDXStandardAcquisitionMeanmAs"
+        ]
+        user_profile.plotDXStandardAcquisitionMeankVp = dx_form.cleaned_data[
+            "plotDXStandardAcquisitionMeankVp"
+        ]
+        user_profile.plotDXStandardAcquisitionMeanDAPOverTime = dx_form.cleaned_data[
+            "plotDXStandardAcquisitionMeanDAPOverTime"
+        ]
+        user_profile.plotDXStandardAcquisitionMeanmAsOverTime = dx_form.cleaned_data[
+            "plotDXStandardAcquisitionMeanmAsOverTime"
+        ]
+        user_profile.plotDXStandardAcquisitionMeankVpOverTime = dx_form.cleaned_data[
+            "plotDXStandardAcquisitionMeankVpOverTime"
+        ]
+        user_profile.plotDXStandardAcquisitionDAPvsMass = dx_form.cleaned_data[
+            "plotDXStandardAcquisitionDAPvsMass"
+        ]
+        user_profile.plotDXStandardStudyMeanDAP = dx_form.cleaned_data[
+            "plotDXStandardStudyMeanDAP"
+        ]
+        user_profile.plotDXStandardStudyFreq = dx_form.cleaned_data[
+            "plotDXStandardStudyFreq"
+        ]
+        user_profile.plotDXStandardStudyDAPvsMass = dx_form.cleaned_data[
+            "plotDXStandardStudyDAPvsMass"
+        ]
+        user_profile.plotDXStandardStudyPerDayAndHour = dx_form.cleaned_data[
+            "plotDXStandardStudyPerDayAndHour"
+        ]
 
 
 def initialise_dx_form_data(user_profile):
@@ -1664,21 +1742,45 @@ def initialise_dx_form_data(user_profile):
         StandardNameSettings.objects.get()
     except ObjectDoesNotExist:
         StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[0]
+    enable_standard_names = StandardNameSettings.objects.values_list(
+        "enable_standard_names", flat=True
+    )[0]
 
     if enable_standard_names:
-        dx_form_data["plotDXStandardAcquisitionFreq"] = user_profile.plotDXStandardAcquisitionFreq
-        dx_form_data["plotDXStandardAcquisitionMeanDAP"] = user_profile.plotDXStandardAcquisitionMeanDAP
-        dx_form_data["plotDXStandardAcquisitionMeanmAs"] = user_profile.plotDXStandardAcquisitionMeanmAs
-        dx_form_data["plotDXStandardAcquisitionMeankVp"] = user_profile.plotDXStandardAcquisitionMeankVp
-        dx_form_data["plotDXStandardAcquisitionMeanDAPOverTime"] = user_profile.plotDXStandardAcquisitionMeanDAPOverTime
-        dx_form_data["plotDXStandardAcquisitionMeanmAsOverTime"] = user_profile.plotDXStandardAcquisitionMeanmAsOverTime
-        dx_form_data["plotDXStandardAcquisitionMeankVpOverTime"] = user_profile.plotDXStandardAcquisitionMeankVpOverTime
-        dx_form_data["plotDXStandardAcquisitionDAPvsMass"] = user_profile.plotDXStandardAcquisitionDAPvsMass
-        dx_form_data["plotDXStandardStudyMeanDAP"] = user_profile.plotDXStandardStudyMeanDAP
+        dx_form_data[
+            "plotDXStandardAcquisitionFreq"
+        ] = user_profile.plotDXStandardAcquisitionFreq
+        dx_form_data[
+            "plotDXStandardAcquisitionMeanDAP"
+        ] = user_profile.plotDXStandardAcquisitionMeanDAP
+        dx_form_data[
+            "plotDXStandardAcquisitionMeanmAs"
+        ] = user_profile.plotDXStandardAcquisitionMeanmAs
+        dx_form_data[
+            "plotDXStandardAcquisitionMeankVp"
+        ] = user_profile.plotDXStandardAcquisitionMeankVp
+        dx_form_data[
+            "plotDXStandardAcquisitionMeanDAPOverTime"
+        ] = user_profile.plotDXStandardAcquisitionMeanDAPOverTime
+        dx_form_data[
+            "plotDXStandardAcquisitionMeanmAsOverTime"
+        ] = user_profile.plotDXStandardAcquisitionMeanmAsOverTime
+        dx_form_data[
+            "plotDXStandardAcquisitionMeankVpOverTime"
+        ] = user_profile.plotDXStandardAcquisitionMeankVpOverTime
+        dx_form_data[
+            "plotDXStandardAcquisitionDAPvsMass"
+        ] = user_profile.plotDXStandardAcquisitionDAPvsMass
+        dx_form_data[
+            "plotDXStandardStudyMeanDAP"
+        ] = user_profile.plotDXStandardStudyMeanDAP
         dx_form_data["plotDXStandardStudyFreq"] = user_profile.plotDXStandardStudyFreq
-        dx_form_data["plotDXStandardStudyDAPvsMass"] = user_profile.plotDXStandardStudyDAPvsMass
-        dx_form_data["plotDXStandardStudyPerDayAndHour"] = user_profile.plotDXStandardStudyPerDayAndHour
+        dx_form_data[
+            "plotDXStandardStudyDAPvsMass"
+        ] = user_profile.plotDXStandardStudyDAPvsMass
+        dx_form_data[
+            "plotDXStandardStudyPerDayAndHour"
+        ] = user_profile.plotDXStandardStudyPerDayAndHour
 
     return dx_form_data
 
@@ -1738,7 +1840,9 @@ def set_ct_chart_options(ct_form, user_profile):
         StandardNameSettings.objects.get()
     except ObjectDoesNotExist:
         StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[0]
+    enable_standard_names = StandardNameSettings.objects.values_list(
+        "enable_standard_names", flat=True
+    )[0]
 
     user_profile.plotCTAcquisitionMeanDLP = ct_form.cleaned_data[
         "plotCTAcquisitionMeanDLP"
@@ -1812,18 +1916,42 @@ def set_ct_chart_options(ct_form, user_profile):
         "plotCTStudyMeanDLPOverTime"
     ]
     if enable_standard_names:
-        user_profile.plotCTStandardAcquisitionFreq = ct_form.cleaned_data["plotCTStandardAcquisitionFreq"]
-        user_profile.plotCTStandardAcquisitionMeanDLP = ct_form.cleaned_data["plotCTStandardAcquisitionMeanDLP"]
-        user_profile.plotCTStandardAcquisitionMeanCTDI = ct_form.cleaned_data["plotCTStandardAcquisitionMeanCTDI"]
-        user_profile.plotCTStandardAcquisitionDLPOverTime = ct_form.cleaned_data["plotCTStandardAcquisitionDLPOverTime"]
-        user_profile.plotCTStandardAcquisitionCTDIOverTime = ct_form.cleaned_data["plotCTStandardAcquisitionCTDIOverTime"]
-        user_profile.plotCTStandardAcquisitionDLPvsMass = ct_form.cleaned_data["plotCTStandardAcquisitionDLPvsMass"]
-        user_profile.plotCTStandardAcquisitionCTDIvsMass = ct_form.cleaned_data["plotCTStandardAcquisitionCTDIvsMass"]
-        user_profile.plotCTStandardStudyMeanDLP = ct_form.cleaned_data["plotCTStandardStudyMeanDLP"]
-        user_profile.plotCTStandardStudyNumEvents = ct_form.cleaned_data["plotCTStandardStudyNumEvents"]
-        user_profile.plotCTStandardStudyFreq = ct_form.cleaned_data["plotCTStandardStudyFreq"]
-        user_profile.plotCTStandardStudyPerDayAndHour = ct_form.cleaned_data["plotCTStandardStudyPerDayAndHour"]
-        user_profile.plotCTStandardStudyMeanDLPOverTime = ct_form.cleaned_data["plotCTStandardStudyMeanDLPOverTime"]
+        user_profile.plotCTStandardAcquisitionFreq = ct_form.cleaned_data[
+            "plotCTStandardAcquisitionFreq"
+        ]
+        user_profile.plotCTStandardAcquisitionMeanDLP = ct_form.cleaned_data[
+            "plotCTStandardAcquisitionMeanDLP"
+        ]
+        user_profile.plotCTStandardAcquisitionMeanCTDI = ct_form.cleaned_data[
+            "plotCTStandardAcquisitionMeanCTDI"
+        ]
+        user_profile.plotCTStandardAcquisitionDLPOverTime = ct_form.cleaned_data[
+            "plotCTStandardAcquisitionDLPOverTime"
+        ]
+        user_profile.plotCTStandardAcquisitionCTDIOverTime = ct_form.cleaned_data[
+            "plotCTStandardAcquisitionCTDIOverTime"
+        ]
+        user_profile.plotCTStandardAcquisitionDLPvsMass = ct_form.cleaned_data[
+            "plotCTStandardAcquisitionDLPvsMass"
+        ]
+        user_profile.plotCTStandardAcquisitionCTDIvsMass = ct_form.cleaned_data[
+            "plotCTStandardAcquisitionCTDIvsMass"
+        ]
+        user_profile.plotCTStandardStudyMeanDLP = ct_form.cleaned_data[
+            "plotCTStandardStudyMeanDLP"
+        ]
+        user_profile.plotCTStandardStudyNumEvents = ct_form.cleaned_data[
+            "plotCTStandardStudyNumEvents"
+        ]
+        user_profile.plotCTStandardStudyFreq = ct_form.cleaned_data[
+            "plotCTStandardStudyFreq"
+        ]
+        user_profile.plotCTStandardStudyPerDayAndHour = ct_form.cleaned_data[
+            "plotCTStandardStudyPerDayAndHour"
+        ]
+        user_profile.plotCTStandardStudyMeanDLPOverTime = ct_form.cleaned_data[
+            "plotCTStandardStudyMeanDLPOverTime"
+        ]
     user_profile.plotCTRequestMeanDLP = ct_form.cleaned_data["plotCTRequestMeanDLP"]
     user_profile.plotCTRequestFreq = ct_form.cleaned_data["plotCTRequestFreq"]
     user_profile.plotCTRequestNumEvents = ct_form.cleaned_data["plotCTRequestNumEvents"]
@@ -1866,22 +1994,46 @@ def initialise_ct_form_data(ct_acquisition_types, user_profile):
         StandardNameSettings.objects.get()
     except ObjectDoesNotExist:
         StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[0]
+    enable_standard_names = StandardNameSettings.objects.values_list(
+        "enable_standard_names", flat=True
+    )[0]
 
     if enable_standard_names:
-        ct_form_data["plotCTStandardAcquisitionFreq"] = user_profile.plotCTStandardAcquisitionFreq
-        ct_form_data["plotCTStandardAcquisitionMeanDLP"] = user_profile.plotCTStandardAcquisitionMeanDLP
-        ct_form_data["plotCTStandardAcquisitionMeanCTDI"] = user_profile.plotCTStandardAcquisitionMeanCTDI
-        ct_form_data["plotCTStandardAcquisitionDLPOverTime"] = user_profile.plotCTStandardAcquisitionDLPOverTime
-        ct_form_data["plotCTStandardAcquisitionCTDIOverTime"] = user_profile.plotCTStandardAcquisitionCTDIOverTime
-        ct_form_data["plotCTStandardAcquisitionDLPvsMass"] = user_profile.plotCTStandardAcquisitionDLPvsMass
-        ct_form_data["plotCTStandardAcquisitionCTDIvsMass"] = user_profile.plotCTStandardAcquisitionCTDIvsMass
+        ct_form_data[
+            "plotCTStandardAcquisitionFreq"
+        ] = user_profile.plotCTStandardAcquisitionFreq
+        ct_form_data[
+            "plotCTStandardAcquisitionMeanDLP"
+        ] = user_profile.plotCTStandardAcquisitionMeanDLP
+        ct_form_data[
+            "plotCTStandardAcquisitionMeanCTDI"
+        ] = user_profile.plotCTStandardAcquisitionMeanCTDI
+        ct_form_data[
+            "plotCTStandardAcquisitionDLPOverTime"
+        ] = user_profile.plotCTStandardAcquisitionDLPOverTime
+        ct_form_data[
+            "plotCTStandardAcquisitionCTDIOverTime"
+        ] = user_profile.plotCTStandardAcquisitionCTDIOverTime
+        ct_form_data[
+            "plotCTStandardAcquisitionDLPvsMass"
+        ] = user_profile.plotCTStandardAcquisitionDLPvsMass
+        ct_form_data[
+            "plotCTStandardAcquisitionCTDIvsMass"
+        ] = user_profile.plotCTStandardAcquisitionCTDIvsMass
 
-        ct_form_data["plotCTStandardStudyMeanDLP"] = user_profile.plotCTStandardStudyMeanDLP
-        ct_form_data["plotCTStandardStudyNumEvents"] = user_profile.plotCTStandardStudyNumEvents
+        ct_form_data[
+            "plotCTStandardStudyMeanDLP"
+        ] = user_profile.plotCTStandardStudyMeanDLP
+        ct_form_data[
+            "plotCTStandardStudyNumEvents"
+        ] = user_profile.plotCTStandardStudyNumEvents
         ct_form_data["plotCTStandardStudyFreq"] = user_profile.plotCTStandardStudyFreq
-        ct_form_data["plotCTStandardStudyPerDayAndHour"] = user_profile.plotCTStandardStudyPerDayAndHour
-        ct_form_data["plotCTStandardStudyMeanDLPOverTime"] = user_profile.plotCTStandardStudyMeanDLPOverTime
+        ct_form_data[
+            "plotCTStandardStudyPerDayAndHour"
+        ] = user_profile.plotCTStandardStudyPerDayAndHour
+        ct_form_data[
+            "plotCTStandardStudyMeanDLPOverTime"
+        ] = user_profile.plotCTStandardStudyMeanDLPOverTime
 
     return ct_form_data
 
@@ -2788,7 +2940,7 @@ class StandardNameAddCore(CreateView):
                 new_entry = StandardNames(
                     standard_name=form.cleaned_data["standard_name"],
                     modality=form.cleaned_data["modality"],
-                    study_description=item
+                    study_description=item,
                 )
                 new_entry.save()
                 new_ids_study.append(new_entry.pk)
@@ -2798,7 +2950,7 @@ class StandardNameAddCore(CreateView):
                 new_entry = StandardNames(
                     standard_name=form.cleaned_data["standard_name"],
                     modality=form.cleaned_data["modality"],
-                    requested_procedure_code_meaning=item
+                    requested_procedure_code_meaning=item,
                 )
                 new_entry.save()
                 new_ids_request.append(new_entry.pk)
@@ -2808,7 +2960,7 @@ class StandardNameAddCore(CreateView):
                 new_entry = StandardNames(
                     standard_name=form.cleaned_data["standard_name"],
                     modality=form.cleaned_data["modality"],
-                    procedure_code_meaning=item
+                    procedure_code_meaning=item,
                 )
                 new_entry.save()
                 new_ids_procedure.append(new_entry.pk)
@@ -2818,7 +2970,7 @@ class StandardNameAddCore(CreateView):
                 new_entry = StandardNames(
                     standard_name=form.cleaned_data["standard_name"],
                     modality=form.cleaned_data["modality"],
-                    acquisition_protocol=item
+                    acquisition_protocol=item,
                 )
                 new_entry.save()
                 new_ids_acquisition.append(new_entry.pk)
@@ -2839,7 +2991,9 @@ class StandardNameAddCore(CreateView):
                 )
 
             # Add the standard names to the studies
-            self.add_multiple_standard_studies(studies, new_ids_study, new_ids_request, new_ids_procedure)
+            self.add_multiple_standard_studies(
+                studies, new_ids_study, new_ids_request, new_ids_procedure
+            )
 
             # Obtain a list of the required acquisitions
             acquisitions = None
@@ -2853,7 +3007,15 @@ class StandardNameAddCore(CreateView):
                 elif form.cleaned_data["modality"] == "RF":
                     q = ["RF"]
 
-                q_criteria = reduce(operator.or_, (Q(projection_xray_radiation_dose__general_study_module_attributes__modality_type__icontains=item) for item in q))
+                q_criteria = reduce(
+                    operator.or_,
+                    (
+                        Q(
+                            projection_xray_radiation_dose__general_study_module_attributes__modality_type__icontains=item
+                        )
+                        for item in q
+                    ),
+                )
                 acquisitions = IrradEventXRayData.objects.filter(q_criteria)
 
             # Add the standard names to the acquisitions
@@ -2864,42 +3026,40 @@ class StandardNameAddCore(CreateView):
             messages.info(self.request, "No changes made")
             return redirect(self.success_url)
 
-    def add_multiple_standard_studies(self, studies,
-                                      std_name_study_ids,
-                                      std_name_request_ids,
-                                      std_name_procedure_ids
-                                      ):
+    def add_multiple_standard_studies(
+        self, studies, std_name_study_ids, std_name_request_ids, std_name_procedure_ids
+    ):
 
         for standard_name in StandardNames.objects.filter(pk__in=std_name_study_ids):
             standard_name.generalstudymoduleattr_set.add(
                 *studies.filter(
                     study_description=standard_name.study_description
-                ).values_list(
-                    "pk", flat=True
-                )
+                ).values_list("pk", flat=True)
             )
 
         for standard_name in StandardNames.objects.filter(pk__in=std_name_request_ids):
             standard_name.generalstudymoduleattr_set.add(
                 *studies.filter(
                     requested_procedure_code_meaning=standard_name.requested_procedure_code_meaning
-                ).values_list(
-                    "pk", flat=True
-                )
+                ).values_list("pk", flat=True)
             )
 
-        for standard_name in StandardNames.objects.filter(pk__in=std_name_procedure_ids):
+        for standard_name in StandardNames.objects.filter(
+            pk__in=std_name_procedure_ids
+        ):
             standard_name.generalstudymoduleattr_set.add(
                 *studies.filter(
                     procedure_code_meaning=standard_name.procedure_code_meaning
-                ).values_list(
-                    "pk", flat=True
-                )
+                ).values_list("pk", flat=True)
             )
 
-    def add_multiple_standard_acquisitions(self, acquisitions, std_name_acquisition_ids):
+    def add_multiple_standard_acquisitions(
+        self, acquisitions, std_name_acquisition_ids
+    ):
 
-        for standard_name in StandardNames.objects.filter(pk__in=std_name_acquisition_ids):
+        for standard_name in StandardNames.objects.filter(
+            pk__in=std_name_acquisition_ids
+        ):
             if type(self).__name__ == "StandardNameAddCT":
                 standard_name.ctirradiationeventdata_set.add(
                     *acquisitions.filter(
@@ -3046,6 +3206,7 @@ def standard_names_populate(request):
             {"name_set": name_set, "admin": admin, "modality": modality},
         )
 
+
 class StandardNameDelete(DeleteView):  # pylint: disable=unused-variable
     """DeleteView to delete a standard name from the database"""
 
@@ -3079,13 +3240,21 @@ class StandardNameDelete(DeleteView):  # pylint: disable=unused-variable
             )
 
         # Remove this standard_name reference to these studies as the standard name may have changed
-        self.object.generalstudymoduleattr_set.remove(*studies.filter(standard_names__standard_name=self.object.standard_name).values_list("pk", flat=True))
+        self.object.generalstudymoduleattr_set.remove(
+            *studies.filter(
+                standard_names__standard_name=self.object.standard_name
+            ).values_list("pk", flat=True)
+        )
 
         # Remove the standard_names entries from acquisitions
         acquisitions = None
         if self.object.modality == "CT":
             acquisitions = CtIrradiationEventData.objects
-            self.object.ctirradiationeventdata_set.remove(*acquisitions.filter(standard_protocols__standard_name=self.object.standard_name).values_list("pk", flat=True))
+            self.object.ctirradiationeventdata_set.remove(
+                *acquisitions.filter(
+                    standard_protocols__standard_name=self.object.standard_name
+                ).values_list("pk", flat=True)
+            )
         else:
             # Filter the IrradEventXRayData.objects to just contain the required modality
             q = ["DX", "CR", "PX"]
@@ -3094,14 +3263,28 @@ class StandardNameDelete(DeleteView):  # pylint: disable=unused-variable
             elif self.object.modality == "RF":
                 q = ["RF"]
 
-            q_criteria = reduce(operator.or_, (Q(projection_xray_radiation_dose__general_study_module_attributes__modality_type__icontains=item) for item in q))
+            q_criteria = reduce(
+                operator.or_,
+                (
+                    Q(
+                        projection_xray_radiation_dose__general_study_module_attributes__modality_type__icontains=item
+                    )
+                    for item in q
+                ),
+            )
             acquisitions = IrradEventXRayData.objects.filter(q_criteria)
 
             # Remove the standard names from the acquisitions
-            self.object.irradeventxraydata_set.remove(*acquisitions.filter(standard_protocols__standard_name=self.object.standard_name).values_list("pk", flat=True))
+            self.object.irradeventxraydata_set.remove(
+                *acquisitions.filter(
+                    standard_protocols__standard_name=self.object.standard_name
+                ).values_list("pk", flat=True)
+            )
 
         # Remove entries with standard_name = self.object.standard_name from the StandardNames table
-        StandardNames.objects.filter(modality=self.object.modality).filter(standard_name=self.object.standard_name).delete()
+        StandardNames.objects.filter(modality=self.object.modality).filter(
+            standard_name=self.object.standard_name
+        ).delete()
 
         return HttpResponseRedirect(self.get_success_url())
 
@@ -3133,15 +3316,25 @@ class StandardNameUpdateCore(UpdateView):
             # Remove references to the StandardName entries from generalstudymoduleattr for any study_description,
             # requested_procedure_code_meaning or procedure_code_meaning values which have been removed from this
             # standard name. Then remove the corresponding StandardName entries.
-            field_names = ["study_description", "requested_procedure_code_meaning", "procedure_code_meaning"]
+            field_names = [
+                "study_description",
+                "requested_procedure_code_meaning",
+                "procedure_code_meaning",
+            ]
             for field in field_names:
                 if field in form.changed_data:
 
                     # Obtain a list of field name values that have been remove from this standard name
-                    names_to_remove = np.setdiff1d(form.initial[field], form.cleaned_data[field])
+                    names_to_remove = np.setdiff1d(
+                        form.initial[field], form.cleaned_data[field]
+                    )
 
                     # Remove reference to these standard names from entries from generalstudymoduleattr
-                    self.object.generalstudymoduleattr_set.remove(*studies.filter(**{field + "__in": names_to_remove}).filter(standard_names__standard_name=self.object.standard_name).values_list("pk", flat=True))
+                    self.object.generalstudymoduleattr_set.remove(
+                        *studies.filter(**{field + "__in": names_to_remove})
+                        .filter(standard_names__standard_name=self.object.standard_name)
+                        .values_list("pk", flat=True)
+                    )
 
                     # Remove the corresponding StandardName entries
                     std_names.filter(**{field + "__in": names_to_remove}).delete()
@@ -3153,12 +3346,20 @@ class StandardNameUpdateCore(UpdateView):
             if field in form.changed_data:
 
                 # Obtain a list of field name values that have been remove from this standard name
-                names_to_remove = np.setdiff1d(form.initial[field], form.cleaned_data[field])
+                names_to_remove = np.setdiff1d(
+                    form.initial[field], form.cleaned_data[field]
+                )
 
                 if self.object.modality == "CT":
                     # Remove reference to these standard names from entries from CtIrradiationEventData
                     acquisitions = CtIrradiationEventData.objects
-                    self.object.ctirradiationeventdata_set.remove(*acquisitions.filter(**{field + "__in": names_to_remove}).filter(standard_protocols__standard_name=self.object.standard_name).values_list("pk", flat=True))
+                    self.object.ctirradiationeventdata_set.remove(
+                        *acquisitions.filter(**{field + "__in": names_to_remove})
+                        .filter(
+                            standard_protocols__standard_name=self.object.standard_name
+                        )
+                        .values_list("pk", flat=True)
+                    )
                 else:
                     # Filter the IrradEventXRayData.objects to just contain the required modality
                     q = ["DX", "CR", "PX"]
@@ -3167,75 +3368,103 @@ class StandardNameUpdateCore(UpdateView):
                     elif self.object.modality == "RF":
                         q = ["RF"]
 
-                    q_criteria = reduce(operator.or_, (Q(projection_xray_radiation_dose__general_study_module_attributes__modality_type__icontains=item) for item in q))
+                    q_criteria = reduce(
+                        operator.or_,
+                        (
+                            Q(
+                                projection_xray_radiation_dose__general_study_module_attributes__modality_type__icontains=item
+                            )
+                            for item in q
+                        ),
+                    )
                     acquisitions = IrradEventXRayData.objects.filter(q_criteria)
 
                     # Remove reference to these standard names from entries from IrradEventXRayData
-                    self.object.irradeventxraydata_set.remove(*acquisitions.filter(**{field + "__in": names_to_remove}).filter(standard_protocols__standard_name=self.object.standard_name).values_list("pk", flat=True))
+                    self.object.irradeventxraydata_set.remove(
+                        *acquisitions.filter(**{field + "__in": names_to_remove})
+                        .filter(
+                            standard_protocols__standard_name=self.object.standard_name
+                        )
+                        .values_list("pk", flat=True)
+                    )
 
                 # Remove the corresponding StandardName entries
                 std_names.filter(**{field + "__in": names_to_remove}).delete()
 
-
             # Add new entries to the StandardNames table
             new_ids_study = []
             if "study_description" in form.changed_data:
-                names_to_add = np.setdiff1d(form.cleaned_data["study_description"], form.initial["study_description"])
+                names_to_add = np.setdiff1d(
+                    form.cleaned_data["study_description"],
+                    form.initial["study_description"],
+                )
                 for item in names_to_add:
                     new_entry = StandardNames(
                         standard_name=form.cleaned_data["standard_name"],
                         modality=form.cleaned_data["modality"],
-                        study_description=item
+                        study_description=item,
                     )
                     new_entry.save()
                     new_ids_study.append(new_entry.pk)
 
             new_ids_request = []
             if "requested_procedure_code_meaning" in form.changed_data:
-                names_to_add = np.setdiff1d(form.cleaned_data["requested_procedure_code_meaning"], form.initial["requested_procedure_code_meaning"])
+                names_to_add = np.setdiff1d(
+                    form.cleaned_data["requested_procedure_code_meaning"],
+                    form.initial["requested_procedure_code_meaning"],
+                )
                 for item in names_to_add:
                     new_entry = StandardNames(
                         standard_name=form.cleaned_data["standard_name"],
                         modality=form.cleaned_data["modality"],
-                        requested_procedure_code_meaning=item
+                        requested_procedure_code_meaning=item,
                     )
                     new_entry.save()
                     new_ids_request.append(new_entry.pk)
 
             new_ids_procedure = []
             if "procedure_code_meaning" in form.changed_data:
-                names_to_add = np.setdiff1d(form.cleaned_data["procedure_code_meaning"], form.initial["procedure_code_meaning"])
+                names_to_add = np.setdiff1d(
+                    form.cleaned_data["procedure_code_meaning"],
+                    form.initial["procedure_code_meaning"],
+                )
                 for item in names_to_add:
                     new_entry = StandardNames(
                         standard_name=form.cleaned_data["standard_name"],
                         modality=form.cleaned_data["modality"],
-                        procedure_code_meaning=item
+                        procedure_code_meaning=item,
                     )
                     new_entry.save()
                     new_ids_procedure.append(new_entry.pk)
 
             new_ids_acquisition = []
             if "acquisition_protocol" in form.changed_data:
-                names_to_add = np.setdiff1d(form.cleaned_data["acquisition_protocol"], form.initial["acquisition_protocol"])
+                names_to_add = np.setdiff1d(
+                    form.cleaned_data["acquisition_protocol"],
+                    form.initial["acquisition_protocol"],
+                )
                 for item in names_to_add:
                     new_entry = StandardNames(
                         standard_name=form.cleaned_data["standard_name"],
                         modality=form.cleaned_data["modality"],
-                        acquisition_protocol=item
+                        acquisition_protocol=item,
                     )
                     new_entry.save()
                     new_ids_acquisition.append(new_entry.pk)
 
             # Add the new standard names to the studies
-            self.add_multiple_standard_studies(studies, new_ids_study, new_ids_request, new_ids_procedure)
+            self.add_multiple_standard_studies(
+                studies, new_ids_study, new_ids_request, new_ids_procedure
+            )
 
             # Add the new standard names to the acquisitions
             self.add_multiple_standard_acquisitions(acquisitions, new_ids_acquisition)
 
             # Update the StandardNames standard name if it has been changed
             if "standard_name" in form.changed_data:
-                std_names.filter(standard_name=form.initial["standard_name"]).update(standard_name=form.cleaned_data["standard_name"])
-
+                std_names.filter(standard_name=form.initial["standard_name"]).update(
+                    standard_name=form.cleaned_data["standard_name"]
+                )
 
             messages.success(self.request, "Entry updated")
             return redirect(self.success_url)
@@ -3243,42 +3472,40 @@ class StandardNameUpdateCore(UpdateView):
             messages.info(self.request, "No changes made")
             return redirect(self.success_url)
 
-    def add_multiple_standard_studies(self, studies,
-                                      std_name_study_ids,
-                                      std_name_request_ids,
-                                      std_name_procedure_ids
-                                      ):
+    def add_multiple_standard_studies(
+        self, studies, std_name_study_ids, std_name_request_ids, std_name_procedure_ids
+    ):
 
         for standard_name in StandardNames.objects.filter(pk__in=std_name_study_ids):
             standard_name.generalstudymoduleattr_set.add(
                 *studies.filter(
                     study_description=standard_name.study_description
-                ).values_list(
-                    "pk", flat=True
-                )
+                ).values_list("pk", flat=True)
             )
 
         for standard_name in StandardNames.objects.filter(pk__in=std_name_request_ids):
             standard_name.generalstudymoduleattr_set.add(
                 *studies.filter(
                     requested_procedure_code_meaning=standard_name.requested_procedure_code_meaning
-                ).values_list(
-                    "pk", flat=True
-                )
+                ).values_list("pk", flat=True)
             )
 
-        for standard_name in StandardNames.objects.filter(pk__in=std_name_procedure_ids):
+        for standard_name in StandardNames.objects.filter(
+            pk__in=std_name_procedure_ids
+        ):
             standard_name.generalstudymoduleattr_set.add(
                 *studies.filter(
                     procedure_code_meaning=standard_name.procedure_code_meaning
-                ).values_list(
-                    "pk", flat=True
-                )
+                ).values_list("pk", flat=True)
             )
 
-    def add_multiple_standard_acquisitions(self, acquisitions, std_name_acquisition_ids):
+    def add_multiple_standard_acquisitions(
+        self, acquisitions, std_name_acquisition_ids
+    ):
 
-        for standard_name in StandardNames.objects.filter(pk__in=std_name_acquisition_ids):
+        for standard_name in StandardNames.objects.filter(
+            pk__in=std_name_acquisition_ids
+        ):
             if type(self).__name__ == "StandardNameUpdateCT":
                 standard_name.ctirradiationeventdata_set.add(
                     *acquisitions.filter(
@@ -3444,5 +3671,8 @@ class StandardNameSettingsUpdate(UpdateView):  # pylint: disable=unused-variable
             status_word = "disabled"
             if form.cleaned_data["enable_standard_names"]:
                 status_word = "enabled"
-            messages.info(self.request, "No changes made - standard name mapping remains " + status_word)
+            messages.info(
+                self.request,
+                "No changes made - standard name mapping remains " + status_word,
+            )
             return redirect(reverse_lazy("standard_name_settings", kwargs={"pk": 1}))

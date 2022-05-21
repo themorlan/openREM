@@ -301,15 +301,13 @@ class RFSummaryListFilter(django_filters.FilterSet):
 
 class RFFilterPlusStdNames(RFSummaryListFilter):
     """Adding standard name fields"""
+
     standard_names__standard_name = django_filters.CharFilter(
         lookup_expr="icontains",
         label="Standard study name",
     )
-    projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name = (
-        django_filters.CharFilter(
-            lookup_expr="icontains",
-            label="Standard acquisition name"
-        )
+    projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name = django_filters.CharFilter(
+        lookup_expr="icontains", label="Standard acquisition name"
     )
 
 
@@ -329,15 +327,13 @@ class RFFilterPlusPid(RFSummaryListFilter):
 
 class RFFilterPlusPidPlusStdNames(RFFilterPlusPid):
     """Adding standard name fields"""
+
     standard_names__standard_name = django_filters.CharFilter(
         lookup_expr="icontains",
         label="Standard study name",
     )
-    projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name = (
-        django_filters.CharFilter(
-            lookup_expr="icontains",
-            label="Standard acquisition name"
-        )
+    projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name = django_filters.CharFilter(
+        lookup_expr="icontains", label="Standard acquisition name"
     )
 
 
@@ -403,6 +399,7 @@ def _specify_event_numbers(queryset, name, value):
     else:
         return queryset
     return filtered
+
 
 class CTSummaryListFilter(django_filters.FilterSet):
 
@@ -586,14 +583,13 @@ class CTSummaryListFilter(django_filters.FilterSet):
 
 class CTFilterPlusStdNames(CTSummaryListFilter):
     """Adding standard name fields"""
+
     standard_names__standard_name = django_filters.CharFilter(
-        lookup_expr="icontains",
-        label="Standard study name"
+        lookup_expr="icontains", label="Standard study name"
     )
     ctradiationdose__ctirradiationeventdata__standard_protocols__standard_name = (
         django_filters.CharFilter(
-            lookup_expr="icontains",
-            label="Standard acquisition name"
+            lookup_expr="icontains", label="Standard acquisition name"
         )
     )
 
@@ -614,14 +610,13 @@ class CTFilterPlusPid(CTSummaryListFilter):
 
 class CTFilterPlusPidPlusStdNames(CTFilterPlusPid):
     """Adding standard name fields"""
+
     standard_names__standard_name = django_filters.CharFilter(
-        lookup_expr="icontains",
-        label="Standard study name"
+        lookup_expr="icontains", label="Standard study name"
     )
     ctradiationdose__ctirradiationeventdata__standard_protocols__standard_name = (
         django_filters.CharFilter(
-            lookup_expr="icontains",
-            label="Standard acquisition name"
+            lookup_expr="icontains", label="Standard acquisition name"
         )
     )
 
@@ -633,7 +628,9 @@ def ct_acq_filter(filters, pid=False):
         StandardNameSettings.objects.get()
     except ObjectDoesNotExist:
         StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[0]
+    enable_standard_names = StandardNameSettings.objects.values_list(
+        "enable_standard_names", flat=True
+    )[0]
 
     studies = GeneralStudyModuleAttr.objects.filter(modality_type__exact="CT")
 
@@ -808,15 +805,13 @@ class MGSummaryListFilter(django_filters.FilterSet):
 
 class MGFilterPlusStdNames(MGSummaryListFilter):
     """Adding standard name fields"""
+
     standard_names__standard_name = django_filters.CharFilter(
         lookup_expr="icontains",
         label="Standard study name",
     )
-    projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name = (
-        django_filters.CharFilter(
-            lookup_expr="icontains",
-            label="Standard acquisition name"
-        )
+    projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name = django_filters.CharFilter(
+        lookup_expr="icontains", label="Standard acquisition name"
     )
 
 
@@ -835,15 +830,13 @@ class MGFilterPlusPid(MGSummaryListFilter):
 
 class MGFilterPlusPidPlusStdNames(MGFilterPlusPid):
     """Adding standard name fields"""
+
     standard_names__standard_name = django_filters.CharFilter(
         lookup_expr="icontains",
         label="Standard study name",
     )
-    projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name = (
-        django_filters.CharFilter(
-            lookup_expr="icontains",
-            label="Standard acquisition name"
-        )
+    projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name = django_filters.CharFilter(
+        lookup_expr="icontains", label="Standard acquisition name"
     )
 
 
@@ -1009,15 +1002,12 @@ class DXSummaryListFilter(django_filters.FilterSet):
 
 class DXFilterPlusStdNames(DXSummaryListFilter):
     """Adding standard name fields"""
+
     standard_names__standard_name = django_filters.CharFilter(
-        lookup_expr="icontains",
-        label="Standard study name"
+        lookup_expr="icontains", label="Standard study name"
     )
-    projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name = (
-        django_filters.CharFilter(
-            lookup_expr="icontains",
-            label="Standard acquisition name"
-        )
+    projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name = django_filters.CharFilter(
+        lookup_expr="icontains", label="Standard acquisition name"
     )
 
 
@@ -1037,15 +1027,12 @@ class DXFilterPlusPid(DXSummaryListFilter):
 
 class DXFilterPlusPidPlusStdNames(DXFilterPlusPid):
     """Adding standard name fields"""
+
     standard_names__standard_name = django_filters.CharFilter(
-        lookup_expr="icontains",
-        label="Standard study name"
+        lookup_expr="icontains", label="Standard study name"
     )
-    projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name = (
-        django_filters.CharFilter(
-            lookup_expr="icontains",
-            label="Standard acquisition name"
-        )
+    projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name = django_filters.CharFilter(
+        lookup_expr="icontains", label="Standard acquisition name"
     )
 
 
@@ -1056,7 +1043,9 @@ def dx_acq_filter(filters, pid=False):
         StandardNameSettings.objects.get()
     except ObjectDoesNotExist:
         StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[0]
+    enable_standard_names = StandardNameSettings.objects.values_list(
+        "enable_standard_names", flat=True
+    )[0]
 
     studies = GeneralStudyModuleAttr.objects.filter(
         Q(modality_type__exact="DX")
@@ -1067,11 +1056,13 @@ def dx_acq_filter(filters, pid=False):
     if pid:
         if enable_standard_names:
             return DXFilterPlusPidPlusStdNames(
-                filters, queryset=studies.order_by("-study_date", "-study_time").distinct()
+                filters,
+                queryset=studies.order_by("-study_date", "-study_time").distinct(),
             )
         else:
             return DXFilterPlusPid(
-                filters, queryset=studies.order_by("-study_date", "-study_time").distinct()
+                filters,
+                queryset=studies.order_by("-study_date", "-study_time").distinct(),
             )
     if enable_standard_names:
         return DXFilterPlusStdNames(

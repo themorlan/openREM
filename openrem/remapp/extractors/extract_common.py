@@ -445,16 +445,24 @@ def add_standard_names(g):
 
     # Obtain a list of standard name IDs that match this GeneralStudyModuleAttr
     matching_std_name_ids = std_names.filter(
-        (Q(study_description=g.study_description) & Q(study_description__isnull=False)) |
-        (Q(requested_procedure_code_meaning=g.requested_procedure_code_meaning) & Q(requested_procedure_code_meaning__isnull=False)) |
-        (Q(procedure_code_meaning=g.procedure_code_meaning) & Q(procedure_code_meaning__isnull=False))
+        (Q(study_description=g.study_description) & Q(study_description__isnull=False))
+        | (
+            Q(requested_procedure_code_meaning=g.requested_procedure_code_meaning)
+            & Q(requested_procedure_code_meaning__isnull=False)
+        )
+        | (
+            Q(procedure_code_meaning=g.procedure_code_meaning)
+            & Q(procedure_code_meaning__isnull=False)
+        )
     ).values_list("pk", flat=True)
 
     # Obtain a list of standard name IDs that are already associated with this GeneralStudyModuleAttr
     std_name_ids_already_in_study = g.standard_names.values_list("pk", flat=True)
 
     # Names that are in the new list, but not in the existing list
-    std_name_ids_to_add = np.setdiff1d(matching_std_name_ids, std_name_ids_already_in_study)
+    std_name_ids_to_add = np.setdiff1d(
+        matching_std_name_ids, std_name_ids_already_in_study
+    )
 
     if std_name_ids_to_add.size:
         g.standard_names.add(*std_name_ids_to_add)
@@ -466,17 +474,25 @@ def add_standard_names(g):
             for event in g.ctradiationdose_set.get().ctirradiationeventdata_set.all():
                 # Only add matching standard name if the event doesn't already have one
                 if not event.standard_protocols.values_list("pk", flat=True):
-                    pk_value = list(std_names.filter(
-                        Q(acquisition_protocol=event.acquisition_protocol) & Q(acquisition_protocol__isnull=False)
-                    ).values_list("pk", flat=True))
+                    pk_value = list(
+                        std_names.filter(
+                            Q(acquisition_protocol=event.acquisition_protocol)
+                            & Q(acquisition_protocol__isnull=False)
+                        ).values_list("pk", flat=True)
+                    )
                     event.standard_protocols.add(*pk_value)
         else:
-            for event in g.projectionxrayradiationdose_set.get().irradeventxraydata_set.all():
+            for (
+                event
+            ) in g.projectionxrayradiationdose_set.get().irradeventxraydata_set.all():
                 # Only add matching standard name if the event doesn't already have one
                 if not event.standard_protocols.values_list("pk", flat=True):
-                    pk_value = list(std_names.filter(
-                        Q(acquisition_protocol=event.acquisition_protocol) & Q(
-                            acquisition_protocol__isnull=False)).values_list("pk", flat=True))
+                    pk_value = list(
+                        std_names.filter(
+                            Q(acquisition_protocol=event.acquisition_protocol)
+                            & Q(acquisition_protocol__isnull=False)
+                        ).values_list("pk", flat=True)
+                    )
                     event.standard_protocols.add(*pk_value)
 
     except ObjectDoesNotExist:

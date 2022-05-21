@@ -70,7 +70,9 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
         StandardNameSettings.objects.get()
     except ObjectDoesNotExist:
         StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[0]
+    enable_standard_names = StandardNameSettings.objects.values_list(
+        "enable_standard_names", flat=True
+    )[0]
 
     datestamp = datetime.datetime.now()
     task_id = get_or_generate_task_uuid()
@@ -211,7 +213,9 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
                             tabtext = sheet_name("[standard] " + protocol)
                             sheet_list[tabtext]["count"] += 1
                             sheet_list[tabtext]["sheet"].write_row(
-                                sheet_list[tabtext]["count"], 0, common_exam_data + series_data
+                                sheet_list[tabtext]["count"],
+                                0,
+                                common_exam_data + series_data,
                             )
                     except AttributeError:
                         pass
@@ -354,14 +358,18 @@ def _generate_all_data_headers_ct(max_events):
         StandardNameSettings.objects.get()
     except ObjectDoesNotExist:
         StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[0]
+    enable_standard_names = StandardNameSettings.objects.values_list(
+        "enable_standard_names", flat=True
+    )[0]
 
     repeating_series_headers = []
     for h in range(int(max_events)):
         repeating_series_headers += ["E" + str(h + 1) + " Protocol"]
 
         if enable_standard_names:
-            repeating_series_headers += ["E" + str(h + 1) + " Standard acquisition name"]
+            repeating_series_headers += [
+                "E" + str(h + 1) + " Standard acquisition name"
+            ]
 
         repeating_series_headers += [
             "E" + str(h + 1) + " Type",
@@ -400,7 +408,9 @@ def _ct_get_series_data(s):
         StandardNameSettings.objects.get()
     except ObjectDoesNotExist:
         StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[0]
+    enable_standard_names = StandardNameSettings.objects.values_list(
+        "enable_standard_names", flat=True
+    )[0]
 
     try:
         if s.ctdiw_phantom_type.code_value == "113691":

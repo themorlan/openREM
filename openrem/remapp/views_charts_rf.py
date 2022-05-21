@@ -55,7 +55,9 @@ def generate_required_rf_charts_list(profile):
         StandardNameSettings.objects.get()
     except ObjectDoesNotExist:
         StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[0]
+    enable_standard_names = StandardNameSettings.objects.values_list(
+        "enable_standard_names", flat=True
+    )[0]
 
     required_charts = []
 
@@ -246,8 +248,8 @@ def generate_required_rf_charts_list(profile):
                 required_charts.append(
                     {
                         "title": "Chart of standard study name mean DAP over time ("
-                                 + time_period
-                                 + ")",
+                        + time_period
+                        + ")",
                         "var_name": "standardStudyMeanDAPOverTime",
                     }
                 )
@@ -255,8 +257,8 @@ def generate_required_rf_charts_list(profile):
                 required_charts.append(
                     {
                         "title": "Chart of standard study name median DAP over time ("
-                                 + time_period
-                                 + ")",
+                        + time_period
+                        + ")",
                         "var_name": "standardStudyMedianDAPOverTime",
                     }
                 )
@@ -273,36 +275,45 @@ def rf_summary_chart_data(request):
         StandardNameSettings.objects.get()
     except ObjectDoesNotExist:
         StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[0]
-
+    enable_standard_names = StandardNameSettings.objects.values_list(
+        "enable_standard_names", flat=True
+    )[0]
 
     if request.user.groups.filter(name="pidgroup"):
         if enable_standard_names:
             f = RFFilterPlusPidPlusStdNames(
                 request.GET,
-                queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact="RF")
+                queryset=GeneralStudyModuleAttr.objects.filter(
+                    modality_type__exact="RF"
+                )
                 .order_by()
                 .distinct(),
             )
         else:
             f = RFFilterPlusPid(
                 request.GET,
-                queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact="RF")
-                    .order_by()
-                    .distinct(),
+                queryset=GeneralStudyModuleAttr.objects.filter(
+                    modality_type__exact="RF"
+                )
+                .order_by()
+                .distinct(),
             )
     else:
         if enable_standard_names:
             f = RFFilterPlusStdNames(
                 request.GET,
-                queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact="RF")
+                queryset=GeneralStudyModuleAttr.objects.filter(
+                    modality_type__exact="RF"
+                )
                 .order_by()
                 .distinct(),
             )
         else:
             f = RFSummaryListFilter(
                 request.GET,
-                queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact="RF")
+                queryset=GeneralStudyModuleAttr.objects.filter(
+                    modality_type__exact="RF"
+                )
                 .order_by()
                 .distinct(),
             )
@@ -339,7 +350,9 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
         StandardNameSettings.objects.get()
     except ObjectDoesNotExist:
         StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[0]
+    enable_standard_names = StandardNameSettings.objects.values_list(
+        "enable_standard_names", flat=True
+    )[0]
 
     # Set the Plotly chart theme
     plotly_set_default_theme(user_profile.plotThemeChoice)
@@ -905,16 +918,25 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
         if any(charts_of_interest):
 
             # Create a standard name data frame - remove any blank standard names
-            standard_name_df = df[(df["standard_names__standard_name"] != "blank") & (df["standard_names__standard_name"] != "Blank")].copy()
+            standard_name_df = df[
+                (df["standard_names__standard_name"] != "blank")
+                & (df["standard_names__standard_name"] != "Blank")
+            ].copy()
             # Remove any unused categories (this will include "Blank" or "blank")
-            standard_name_df["standard_names__standard_name"] = standard_name_df["standard_names__standard_name"].cat.remove_unused_categories()
+            standard_name_df["standard_names__standard_name"] = standard_name_df[
+                "standard_names__standard_name"
+            ].cat.remove_unused_categories()
 
             if user_profile.plotRFStandardStudyPerDayAndHour:
                 df_time_series_per_weekday = create_dataframe_weekdays(
-                    standard_name_df, "standard_names__standard_name", df_date_col="study_date"
+                    standard_name_df,
+                    "standard_names__standard_name",
+                    df_date_col="study_date",
                 )
 
-                return_structure["standardStudyWorkloadData"] = plotly_barchart_weekdays(
+                return_structure[
+                    "standardStudyWorkloadData"
+                ] = plotly_barchart_weekdays(
                     df_time_series_per_weekday,
                     "weekday",
                     "standard_names__standard_name",
@@ -945,7 +967,10 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
                     groupby_cols = groupby_cols + ["performing_physician_name"]
 
                 df_aggregated = create_dataframe_aggregates(
-                    standard_name_df, groupby_cols, "total_dap", stats_to_use=stats_to_include
+                    standard_name_df,
+                    groupby_cols,
+                    "total_dap",
+                    stats_to_use=stats_to_include,
                 )
 
                 if user_profile.plotMean or user_profile.plotMedian:
@@ -972,8 +997,12 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
                         ],
                     }
                     if user_profile.plotMean:
-                        parameter_dict["value_axis_title"] = "Mean DAP (cGy.cm<sup>2</sup>)"
-                        parameter_dict["filename"] = "OpenREM RF standard study name DAP mean"
+                        parameter_dict[
+                            "value_axis_title"
+                        ] = "Mean DAP (cGy.cm<sup>2</sup>)"
+                        parameter_dict[
+                            "filename"
+                        ] = "OpenREM RF standard study name DAP mean"
                         parameter_dict["average_choice"] = "mean"
 
                         (
@@ -986,8 +1015,12 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
                         )
 
                     if user_profile.plotMedian:
-                        parameter_dict["value_axis_title"] = "Median DAP (cGy.cm<sup>2</sup>)"
-                        parameter_dict["filename"] = "OpenREM RF standard study name DAP median"
+                        parameter_dict[
+                            "value_axis_title"
+                        ] = "Median DAP (cGy.cm<sup>2</sup>)"
+                        parameter_dict[
+                            "filename"
+                        ] = "OpenREM RF standard study name DAP median"
                         parameter_dict["average_choice"] = "median"
                         (
                             return_structure["standardStudyMedianData"],
@@ -1063,7 +1096,9 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
                         "global_max_min": user_profile.plotHistogramGlobalBins,
                         "return_as_dict": return_as_dict,
                     }
-                    return_structure["standardStudyHistogramData"] = plotly_histogram_barchart(
+                    return_structure[
+                        "standardStudyHistogramData"
+                    ] = plotly_histogram_barchart(
                         standard_name_df,
                         parameter_dict,
                     )
@@ -1141,7 +1176,9 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
                 if user_profile.plotMean:
                     return_structure["standardStudyMeanDAPOverTime"] = result["mean"]
                 if user_profile.plotMedian:
-                    return_structure["standardStudyMedianDAPOverTime"] = result["median"]
+                    return_structure["standardStudyMedianDAPOverTime"] = result[
+                        "median"
+                    ]
 
     return return_structure
 
@@ -1154,7 +1191,9 @@ def rf_chart_form_processing(request, user_profile):
         StandardNameSettings.objects.get()
     except ObjectDoesNotExist:
         StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[0]
+    enable_standard_names = StandardNameSettings.objects.values_list(
+        "enable_standard_names", flat=True
+    )[0]
 
     # Obtain the chart options from the request
     chart_options_form = None
@@ -1162,7 +1201,6 @@ def rf_chart_form_processing(request, user_profile):
         chart_options_form = RFChartOptionsFormIncStandard(request.GET)
     else:
         chart_options_form = RFChartOptionsForm(request.GET)
-
 
     # Check whether the form data is valid
     if chart_options_form.is_valid():

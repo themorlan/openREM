@@ -369,20 +369,51 @@ standard_name_patterns = [  # pylint: disable=invalid-name
     path("add_name_dx/", views_admin.StandardNameAddDX.as_view(), name="add_name_dx"),
     path("add_name_rf/", views_admin.StandardNameAddRF.as_view(), name="add_name_rf"),
     path("add_name_mg/", views_admin.StandardNameAddMG.as_view(), name="add_name_mg"),
-
-    path("update_name/<int:std_name_pk>/<str:modality>/", views_admin.standard_name_update, name="update_name"),
-
-    path("update_name_ct/<int:pk>/", views_admin.StandardNameUpdateCT.as_view(), name="update_name_ct"),
-    path("update_name_dx/<int:pk>/", views_admin.StandardNameUpdateDX.as_view(), name="update_name_dx"),
-    path("update_name_rf/<int:pk>/", views_admin.StandardNameUpdateRF.as_view(), name="update_name_rf"),
-    path("update_name_mg/<int:pk>/", views_admin.StandardNameUpdateMG.as_view(), name="update_name_mg"),
-
-    path("view_standard_names/", views_admin.standard_names_view, name="standard_names_view"),
-    path("populate_standard_names", views_admin.standard_names_populate, name="standard_names_populate"),
-
-    path("standard_name/<int:pk>/delete/", views_admin.StandardNameDelete.as_view(), name="standard_name_delete"),
-
-    path("standard_name_settings/<int:pk>/", views_admin.StandardNameSettingsUpdate.as_view(), name="standard_name_settings"),
+    path(
+        "update_name/<int:std_name_pk>/<str:modality>/",
+        views_admin.standard_name_update,
+        name="update_name",
+    ),
+    path(
+        "update_name_ct/<int:pk>/",
+        views_admin.StandardNameUpdateCT.as_view(),
+        name="update_name_ct",
+    ),
+    path(
+        "update_name_dx/<int:pk>/",
+        views_admin.StandardNameUpdateDX.as_view(),
+        name="update_name_dx",
+    ),
+    path(
+        "update_name_rf/<int:pk>/",
+        views_admin.StandardNameUpdateRF.as_view(),
+        name="update_name_rf",
+    ),
+    path(
+        "update_name_mg/<int:pk>/",
+        views_admin.StandardNameUpdateMG.as_view(),
+        name="update_name_mg",
+    ),
+    path(
+        "view_standard_names/",
+        views_admin.standard_names_view,
+        name="standard_names_view",
+    ),
+    path(
+        "populate_standard_names",
+        views_admin.standard_names_populate,
+        name="standard_names_populate",
+    ),
+    path(
+        "standard_name/<int:pk>/delete/",
+        views_admin.StandardNameDelete.as_view(),
+        name="standard_name_delete",
+    ),
+    path(
+        "standard_name_settings/<int:pk>/",
+        views_admin.StandardNameSettingsUpdate.as_view(),
+        name="standard_name_settings",
+    ),
 ]
 
 urlpatterns = [
@@ -395,5 +426,5 @@ urlpatterns = [
     path("tasks/", include(tasks_patterns)),
     path("import/", include(import_patterns)),
     path("names/", include(standard_name_patterns)),
-    url(r'^jsi18n/$', django_views.i18n.JavaScriptCatalog.as_view(), name='jsi18n'),
+    url(r"^jsi18n/$", django_views.i18n.JavaScriptCatalog.as_view(), name="jsi18n"),
 ]

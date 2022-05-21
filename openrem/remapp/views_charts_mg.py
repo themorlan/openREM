@@ -57,7 +57,9 @@ def generate_required_mg_charts_list(profile):
         StandardNameSettings.objects.get()
     except ObjectDoesNotExist:
         StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[0]
+    enable_standard_names = StandardNameSettings.objects.values_list(
+        "enable_standard_names", flat=True
+    )[0]
 
     required_charts = []
 
@@ -246,8 +248,8 @@ def generate_required_mg_charts_list(profile):
                 required_charts.append(
                     {
                         "title": "Chart of standard acquisition name mean AGD over time ("
-                                 + time_period
-                                 + ")",
+                        + time_period
+                        + ")",
                         "var_name": "standardAcquisitionMeanAGDOverTime",
                     }
                 )
@@ -255,8 +257,8 @@ def generate_required_mg_charts_list(profile):
                 required_charts.append(
                     {
                         "title": "Chart of standard acquisition name median AGD over time ("
-                                 + time_period
-                                 + ")",
+                        + time_period
+                        + ")",
                         "var_name": "standardAcquisitionMedianAGDOverTime",
                     }
                 )
@@ -297,20 +299,26 @@ def mg_summary_chart_data(request):
         StandardNameSettings.objects.get()
     except ObjectDoesNotExist:
         StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[0]
+    enable_standard_names = StandardNameSettings.objects.values_list(
+        "enable_standard_names", flat=True
+    )[0]
 
     if request.user.groups.filter(name="pidgroup"):
         if enable_standard_names:
             f = MGFilterPlusPidPlusStdNames(
                 request.GET,
-                queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact="MG")
+                queryset=GeneralStudyModuleAttr.objects.filter(
+                    modality_type__exact="MG"
+                )
                 .order_by()
                 .distinct(),
             )
         else:
             f = MGFilterPlusPid(
                 request.GET,
-                queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact="MG")
+                queryset=GeneralStudyModuleAttr.objects.filter(
+                    modality_type__exact="MG"
+                )
                 .order_by()
                 .distinct(),
             )
@@ -318,14 +326,18 @@ def mg_summary_chart_data(request):
         if enable_standard_names:
             f = MGFilterPlusStdNames(
                 request.GET,
-                queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact="MG")
+                queryset=GeneralStudyModuleAttr.objects.filter(
+                    modality_type__exact="MG"
+                )
                 .order_by()
                 .distinct(),
             )
         else:
             f = MGSummaryListFilter(
                 request.GET,
-                queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact="MG")
+                queryset=GeneralStudyModuleAttr.objects.filter(
+                    modality_type__exact="MG"
+                )
                 .order_by()
                 .distinct(),
             )
@@ -362,7 +374,9 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
         StandardNameSettings.objects.get()
     except ObjectDoesNotExist:
         StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[0]
+    enable_standard_names = StandardNameSettings.objects.values_list(
+        "enable_standard_names", flat=True
+    )[0]
 
     # Set the Plotly chart theme
     plotly_set_default_theme(user_profile.plotThemeChoice)
@@ -375,9 +389,7 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
     if user_profile.plotMedian:
         average_choices.append("median")
 
-    charts_of_interest = [
-        user_profile.plotMGAcquisitionAGDOverTime
-    ]
+    charts_of_interest = [user_profile.plotMGAcquisitionAGDOverTime]
     if enable_standard_names:
         charts_of_interest.append(user_profile.plotMGStandardAcquisitionAGDOverTime)
     if any(charts_of_interest):
@@ -416,7 +428,9 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
             user_profile.plotMGAcquisitionAGDOverTime,
         ]
         if any(charts_of_interest):
-            name_fields.append("projectionxrayradiationdose__irradeventxraydata__acquisition_protocol")
+            name_fields.append(
+                "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
+            )
 
         if enable_standard_names:
             charts_of_interest = [
@@ -429,7 +443,9 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                 user_profile.plotMGStandardAcquisitionAGDOverTime,
             ]
             if any(charts_of_interest):
-                name_fields.append("projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name")
+                name_fields.append(
+                    "projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name"
+                )
 
         value_fields = []
         value_multipliers = []
@@ -454,7 +470,9 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
         if enable_standard_names:
             charts_of_interest.append(user_profile.plotMGStandardkVpvsThickness)
         if any(charts_of_interest):
-            value_fields.append("projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__kvp__kvp")
+            value_fields.append(
+                "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__kvp__kvp"
+            )
             value_multipliers.append(1)
 
         charts_of_interest = [user_profile.plotMGmAsvsThickness]
@@ -521,7 +539,9 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
             if user_profile.plotBoxplots and "median" not in average_choices:
                 average_choices = average_choices + ["median"]
 
-            name_field = ("projectionxrayradiationdose__irradeventxraydata__acquisition_protocol")
+            name_field = (
+                "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
+            )
             value_field = "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__average_glandular_dose"  # pylint: disable=line-too-long
 
             if user_profile.plotMGaverageAGDvsThickness:
@@ -579,11 +599,23 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                 modality_text = "CT"
                 chart_message = ""
 
-                new_charts = generate_average_chart_group(average_choices, chart_message, df, modality_text,
-                                                          name_field, name_text, return_as_dict, return_structure,
-                                                          units_text, user_profile, value_field, value_text,
-                                                          variable_name_start, variable_value_name,
-                                                          user_profile.plotMGInitialSortingChoice)
+                new_charts = generate_average_chart_group(
+                    average_choices,
+                    chart_message,
+                    df,
+                    modality_text,
+                    name_field,
+                    name_text,
+                    return_as_dict,
+                    return_structure,
+                    units_text,
+                    user_profile,
+                    value_field,
+                    value_text,
+                    variable_name_start,
+                    variable_value_name,
+                    user_profile.plotMGInitialSortingChoice,
+                )
 
                 return_structure = {**return_structure, **new_charts}
 
@@ -737,9 +769,19 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
         if any(charts_of_interest):
             # Exclude "Blank" and "blank" standard_acquisition_name data
             df_without_blanks = df[
-                (df["projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name"] != "blank") &
-                (df["projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name"] != "Blank")
-                ].copy()
+                (
+                    df[
+                        "projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name"
+                    ]
+                    != "blank"
+                )
+                & (
+                    df[
+                        "projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name"
+                    ]
+                    != "Blank"
+                )
+            ].copy()
             # Remove any unused categories (this will include "Blank" or "blank")
             df_without_blanks[
                 "projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name"
@@ -747,24 +789,27 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                 "projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name"
             ].cat.remove_unused_categories()
 
-            if user_profile.plotMGStandardAverageAGDvsThickness or user_profile.plotMGStandardAverageAGD:
-    
+            if (
+                user_profile.plotMGStandardAverageAGDvsThickness
+                or user_profile.plotMGStandardAverageAGD
+            ):
+
                 if user_profile.plotBoxplots and "median" not in average_choices:
                     average_choices = average_choices + ["median"]
-    
-                name_field = ("projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name")
+
+                name_field = "projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name"
                 value_field = "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__average_glandular_dose"  # pylint: disable=line-too-long
-    
+
                 if user_profile.plotMGStandardAverageAGDvsThickness:
                     category_names_col = name_field
                     group_by_col = "x_ray_system_name"
                     legend_title = "Standard acquisition name"
-    
+
                     if user_profile.plotGroupingChoice == "series":
                         category_names_col = "x_ray_system_name"
                         group_by_col = name_field
                         legend_title = "System"
-    
+
                     parameter_dict = {  # pylint: disable=line-too-long
                         "df_x_value_col": "projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness",  # pylint: disable=line-too-long
                         "df_y_value_col": value_field,  # pylint: disable=line-too-long
@@ -791,7 +836,7 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                             df_without_blanks,
                             parameter_dict,
                         )
-    
+
                     if user_profile.plotMedian:
                         parameter_dict["stat_name"] = "median"
                         return_structure[
@@ -800,7 +845,7 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                             df_without_blanks,
                             parameter_dict,
                         )
-    
+
                 if user_profile.plotMGStandardAverageAGD:
                     value_text = "AGD"
                     units_text = "(mGy)"
@@ -809,15 +854,27 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                     variable_value_name = "AGD"
                     modality_text = "CT"
                     chart_message = ""
-    
-                    new_charts = generate_average_chart_group(average_choices, chart_message, df_without_blanks,
-                                                              modality_text, name_field, name_text, return_as_dict,
-                                                              return_structure, units_text, user_profile, value_field,
-                                                              value_text, variable_name_start, variable_value_name,
-                                                              user_profile.plotMGInitialSortingChoice)
-    
+
+                    new_charts = generate_average_chart_group(
+                        average_choices,
+                        chart_message,
+                        df_without_blanks,
+                        modality_text,
+                        name_field,
+                        name_text,
+                        return_as_dict,
+                        return_structure,
+                        units_text,
+                        user_profile,
+                        value_field,
+                        value_text,
+                        variable_name_start,
+                        variable_value_name,
+                        user_profile.plotMGInitialSortingChoice,
+                    )
+
                     return_structure = {**return_structure, **new_charts}
-    
+
             if user_profile.plotMGStandardAGDvsThickness:
                 parameter_dict = {  # pylint: disable=line-too-long
                     "df_name_col": "projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name",
@@ -842,7 +899,7 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                     df_without_blanks,
                     parameter_dict,
                 )
-    
+
             if user_profile.plotMGStandardkVpvsThickness:
                 parameter_dict = {  # pylint: disable=line-too-long
                     "df_name_col": "projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name",
@@ -892,7 +949,7 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                     df_without_blanks,
                     parameter_dict,
                 )
-    
+
             if user_profile.plotMGStandardAcquisitionFreq:
                 parameter_dict = {
                     "df_name_col": "projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name",
@@ -915,15 +972,17 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                     return_structure["standardAcquisitionFrequencyData"],
                     return_structure["standardAcquisitionFrequencyDataCSV"],
                 ) = plotly_frequency_barchart(  # pylint: disable=line-too-long
-                    df_without_blanks, parameter_dict, csv_name="standardAcquisitionFrequencyData.csv"
+                    df_without_blanks,
+                    parameter_dict,
+                    csv_name="standardAcquisitionFrequencyData.csv",
                 )
-    
+
             if user_profile.plotMGStandardAcquisitionAGDOverTime:
                 facet_title = "System"
-    
+
                 if user_profile.plotGroupingChoice == "series":
                     facet_title = "Standard acquisition name"
-    
+
                 parameter_dict = {  # pylint: disable=line-too-long
                     "df_name_col": "projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name",
                     "df_value_col": "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__average_glandular_dose",  # pylint: disable=line-too-long
@@ -948,11 +1007,15 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                     df_without_blanks,
                     parameter_dict,
                 )
-    
+
                 if user_profile.plotMean:
-                    return_structure["standardAcquisitionMeanAGDOverTime"] = result["mean"]
+                    return_structure["standardAcquisitionMeanAGDOverTime"] = result[
+                        "mean"
+                    ]
                 if user_profile.plotMedian:
-                    return_structure["standardAcquisitionMedianAGDOverTime"] = result["median"]
+                    return_structure["standardAcquisitionMedianAGDOverTime"] = result[
+                        "median"
+                    ]
 
     #######################################################################
     # Prepare study- and request-level Pandas DataFrame to use for charts
@@ -1039,21 +1102,24 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
 
                 # Create a standard name data frame - remove any blank standard names
                 standard_name_df = df[
-                    (df["standard_names__standard_name"] != "blank") &
-                    (df["standard_names__standard_name"] != "Blank")].copy()
+                    (df["standard_names__standard_name"] != "blank")
+                    & (df["standard_names__standard_name"] != "Blank")
+                ].copy()
                 # Remove any unused categories (this will include "Blank" or "blank")
-                standard_name_df[
-                    "standard_names__standard_name"
-                ] = standard_name_df[
+                standard_name_df["standard_names__standard_name"] = standard_name_df[
                     "standard_names__standard_name"
                 ].cat.remove_unused_categories()
 
                 if user_profile.plotMGStandardStudyPerDayAndHour:
                     df_time_series_per_weekday = create_dataframe_weekdays(
-                        standard_name_df, "standard_names__standard_name", df_date_col="study_date"
+                        standard_name_df,
+                        "standard_names__standard_name",
+                        df_date_col="study_date",
                     )
 
-                    return_structure["standardStudyWorkloadData"] = plotly_barchart_weekdays(
+                    return_structure[
+                        "standardStudyWorkloadData"
+                    ] = plotly_barchart_weekdays(
                         df_time_series_per_weekday,
                         "weekday",
                         "standard_names__standard_name",
@@ -1080,7 +1146,9 @@ def mg_chart_form_processing(request, user_profile):
         StandardNameSettings.objects.get()
     except ObjectDoesNotExist:
         StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[0]
+    enable_standard_names = StandardNameSettings.objects.values_list(
+        "enable_standard_names", flat=True
+    )[0]
 
     # Obtain the chart options from the request
     chart_options_form = None

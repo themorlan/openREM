@@ -134,7 +134,9 @@ def common_headers(modality=None, pid=False, name=None, patid=None):
         StandardNameSettings.objects.get()
     except ObjectDoesNotExist:
         StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[0]
+    enable_standard_names = StandardNameSettings.objects.values_list(
+        "enable_standard_names", flat=True
+    )[0]
 
     pid_headings = []
     if pid and name:
@@ -164,12 +166,16 @@ def common_headers(modality=None, pid=False, name=None, patid=None):
         "Study description",
     ]
     if enable_standard_names:
-        headers += ["Standard study name (study)",]
+        headers += [
+            "Standard study name (study)",
+        ]
     headers += [
         "Requested procedure",
     ]
     if enable_standard_names:
-        headers += ["Standard study name (request)",]
+        headers += [
+            "Standard study name (request)",
+        ]
     headers += [
         "Study Comments",
         "No. events",
@@ -218,7 +224,9 @@ def generate_sheets(
         StandardNameSettings.objects.get()
     except ObjectDoesNotExist:
         StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[0]
+    enable_standard_names = StandardNameSettings.objects.values_list(
+        "enable_standard_names", flat=True
+    )[0]
 
     sheet_list = {}
     protocols_list = []
@@ -243,7 +251,10 @@ def generate_sheets(
                 if enable_standard_names:
                     try:
                         if s.standard_protocols.first().standard_name:
-                            safe_protocol = "[standard] " + s.standard_protocols.first().standard_name
+                            safe_protocol = (
+                                "[standard] "
+                                + s.standard_protocols.first().standard_name
+                            )
 
                         if safe_protocol not in protocols_list:
                             protocols_list.append(safe_protocol)
@@ -329,7 +340,9 @@ def get_common_data(modality, exams, pid=None, name=None, patid=None):
         StandardNameSettings.objects.get()
     except ObjectDoesNotExist:
         StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[0]
+    enable_standard_names = StandardNameSettings.objects.values_list(
+        "enable_standard_names", flat=True
+    )[0]
 
     patient_birth_date = None
     patient_name = None
@@ -482,14 +495,18 @@ def get_common_data(modality, exams, pid=None, name=None, patid=None):
 
         # Get standard name that matches study_description
         std_name = std_names.filter(
-            Q(study_description=exams.study_description) &
-            Q(study_description__isnull=False)
+            Q(study_description=exams.study_description)
+            & Q(study_description__isnull=False)
         ).values_list("standard_name", flat=True)
 
         if std_name:
-            examdata += [list(std_name)[0],]
+            examdata += [
+                list(std_name)[0],
+            ]
         else:
-            examdata += ["",]
+            examdata += [
+                "",
+            ]
 
     examdata += [
         exams.requested_procedure_code_meaning,
@@ -498,14 +515,18 @@ def get_common_data(modality, exams, pid=None, name=None, patid=None):
     if enable_standard_names:
         # Get standard name that matches requested_procedure_code_meaning
         std_name = std_names.filter(
-            Q(requested_procedure_code_meaning=exams.requested_procedure_code_meaning) &
-            Q(requested_procedure_code_meaning__isnull=False)
+            Q(requested_procedure_code_meaning=exams.requested_procedure_code_meaning)
+            & Q(requested_procedure_code_meaning__isnull=False)
         ).values_list("standard_name", flat=True)
 
         if std_name:
-            examdata += [list(std_name)[0],]
+            examdata += [
+                list(std_name)[0],
+            ]
         else:
-            examdata += ["",]
+            examdata += [
+                "",
+            ]
 
     examdata += [
         comment,
@@ -785,7 +806,9 @@ def create_summary_sheet(
     # Generate list of Study Descriptions
     summary_sheet.write(5, 0, "Study Description")
     summary_sheet.write(5, 1, "Frequency")
-    study_descriptions = studies.values("study_description").annotate(n=Count("pk", distinct=True))
+    study_descriptions = studies.values("study_description").annotate(
+        n=Count("pk", distinct=True)
+    )
     for row, item in enumerate(study_descriptions.order_by("n").reverse()):
         summary_sheet.write(row + 6, 0, item["study_description"])
         summary_sheet.write(row + 6, 1, item["n"])
@@ -811,7 +834,11 @@ def create_summary_sheet(
         )
 
         # Exclude any [standard] protocols
-        protocols = [x for x in sorted_protocols if not x[1]["protocolname"][0].startswith("[standard]")]
+        protocols = [
+            x
+            for x in sorted_protocols
+            if not x[1]["protocolname"][0].startswith("[standard]")
+        ]
         for row, item in enumerate(protocols):
             if not item[1]["protocolname"][0].startswith("[standard]"):
                 summary_sheet.write(
@@ -825,14 +852,19 @@ def create_summary_sheet(
         StandardNameSettings.objects.get()
     except ObjectDoesNotExist:
         StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[0]
+    enable_standard_names = StandardNameSettings.objects.values_list(
+        "enable_standard_names", flat=True
+    )[0]
 
     if enable_standard_names:
         # Generate list of standard study names
         summary_sheet.write(5, 9, "Standard study name")
         summary_sheet.write(5, 10, "Frequency")
-        standard_names = studies.exclude(standard_names__standard_name__isnull=True).values(
-            "standard_names__standard_name").annotate(n=Count("pk", distinct=True))
+        standard_names = (
+            studies.exclude(standard_names__standard_name__isnull=True)
+            .values("standard_names__standard_name")
+            .annotate(n=Count("pk", distinct=True))
+        )
 
         for row, item in enumerate(standard_names.order_by("n").reverse()):
             summary_sheet.write(row + 6, 9, item["standard_names__standard_name"])
@@ -843,7 +875,11 @@ def create_summary_sheet(
         # Only include [standard] protocols
         summary_sheet.write(5, 12, "Standard acquisition name")
         summary_sheet.write(5, 13, "Frequency")
-        protocols = [x for x in sorted_protocols if x[1]["protocolname"][0].startswith("[standard]")]
+        protocols = [
+            x
+            for x in sorted_protocols
+            if x[1]["protocolname"][0].startswith("[standard]")
+        ]
 
         for row, item in enumerate(protocols):
             summary_sheet.write(row + 6, 12, item[1]["protocolname"][0])

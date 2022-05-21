@@ -56,7 +56,9 @@ def generate_required_ct_charts_list(profile):
         StandardNameSettings.objects.get()
     except ObjectDoesNotExist:
         StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[0]
+    enable_standard_names = StandardNameSettings.objects.values_list(
+        "enable_standard_names", flat=True
+    )[0]
 
     required_charts = []
 
@@ -257,28 +259,36 @@ def generate_required_ct_charts_list(profile):
             if profile.plotMean:
                 required_charts.append(  # nosec
                     {
-                        "title": mark_safe("Chart of standard acquisition name mean CTDI<sub>vol</sub>"),
+                        "title": mark_safe(
+                            "Chart of standard acquisition name mean CTDI<sub>vol</sub>"
+                        ),
                         "var_name": "standardAcquisitionMeanCTDI",
                     }
                 )
             if profile.plotMedian:
                 required_charts.append(  # nosec
                     {
-                        "title": mark_safe("Chart of standard acquisition name median CTDI<sub>vol</sub>"),
+                        "title": mark_safe(
+                            "Chart of standard acquisition name median CTDI<sub>vol</sub>"
+                        ),
                         "var_name": "standardAcquisitionMedianCTDI",
                     }
                 )
             if profile.plotBoxplots:
                 required_charts.append(  # nosec
                     {
-                        "title": mark_safe("Boxplot of standard acquisition name CTDI<sub>vol</sub>"),
+                        "title": mark_safe(
+                            "Boxplot of standard acquisition name CTDI<sub>vol</sub>"
+                        ),
                         "var_name": "standardAcquisitionBoxplotCTDI",
                     }
                 )
             if profile.plotHistograms:
                 required_charts.append(  # nosec
                     {
-                        "title": mark_safe("Histogram of standard acquisition name CTDI<sub>vol</sub>"),
+                        "title": mark_safe(
+                            "Histogram of standard acquisition name CTDI<sub>vol</sub>"
+                        ),
                         "var_name": "standardAcquisitionHistogramCTDI",
                     }
                 )
@@ -706,7 +716,9 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
         StandardNameSettings.objects.get()
     except ObjectDoesNotExist:
         StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[0]
+    enable_standard_names = StandardNameSettings.objects.values_list(
+        "enable_standard_names", flat=True
+    )[0]
 
     # Set the Plotly chart theme
     plotly_set_default_theme(user_profile.plotThemeChoice)
@@ -769,7 +781,9 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
             user_profile.plotCTAcquisitionDLPOverTime,
         ]
         if any(charts_of_interest):
-            name_fields.append("ctradiationdose__ctirradiationeventdata__acquisition_protocol")
+            name_fields.append(
+                "ctradiationdose__ctirradiationeventdata__acquisition_protocol"
+            )
 
         if enable_standard_names:
             charts_of_interest = [
@@ -782,7 +796,9 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 user_profile.plotCTStandardAcquisitionCTDIvsMass,
             ]
             if any(charts_of_interest):
-                name_fields.append("ctradiationdose__ctirradiationeventdata__standard_protocols__standard_name")
+                name_fields.append(
+                    "ctradiationdose__ctirradiationeventdata__standard_protocols__standard_name"
+                )
 
         value_fields = []
         charts_of_interest = [
@@ -804,7 +820,9 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
         ]
         if enable_standard_names:
             charts_of_interest.append(user_profile.plotCTStandardAcquisitionMeanCTDI)
-            charts_of_interest.append(user_profile.plotCTStandardAcquisitionCTDIOverTime)
+            charts_of_interest.append(
+                user_profile.plotCTStandardAcquisitionCTDIOverTime
+            )
         charts_of_interest.append(user_profile.plotCTStandardAcquisitionCTDIvsMass)
         if any(charts_of_interest):
             value_fields.append("ctradiationdose__ctirradiationeventdata__mean_ctdivol")
@@ -828,7 +846,9 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
         ]
         if enable_standard_names:
             charts_of_interest.append(user_profile.plotCTStandardAcquisitionDLPOverTime)
-            charts_of_interest.append(user_profile.plotCTStandardAcquisitionCTDIOverTime)
+            charts_of_interest.append(
+                user_profile.plotCTStandardAcquisitionCTDIOverTime
+            )
         if any(charts_of_interest):
             date_fields.append("study_date")
 
@@ -907,11 +927,23 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
             variable_value_name = "DLP"
             modality_text = "CT"
 
-            new_charts = generate_average_chart_group(average_choices, chart_message, df, modality_text,
-                                                      name_field, name_text, return_as_dict, return_structure,
-                                                      units_text, user_profile, value_field, value_text,
-                                                      variable_name_start, variable_value_name,
-                                                      user_profile.plotCTInitialSortingChoice)
+            new_charts = generate_average_chart_group(
+                average_choices,
+                chart_message,
+                df,
+                modality_text,
+                name_field,
+                name_text,
+                return_as_dict,
+                return_structure,
+                units_text,
+                user_profile,
+                value_field,
+                value_text,
+                variable_name_start,
+                variable_value_name,
+                user_profile.plotCTInitialSortingChoice,
+            )
 
             return_structure = {**return_structure, **new_charts}
 
@@ -926,11 +958,23 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
             modality_text = "CT"
             variable_value_name = "CTDI"
 
-            new_charts = generate_average_chart_group(average_choices, chart_message, df, modality_text,
-                                                      name_field, name_text, return_as_dict, return_structure,
-                                                      units_text, user_profile, value_field, value_text,
-                                                      variable_name_start, variable_value_name,
-                                                      user_profile.plotCTInitialSortingChoice)
+            new_charts = generate_average_chart_group(
+                average_choices,
+                chart_message,
+                df,
+                modality_text,
+                name_field,
+                name_text,
+                return_as_dict,
+                return_structure,
+                units_text,
+                user_profile,
+                value_field,
+                value_text,
+                variable_name_start,
+                variable_value_name,
+                user_profile.plotCTInitialSortingChoice,
+            )
 
             return_structure = {**return_structure, **new_charts}
 
@@ -1097,9 +1141,19 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
             if any(charts_of_interest):
                 # Exclude "Blank" and "blank" standard_acqusition_name data
                 df_without_blanks = df[
-                    (df["ctradiationdose__ctirradiationeventdata__standard_protocols__standard_name"] != "blank") &
-                    (df["ctradiationdose__ctirradiationeventdata__standard_protocols__standard_name"] != "Blank")
-                    ].copy()
+                    (
+                        df[
+                            "ctradiationdose__ctirradiationeventdata__standard_protocols__standard_name"
+                        ]
+                        != "blank"
+                    )
+                    & (
+                        df[
+                            "ctradiationdose__ctirradiationeventdata__standard_protocols__standard_name"
+                        ]
+                        != "Blank"
+                    )
+                ].copy()
                 # Remove any unused categories (this will include "Blank" or "blank")
                 df_without_blanks[
                     "ctradiationdose__ctirradiationeventdata__standard_protocols__standard_name"
@@ -1146,18 +1200,31 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                     modality_text = "CT"
                     chart_message = ""
 
-                    new_charts = generate_average_chart_group(average_choices, chart_message, df_without_blanks,
-                                                              modality_text,
-                                                              name_field, name_text, return_as_dict, return_structure,
-                                                              units_text, user_profile, value_field, value_text,
-                                                              variable_name_start, variable_value_name,
-                                                              user_profile.plotCTInitialSortingChoice)
+                    new_charts = generate_average_chart_group(
+                        average_choices,
+                        chart_message,
+                        df_without_blanks,
+                        modality_text,
+                        name_field,
+                        name_text,
+                        return_as_dict,
+                        return_structure,
+                        units_text,
+                        user_profile,
+                        value_field,
+                        value_text,
+                        variable_name_start,
+                        variable_value_name,
+                        user_profile.plotCTInitialSortingChoice,
+                    )
 
                     return_structure = {**return_structure, **new_charts}
 
                 if user_profile.plotCTStandardAcquisitionMeanCTDI:
                     name_field = "ctradiationdose__ctirradiationeventdata__standard_protocols__standard_name"
-                    value_field = "ctradiationdose__ctirradiationeventdata__mean_ctdivol"
+                    value_field = (
+                        "ctradiationdose__ctirradiationeventdata__mean_ctdivol"
+                    )
                     value_text = "CTDI<sub>vol</sub>"
                     units_text = "(mGy)"
                     name_text = "Standard acquisition name"
@@ -1166,12 +1233,23 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                     modality_text = "CT"
                     chart_message = ""
 
-                    new_charts = generate_average_chart_group(average_choices, chart_message, df_without_blanks,
-                                                              modality_text,
-                                                              name_field, name_text, return_as_dict, return_structure,
-                                                              units_text, user_profile, value_field, value_text,
-                                                              variable_name_start, variable_value_name,
-                                                              user_profile.plotCTInitialSortingChoice)
+                    new_charts = generate_average_chart_group(
+                        average_choices,
+                        chart_message,
+                        df_without_blanks,
+                        modality_text,
+                        name_field,
+                        name_text,
+                        return_as_dict,
+                        return_structure,
+                        units_text,
+                        user_profile,
+                        value_field,
+                        value_text,
+                        variable_name_start,
+                        variable_value_name,
+                        user_profile.plotCTInitialSortingChoice,
+                    )
 
                     return_structure = {**return_structure, **new_charts}
 
@@ -1208,9 +1286,13 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                     )
 
                     if user_profile.plotMean:
-                        return_structure["standardAcquisitionMeanCTDIOverTime"] = result["mean"]
+                        return_structure[
+                            "standardAcquisitionMeanCTDIOverTime"
+                        ] = result["mean"]
                     if user_profile.plotMedian:
-                        return_structure["standardAcquisitionMedianCTDIOverTime"] = result["median"]
+                        return_structure[
+                            "standardAcquisitionMedianCTDIOverTime"
+                        ] = result["median"]
 
                 if user_profile.plotCTStandardAcquisitionDLPOverTime:
                     facet_title = "System"
@@ -1245,9 +1327,13 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                     )
 
                     if user_profile.plotMean:
-                        return_structure["standardAcquisitionMeanDLPOverTime"] = result["mean"]
+                        return_structure["standardAcquisitionMeanDLPOverTime"] = result[
+                            "mean"
+                        ]
                     if user_profile.plotMedian:
-                        return_structure["standardAcquisitionMedianDLPOverTime"] = result["median"]
+                        return_structure[
+                            "standardAcquisitionMedianDLPOverTime"
+                        ] = result["median"]
 
                 if user_profile.plotCTStandardAcquisitionCTDIvsMass:
                     parameter_dict = {
@@ -1268,7 +1354,9 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                         "return_as_dict": return_as_dict,
                         "custom_msg_line": chart_message,
                     }
-                    return_structure["standardAcquisitionScatterCTDIvsMass"] = plotly_scatter(
+                    return_structure[
+                        "standardAcquisitionScatterCTDIvsMass"
+                    ] = plotly_scatter(
                         df_without_blanks,
                         parameter_dict,
                     )
@@ -1292,7 +1380,9 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                         "return_as_dict": return_as_dict,
                         "custom_msg_line": chart_message,
                     }
-                    return_structure["standardAcquisitionScatterDLPvsMass"] = plotly_scatter(
+                    return_structure[
+                        "standardAcquisitionScatterDLPvsMass"
+                    ] = plotly_scatter(
                         df_without_blanks,
                         parameter_dict,
                     )
@@ -1370,7 +1460,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
 
         charts_of_interest = [
             user_profile.plotCTStudyNumEvents,
-            user_profile.plotCTRequestNumEvents
+            user_profile.plotCTRequestNumEvents,
         ]
         if enable_standard_names:
             charts_of_interest.append(user_profile.plotCTStandardStudyNumEvents)
@@ -1436,11 +1526,23 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
             modality_text = "CT"
             chart_message = ""
 
-            new_charts = generate_average_chart_group(average_choices, chart_message, df, modality_text,
-                                                      name_field, name_text, return_as_dict, return_structure,
-                                                      units_text, user_profile, value_field, value_text,
-                                                      variable_name_start, variable_value_name,
-                                                      user_profile.plotCTInitialSortingChoice)
+            new_charts = generate_average_chart_group(
+                average_choices,
+                chart_message,
+                df,
+                modality_text,
+                name_field,
+                name_text,
+                return_as_dict,
+                return_structure,
+                units_text,
+                user_profile,
+                value_field,
+                value_text,
+                variable_name_start,
+                variable_value_name,
+                user_profile.plotCTInitialSortingChoice,
+            )
 
             return_structure = {**return_structure, **new_charts}
 
@@ -1456,12 +1558,11 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
 
                 # Create a standard name data frame - remove any blank standard names
                 standard_name_df = df[
-                    (df["standard_names__standard_name"] != "blank") &
-                    (df["standard_names__standard_name"] != "Blank")].copy()
+                    (df["standard_names__standard_name"] != "blank")
+                    & (df["standard_names__standard_name"] != "Blank")
+                ].copy()
                 # Remove any unused categories (this will include "Blank" or "blank")
-                standard_name_df[
-                    "standard_names__standard_name"
-                ] = standard_name_df[
+                standard_name_df["standard_names__standard_name"] = standard_name_df[
                     "standard_names__standard_name"
                 ].cat.remove_unused_categories()
 
@@ -1477,12 +1578,23 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                     modality_text = "CT"
                     chart_message = ""
 
-                    new_charts = generate_average_chart_group(average_choices, chart_message, standard_name_df,
-                                                              modality_text,
-                                                              name_field, name_text, return_as_dict, return_structure,
-                                                              units_text, user_profile, value_field, value_text,
-                                                              variable_name_start, variable_value_name,
-                                                              user_profile.plotCTInitialSortingChoice)
+                    new_charts = generate_average_chart_group(
+                        average_choices,
+                        chart_message,
+                        standard_name_df,
+                        modality_text,
+                        name_field,
+                        name_text,
+                        return_as_dict,
+                        return_structure,
+                        units_text,
+                        user_profile,
+                        value_field,
+                        value_text,
+                        variable_name_start,
+                        variable_value_name,
+                        user_profile.plotCTInitialSortingChoice,
+                    )
 
                     return_structure = {**return_structure, **new_charts}
 
@@ -1498,12 +1610,23 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                     modality_text = "CT"
                     chart_message = ""
 
-                    new_charts = generate_average_chart_group(average_choices, chart_message, standard_name_df,
-                                                              modality_text,
-                                                              name_field, name_text, return_as_dict, return_structure,
-                                                              units_text, user_profile, value_field, value_text,
-                                                              variable_name_start, variable_value_name,
-                                                              user_profile.plotCTInitialSortingChoice)
+                    new_charts = generate_average_chart_group(
+                        average_choices,
+                        chart_message,
+                        standard_name_df,
+                        modality_text,
+                        name_field,
+                        name_text,
+                        return_as_dict,
+                        return_structure,
+                        units_text,
+                        user_profile,
+                        value_field,
+                        value_text,
+                        variable_name_start,
+                        variable_value_name,
+                        user_profile.plotCTInitialSortingChoice,
+                    )
 
                     return_structure = {**return_structure, **new_charts}
 
@@ -1536,10 +1659,14 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
 
                 if user_profile.plotCTStandardStudyPerDayAndHour:
                     df_time_series_per_weekday = create_dataframe_weekdays(
-                        standard_name_df, "standard_names__standard_name", df_date_col="study_date"
+                        standard_name_df,
+                        "standard_names__standard_name",
+                        df_date_col="study_date",
                     )
 
-                    return_structure["standardStudyWorkloadData"] = plotly_barchart_weekdays(
+                    return_structure[
+                        "standardStudyWorkloadData"
+                    ] = plotly_barchart_weekdays(
                         df_time_series_per_weekday,
                         "weekday",
                         "standard_names__standard_name",
@@ -1587,9 +1714,13 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                     )
 
                     if user_profile.plotMean:
-                        return_structure["standardStudyMeanDLPOverTime"] = result["mean"]
+                        return_structure["standardStudyMeanDLPOverTime"] = result[
+                            "mean"
+                        ]
                     if user_profile.plotMedian:
-                        return_structure["standardStudyMedianDLPOverTime"] = result["median"]
+                        return_structure["standardStudyMedianDLPOverTime"] = result[
+                            "median"
+                        ]
 
         if user_profile.plotCTStudyMeanCTDI:
 
@@ -1603,11 +1734,23 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
             modality_text = "CT"
             chart_message = ""
 
-            new_charts = generate_average_chart_group(average_choices, chart_message, df, modality_text,
-                                                      name_field, name_text, return_as_dict, return_structure,
-                                                      units_text, user_profile, value_field, value_text,
-                                                      variable_name_start, variable_value_name,
-                                                      user_profile.plotCTInitialSortingChoice)
+            new_charts = generate_average_chart_group(
+                average_choices,
+                chart_message,
+                df,
+                modality_text,
+                name_field,
+                name_text,
+                return_as_dict,
+                return_structure,
+                units_text,
+                user_profile,
+                value_field,
+                value_text,
+                variable_name_start,
+                variable_value_name,
+                user_profile.plotCTInitialSortingChoice,
+            )
 
             return_structure = {**return_structure, **new_charts}
 
@@ -1623,11 +1766,23 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
             modality_text = "CT"
             chart_message = ""
 
-            new_charts = generate_average_chart_group(average_choices, chart_message, df, modality_text,
-                                                      name_field, name_text, return_as_dict, return_structure,
-                                                      units_text, user_profile, value_field, value_text,
-                                                      variable_name_start, variable_value_name,
-                                                      user_profile.plotCTInitialSortingChoice)
+            new_charts = generate_average_chart_group(
+                average_choices,
+                chart_message,
+                df,
+                modality_text,
+                name_field,
+                name_text,
+                return_as_dict,
+                return_structure,
+                units_text,
+                user_profile,
+                value_field,
+                value_text,
+                variable_name_start,
+                variable_value_name,
+                user_profile.plotCTInitialSortingChoice,
+            )
 
             return_structure = {**return_structure, **new_charts}
 
@@ -1670,11 +1825,23 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
             modality_text = "CT"
             chart_message = ""
 
-            new_charts = generate_average_chart_group(average_choices, chart_message, df, modality_text,
-                                                      name_field, name_text, return_as_dict, return_structure,
-                                                      units_text, user_profile, value_field, value_text,
-                                                      variable_name_start, variable_value_name,
-                                                      user_profile.plotCTInitialSortingChoice)
+            new_charts = generate_average_chart_group(
+                average_choices,
+                chart_message,
+                df,
+                modality_text,
+                name_field,
+                name_text,
+                return_as_dict,
+                return_structure,
+                units_text,
+                user_profile,
+                value_field,
+                value_text,
+                variable_name_start,
+                variable_value_name,
+                user_profile.plotCTInitialSortingChoice,
+            )
 
             return_structure = {**return_structure, **new_charts}
 
@@ -1690,11 +1857,23 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
             modality_text = "CT"
             chart_message = ""
 
-            new_charts = generate_average_chart_group(average_choices, chart_message, df, modality_text,
-                                                      name_field, name_text, return_as_dict, return_structure,
-                                                      units_text, user_profile, value_field, value_text,
-                                                      variable_name_start, variable_value_name,
-                                                      user_profile.plotCTInitialSortingChoice)
+            new_charts = generate_average_chart_group(
+                average_choices,
+                chart_message,
+                df,
+                modality_text,
+                name_field,
+                name_text,
+                return_as_dict,
+                return_structure,
+                units_text,
+                user_profile,
+                value_field,
+                value_text,
+                variable_name_start,
+                variable_value_name,
+                user_profile.plotCTInitialSortingChoice,
+            )
 
             return_structure = {**return_structure, **new_charts}
 
@@ -1828,7 +2007,9 @@ def ct_chart_form_processing(request, user_profile):
         StandardNameSettings.objects.get()
     except ObjectDoesNotExist:
         StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[0]
+    enable_standard_names = StandardNameSettings.objects.values_list(
+        "enable_standard_names", flat=True
+    )[0]
 
     # Obtain the chart options from the request
     chart_options_form = None

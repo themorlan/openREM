@@ -185,7 +185,9 @@ def standard_name_settings():
         StandardNameSettings.objects.get()
     except ObjectDoesNotExist:
         StandardNameSettings.objects.create()
-    return StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[0]
+    return StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[
+        0
+    ]
 
 
 def create_paginated_study_list(request, f, user_profile):
@@ -279,7 +281,11 @@ def rf_summary_list_filter(request):
     """Obtain data for radiographic summary view."""
 
     enable_standard_names = standard_name_settings()
-    queryset = GeneralStudyModuleAttr.objects.filter(modality_type__exact="RF").order_by("-study_date", "-study_time").distinct()
+    queryset = (
+        GeneralStudyModuleAttr.objects.filter(modality_type__exact="RF")
+        .order_by("-study_date", "-study_time")
+        .distinct()
+    )
 
     if request.user.groups.filter(name="pidgroup"):
         if enable_standard_names:
@@ -704,10 +710,10 @@ def ct_detail_view(request, pk=None):
 
     events_all = (
         study.ctradiationdose_set.get()
-            .ctirradiationeventdata_set.select_related(
+        .ctirradiationeventdata_set.select_related(
             "ct_acquisition_type", "ctdiw_phantom_type"
         )
-            .order_by("pk")
+        .order_by("pk")
     )
 
     associated_nm = GeneralStudyModuleAttr.objects.filter(
@@ -739,7 +745,11 @@ def mg_summary_list_filter(request):
     if "page" in filter_data:
         del filter_data["page"]
 
-    queryset = GeneralStudyModuleAttr.objects.filter(modality_type__exact="MG").order_by("-study_date", "-study_time").distinct()
+    queryset = (
+        GeneralStudyModuleAttr.objects.filter(modality_type__exact="MG")
+        .order_by("-study_date", "-study_time")
+        .distinct()
+    )
 
     if request.user.groups.filter(name="pidgroup"):
         if enable_standard_names:

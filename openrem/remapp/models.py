@@ -895,7 +895,7 @@ class StandardNames(models.Model):
             ("modality", "study_description"),
             ("modality", "requested_procedure_code_meaning"),
             ("modality", "procedure_code_meaning"),
-            ("modality", "acquisition_protocol")
+            ("modality", "acquisition_protocol"),
         )
 
     def __unicode__(self):
