@@ -31,12 +31,12 @@ from datetime import datetime
 from decimal import Decimal
 import logging
 
-import numpy as np
 from django.db.models import (
     ObjectDoesNotExist,
     Q,
 )
 from django.conf import settings
+import numpy as np
 
 from remapp.models import (
     GeneralStudyModuleAttr,

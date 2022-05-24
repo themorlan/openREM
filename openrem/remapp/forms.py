@@ -30,6 +30,7 @@
 import os
 import logging
 import operator
+from functools import reduce
 
 from django import forms
 from django.db.models import Q
@@ -47,7 +48,6 @@ from crispy_forms.bootstrap import (
     Accordion,
     AccordionGroup,
 )
-from functools import reduce
 
 from .models import (
     DicomDeleteSettings,
@@ -1638,7 +1638,7 @@ class DicomStoreForm(forms.ModelForm):
 
 
 class StandardNameFormBase(forms.ModelForm):
-    """Form for configuring standard names for study description, requested procedure, procedure and acquisition name"""
+    """For configuring standard names for study description, requested procedure, procedure and acquisition name. """
 
     class Meta(object):
         model = StandardNames
