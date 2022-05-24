@@ -157,14 +157,18 @@ def _series_headers(max_events):
         StandardNameSettings.objects.get()
     except ObjectDoesNotExist:
         StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[0]
+    enable_standard_names = StandardNameSettings.objects.values_list(
+        "enable_standard_names", flat=True
+    )[0]
 
     series_headers = []
     for series_number in range(int(max_events)):
         series_headers += ["E" + str(series_number + 1) + " Protocol"]
 
         if enable_standard_names:
-            series_headers += ["E" + str(series_number + 1) + " Standard acquisition name"]
+            series_headers += [
+                "E" + str(series_number + 1) + " Standard acquisition name"
+            ]
 
         series_headers += [
             "E" + str(series_number + 1) + " Anatomy",
@@ -203,7 +207,9 @@ def _dx_get_series_data(s):
         StandardNameSettings.objects.get()
     except ObjectDoesNotExist:
         StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[0]
+    enable_standard_names = StandardNameSettings.objects.values_list(
+        "enable_standard_names", flat=True
+    )[0]
 
     source_data = _get_source_data(s)
     detector_data = _get_detector_data(s)
@@ -388,7 +394,9 @@ def dxxlsx(filterdict, pid=False, name=None, patid=None, user=None):
         StandardNameSettings.objects.get()
     except ObjectDoesNotExist:
         StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[0]
+    enable_standard_names = StandardNameSettings.objects.values_list(
+        "enable_standard_names", flat=True
+    )[0]
 
     datestamp = datetime.datetime.now()
     task_id = get_or_generate_task_uuid()
@@ -427,7 +435,7 @@ def dxxlsx(filterdict, pid=False, name=None, patid=None, user=None):
     protocolheaders = commonheaders + ["Protocol"]
 
     if enable_standard_names:
-        protocolheaders +=  ["Standard acquisition name"]
+        protocolheaders += ["Standard acquisition name"]
 
     protocolheaders = protocolheaders + [
         "Anatomy",
@@ -532,7 +540,9 @@ def dxxlsx(filterdict, pid=False, name=None, patid=None, user=None):
                             tabtext = sheet_name("[standard] " + protocol)
                             sheet_list[tabtext]["count"] += 1
                             sheet_list[tabtext]["sheet"].write_row(
-                                sheet_list[tabtext]["count"], 0, common_exam_data + series_data
+                                sheet_list[tabtext]["count"],
+                                0,
+                                common_exam_data + series_data,
                             )
                     except AttributeError:
                         pass

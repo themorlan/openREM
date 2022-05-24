@@ -67,8 +67,9 @@ def _series_headers(max_events):
         StandardNameSettings.objects.get()
     except ObjectDoesNotExist:
         StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[0]
-
+    enable_standard_names = StandardNameSettings.objects.values_list(
+        "enable_standard_names", flat=True
+    )[0]
 
     series_headers = []
     for series_number in range(max_events):
@@ -79,7 +80,9 @@ def _series_headers(max_events):
         ]
 
         if enable_standard_names:
-            series_headers += ["E" + str(series_number + 1) + " Standard acquisition name"]
+            series_headers += [
+                "E" + str(series_number + 1) + " Standard acquisition name"
+            ]
 
         series_headers += [
             "E" + str(series_number + 1) + " Thickness",
@@ -116,7 +119,9 @@ def _mg_get_series_data(event):
         StandardNameSettings.objects.get()
     except ObjectDoesNotExist:
         StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[0]
+    enable_standard_names = StandardNameSettings.objects.values_list(
+        "enable_standard_names", flat=True
+    )[0]
 
     try:
         mechanical_data = event.irradeventxraymechanicaldata_set.get()
@@ -198,7 +203,6 @@ def _mg_get_series_data(event):
         else:
             series_data += [""]
 
-
     series_data += [
         compression_thickness,
         radiological_thickness,
@@ -248,7 +252,9 @@ def exportMG2excel(filterdict, pid=False, name=None, patid=None, user=None, xlsx
         StandardNameSettings.objects.get()
     except ObjectDoesNotExist:
         StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[0]
+    enable_standard_names = StandardNameSettings.objects.values_list(
+        "enable_standard_names", flat=True
+    )[0]
 
     datestamp = datetime.datetime.now()
     if xlsx:
@@ -290,23 +296,31 @@ def exportMG2excel(filterdict, pid=False, name=None, patid=None, user=None, xlsx
         if enable_standard_names:
             df_filtered_qs = MGFilterPlusPidPlusStdNames(
                 filterdict,
-                queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact="MG").distinct(),
+                queryset=GeneralStudyModuleAttr.objects.filter(
+                    modality_type__exact="MG"
+                ).distinct(),
             )
         else:
             df_filtered_qs = MGFilterPlusPid(
                 filterdict,
-                queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact="MG").distinct(),
+                queryset=GeneralStudyModuleAttr.objects.filter(
+                    modality_type__exact="MG"
+                ).distinct(),
             )
     else:
         if enable_standard_names:
             df_filtered_qs = MGFilterPlusStdNames(
                 filterdict,
-                queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact="MG").distinct(),
+                queryset=GeneralStudyModuleAttr.objects.filter(
+                    modality_type__exact="MG"
+                ).distinct(),
             )
         else:
             df_filtered_qs = MGSummaryListFilter(
                 filterdict,
-                queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact="MG").distinct(),
+                queryset=GeneralStudyModuleAttr.objects.filter(
+                    modality_type__exact="MG"
+                ).distinct(),
             )
 
     studies = df_filtered_qs.qs

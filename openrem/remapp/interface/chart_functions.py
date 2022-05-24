@@ -314,24 +314,32 @@ def create_standard_study_df(df, std_name="standard_study", df_agg_cols=None):
         df: a Pandas DataFrame with df_agg_col and x_ray_system_name values for each standard_study
     """
     # Generate a list of unique names in the standard name fields of the dataframe, excluding "blank" and "Blank"
-    unique_names = (df['standard_study_name'].append(df['standard_request_name']).append(df['standard_procedure_name'])).unique()
+    unique_names = (
+        df["standard_study_name"]
+        .append(df["standard_request_name"])
+        .append(df["standard_procedure_name"])
+    ).unique()
     unique_names = unique_names[(unique_names != "blank") & (unique_names != "Blank")]
 
     # The list of fields to use when generating the grouped dataframe and the fields for the id_vars of the melt
-    fields_to_include = ["standard_request_name", "standard_procedure_name", "standard_study_name", "x_ray_system_name"]
+    fields_to_include = [
+        "standard_request_name",
+        "standard_procedure_name",
+        "standard_study_name",
+        "x_ray_system_name",
+    ]
     id_vars = ["index", "x_ray_system_name"]
     if df_agg_cols:
         fields_to_include.extend(df_agg_cols)
         id_vars.extend(df_agg_cols)
 
-    df = df[fields_to_include].reset_index().melt(
-        id_vars=id_vars, value_name="standard_study"
-    ).drop_duplicates(
-        ["index", "standard_study"]
-    ).dropna(
-        subset=["standard_study"]
-    ).drop(
-        columns=["variable"]
+    df = (
+        df[fields_to_include]
+        .reset_index()
+        .melt(id_vars=id_vars, value_name="standard_study")
+        .drop_duplicates(["index", "standard_study"])
+        .dropna(subset=["standard_study"])
+        .drop(columns=["variable"])
     )
 
     # Drop all rows except those that are in the list of unique standard names. Doing this at this stage
@@ -2196,9 +2204,23 @@ def download_link(
     return f'<a class="btn btn-default btn-sm" role="button" href="data:file/txt;base64,{b64}" download="{download_filename}">{download_link_text}</a>'  # pylint: disable=line-too-long
 
 
-def generate_average_chart_group(average_choices, chart_message, df, modality_text, name_field, name_text,
-                                 return_as_dict, return_structure, units_text, user_profile, value_field, value_text,
-                                 variable_name_start, variable_value_name, sorting_choice):
+def generate_average_chart_group(
+    average_choices,
+    chart_message,
+    df,
+    modality_text,
+    name_field,
+    name_text,
+    return_as_dict,
+    return_structure,
+    units_text,
+    user_profile,
+    value_field,
+    value_text,
+    variable_name_start,
+    variable_value_name,
+    sorting_choice,
+):
 
     if user_profile.plotBoxplots and "median" not in average_choices:
         average_choices = average_choices + ["median"]
@@ -2228,13 +2250,23 @@ def generate_average_chart_group(average_choices, chart_message, df, modality_te
 
         if user_profile.plotMean:
             parameter_dict["value_axis_title"] = "Mean " + value_text + " " + units_text
-            parameter_dict[
-                "filename"
-            ] = "OpenREM " + modality_text + " " + name_text + " " + value_text + " mean"
+            parameter_dict["filename"] = (
+                "OpenREM "
+                + modality_text
+                + " "
+                + name_text
+                + " "
+                + value_text
+                + " mean"
+            )
             parameter_dict["average_choice"] = "mean"
             (
-                return_structure[variable_name_start + "Mean" + variable_value_name + "Data"],
-                return_structure[variable_name_start + "Mean" + variable_value_name + "DataCSV"],
+                return_structure[
+                    variable_name_start + "Mean" + variable_value_name + "Data"
+                ],
+                return_structure[
+                    variable_name_start + "Mean" + variable_value_name + "DataCSV"
+                ],
             ) = plotly_barchart(  # pylint: disable=line-too-long
                 df_aggregated,
                 parameter_dict,
@@ -2242,14 +2274,23 @@ def generate_average_chart_group(average_choices, chart_message, df, modality_te
             )
 
             # Create a data frame to use to display the data to the user in an html table
-            table_df = df_aggregated[["x_ray_system_name", name_field, "mean", "count"]].round({"mean": 2})
+            table_df = df_aggregated[
+                ["x_ray_system_name", name_field, "mean", "count"]
+            ].round({"mean": 2})
 
             # Rename the data frame columns to have user-friendly names
-            table_df.columns = ["X-ray system name", name_text, "Mean " + value_text + " " + units_text, "Count"]
+            table_df.columns = [
+                "X-ray system name",
+                name_text,
+                "Mean " + value_text + " " + units_text,
+                "Count",
+            ]
 
             # Pivot the table so that there is a column per system for the median and count
             table_df = table_df.pivot(index=name_text, columns="X-ray system name")
-            table_df.columns = ['<br>'.join((col[1], str(col[0]))) for col in table_df.columns]
+            table_df.columns = [
+                "<br>".join((col[1], str(col[0]))) for col in table_df.columns
+            ]
             table_df = table_df.reset_index()
 
             # Add a html table version of the data frame to the return structure
@@ -2263,14 +2304,26 @@ def generate_average_chart_group(average_choices, chart_message, df, modality_te
             )
 
         if user_profile.plotMedian:
-            parameter_dict["value_axis_title"] = "Median " + value_text + " " + units_text
-            parameter_dict[
-                "filename"
-            ] = "OpenREM " + modality_text + " " + name_text + " " + value_text + " median"
+            parameter_dict["value_axis_title"] = (
+                "Median " + value_text + " " + units_text
+            )
+            parameter_dict["filename"] = (
+                "OpenREM "
+                + modality_text
+                + " "
+                + name_text
+                + " "
+                + value_text
+                + " median"
+            )
             parameter_dict["average_choice"] = "median"
             (
-                return_structure[variable_name_start + "Median" + variable_value_name + "Data"],
-                return_structure[variable_name_start + "Median" + variable_value_name + "DataCSV"],
+                return_structure[
+                    variable_name_start + "Median" + variable_value_name + "Data"
+                ],
+                return_structure[
+                    variable_name_start + "Median" + variable_value_name + "DataCSV"
+                ],
             ) = plotly_barchart(  # pylint: disable=line-too-long
                 df_aggregated,
                 parameter_dict,
@@ -2278,18 +2331,29 @@ def generate_average_chart_group(average_choices, chart_message, df, modality_te
             )
 
             # Create a data frame to use to display the data to the user in an html table
-            table_df = df_aggregated[["x_ray_system_name", name_field, "median", "count"]].round({"median": 2})
+            table_df = df_aggregated[
+                ["x_ray_system_name", name_field, "median", "count"]
+            ].round({"median": 2})
 
             # Rename the data frame columns to have user-friendly names
-            table_df.columns = ["X-ray system name", name_text, "Median " + value_text + " " + units_text, "Count"]
+            table_df.columns = [
+                "X-ray system name",
+                name_text,
+                "Median " + value_text + " " + units_text,
+                "Count",
+            ]
 
             # Pivot the table so that there is a column per system for the median and count
             table_df = table_df.pivot(index=name_text, columns="X-ray system name")
-            table_df.columns = ['<br>'.join((col[1], str(col[0]))) for col in table_df.columns]
+            table_df.columns = [
+                "<br>".join((col[1], str(col[0]))) for col in table_df.columns
+            ]
             table_df = table_df.reset_index()
 
             # Add a html table version of the data frame to the return structure
-            tableName = variable_name_start + "Median" + variable_value_name + "DataTable"
+            tableName = (
+                variable_name_start + "Median" + variable_value_name + "DataTable"
+            )
             return_structure[tableName] = table_df.to_html(
                 classes="table table-bordered table-sm small sortable chart-data-table-contents",
                 table_id=tableName,
@@ -2305,7 +2369,13 @@ def generate_average_chart_group(average_choices, chart_message, df, modality_te
             "value_axis_title": value_text + " " + units_text,
             "name_axis_title": name_text,
             "colourmap": user_profile.plotColourMapChoice,
-            "filename": "OpenREM " + modality_text + " " + name_text + " " + variable_value_name + " boxplot",
+            "filename": "OpenREM "
+            + modality_text
+            + " "
+            + name_text
+            + " "
+            + variable_value_name
+            + " boxplot",
             "facet_col": None,
             "sorting_choice": [
                 user_profile.plotInitialSortingDirection,
@@ -2316,7 +2386,9 @@ def generate_average_chart_group(average_choices, chart_message, df, modality_te
             "custom_msg_line": chart_message,
         }
 
-        return_structure[variable_name_start + "Boxplot" + variable_value_name + "Data"] = plotly_boxplot(
+        return_structure[
+            variable_name_start + "Boxplot" + variable_value_name + "Data"
+        ] = plotly_boxplot(
             df,
             parameter_dict,
         )
@@ -2339,7 +2411,13 @@ def generate_average_chart_group(average_choices, chart_message, df, modality_te
             "legend_title": legend_title,
             "n_bins": user_profile.plotHistogramBins,
             "colourmap": user_profile.plotColourMapChoice,
-            "filename": "OpenREM " + modality_text + " " + name_text + " " + variable_value_name + " histogram",
+            "filename": "OpenREM "
+            + modality_text
+            + " "
+            + name_text
+            + " "
+            + variable_value_name
+            + " histogram",
             "facet_col_wrap": user_profile.plotFacetColWrapVal,
             "sorting_choice": [
                 user_profile.plotInitialSortingDirection,
@@ -2351,7 +2429,7 @@ def generate_average_chart_group(average_choices, chart_message, df, modality_te
         }
         return_structure[
             variable_name_start + "Histogram" + variable_value_name + "Data"
-            ] = plotly_histogram_barchart(
+        ] = plotly_histogram_barchart(
             df,
             parameter_dict,
         )

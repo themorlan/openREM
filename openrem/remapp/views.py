@@ -179,6 +179,17 @@ def create_admin_info(request):
     return admin
 
 
+def standard_name_settings():
+    """Obtain the system-level enable_standard_names setting."""
+    try:
+        StandardNameSettings.objects.get()
+    except ObjectDoesNotExist:
+        StandardNameSettings.objects.create()
+    return StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[
+        0
+    ]
+
+
 def create_paginated_study_list(request, f, user_profile):
     paginator = Paginator(f.qs, user_profile.itemsPerPage)
     page = request.GET.get("page")
@@ -191,69 +202,31 @@ def create_paginated_study_list(request, f, user_profile):
     return study_list
 
 
-@login_required
-def dx_summary_list_filter(request):
-    """Obtain data for radiographic summary view"""
-    pid = bool(request.user.groups.filter(name="pidgroup"))
-    f = dx_acq_filter(request.GET, pid=pid)
-
-    try:
-        # See if the user has plot settings in userprofile
-        user_profile = request.user.userprofile
-    except ObjectDoesNotExist:
-        # Create a default userprofile for the user if one doesn't exist
-        create_user_profile(sender=request.user, instance=request.user, created=True)
-        user_profile = request.user.userprofile
-
-    chart_options_form = dx_chart_form_processing(request, user_profile)
-
-    # Obtain the number of items per page from the request
-    items_per_page_form = itemsPerPageForm(request.GET)
-    # check whether the form data is valid
-    if items_per_page_form.is_valid():
-        # Use the form data if the user clicked on the submit button
-        if "submit" in request.GET:
-            # process the data in form.cleaned_data as required
-            user_profile.itemsPerPage = items_per_page_form.cleaned_data["itemsPerPage"]
-            user_profile.save()
-
-        # If submit was not clicked then use the settings already stored in the user's profile
-        else:
-            form_data = {"itemsPerPage": user_profile.itemsPerPage}
-            items_per_page_form = itemsPerPageForm(form_data)
-
-    # Obtain the system-level enable_standard_names setting
-    try:
-        StandardNameSettings.objects.get()
-    except ObjectDoesNotExist:
-        StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[0]
-
-    admin = {
-        "openremversion": __version__,
-        "docsversion": __docs_version__,
-    }
-
-    for group in request.user.groups.all():
-        admin[group.name] = True
-
-    paginator = Paginator(f.qs, user_profile.itemsPerPage)
-    page = request.GET.get("page")
-    try:
-        study_list = paginator.page(page)
-    except PageNotAnInteger:
-        study_list = paginator.page(1)
-    except EmptyPage:
-        study_list = paginator.page(paginator.num_pages)
-
+def generate_return_structure(request, f):
+    user_profile = get_or_create_user(request)
+    items_per_page_form = update_items_per_page_form(request, user_profile)
+    admin = create_admin_info(request)
+    study_list = create_paginated_study_list(request, f, user_profile)
+    enable_standard_names = standard_name_settings()
     return_structure = {
         "filter": f,
         "study_list": study_list,
         "admin": admin,
-        "chartOptionsForm": chart_options_form,
         "itemsPerPageForm": items_per_page_form,
         "showStandardNames": enable_standard_names,
     }
+    return user_profile, return_structure
+
+
+@login_required
+def dx_summary_list_filter(request):
+    """Obtain data for radiographic summary view."""
+    pid = bool(request.user.groups.filter(name="pidgroup"))
+    f = dx_acq_filter(request.GET, pid=pid)
+
+    user_profile, return_structure = generate_return_structure(request, f)
+    chart_options_form = dx_chart_form_processing(request, user_profile)
+    return_structure["chartOptionsForm"] = chart_options_form
 
     if user_profile.plotCharts:
         return_structure["required_charts"] = generate_required_dx_charts_list(
@@ -267,13 +240,6 @@ def dx_summary_list_filter(request):
 def dx_detail_view(request, pk=None):
     """Detail view for a DX study."""
 
-    # Obtain the system-level enable_standard_names setting
-    try:
-        StandardNameSettings.objects.get()
-    except ObjectDoesNotExist:
-        StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[0]
-
     try:
         study = GeneralStudyModuleAttr.objects.get(pk=pk)
     except:
@@ -281,6 +247,7 @@ def dx_detail_view(request, pk=None):
         return redirect(reverse_lazy("dx_summary_list_filter"))
 
     admin = create_admin_info(request)
+    enable_standard_names = standard_name_settings()
 
     projection_set = study.projectionxrayradiationdose_set.get()
     events_all = projection_set.irradeventxraydata_set.select_related(
@@ -313,14 +280,12 @@ def dx_detail_view(request, pk=None):
 def rf_summary_list_filter(request):
     """Obtain data for radiographic summary view."""
 
-    # Obtain the system-level enable_standard_names setting
-    try:
-        StandardNameSettings.objects.get()
-    except ObjectDoesNotExist:
-        StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[0]
-
-    queryset = GeneralStudyModuleAttr.objects.filter(modality_type__exact="RF").order_by("-study_date", "-study_time").distinct()
+    enable_standard_names = standard_name_settings()
+    queryset = (
+        GeneralStudyModuleAttr.objects.filter(modality_type__exact="RF")
+        .order_by("-study_date", "-study_time")
+        .distinct()
+    )
 
     if request.user.groups.filter(name="pidgroup"):
         if enable_standard_names:
@@ -345,9 +310,8 @@ def rf_summary_list_filter(request):
                 queryset=queryset,
             )
 
-    user_profile = get_or_create_user(request)
+    user_profile, return_structure = generate_return_structure(request, f)
     chart_options_form = rf_chart_form_processing(request, user_profile)
-    items_per_page_form = update_items_per_page_form(request, user_profile)
 
     # Import total DAP and total dose at reference point alert levels. Create with default values if not found.
     try:
@@ -361,19 +325,8 @@ def rf_summary_list_filter(request):
         "accum_dose_delta_weeks",
     )[0]
 
-    admin = create_admin_info(request)
-
-    study_list = create_paginated_study_list(request, f, user_profile)
-
-    return_structure = {
-        "filter": f,
-        "study_list": study_list,
-        "admin": admin,
-        "chartOptionsForm": chart_options_form,
-        "itemsPerPageForm": items_per_page_form,
-        "alertLevels": alert_levels,
-        "showStandardNames": enable_standard_names,
-    }
+    return_structure["chartOptionsForm"] = chart_options_form
+    return_structure["alertLevels"] = alert_levels
 
     if user_profile.plotCharts:
         return_structure["required_charts"] = generate_required_rf_charts_list(
@@ -387,12 +340,7 @@ def rf_summary_list_filter(request):
 def rf_detail_view(request, pk=None):
     """Detail view for an RF study."""
 
-    # Obtain the system-level enable_standard_names setting
-    try:
-        StandardNameSettings.objects.get()
-    except ObjectDoesNotExist:
-        StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[0]
+    enable_standard_names = standard_name_settings()
 
     try:
         study = GeneralStudyModuleAttr.objects.get(pk=pk)
@@ -688,19 +636,10 @@ def nm_summary_list_filter(request):
     """Obtain data for NM summary view."""
     pid = bool(request.user.groups.filter(name="pidgroup"))
     f = nm_filter(request.GET, pid=pid)
-    user_profile = get_or_create_user(request)
-    chart_options_form = nm_chart_form_processing(request, user_profile)
-    items_per_page_form = update_items_per_page_form(request, user_profile)
-    admin = create_admin_info(request)
-    study_list = create_paginated_study_list(request, f, user_profile)
 
-    return_structure = {
-        "filter": f,
-        "study_list": study_list,
-        "admin": admin,
-        "chartOptionsForm": chart_options_form,
-        "itemsPerPageForm": items_per_page_form,
-    }
+    user_profile, return_structure = generate_return_structure(request, f)
+    chart_options_form = nm_chart_form_processing(request, user_profile)
+    return_structure["chartOptionsForm"] = chart_options_form
 
     if user_profile.plotCharts:
         return_structure["required_charts"] = generate_required_nm_charts_list(
@@ -725,6 +664,7 @@ def nm_detail_view(request, pk=None):
     ).first()
 
     admin = create_admin_info(request)
+    enable_standard_names = standard_name_settings()
 
     return render(
         request,
@@ -733,6 +673,7 @@ def nm_detail_view(request, pk=None):
             "generalstudymoduleattr": study,
             "admin": admin,
             "associated_ct": associated_ct,
+            "showStandardNames": enable_standard_names,
         },
     )
 
@@ -742,27 +683,10 @@ def ct_summary_list_filter(request):
     """Obtain data for CT summary view."""
     pid = bool(request.user.groups.filter(name="pidgroup"))
     f = ct_acq_filter(request.GET, pid=pid)
-    user_profile = get_or_create_user(request)
+
+    user_profile, return_structure = generate_return_structure(request, f)
     chart_options_form = ct_chart_form_processing(request, user_profile)
-    items_per_page_form = update_items_per_page_form(request, user_profile)
-    admin = create_admin_info(request)
-    study_list = create_paginated_study_list(request, f, user_profile)
-
-    # Obtain the system-level enable_standard_names setting
-    try:
-        StandardNameSettings.objects.get()
-    except ObjectDoesNotExist:
-        StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[0]
-
-    return_structure = {
-        "filter": f,
-        "study_list": study_list,
-        "admin": admin,
-        "chartOptionsForm": chart_options_form,
-        "itemsPerPageForm": items_per_page_form,
-        "showStandardNames": enable_standard_names,
-    }
+    return_structure["chartOptionsForm"] = chart_options_form
 
     if user_profile.plotCharts:
         return_structure["required_charts"] = generate_required_ct_charts_list(
@@ -776,12 +700,7 @@ def ct_summary_list_filter(request):
 def ct_detail_view(request, pk=None):
     """Detail view for a CT study."""
 
-    # Obtain the system-level enable_standard_names setting
-    try:
-        StandardNameSettings.objects.get()
-    except ObjectDoesNotExist:
-        StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[0]
+    enable_standard_names = standard_name_settings()
 
     try:
         study = GeneralStudyModuleAttr.objects.get(pk=pk)
@@ -791,10 +710,10 @@ def ct_detail_view(request, pk=None):
 
     events_all = (
         study.ctradiationdose_set.get()
-            .ctirradiationeventdata_set.select_related(
+        .ctirradiationeventdata_set.select_related(
             "ct_acquisition_type", "ctdiw_phantom_type"
         )
-            .order_by("pk")
+        .order_by("pk")
     )
 
     associated_nm = GeneralStudyModuleAttr.objects.filter(
@@ -821,18 +740,16 @@ def ct_detail_view(request, pk=None):
 def mg_summary_list_filter(request):
     """Mammography data for summary view."""
 
-    # Obtain the system-level enable_standard_names setting
-    try:
-        StandardNameSettings.objects.get()
-    except ObjectDoesNotExist:
-        StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[0]
-
+    enable_standard_names = standard_name_settings()
     filter_data = request.GET.copy()
     if "page" in filter_data:
         del filter_data["page"]
 
-    queryset = GeneralStudyModuleAttr.objects.filter(modality_type__exact="MG").order_by("-study_date", "-study_time").distinct()
+    queryset = (
+        GeneralStudyModuleAttr.objects.filter(modality_type__exact="MG")
+        .order_by("-study_date", "-study_time")
+        .distinct()
+    )
 
     if request.user.groups.filter(name="pidgroup"):
         if enable_standard_names:
@@ -857,20 +774,9 @@ def mg_summary_list_filter(request):
                 queryset=queryset,
             )
 
-    user_profile = get_or_create_user(request)
+    user_profile, return_structure = generate_return_structure(request, f)
     chart_options_form = mg_chart_form_processing(request, user_profile)
-    items_per_page_form = update_items_per_page_form(request, user_profile)
-    admin = create_admin_info(request)
-    study_list = create_paginated_study_list(request, f, user_profile)
-
-    return_structure = {
-        "filter": f,
-        "study_list": study_list,
-        "admin": admin,
-        "chartOptionsForm": chart_options_form,
-        "itemsPerPageForm": items_per_page_form,
-        "showStandardNames": enable_standard_names,
-    }
+    return_structure["chartOptionsForm"] = chart_options_form
 
     if user_profile.plotCharts:
         return_structure["required_charts"] = generate_required_mg_charts_list(
@@ -884,12 +790,7 @@ def mg_summary_list_filter(request):
 def mg_detail_view(request, pk=None):
     """Detail view for a CT study."""
 
-    # Obtain the system-level enable_standard_names setting
-    try:
-        StandardNameSettings.objects.get()
-    except ObjectDoesNotExist:
-        StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[0]
+    enable_standard_names = standard_name_settings()
 
     try:
         study = GeneralStudyModuleAttr.objects.get(pk=pk)
