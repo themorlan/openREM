@@ -861,7 +861,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
             name_field = (
                 "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
             )
-            value_field = "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure__exposure"
+            value_field = "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure__exposure"  # pylint: disable=line-too-long
             value_text = "mAs"
             units_text = ""
             name_text = "Acquisition protocol"
@@ -1178,7 +1178,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     return_structure = {**return_structure, **new_charts}
 
                 if user_profile.plotDXStandardAcquisitionFreq:
-                    parameter_dict = {
+                    parameter_dict = {  # pylint: disable=line-too-long
                         "df_name_col": "projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name",
                         "sorting_choice": [
                             user_profile.plotInitialSortingDirection,
@@ -1250,7 +1250,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     if user_profile.plotGroupingChoice == "series":
                         facet_title = "Standard acquisition name"
 
-                    parameter_dict = {
+                    parameter_dict = {  # pylint: disable=line-too-long
                         "df_name_col": "projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name",
                         "df_value_col": "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__kvp__kvp",
                         "df_date_col": "study_date",
@@ -1292,7 +1292,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
 
                     parameter_dict = {  # pylint: disable=line-too-long
                         "df_name_col": "projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name",
-                        "df_value_col": "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure__exposure",
+                        "df_value_col": "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure__exposure",  # pylint: disable=line-too-long
                         "df_date_col": "study_date",
                         "name_title": "Standard acquisition name",
                         "value_title": "mAs",

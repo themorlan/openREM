@@ -2171,7 +2171,7 @@ def generate_average_chart_group(
     variable_value_name,
     sorting_choice,
 ):
-
+    # pylint: disable=too-many-locals
     if user_profile.plotBoxplots and "median" not in average_choices:
         average_choices = average_choices + ["median"]
 
