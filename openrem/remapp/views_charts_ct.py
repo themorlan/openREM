@@ -37,7 +37,6 @@ from .interface.chart_functions import (
     plotly_frequency_barchart,
     plotly_scatter,
     construct_over_time_charts,
-    create_standard_study_df,
     generate_average_chart_group,
 )
 

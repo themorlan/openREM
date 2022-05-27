@@ -34,7 +34,6 @@ from .interface.chart_functions import (
     plotly_scatter,
     construct_over_time_charts,
     generate_average_chart_group,
-    create_standard_study_df,
 )
 
 logger = logging.getLogger(__name__)

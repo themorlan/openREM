@@ -302,56 +302,6 @@ def create_dataframe_aggregates(df, df_name_cols, df_agg_col, stats_to_use=None)
     return grouped_df
 
 
-def create_standard_study_df(df, std_name="standard_study", df_agg_cols=None):
-    """
-    Creates a Pandas DataFrame of standard_study names, df_agg_col values and x_ray_system_name values from entries
-    in the initial DataFrame's standard_study_name, standard_request_name and standard_procedure_name fields.
-    Args:
-        df: Pandas DataFrame containing all the data. Must include
-        df_agg_cols: List of DataFrame column names containing values of interest
-
-    Returns:
-        df: a Pandas DataFrame with df_agg_col and x_ray_system_name values for each standard_study
-    """
-    # Generate a list of unique names in the standard name fields of the dataframe, excluding "blank" and "Blank"
-    unique_names = (
-        df["standard_study_name"]
-        .append(df["standard_request_name"])
-        .append(df["standard_procedure_name"])
-    ).unique()
-    unique_names = unique_names[(unique_names != "blank") & (unique_names != "Blank")]
-
-    # The list of fields to use when generating the grouped dataframe and the fields for the id_vars of the melt
-    fields_to_include = [
-        "standard_request_name",
-        "standard_procedure_name",
-        "standard_study_name",
-        "x_ray_system_name",
-    ]
-    id_vars = ["index", "x_ray_system_name"]
-    if df_agg_cols:
-        fields_to_include.extend(df_agg_cols)
-        id_vars.extend(df_agg_cols)
-
-    df = (
-        df[fields_to_include]
-        .reset_index()
-        .melt(id_vars=id_vars, value_name="standard_study")
-        .drop_duplicates(["index", "standard_study"])
-        .dropna(subset=["standard_study"])
-        .drop(columns=["variable"])
-    )
-
-    # Drop all rows except those that are in the list of unique standard names. Doing this at this stage
-    # to save aggregating things that we're just going to throw away.
-    df = df[df["standard_study"].isin(unique_names)]
-
-    # Set the standard study column to category type to save memory
-    df["standard_study"] = df["standard_study"].astype("category")
-
-    return df
-
-
 def plotly_set_default_theme(theme_name):
     """
     A short method to set the plotly chart theme
