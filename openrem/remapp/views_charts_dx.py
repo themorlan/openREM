@@ -1148,7 +1148,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
 
                 if user_profile.plotDXStandardAcquisitionMeanmAs:
                     name_field = "projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name"
-                    value_field = "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure__exposure"
+                    value_field = "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure__exposure"  # pylint: disable=line-too-long
                     value_text = "mAs"
                     units_text = ""
                     name_text = "Standard acquisition name"
@@ -1178,8 +1178,8 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     return_structure = {**return_structure, **new_charts}
 
                 if user_profile.plotDXStandardAcquisitionFreq:
-                    parameter_dict = {  # pylint: disable=line-too-long
-                        "df_name_col": "projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name",
+                    parameter_dict = {
+                        "df_name_col": "projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name",  # pylint: disable=line-too-long
                         "sorting_choice": [
                             user_profile.plotInitialSortingDirection,
                             user_profile.plotDXInitialSortingChoice,
@@ -1198,7 +1198,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     (
                         return_structure["standardAcquisitionFrequencyData"],
                         return_structure["standardAcquisitionFrequencyDataCSV"],
-                    ) = plotly_frequency_barchart(  # pylint: disable=line-too-long
+                    ) = plotly_frequency_barchart(
                         df_without_blanks,
                         parameter_dict,
                         csv_name="standardAcquisitionFrequencyData.csv",
@@ -1211,7 +1211,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                         facet_title = "Standard acquisition name"
 
                     parameter_dict = {
-                        "df_name_col": "projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name",
+                        "df_name_col": "projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name",  # pylint: disable=line-too-long
                         "df_value_col": "projectionxrayradiationdose__irradeventxraydata__dose_area_product",
                         "df_date_col": "study_date",
                         "name_title": "Standard acquisition name",
@@ -1250,9 +1250,9 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     if user_profile.plotGroupingChoice == "series":
                         facet_title = "Standard acquisition name"
 
-                    parameter_dict = {  # pylint: disable=line-too-long
-                        "df_name_col": "projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name",
-                        "df_value_col": "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__kvp__kvp",
+                    parameter_dict = {
+                        "df_name_col": "projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name",  # pylint: disable=line-too-long
+                        "df_value_col": "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__kvp__kvp",  # pylint: disable=line-too-long
                         "df_date_col": "study_date",
                         "name_title": "Standard acquisition name",
                         "value_title": "kVp",
@@ -1290,8 +1290,8 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     if user_profile.plotGroupingChoice == "series":
                         facet_title = "Standard acquisition name"
 
-                    parameter_dict = {  # pylint: disable=line-too-long
-                        "df_name_col": "projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name",
+                    parameter_dict = {
+                        "df_name_col": "projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name",  # pylint: disable=line-too-long
                         "df_value_col": "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure__exposure",  # pylint: disable=line-too-long
                         "df_date_col": "study_date",
                         "name_title": "Standard acquisition name",
@@ -1326,7 +1326,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
 
                 if user_profile.plotDXStandardAcquisitionDAPvsMass:
                     parameter_dict = {
-                        "df_name_col": "projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name",
+                        "df_name_col": "projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name",  # pylint: disable=line-too-long
                         "df_x_col": "patientstudymoduleattr__patient_weight",
                         "df_y_col": "projectionxrayradiationdose__irradeventxraydata__dose_area_product",
                         "sorting_choice": [
