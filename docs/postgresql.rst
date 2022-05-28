@@ -10,7 +10,11 @@ Creating the database
 
 Install PostgreSQL and the python connector
 ===========================================
-    
+
+.. note::
+
+    OpenREM 0.10 requires PostgreSQL 13 or earlier.
+
 .. sourcecode:: console
 
     sudo apt-get install postgresql
