@@ -427,3 +427,16 @@ li.no-wrap {
 img.colour_swatch {
   border: 1px solid #CCCCCC;
 }
+
+.selector select {
+  overflow: auto;
+}
+
+.chart-data-table {
+  position: relative;
+  z-index: 99999;
+}
+
+.chart-data-table-contents {
+  background: rgba(255,255,255,1.0);
+}

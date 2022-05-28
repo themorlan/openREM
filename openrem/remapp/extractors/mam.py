@@ -52,6 +52,7 @@ django.setup()
 
 from .extract_common import (  # pylint: disable=wrong-import-order, wrong-import-position
     patient_module_attributes,
+    add_standard_names,
 )
 
 
@@ -500,6 +501,9 @@ def _generalstudymoduleattributes(dataset, g):
         g.projectionxrayradiationdose_set.get().irradeventxraydata_set.count()
     )
     g.save()
+
+    # Add standard names
+    add_standard_names(g)
 
 
 def _test_if_mammo(dataset):

@@ -31,14 +31,19 @@ from datetime import datetime
 from decimal import Decimal
 import logging
 
-from django.db.models import ObjectDoesNotExist
+from django.db.models import (
+    ObjectDoesNotExist,
+    Q,
+)
 from django.conf import settings
+import numpy as np
 
 from remapp.models import (
     GeneralStudyModuleAttr,
     PatientIDSettings,
     PatientModuleAttr,
     PatientStudyModuleAttr,
+    StandardNames,
     PersonParticipant,
     GeneralEquipmentModuleAttr,
     UniqueEquipmentNames,
@@ -421,6 +426,77 @@ def patient_module_attributes(dataset, g):  # C.7.1.1
     if patient_id_settings.dob_stored and patient_birth_date:
         pat.patient_birth_date = patient_birth_date
     pat.save()
+
+
+def add_standard_names(g):
+    """Add references to any matching standard name entries
+
+    :param g: GeneralStudyModuleAttr database table
+    :return: None - database is updated
+    """
+
+    # If the modality_type is CR or PX then override it to DX, because all CR, DX and PX studies are stored in the
+    # standard_names table as DX
+    modality = g.modality_type
+    if modality in ["CR", "PX"]:
+        modality = "DX"
+
+    std_names = StandardNames.objects.filter(modality=modality)
+
+    # Obtain a list of standard name IDs that match this GeneralStudyModuleAttr
+    matching_std_name_ids = std_names.filter(
+        (Q(study_description=g.study_description) & Q(study_description__isnull=False))
+        | (
+            Q(requested_procedure_code_meaning=g.requested_procedure_code_meaning)
+            & Q(requested_procedure_code_meaning__isnull=False)
+        )
+        | (
+            Q(procedure_code_meaning=g.procedure_code_meaning)
+            & Q(procedure_code_meaning__isnull=False)
+        )
+    ).values_list("pk", flat=True)
+
+    # Obtain a list of standard name IDs that are already associated with this GeneralStudyModuleAttr
+    std_name_ids_already_in_study = g.standard_names.values_list("pk", flat=True)
+
+    # Names that are in the new list, but not in the existing list
+    std_name_ids_to_add = np.setdiff1d(
+        matching_std_name_ids, std_name_ids_already_in_study
+    )
+
+    if std_name_ids_to_add.size:
+        g.standard_names.add(*std_name_ids_to_add)
+
+    # Add standard name references to the study irradiation events where the acquisition_protocol values match.
+    # Some events will already exist if the new data is adding to an existing study
+    try:
+        if modality == "CT":
+            for event in g.ctradiationdose_set.get().ctirradiationeventdata_set.all():
+                # Only add matching standard name if the event doesn't already have one
+                if not event.standard_protocols.values_list("pk", flat=True):
+                    pk_value = list(
+                        std_names.filter(
+                            Q(acquisition_protocol=event.acquisition_protocol)
+                            & Q(acquisition_protocol__isnull=False)
+                        ).values_list("pk", flat=True)
+                    )
+                    event.standard_protocols.add(*pk_value)
+        else:
+            for (
+                event
+            ) in g.projectionxrayradiationdose_set.get().irradeventxraydata_set.all():
+                # Only add matching standard name if the event doesn't already have one
+                if not event.standard_protocols.values_list("pk", flat=True):
+                    pk_value = list(
+                        std_names.filter(
+                            Q(acquisition_protocol=event.acquisition_protocol)
+                            & Q(acquisition_protocol__isnull=False)
+                        ).values_list("pk", flat=True)
+                    )
+                    event.standard_protocols.add(*pk_value)
+
+    except ObjectDoesNotExist:
+        pass
 
 
 def observercontext(dataset, obs):  # TID 1002

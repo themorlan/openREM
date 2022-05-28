@@ -36,7 +36,9 @@ from __future__ import absolute_import
 import os
 import json
 import logging
+import operator
 from datetime import timedelta
+import numpy as np
 from builtins import map  # pylint: disable=redefined-builtin
 
 from django.contrib import messages
@@ -55,26 +57,37 @@ from django.utils.safestring import mark_safe
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.utils import timezone
+from functools import reduce
 
 from .extractors.extract_common import populate_rf_delta_weeks_summary
 from .forms import (
     CTChartOptionsDisplayForm,
+    CTChartOptionsDisplayFormIncStandard,
     DXChartOptionsDisplayForm,
+    DXChartOptionsDisplayFormIncStandard,
     DicomDeleteSettingsForm,
     GeneralChartOptionsDisplayForm,
     HomepageOptionsForm,
     MGChartOptionsDisplayForm,
+    MGChartOptionsDisplayFormIncStandard,
     MergeOnDeviceObserverUIDForm,
     NotPatientIDForm,
     NotPatientNameForm,
     RFChartOptionsDisplayForm,
+    RFChartOptionsDisplayFormIncStandard,
     RFHighDoseFluoroAlertsForm,
     UpdateDisplayNamesForm,
+    StandardNameFormCT,
+    StandardNameFormDX,
+    StandardNameFormMG,
+    StandardNameFormRF,
+    StandardNameSettingsForm,
     NMChartOptionsDisplayForm,
 )
 from .models import (
     AccumIntegratedProjRadiogDose,
     AdminTaskQuestions,
+    CtIrradiationEventData,
     BackgroundTask,
     DicomDeleteSettings,
     DicomQuery,
@@ -83,6 +96,7 @@ from .models import (
     HighDoseMetricAlertRecipients,
     HighDoseMetricAlertSettings,
     HomePageAdminSettings,
+    IrradEventXRayData,
     MergeOnDeviceObserverUIDSettings,
     NotPatientIndicatorsID,
     NotPatientIndicatorsName,
@@ -94,6 +108,8 @@ from .models import (
     UpgradeStatus,
     create_user_profile,
     CommonVariables,
+    StandardNames,
+    StandardNameSettings,
 )
 from .tools.get_values import get_keys_by_value
 from .tools.hash_id import hash_id
@@ -1256,13 +1272,33 @@ def review_failed_imports(request, modality=None):
 
 @login_required
 def chart_options_view(request):
+
+    # Obtain the system-level enable_standard_names setting
+    try:
+        StandardNameSettings.objects.get()
+    except ObjectDoesNotExist:
+        StandardNameSettings.objects.create()
+    enable_standard_names = StandardNameSettings.objects.values_list(
+        "enable_standard_names", flat=True
+    )[0]
+
     if request.method == "POST":
         general_form = GeneralChartOptionsDisplayForm(request.POST)
-        ct_form = CTChartOptionsDisplayForm(request.POST)
-        dx_form = DXChartOptionsDisplayForm(request.POST)
-        rf_form = RFChartOptionsDisplayForm(request.POST)
-        mg_form = MGChartOptionsDisplayForm(request.POST)
+        ct_form = None
+        dx_form = None
+        mg_form = None
+        rf_form = None
         nm_form = NMChartOptionsDisplayForm(request.POST)
+        if enable_standard_names:
+            ct_form = CTChartOptionsDisplayFormIncStandard(request.POST)
+            dx_form = DXChartOptionsDisplayFormIncStandard(request.POST)
+            mg_form = MGChartOptionsDisplayFormIncStandard(request.POST)
+            rf_form = RFChartOptionsDisplayFormIncStandard(request.POST)
+        else:
+            ct_form = CTChartOptionsDisplayForm(request.POST)
+            dx_form = DXChartOptionsDisplayForm(request.POST)
+            mg_form = MGChartOptionsDisplayForm(request.POST)
+            rf_form = RFChartOptionsDisplayForm(request.POST)
         if (
             general_form.is_valid()
             and ct_form.is_valid()
@@ -1370,11 +1406,21 @@ def chart_options_view(request):
     nm_form_data = initialise_nm_form_data(user_profile)
 
     general_chart_options_form = GeneralChartOptionsDisplayForm(general_form_data)
-    ct_chart_options_form = CTChartOptionsDisplayForm(ct_form_data)
-    dx_chart_options_form = DXChartOptionsDisplayForm(dx_form_data)
-    rf_chart_options_form = RFChartOptionsDisplayForm(rf_form_data)
-    mg_chart_options_form = MGChartOptionsDisplayForm(mg_form_data)
+    ct_chart_options_form = None
+    dx_chart_options_form = None
+    mg_chart_options_form = None
+    rf_chart_options_form = None
     nm_chart_options_form = NMChartOptionsDisplayForm(nm_form_data)
+    if enable_standard_names:
+        ct_chart_options_form = CTChartOptionsDisplayFormIncStandard(ct_form_data)
+        dx_chart_options_form = DXChartOptionsDisplayFormIncStandard(dx_form_data)
+        mg_chart_options_form = MGChartOptionsDisplayFormIncStandard(mg_form_data)
+        rf_chart_options_form = RFChartOptionsDisplayFormIncStandard(rf_form_data)
+    else:
+        ct_chart_options_form = CTChartOptionsDisplayForm(ct_form_data)
+        dx_chart_options_form = DXChartOptionsDisplayForm(dx_form_data)
+        mg_chart_options_form = MGChartOptionsDisplayForm(mg_form_data)
+        rf_chart_options_form = RFChartOptionsDisplayForm(rf_form_data)
 
     return_structure = {
         "admin": admin,
@@ -1400,6 +1446,16 @@ def set_common_chart_options(general_form, user_profile):
 
 
 def set_rf_chart_options(rf_form, user_profile):
+
+    # Obtain the system-level enable_standard_names setting
+    try:
+        StandardNameSettings.objects.get()
+    except ObjectDoesNotExist:
+        StandardNameSettings.objects.create()
+    enable_standard_names = StandardNameSettings.objects.values_list(
+        "enable_standard_names", flat=True
+    )[0]
+
     user_profile.plotRFStudyPerDayAndHour = rf_form.cleaned_data[
         "plotRFStudyPerDayAndHour"
     ]
@@ -1416,6 +1472,19 @@ def set_rf_chart_options(rf_form, user_profile):
     user_profile.plotRFInitialSortingChoice = rf_form.cleaned_data[
         "plotRFInitialSortingChoice"
     ]
+    if enable_standard_names:
+        user_profile.plotRFStandardStudyFreq = rf_form.cleaned_data[
+            "plotRFStandardStudyFreq"
+        ]
+        user_profile.plotRFStandardStudyDAP = rf_form.cleaned_data[
+            "plotRFStandardStudyDAP"
+        ]
+        user_profile.plotRFStandardStudyDAPOverTime = rf_form.cleaned_data[
+            "plotRFStandardStudyDAPOverTime"
+        ]
+        user_profile.plotRFStandardStudyPerDayAndHour = rf_form.cleaned_data[
+            "plotRFStandardStudyPerDayAndHour"
+        ]
 
 
 def initialise_rf_form_data(user_profile):
@@ -1431,10 +1500,40 @@ def initialise_rf_form_data(user_profile):
         "plotRFSplitByPhysician": user_profile.plotRFSplitByPhysician,
         "plotRFInitialSortingChoice": user_profile.plotRFInitialSortingChoice,
     }
+
+    # Obtain the system-level enable_standard_names setting
+    try:
+        StandardNameSettings.objects.get()
+    except ObjectDoesNotExist:
+        StandardNameSettings.objects.create()
+    enable_standard_names = StandardNameSettings.objects.values_list(
+        "enable_standard_names", flat=True
+    )[0]
+
+    if enable_standard_names:
+        rf_form_data["plotRFStandardStudyFreq"] = user_profile.plotRFStandardStudyFreq
+        rf_form_data["plotRFStandardStudyDAP"] = user_profile.plotRFStandardStudyDAP
+        rf_form_data[
+            "plotRFStandardStudyDAPOverTime"
+        ] = user_profile.plotRFStandardStudyDAPOverTime
+        rf_form_data[
+            "plotRFStandardStudyPerDayAndHour"
+        ] = user_profile.plotRFStandardStudyPerDayAndHour
+
     return rf_form_data
 
 
 def set_mg_chart_options(mg_form, user_profile):
+
+    # Obtain the system-level enable_standard_names setting
+    try:
+        StandardNameSettings.objects.get()
+    except ObjectDoesNotExist:
+        StandardNameSettings.objects.create()
+    enable_standard_names = StandardNameSettings.objects.values_list(
+        "enable_standard_names", flat=True
+    )[0]
+
     user_profile.plotMGacquisitionFreq = mg_form.cleaned_data["plotMGacquisitionFreq"]
     user_profile.plotMGaverageAGD = mg_form.cleaned_data["plotMGaverageAGD"]
     user_profile.plotMGaverageAGDvsThickness = mg_form.cleaned_data[
@@ -1453,6 +1552,31 @@ def set_mg_chart_options(mg_form, user_profile):
     user_profile.plotMGInitialSortingChoice = mg_form.cleaned_data[
         "plotMGInitialSortingChoice"
     ]
+    if enable_standard_names:
+        user_profile.plotMGStandardAcquisitionFreq = mg_form.cleaned_data[
+            "plotMGStandardAcquisitionFreq"
+        ]
+        user_profile.plotMGStandardAverageAGD = mg_form.cleaned_data[
+            "plotMGStandardAverageAGD"
+        ]
+        user_profile.plotMGStandardAverageAGDvsThickness = mg_form.cleaned_data[
+            "plotMGStandardAverageAGDvsThickness"
+        ]
+        user_profile.plotMGStandardAcquisitionAGDOverTime = mg_form.cleaned_data[
+            "plotMGStandardAcquisitionAGDOverTime"
+        ]
+        user_profile.plotMGStandardAGDvsThickness = mg_form.cleaned_data[
+            "plotMGStandardAGDvsThickness"
+        ]
+        user_profile.plotMGStandardkVpvsThickness = mg_form.cleaned_data[
+            "plotMGStandardkVpvsThickness"
+        ]
+        user_profile.plotMGStandardmAsvsThickness = mg_form.cleaned_data[
+            "plotMGStandardmAsvsThickness"
+        ]
+        user_profile.plotMGStandardStudyPerDayAndHour = mg_form.cleaned_data[
+            "plotMGStandardStudyPerDayAndHour"
+        ]
 
 
 def initialise_mg_form_data(user_profile):
@@ -1468,10 +1592,54 @@ def initialise_mg_form_data(user_profile):
         "plotMGOverTimePeriod": user_profile.plotMGOverTimePeriod,
         "plotMGInitialSortingChoice": user_profile.plotMGInitialSortingChoice,
     }
+
+    # Obtain the system-level enable_standard_names setting
+    try:
+        StandardNameSettings.objects.get()
+    except ObjectDoesNotExist:
+        StandardNameSettings.objects.create()
+    enable_standard_names = StandardNameSettings.objects.values_list(
+        "enable_standard_names", flat=True
+    )[0]
+
+    if enable_standard_names:
+        mg_form_data[
+            "plotMGStandardAcquisitionFreq"
+        ] = user_profile.plotMGStandardAcquisitionFreq
+        mg_form_data["plotMGStandardAverageAGD"] = user_profile.plotMGStandardAverageAGD
+        mg_form_data[
+            "plotMGStandardAverageAGDvsThickness"
+        ] = user_profile.plotMGStandardAverageAGDvsThickness
+        mg_form_data[
+            "plotMGStandardAcquisitionAGDOverTime"
+        ] = user_profile.plotMGStandardAcquisitionAGDOverTime
+        mg_form_data[
+            "plotMGStandardAGDvsThickness"
+        ] = user_profile.plotMGStandardAGDvsThickness
+        mg_form_data[
+            "plotMGStandardkVpvsThickness"
+        ] = user_profile.plotMGStandardkVpvsThickness
+        mg_form_data[
+            "plotMGStandardmAsvsThickness"
+        ] = user_profile.plotMGStandardmAsvsThickness
+        mg_form_data[
+            "plotMGStandardStudyPerDayAndHour"
+        ] = user_profile.plotMGStandardStudyPerDayAndHour
+
     return mg_form_data
 
 
 def set_dx_chart_options(dx_form, user_profile):
+
+    # Obtain the system-level enable_standard_names setting
+    try:
+        StandardNameSettings.objects.get()
+    except ObjectDoesNotExist:
+        StandardNameSettings.objects.create()
+    enable_standard_names = StandardNameSettings.objects.values_list(
+        "enable_standard_names", flat=True
+    )[0]
+
     user_profile.plotDXAcquisitionMeanDAP = dx_form.cleaned_data[
         "plotDXAcquisitionMeanDAP"
     ]
@@ -1509,6 +1677,43 @@ def set_dx_chart_options(dx_form, user_profile):
     user_profile.plotDXInitialSortingChoice = dx_form.cleaned_data[
         "plotDXInitialSortingChoice"
     ]
+    if enable_standard_names:
+        user_profile.plotDXStandardAcquisitionFreq = dx_form.cleaned_data[
+            "plotDXStandardAcquisitionFreq"
+        ]
+        user_profile.plotDXStandardAcquisitionMeanDAP = dx_form.cleaned_data[
+            "plotDXStandardAcquisitionMeanDAP"
+        ]
+        user_profile.plotDXStandardAcquisitionMeanmAs = dx_form.cleaned_data[
+            "plotDXStandardAcquisitionMeanmAs"
+        ]
+        user_profile.plotDXStandardAcquisitionMeankVp = dx_form.cleaned_data[
+            "plotDXStandardAcquisitionMeankVp"
+        ]
+        user_profile.plotDXStandardAcquisitionMeanDAPOverTime = dx_form.cleaned_data[
+            "plotDXStandardAcquisitionMeanDAPOverTime"
+        ]
+        user_profile.plotDXStandardAcquisitionMeanmAsOverTime = dx_form.cleaned_data[
+            "plotDXStandardAcquisitionMeanmAsOverTime"
+        ]
+        user_profile.plotDXStandardAcquisitionMeankVpOverTime = dx_form.cleaned_data[
+            "plotDXStandardAcquisitionMeankVpOverTime"
+        ]
+        user_profile.plotDXStandardAcquisitionDAPvsMass = dx_form.cleaned_data[
+            "plotDXStandardAcquisitionDAPvsMass"
+        ]
+        user_profile.plotDXStandardStudyMeanDAP = dx_form.cleaned_data[
+            "plotDXStandardStudyMeanDAP"
+        ]
+        user_profile.plotDXStandardStudyFreq = dx_form.cleaned_data[
+            "plotDXStandardStudyFreq"
+        ]
+        user_profile.plotDXStandardStudyDAPvsMass = dx_form.cleaned_data[
+            "plotDXStandardStudyDAPvsMass"
+        ]
+        user_profile.plotDXStandardStudyPerDayAndHour = dx_form.cleaned_data[
+            "plotDXStandardStudyPerDayAndHour"
+        ]
 
 
 def initialise_dx_form_data(user_profile):
@@ -1531,6 +1736,52 @@ def initialise_dx_form_data(user_profile):
         "plotDXRequestDAPvsMass": user_profile.plotDXRequestDAPvsMass,
         "plotDXInitialSortingChoice": user_profile.plotDXInitialSortingChoice,
     }
+
+    # Obtain the system-level enable_standard_names setting
+    try:
+        StandardNameSettings.objects.get()
+    except ObjectDoesNotExist:
+        StandardNameSettings.objects.create()
+    enable_standard_names = StandardNameSettings.objects.values_list(
+        "enable_standard_names", flat=True
+    )[0]
+
+    if enable_standard_names:
+        dx_form_data[
+            "plotDXStandardAcquisitionFreq"
+        ] = user_profile.plotDXStandardAcquisitionFreq
+        dx_form_data[
+            "plotDXStandardAcquisitionMeanDAP"
+        ] = user_profile.plotDXStandardAcquisitionMeanDAP
+        dx_form_data[
+            "plotDXStandardAcquisitionMeanmAs"
+        ] = user_profile.plotDXStandardAcquisitionMeanmAs
+        dx_form_data[
+            "plotDXStandardAcquisitionMeankVp"
+        ] = user_profile.plotDXStandardAcquisitionMeankVp
+        dx_form_data[
+            "plotDXStandardAcquisitionMeanDAPOverTime"
+        ] = user_profile.plotDXStandardAcquisitionMeanDAPOverTime
+        dx_form_data[
+            "plotDXStandardAcquisitionMeanmAsOverTime"
+        ] = user_profile.plotDXStandardAcquisitionMeanmAsOverTime
+        dx_form_data[
+            "plotDXStandardAcquisitionMeankVpOverTime"
+        ] = user_profile.plotDXStandardAcquisitionMeankVpOverTime
+        dx_form_data[
+            "plotDXStandardAcquisitionDAPvsMass"
+        ] = user_profile.plotDXStandardAcquisitionDAPvsMass
+        dx_form_data[
+            "plotDXStandardStudyMeanDAP"
+        ] = user_profile.plotDXStandardStudyMeanDAP
+        dx_form_data["plotDXStandardStudyFreq"] = user_profile.plotDXStandardStudyFreq
+        dx_form_data[
+            "plotDXStandardStudyDAPvsMass"
+        ] = user_profile.plotDXStandardStudyDAPvsMass
+        dx_form_data[
+            "plotDXStandardStudyPerDayAndHour"
+        ] = user_profile.plotDXStandardStudyPerDayAndHour
+
     return dx_form_data
 
 
@@ -1583,6 +1834,16 @@ def initialise_nm_form_data(user_profile):
 
 
 def set_ct_chart_options(ct_form, user_profile):
+
+    # Obtain the system-level enable_standard_names setting
+    try:
+        StandardNameSettings.objects.get()
+    except ObjectDoesNotExist:
+        StandardNameSettings.objects.create()
+    enable_standard_names = StandardNameSettings.objects.values_list(
+        "enable_standard_names", flat=True
+    )[0]
+
     user_profile.plotCTAcquisitionMeanDLP = ct_form.cleaned_data[
         "plotCTAcquisitionMeanDLP"
     ]
@@ -1654,6 +1915,43 @@ def set_ct_chart_options(ct_form, user_profile):
     user_profile.plotCTStudyMeanDLPOverTime = ct_form.cleaned_data[
         "plotCTStudyMeanDLPOverTime"
     ]
+    if enable_standard_names:
+        user_profile.plotCTStandardAcquisitionFreq = ct_form.cleaned_data[
+            "plotCTStandardAcquisitionFreq"
+        ]
+        user_profile.plotCTStandardAcquisitionMeanDLP = ct_form.cleaned_data[
+            "plotCTStandardAcquisitionMeanDLP"
+        ]
+        user_profile.plotCTStandardAcquisitionMeanCTDI = ct_form.cleaned_data[
+            "plotCTStandardAcquisitionMeanCTDI"
+        ]
+        user_profile.plotCTStandardAcquisitionDLPOverTime = ct_form.cleaned_data[
+            "plotCTStandardAcquisitionDLPOverTime"
+        ]
+        user_profile.plotCTStandardAcquisitionCTDIOverTime = ct_form.cleaned_data[
+            "plotCTStandardAcquisitionCTDIOverTime"
+        ]
+        user_profile.plotCTStandardAcquisitionDLPvsMass = ct_form.cleaned_data[
+            "plotCTStandardAcquisitionDLPvsMass"
+        ]
+        user_profile.plotCTStandardAcquisitionCTDIvsMass = ct_form.cleaned_data[
+            "plotCTStandardAcquisitionCTDIvsMass"
+        ]
+        user_profile.plotCTStandardStudyMeanDLP = ct_form.cleaned_data[
+            "plotCTStandardStudyMeanDLP"
+        ]
+        user_profile.plotCTStandardStudyNumEvents = ct_form.cleaned_data[
+            "plotCTStandardStudyNumEvents"
+        ]
+        user_profile.plotCTStandardStudyFreq = ct_form.cleaned_data[
+            "plotCTStandardStudyFreq"
+        ]
+        user_profile.plotCTStandardStudyPerDayAndHour = ct_form.cleaned_data[
+            "plotCTStandardStudyPerDayAndHour"
+        ]
+        user_profile.plotCTStandardStudyMeanDLPOverTime = ct_form.cleaned_data[
+            "plotCTStandardStudyMeanDLPOverTime"
+        ]
     user_profile.plotCTRequestMeanDLP = ct_form.cleaned_data["plotCTRequestMeanDLP"]
     user_profile.plotCTRequestFreq = ct_form.cleaned_data["plotCTRequestFreq"]
     user_profile.plotCTRequestNumEvents = ct_form.cleaned_data["plotCTRequestNumEvents"]
@@ -1667,6 +1965,7 @@ def set_ct_chart_options(ct_form, user_profile):
 
 
 def initialise_ct_form_data(ct_acquisition_types, user_profile):
+
     ct_form_data = {
         "plotCTAcquisitionMeanDLP": user_profile.plotCTAcquisitionMeanDLP,
         "plotCTAcquisitionMeanCTDI": user_profile.plotCTAcquisitionMeanCTDI,
@@ -1689,6 +1988,53 @@ def initialise_ct_form_data(ct_acquisition_types, user_profile):
         "plotCTOverTimePeriod": user_profile.plotCTOverTimePeriod,
         "plotCTInitialSortingChoice": user_profile.plotCTInitialSortingChoice,
     }
+
+    # Obtain the system-level enable_standard_names setting
+    try:
+        StandardNameSettings.objects.get()
+    except ObjectDoesNotExist:
+        StandardNameSettings.objects.create()
+    enable_standard_names = StandardNameSettings.objects.values_list(
+        "enable_standard_names", flat=True
+    )[0]
+
+    if enable_standard_names:
+        ct_form_data[
+            "plotCTStandardAcquisitionFreq"
+        ] = user_profile.plotCTStandardAcquisitionFreq
+        ct_form_data[
+            "plotCTStandardAcquisitionMeanDLP"
+        ] = user_profile.plotCTStandardAcquisitionMeanDLP
+        ct_form_data[
+            "plotCTStandardAcquisitionMeanCTDI"
+        ] = user_profile.plotCTStandardAcquisitionMeanCTDI
+        ct_form_data[
+            "plotCTStandardAcquisitionDLPOverTime"
+        ] = user_profile.plotCTStandardAcquisitionDLPOverTime
+        ct_form_data[
+            "plotCTStandardAcquisitionCTDIOverTime"
+        ] = user_profile.plotCTStandardAcquisitionCTDIOverTime
+        ct_form_data[
+            "plotCTStandardAcquisitionDLPvsMass"
+        ] = user_profile.plotCTStandardAcquisitionDLPvsMass
+        ct_form_data[
+            "plotCTStandardAcquisitionCTDIvsMass"
+        ] = user_profile.plotCTStandardAcquisitionCTDIvsMass
+
+        ct_form_data[
+            "plotCTStandardStudyMeanDLP"
+        ] = user_profile.plotCTStandardStudyMeanDLP
+        ct_form_data[
+            "plotCTStandardStudyNumEvents"
+        ] = user_profile.plotCTStandardStudyNumEvents
+        ct_form_data["plotCTStandardStudyFreq"] = user_profile.plotCTStandardStudyFreq
+        ct_form_data[
+            "plotCTStandardStudyPerDayAndHour"
+        ] = user_profile.plotCTStandardStudyPerDayAndHour
+        ct_form_data[
+            "plotCTStandardStudyMeanDLPOverTime"
+        ] = user_profile.plotCTStandardStudyMeanDLPOverTime
+
     return ct_form_data
 
 
@@ -2576,3 +2922,757 @@ def populate_summary_progress(request):
                 "remapp/populate_summary_progress_error.html",
                 {"not_admin": True},
             )
+
+
+class StandardNameAddCore(CreateView):
+
+    success_url = reverse_lazy("standard_names_view")
+
+    def form_valid(self, form):
+        if form.has_changed():
+            if not form.cleaned_data["standard_name"]:
+                messages.warning(self.request, "Blank standard name - no update made")
+                return redirect(self.success_url)
+
+            # Add new entries to the StandardNames table
+            new_ids_study = []
+            for item in form.cleaned_data["study_description"]:
+                new_entry = StandardNames(
+                    standard_name=form.cleaned_data["standard_name"],
+                    modality=form.cleaned_data["modality"],
+                    study_description=item,
+                )
+                new_entry.save()
+                new_ids_study.append(new_entry.pk)
+
+            new_ids_request = []
+            for item in form.cleaned_data["requested_procedure_code_meaning"]:
+                new_entry = StandardNames(
+                    standard_name=form.cleaned_data["standard_name"],
+                    modality=form.cleaned_data["modality"],
+                    requested_procedure_code_meaning=item,
+                )
+                new_entry.save()
+                new_ids_request.append(new_entry.pk)
+
+            new_ids_procedure = []
+            for item in form.cleaned_data["procedure_code_meaning"]:
+                new_entry = StandardNames(
+                    standard_name=form.cleaned_data["standard_name"],
+                    modality=form.cleaned_data["modality"],
+                    procedure_code_meaning=item,
+                )
+                new_entry.save()
+                new_ids_procedure.append(new_entry.pk)
+
+            new_ids_acquisition = []
+            for item in form.cleaned_data["acquisition_protocol"]:
+                new_entry = StandardNames(
+                    standard_name=form.cleaned_data["standard_name"],
+                    modality=form.cleaned_data["modality"],
+                    acquisition_protocol=item,
+                )
+                new_entry.save()
+                new_ids_acquisition.append(new_entry.pk)
+
+            # Obtain a list of the required studies
+            studies = GeneralStudyModuleAttr.objects
+            if form.cleaned_data["modality"] == "CT":
+                studies = studies.filter(modality_type="CT")
+            elif form.cleaned_data["modality"] == "MG":
+                studies = studies.filter(modality_type="MG")
+            elif form.cleaned_data["modality"] == "RF":
+                studies = studies.filter(modality_type="RF")
+            else:
+                studies = studies.filter(
+                    Q(modality_type__exact="DX")
+                    | Q(modality_type__exact="CR")
+                    | Q(modality_type__exact="PX")
+                )
+
+            # Add the standard names to the studies
+            self.add_multiple_standard_studies(
+                studies, new_ids_study, new_ids_request, new_ids_procedure
+            )
+
+            # Obtain a list of the required acquisitions
+            acquisitions = None
+            if form.cleaned_data["modality"] == "CT":
+                acquisitions = CtIrradiationEventData.objects
+            else:
+                # Filter the IrradEventXRayData.objects to just contain the required modality
+                q = ["DX", "CR", "PX"]
+                if form.cleaned_data["modality"] == "MG":
+                    q = ["MG"]
+                elif form.cleaned_data["modality"] == "RF":
+                    q = ["RF"]
+
+                q_criteria = reduce(
+                    operator.or_,
+                    (
+                        Q(
+                            projection_xray_radiation_dose__general_study_module_attributes__modality_type__icontains=item
+                        )
+                        for item in q
+                    ),
+                )
+                acquisitions = IrradEventXRayData.objects.filter(q_criteria)
+
+            # Add the standard names to the acquisitions
+            self.add_multiple_standard_acquisitions(acquisitions, new_ids_acquisition)
+
+            return redirect(self.success_url)
+        else:
+            messages.info(self.request, "No changes made")
+            return redirect(self.success_url)
+
+    def add_multiple_standard_studies(
+        self, studies, std_name_study_ids, std_name_request_ids, std_name_procedure_ids
+    ):
+
+        for standard_name in StandardNames.objects.filter(pk__in=std_name_study_ids):
+            standard_name.generalstudymoduleattr_set.add(
+                *studies.filter(
+                    study_description=standard_name.study_description
+                ).values_list("pk", flat=True)
+            )
+
+        for standard_name in StandardNames.objects.filter(pk__in=std_name_request_ids):
+            standard_name.generalstudymoduleattr_set.add(
+                *studies.filter(
+                    requested_procedure_code_meaning=standard_name.requested_procedure_code_meaning
+                ).values_list("pk", flat=True)
+            )
+
+        for standard_name in StandardNames.objects.filter(
+            pk__in=std_name_procedure_ids
+        ):
+            standard_name.generalstudymoduleattr_set.add(
+                *studies.filter(
+                    procedure_code_meaning=standard_name.procedure_code_meaning
+                ).values_list("pk", flat=True)
+            )
+
+    def add_multiple_standard_acquisitions(
+        self, acquisitions, std_name_acquisition_ids
+    ):
+
+        for standard_name in StandardNames.objects.filter(
+            pk__in=std_name_acquisition_ids
+        ):
+            if type(self).__name__ == "StandardNameAddCT":
+                standard_name.ctirradiationeventdata_set.add(
+                    *acquisitions.filter(
+                        acquisition_protocol=standard_name.acquisition_protocol
+                    ).values_list("pk", flat=True)
+                )
+            else:
+                standard_name.irradeventxraydata_set.add(
+                    *acquisitions.filter(
+                        acquisition_protocol=standard_name.acquisition_protocol
+                    ).values_list("pk", flat=True)
+                )
+
+
+class StandardNameAddCT(StandardNameAddCore):  # pylint: disable=unused-variable
+    """CreateView to add a standard name to the database"""
+
+    model = StandardNames
+    form_class = StandardNameFormCT
+
+    def get_context_data(self, **context):
+
+        # The user has navigated to this page
+        context = super(StandardNameAddCT, self).get_context_data(**context)
+        admin = {"openremversion": __version__, "docsversion": __docs_version__}
+        for group in self.request.user.groups.all():
+            admin[group.name] = True
+        context["admin"] = admin
+        context["modality_name"] = "CT"
+        return context
+
+
+class StandardNameAddDX(StandardNameAddCore):  # pylint: disable=unused-variable
+    """CreateView to add a standard name to the database"""
+
+    model = StandardNames
+    form_class = StandardNameFormDX
+
+    def get_context_data(self, **context):
+
+        # The user has navigated to this page
+        context = super(StandardNameAddDX, self).get_context_data(**context)
+        admin = {"openremversion": __version__, "docsversion": __docs_version__}
+        for group in self.request.user.groups.all():
+            admin[group.name] = True
+        context["admin"] = admin
+        context["modality_name"] = "radiographic"
+        return context
+
+
+class StandardNameAddMG(StandardNameAddCore):  # pylint: disable=unused-variable
+    """CreateView to add a standard name to the database"""
+
+    model = StandardNames
+    form_class = StandardNameFormMG
+
+    def get_context_data(self, **context):
+
+        # The user has navigated to this page
+        context = super(StandardNameAddMG, self).get_context_data(**context)
+        admin = {"openremversion": __version__, "docsversion": __docs_version__}
+        for group in self.request.user.groups.all():
+            admin[group.name] = True
+        context["admin"] = admin
+        context["modality_name"] = "mammographic"
+        return context
+
+
+class StandardNameAddRF(StandardNameAddCore):  # pylint: disable=unused-variable
+    """CreateView to add a standard name to the database"""
+
+    model = StandardNames
+    form_class = StandardNameFormRF
+
+    def get_context_data(self, **context):
+
+        # The user has navigated to this page
+        context = super(StandardNameAddRF, self).get_context_data(**context)
+        admin = {"openremversion": __version__, "docsversion": __docs_version__}
+        for group in self.request.user.groups.all():
+            admin[group.name] = True
+        context["admin"] = admin
+        context["modality_name"] = "fluoroscopic"
+        return context
+
+
+@login_required
+def standard_names_view(request):
+    if request.method == "POST":
+        return HttpResponseRedirect(reverse_lazy("standard_names_view"))
+
+    f = StandardNames.objects.order_by("standard_name")
+
+    ct_names = f.filter(modality__iexact="CT").distinct()
+    mg_names = f.filter(modality__iexact="MG").distinct()
+    dx_names = f.filter(modality__iexact="DX").distinct()
+    rf_names = f.filter(modality__iexact="RF").distinct()
+
+    admin = {
+        "openremversion": __version__,
+        "docsversion": __docs_version__,
+    }
+
+    for group in request.user.groups.all():
+        admin[group.name] = True
+
+    return_structure = {
+        "name_list": f,
+        "admin": admin,
+        "ct_names": ct_names,
+        "mg_names": mg_names,
+        "dx_names": dx_names,
+        "rf_names": rf_names,
+        "modalities": ["CT", "RF", "MG", "DX"],
+    }
+
+    return render(request, "remapp/standardnameview.html", return_structure)
+
+
+def standard_names_populate(request):
+    """AJAX view to populate the modality tables for the standard names view
+
+    :param request: Request object containing modality
+    :return: HTML table
+    """
+    if request.is_ajax():
+        data = request.POST
+        modality = data.get("modality")
+        f = StandardNames.objects.order_by("standard_name")
+        admin = {
+            "openremversion": __version__,
+            "docsversion": __docs_version__,
+        }
+        for group in request.user.groups.all():
+            admin[group.name] = True
+
+        name_set = f.filter(modality=modality).distinct()
+
+        template = "remapp/standardname-modality.html"
+
+        return render(
+            request,
+            template,
+            {"name_set": name_set, "admin": admin, "modality": modality},
+        )
+
+
+class StandardNameDelete(DeleteView):  # pylint: disable=unused-variable
+    """DeleteView to delete a standard name from the database"""
+
+    model = StandardNames
+    success_url = reverse_lazy("standard_names_view")
+
+    def get_context_data(self, **context):
+        context[self.context_object_name] = self.object
+        admin = {"openremversion": __version__, "docsversion": __docs_version__}
+        for group in self.request.user.groups.all():
+            admin[group.name] = True
+        context["admin"] = admin
+        return context
+
+    def delete(self, *args, **kwargs):
+        self.object = self.get_object()
+
+        # Obtain a list of relevant studies
+        studies = GeneralStudyModuleAttr.objects
+        if self.object.modality == "CT":
+            studies = studies.filter(modality_type="CT")
+        elif self.object.modality == "MG":
+            studies = studies.filter(modality_type="MG")
+        elif self.object.modality == "RF":
+            studies = studies.filter(modality_type="RF")
+        else:
+            studies = studies.filter(
+                Q(modality_type__exact="DX")
+                | Q(modality_type__exact="CR")
+                | Q(modality_type__exact="PX")
+            )
+
+        # Remove this standard_name reference to these studies as the standard name may have changed
+        self.object.generalstudymoduleattr_set.remove(
+            *studies.filter(
+                standard_names__standard_name=self.object.standard_name
+            ).values_list("pk", flat=True)
+        )
+
+        # Remove the standard_names entries from acquisitions
+        acquisitions = None
+        if self.object.modality == "CT":
+            acquisitions = CtIrradiationEventData.objects
+            self.object.ctirradiationeventdata_set.remove(
+                *acquisitions.filter(
+                    standard_protocols__standard_name=self.object.standard_name
+                ).values_list("pk", flat=True)
+            )
+        else:
+            # Filter the IrradEventXRayData.objects to just contain the required modality
+            q = ["DX", "CR", "PX"]
+            if self.object.modality == "MG":
+                q = ["MG"]
+            elif self.object.modality == "RF":
+                q = ["RF"]
+
+            q_criteria = reduce(
+                operator.or_,
+                (
+                    Q(
+                        projection_xray_radiation_dose__general_study_module_attributes__modality_type__icontains=item
+                    )
+                    for item in q
+                ),
+            )
+            acquisitions = IrradEventXRayData.objects.filter(q_criteria)
+
+            # Remove the standard names from the acquisitions
+            self.object.irradeventxraydata_set.remove(
+                *acquisitions.filter(
+                    standard_protocols__standard_name=self.object.standard_name
+                ).values_list("pk", flat=True)
+            )
+
+        # Remove entries with standard_name = self.object.standard_name from the StandardNames table
+        StandardNames.objects.filter(modality=self.object.modality).filter(
+            standard_name=self.object.standard_name
+        ).delete()
+
+        return HttpResponseRedirect(self.get_success_url())
+
+
+class StandardNameUpdateCore(UpdateView):
+
+    success_url = reverse_lazy("standard_names_view")
+
+    def form_valid(self, form):
+        if form.has_changed():
+            # All StandardNames entries for the required modality
+            std_names = StandardNames.objects.filter(modality=self.object.modality)
+
+            # Obtain a list of relevant studies
+            studies = GeneralStudyModuleAttr.objects
+            if self.object.modality == "CT":
+                studies = studies.filter(modality_type="CT")
+            elif self.object.modality == "MG":
+                studies = studies.filter(modality_type="MG")
+            elif self.object.modality == "RF":
+                studies = studies.filter(modality_type="RF")
+            else:
+                studies = studies.filter(
+                    Q(modality_type__exact="DX")
+                    | Q(modality_type__exact="CR")
+                    | Q(modality_type__exact="PX")
+                )
+
+            # Remove references to the StandardName entries from generalstudymoduleattr for any study_description,
+            # requested_procedure_code_meaning or procedure_code_meaning values which have been removed from this
+            # standard name. Then remove the corresponding StandardName entries.
+            field_names = [
+                "study_description",
+                "requested_procedure_code_meaning",
+                "procedure_code_meaning",
+            ]
+            for field in field_names:
+                if field in form.changed_data:
+
+                    # Obtain a list of field name values that have been remove from this standard name
+                    names_to_remove = np.setdiff1d(
+                        form.initial[field], form.cleaned_data[field]
+                    )
+
+                    # Remove reference to these standard names from entries from generalstudymoduleattr
+                    self.object.generalstudymoduleattr_set.remove(
+                        *studies.filter(**{field + "__in": names_to_remove})
+                        .filter(standard_names__standard_name=self.object.standard_name)
+                        .values_list("pk", flat=True)
+                    )
+
+                    # Remove the corresponding StandardName entries
+                    std_names.filter(**{field + "__in": names_to_remove}).delete()
+
+            # Remove references to the StandardName entries from the irradiatedevent table for any acquisition_protocol
+            # values which have been removed from this standard name. Then remove the StandardName entries.
+            acquisitions = None
+            field = "acquisition_protocol"
+            if field in form.changed_data:
+
+                # Obtain a list of field name values that have been remove from this standard name
+                names_to_remove = np.setdiff1d(
+                    form.initial[field], form.cleaned_data[field]
+                )
+
+                if self.object.modality == "CT":
+                    # Remove reference to these standard names from entries from CtIrradiationEventData
+                    acquisitions = CtIrradiationEventData.objects
+                    self.object.ctirradiationeventdata_set.remove(
+                        *acquisitions.filter(**{field + "__in": names_to_remove})
+                        .filter(
+                            standard_protocols__standard_name=self.object.standard_name
+                        )
+                        .values_list("pk", flat=True)
+                    )
+                else:
+                    # Filter the IrradEventXRayData.objects to just contain the required modality
+                    q = ["DX", "CR", "PX"]
+                    if self.object.modality == "MG":
+                        q = ["MG"]
+                    elif self.object.modality == "RF":
+                        q = ["RF"]
+
+                    q_criteria = reduce(
+                        operator.or_,
+                        (
+                            Q(
+                                projection_xray_radiation_dose__general_study_module_attributes__modality_type__icontains=item
+                            )
+                            for item in q
+                        ),
+                    )
+                    acquisitions = IrradEventXRayData.objects.filter(q_criteria)
+
+                    # Remove reference to these standard names from entries from IrradEventXRayData
+                    self.object.irradeventxraydata_set.remove(
+                        *acquisitions.filter(**{field + "__in": names_to_remove})
+                        .filter(
+                            standard_protocols__standard_name=self.object.standard_name
+                        )
+                        .values_list("pk", flat=True)
+                    )
+
+                # Remove the corresponding StandardName entries
+                std_names.filter(**{field + "__in": names_to_remove}).delete()
+
+            # Add new entries to the StandardNames table
+            new_ids_study = []
+            if "study_description" in form.changed_data:
+                names_to_add = np.setdiff1d(
+                    form.cleaned_data["study_description"],
+                    form.initial["study_description"],
+                )
+                for item in names_to_add:
+                    new_entry = StandardNames(
+                        standard_name=form.cleaned_data["standard_name"],
+                        modality=form.cleaned_data["modality"],
+                        study_description=item,
+                    )
+                    new_entry.save()
+                    new_ids_study.append(new_entry.pk)
+
+            new_ids_request = []
+            if "requested_procedure_code_meaning" in form.changed_data:
+                names_to_add = np.setdiff1d(
+                    form.cleaned_data["requested_procedure_code_meaning"],
+                    form.initial["requested_procedure_code_meaning"],
+                )
+                for item in names_to_add:
+                    new_entry = StandardNames(
+                        standard_name=form.cleaned_data["standard_name"],
+                        modality=form.cleaned_data["modality"],
+                        requested_procedure_code_meaning=item,
+                    )
+                    new_entry.save()
+                    new_ids_request.append(new_entry.pk)
+
+            new_ids_procedure = []
+            if "procedure_code_meaning" in form.changed_data:
+                names_to_add = np.setdiff1d(
+                    form.cleaned_data["procedure_code_meaning"],
+                    form.initial["procedure_code_meaning"],
+                )
+                for item in names_to_add:
+                    new_entry = StandardNames(
+                        standard_name=form.cleaned_data["standard_name"],
+                        modality=form.cleaned_data["modality"],
+                        procedure_code_meaning=item,
+                    )
+                    new_entry.save()
+                    new_ids_procedure.append(new_entry.pk)
+
+            new_ids_acquisition = []
+            if "acquisition_protocol" in form.changed_data:
+                names_to_add = np.setdiff1d(
+                    form.cleaned_data["acquisition_protocol"],
+                    form.initial["acquisition_protocol"],
+                )
+                for item in names_to_add:
+                    new_entry = StandardNames(
+                        standard_name=form.cleaned_data["standard_name"],
+                        modality=form.cleaned_data["modality"],
+                        acquisition_protocol=item,
+                    )
+                    new_entry.save()
+                    new_ids_acquisition.append(new_entry.pk)
+
+            # Add the new standard names to the studies
+            self.add_multiple_standard_studies(
+                studies, new_ids_study, new_ids_request, new_ids_procedure
+            )
+
+            # Add the new standard names to the acquisitions
+            self.add_multiple_standard_acquisitions(acquisitions, new_ids_acquisition)
+
+            # Update the StandardNames standard name if it has been changed
+            if "standard_name" in form.changed_data:
+                std_names.filter(standard_name=form.initial["standard_name"]).update(
+                    standard_name=form.cleaned_data["standard_name"]
+                )
+
+            messages.success(self.request, "Entry updated")
+            return redirect(self.success_url)
+        else:
+            messages.info(self.request, "No changes made")
+            return redirect(self.success_url)
+
+    def add_multiple_standard_studies(
+        self, studies, std_name_study_ids, std_name_request_ids, std_name_procedure_ids
+    ):
+
+        for standard_name in StandardNames.objects.filter(pk__in=std_name_study_ids):
+            standard_name.generalstudymoduleattr_set.add(
+                *studies.filter(
+                    study_description=standard_name.study_description
+                ).values_list("pk", flat=True)
+            )
+
+        for standard_name in StandardNames.objects.filter(pk__in=std_name_request_ids):
+            standard_name.generalstudymoduleattr_set.add(
+                *studies.filter(
+                    requested_procedure_code_meaning=standard_name.requested_procedure_code_meaning
+                ).values_list("pk", flat=True)
+            )
+
+        for standard_name in StandardNames.objects.filter(
+            pk__in=std_name_procedure_ids
+        ):
+            standard_name.generalstudymoduleattr_set.add(
+                *studies.filter(
+                    procedure_code_meaning=standard_name.procedure_code_meaning
+                ).values_list("pk", flat=True)
+            )
+
+    def add_multiple_standard_acquisitions(
+        self, acquisitions, std_name_acquisition_ids
+    ):
+
+        for standard_name in StandardNames.objects.filter(
+            pk__in=std_name_acquisition_ids
+        ):
+            if type(self).__name__ == "StandardNameUpdateCT":
+                standard_name.ctirradiationeventdata_set.add(
+                    *acquisitions.filter(
+                        acquisition_protocol=standard_name.acquisition_protocol
+                    ).values_list("pk", flat=True)
+                )
+            else:
+                standard_name.irradeventxraydata_set.add(
+                    *acquisitions.filter(
+                        acquisition_protocol=standard_name.acquisition_protocol
+                    ).values_list("pk", flat=True)
+                )
+
+
+class StandardNameUpdateCT(StandardNameUpdateCore):  # pylint: disable=unused-variable
+    """UpdateView to update a standard CT name"""
+
+    model = StandardNames
+    form_class = StandardNameFormCT
+
+    def get_context_data(self, **context):
+        context = super(StandardNameUpdateCT, self).get_context_data(**context)
+        admin = {
+            "openremversion": __version__,
+            "docsversion": __docs_version__,
+        }
+        for group in self.request.user.groups.all():
+            admin[group.name] = True
+        context["admin"] = admin
+        return context
+
+
+class StandardNameUpdateDX(StandardNameUpdateCore):  # pylint: disable=unused-variable
+    """UpdateView to update a standard DX name"""
+
+    model = StandardNames
+    form_class = StandardNameFormDX
+
+    def get_context_data(self, **context):
+        context = super(StandardNameUpdateDX, self).get_context_data(**context)
+        admin = {
+            "openremversion": __version__,
+            "docsversion": __docs_version__,
+        }
+        for group in self.request.user.groups.all():
+            admin[group.name] = True
+        context["admin"] = admin
+        return context
+
+
+class StandardNameUpdateRF(StandardNameUpdateCore):  # pylint: disable=unused-variable
+    """UpdateView to update a standard RF name"""
+
+    model = StandardNames
+    form_class = StandardNameFormRF
+
+    def get_context_data(self, **context):
+        context = super(StandardNameUpdateRF, self).get_context_data(**context)
+        admin = {
+            "openremversion": __version__,
+            "docsversion": __docs_version__,
+        }
+        for group in self.request.user.groups.all():
+            admin[group.name] = True
+        context["admin"] = admin
+        return context
+
+
+class StandardNameUpdateMG(StandardNameUpdateCore):  # pylint: disable=unused-variable
+    """UpdateView to update a standard MG name"""
+
+    model = StandardNames
+    form_class = StandardNameFormMG
+
+    def get_context_data(self, **context):
+        context = super(StandardNameUpdateMG, self).get_context_data(**context)
+        admin = {
+            "openremversion": __version__,
+            "docsversion": __docs_version__,
+        }
+        for group in self.request.user.groups.all():
+            admin[group.name] = True
+        context["admin"] = admin
+        return context
+
+
+@login_required
+def standard_name_update(request, std_name_pk=None, modality=None):
+    """View to list 'failed import' studies
+
+    :param request:
+    :param modality: modality to filter by
+    :return:
+    """
+    if not modality in ["CT", "RF", "MG", "DX"]:
+        messages.error(
+            request,
+            "No modality provided.",
+        )
+        return HttpResponseRedirect(reverse_lazy("standard_names_view"))
+
+    if std_name_pk is None:
+        messages.error(
+            request,
+            "No standard name index provided.",
+        )
+        return HttpResponseRedirect(reverse_lazy("standard_names_view"))
+
+    if not request.user.groups.filter(name="admingroup"):
+        messages.error(
+            request,
+            "You are not in the administrator group - please contact your administrator",
+        )
+        return redirect(reverse_lazy("standard_names_view"))
+
+    if request.method == "GET":
+        if modality.lower() == "ct":
+            return redirect(reverse_lazy("update_name_ct", kwargs={"pk": std_name_pk}))
+
+        if modality.lower() == "dx":
+            return redirect(reverse_lazy("update_name_dx", kwargs={"pk": std_name_pk}))
+
+        if modality.lower() == "rf":
+            return redirect(reverse_lazy("update_name_rf", kwargs={"pk": std_name_pk}))
+
+        if modality.lower() == "mg":
+            return redirect(reverse_lazy("update_name_mg", kwargs={"pk": std_name_pk}))
+    else:
+        messages.error(request, "Incorrect attempt to update standard name.")
+        return redirect(reverse_lazy("standard_names_view"))
+
+
+class StandardNameSettingsUpdate(UpdateView):  # pylint: disable=unused-variable
+    """UpdateView to update the standard patient name settings"""
+
+    try:
+        StandardNameSettings.get_solo()  # will create item if it doesn't exist
+    except (AvoidDataMigrationErrorPostgres, AvoidDataMigrationErrorSQLite):
+        pass
+
+    model = StandardNameSettings
+    form_class = StandardNameSettingsForm
+
+    def get_context_data(self, **context):
+        context = super(StandardNameSettingsUpdate, self).get_context_data(**context)
+        admin = {
+            "openremversion": __version__,
+            "docsversion": __docs_version__,
+        }
+        for group in self.request.user.groups.all():
+            admin[group.name] = True
+        context["admin"] = admin
+        return context
+
+    def form_valid(self, form):
+        if form.has_changed():
+            if form.cleaned_data["enable_standard_names"]:
+                messages.success(self.request, "Standard name mapping enabled")
+            else:
+                messages.info(self.request, "Standard name mapping disabled")
+            return super(StandardNameSettingsUpdate, self).form_valid(form)
+        else:
+            status_word = "disabled"
+            if form.cleaned_data["enable_standard_names"]:
+                status_word = "enabled"
+            messages.info(
+                self.request,
+                "No changes made - standard name mapping remains " + status_word,
+            )
+            return redirect(reverse_lazy("standard_name_settings", kwargs={"pk": 1}))

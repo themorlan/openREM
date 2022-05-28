@@ -1,0 +1,71 @@
+{% extends "remapp/base.html" %}
+
+{% block confnav %}
+    <li class="dropdown active">{% endblock %}
+
+{% block mainblock %}
+
+    <div class="row col-md-offset-2">
+        <h1>Delete a standard name entry</h1>
+    </div>
+
+    {% if admin.admingroup %}
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <div class="panel panel-info">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Are you sure you want to remove this standard name entry?</h3>
+                    </div>
+                    <div class="panel-body">
+
+                        <table class="table table-bordered table-hover">
+                            <tr>
+                                <td><label>Standard name:</label></td>
+                                <td>{{ object.standard_name }}</td>
+                            </tr>
+                            <tr>
+                                <td><label>Study description:</label></td>
+                                <td>{{ object.study_description|default_if_none:"-" }}</td>
+                            </tr>
+                            <tr>
+                                <td><label>Requested procedure name:</label></td>
+                                <td>{{ object.requested_procedure_code_meaning|default_if_none:"-" }}</td>
+                            </tr>
+                            <tr>
+                                <td><label>Procedure name:</label></td>
+                                <td>{{ object.procedure_code_meaning|default_if_none:"-" }}</td>
+                            </tr>
+                            <tr>
+                                <td><label>Acquisition protocol name:</label></td>
+                                <td>{{ object.acquisition_protocol|default_if_none:"-" }}</td>
+                            </tr>
+                        </table>
+
+                        <form action="" method="post" id="delete_stanard_name">
+                            {% csrf_token %}
+                            <input type="submit" class="btn btn-danger" value="Delete" id="delete-button"/>
+                            <input type="button" class="btn btn-primary" value="Cancel"
+                                   onclick="window.location = '{% url 'standard_names_view' %}';"/>
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="row col-md-offset-2">
+            <p>Only users in the Admin group can delete standard name entries.</p>
+        </div>
+    {% endif %}
+
+    <script>
+        $(document).ready(function(e) {
+            $("#delete_stanard_name").submit(function() {
+                var txt = $("#delete-button");
+                txt.val("Updating the database - this may take some time").attr("disabled", true);
+                return;
+            })
+        });
+    </script>
+
+{% endblock %}

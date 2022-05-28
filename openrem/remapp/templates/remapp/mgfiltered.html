@@ -80,29 +80,66 @@
                         {% endfor %}
                     <input class="btn btn-default" type="submit" />
             </div>
+
             <div class="panel-heading">
                 <h3 class="panel-title">Chart options</h3>
             </div>
+
             <div class="panel-body">
-                <table aria-describedby="Mammography chart options">
-                    {% csrf_token %}
-                    {% for field in chartOptionsForm %}
-                        <tr>
-                        {% if field.field.widget.attrs.class == 'CheckboxSelectMultiple' %}
-                            <td class="shaded_top_bottom_border"><label for="{{ field.auto_id }}">{{ field.label }}</label></td>
-                            <td class="shaded_top_bottom_border">{{ field }}</td>
-                        {% elif field.label == 'Acquisition frequency' or field.label == 'Study workload' or field.label == 'Time period' %}
-                            <td class="top_border"><label for="{{ field.auto_id }}">{{ field.label }}</label></td>
-                            <td class="top_border">{{ field }}</td>
-                        {% else %}
-                            <td><label for="{{ field.auto_id }}">{{ field.label }}</label></td>
-                            <td>{{ field }}</td>
-                        {% endif %}
-                        </tr>
-                    {% endfor %}
-                </table>
+
+                {% csrf_token %}
+                {% regroup chartOptionsForm by field.group as field_groups %}
+
+                {% for field_group in field_groups %}
+
+                    {% if field_group.grouper == 'PlotCharts' %}
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h4 class="panel-title">
+                                    <label style="font-weight: normal" for="{{ field_group.list.0.auto_id }}">{{ field_group.list.0.label }}</label>&nbsp;{{ field_group.list.0 }}
+                                </h4>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="panel panel-default">
+
+                            <div class="panel-heading">
+                                <h4 class="panel-title">
+                                    <a class="no-decoration" data-toggle="collapse" data-target="#{{ field_group.grouper|cut:" " }}">{{ field_group.grouper }}</a>
+                                </h4>
+                            </div>
+
+                            <div id="{{ field_group.grouper|cut:" " }}" class="panel-collapse collapse in">
+                                <div class="panel-body">
+
+                                    <table class="table table-condensed">
+                                    {% for field in field_group.list %}
+                                        <tr>
+                                        {% if field.field.widget.attrs.class == 'CheckboxSelectMultiple' %}
+                                            <td class="shaded_top_bottom_border"><label for="{{ field.auto_id }}">{{ field.label }}</label></td>
+                                            <td class="shaded_top_bottom_border">{{ field }}</td>
+                                        {% elif field.label == 'Acquisition frequency' or field.label == 'Study workload' or field.label == 'Time period' %}
+                                            <td class="top_border"><label for="{{ field.auto_id }}">{{ field.label }}</label></td>
+                                            <td class="top_border">{{ field }}</td>
+                                        {% else %}
+                                            <td><label for="{{ field.auto_id }}">{{ field.label }}</label></td>
+                                            <td>{{ field }}</td>
+                                        {% endif %}
+                                        </tr>
+                                    {% endfor %}
+                                    </table>
+
+                                </div>
+                            </div>
+
+                        </div>
+                    {% endif %}
+
+                {% endfor %}
+
                 <input class="btn btn-default" name="submit" type="submit" />
             </div>
+
             <div class="panel-heading">
                 <h3 class="panel-title">Table options</h3>
             </div>
@@ -142,6 +179,9 @@
                     <tr><td class="nowrap">Accession number</td></tr>
                 </table>
             </th>
+        {% if showStandardNames %}
+            <th>Standard study names</th>
+        {% endif %}
             <th scope="col">Number of events</th>
             <th scope="col">Accumulated AGD (mGy)</th>
             {% if admin.admingroup %}
@@ -184,6 +224,17 @@
                     </table>
                 </a>
             </td>
+        {% if showStandardNames %}
+            <td>
+                <a href="{% url 'mg_detail_view' pk=exam.id %}">
+                    <table onclick="window.location='{% url 'mg_detail_view' pk=exam.id %}';" aria-describedby="Standard study description, procedure and requested procedure names">
+                        {% for std_name in exam.standard_names.all %}
+                            <tr><td class="nowrap">{{ std_name.standard_name|default_if_none:"-" }}</td></tr>
+                        {% endfor %}
+                    </table>
+                </a>
+            </td>
+        {% endif %}
             <td>
                 <a href="{% url 'mg_detail_view' pk=exam.id %}">
                     {{ projection_set.irradeventxraydata_set.count }}

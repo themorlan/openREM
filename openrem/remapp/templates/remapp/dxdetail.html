@@ -22,6 +22,16 @@
         <li>Study description: {{ generalstudymoduleattr.study_description }}</li>
         <li>Procedure: {{ generalstudymoduleattr.procedure_code_meaning }}</li>
         <li>Requested procedure: {{ generalstudymoduleattr.requested_procedure_code_meaning }}</li>
+      {% if showStandardNames %}
+        <li>Standard study names:
+            <ul>
+            {% for std_name in generalstudymoduleattr.standard_names.all %}
+                <li>{{ std_name.standard_name }}</li>
+            {% endfor %}
+            </ul>
+        </li>
+      {% endif %}
+
         <li>Patient age: {{ patientstudy.patient_age_decimal|floatformat:1 }} years</li>
         <li>
           Patient height and weight: {{ patientstudy.patient_size|floatformat:2 }} m,
@@ -83,6 +93,9 @@
       <table class="table table-striped table-bordered small" aria-describedby="Exposure details for each acquisition contained in the study">
         <th scope="col">Time</th>
         <th scope="col">Acquisition protocol</th>
+    {% if showStandardNames %}
+        <th scope="col">Standard acquisition protocol</th>
+    {% endif %}
         <th scope="col">
           Anatomy, laterality<br>
           Targe region<br>
@@ -106,6 +119,15 @@
               <tr>
                 <td>{{ event.date_time_started|time:"H:i.s" }}</td>
                 <td>{{ event.acquisition_protocol }}</td>
+                {% if showStandardNames %}
+                    <td>
+                        <table>
+                        {% for std_name in event.standard_protocols.all %}
+                            <tr><td class="nowrap">{{ std_name.standard_name|default_if_none:"-" }}</td></tr>
+                        {% endfor %}
+                        </table>
+                    </td>
+                {% endif %}
                 <td>
                   {% if event.anatomical_structure %} {{ event.anatomical_structure.code_meaning }} {% endif %}
                   {% if event.laterality %}{{ event.laterality.code_meaning }} {% endif %}<br>

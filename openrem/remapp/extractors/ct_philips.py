@@ -66,6 +66,7 @@ django.setup()
 from .extract_common import (  # pylint: disable=wrong-import-order, wrong-import-position
     ct_event_type_count,
     patient_module_attributes,
+    add_standard_names,
 )
 from remapp.models import (  # pylint: disable=wrong-import-order, wrong-import-position
     CtAccumulatedDoseData,
@@ -368,6 +369,9 @@ def _philips_ct2db(dataset):
     _generalequipmentmoduleattributes(dataset, g)
     _patientstudymoduleattributes(dataset, g)
     patient_module_attributes(dataset, g)
+
+    # Add standard names
+    add_standard_names(g)
 
 
 def ct_philips(philips_file):

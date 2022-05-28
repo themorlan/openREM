@@ -41,7 +41,13 @@ from decimal import Decimal
 import pickle  # nosec
 from collections import OrderedDict
 
-from django.db.models import Sum, Q, Min
+from django.db.models import (
+    Sum,
+    Q,
+    Min,
+    Subquery,
+    OuterRef,
+)
 from django.contrib import messages
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
@@ -60,11 +66,15 @@ import numpy as np
 from .forms import itemsPerPageForm
 from .interface.mod_filters import (
     RFSummaryListFilter,
+    RFFilterPlusStdNames,
     RFFilterPlusPid,
+    RFFilterPlusPidPlusStdNames,
     dx_acq_filter,
     ct_acq_filter,
     MGSummaryListFilter,
     MGFilterPlusPid,
+    MGFilterPlusStdNames,
+    MGFilterPlusPidPlusStdNames,
     nm_filter,
 )
 from .tools.make_skin_map import make_skin_map
@@ -95,6 +105,8 @@ from .models import (
     AdminTaskQuestions,
     HomePageAdminSettings,
     UpgradeStatus,
+    StandardNameSettings,
+    StandardNames,
 )
 from .version import __version__, __docs_version__, __skin_map_version__
 
@@ -167,6 +179,17 @@ def create_admin_info(request):
     return admin
 
 
+def standard_name_settings():
+    """Obtain the system-level enable_standard_names setting."""
+    try:
+        StandardNameSettings.objects.get()
+    except ObjectDoesNotExist:
+        StandardNameSettings.objects.create()
+    return StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[
+        0
+    ]
+
+
 def create_paginated_study_list(request, f, user_profile):
     paginator = Paginator(f.qs, user_profile.itemsPerPage)
     page = request.GET.get("page")
@@ -179,25 +202,31 @@ def create_paginated_study_list(request, f, user_profile):
     return study_list
 
 
+def generate_return_structure(request, f):
+    user_profile = get_or_create_user(request)
+    items_per_page_form = update_items_per_page_form(request, user_profile)
+    admin = create_admin_info(request)
+    study_list = create_paginated_study_list(request, f, user_profile)
+    enable_standard_names = standard_name_settings()
+    return_structure = {
+        "filter": f,
+        "study_list": study_list,
+        "admin": admin,
+        "itemsPerPageForm": items_per_page_form,
+        "showStandardNames": enable_standard_names,
+    }
+    return user_profile, return_structure
+
+
 @login_required
 def dx_summary_list_filter(request):
     """Obtain data for radiographic summary view."""
     pid = bool(request.user.groups.filter(name="pidgroup"))
     f = dx_acq_filter(request.GET, pid=pid)
 
-    user_profile = get_or_create_user(request)
+    user_profile, return_structure = generate_return_structure(request, f)
     chart_options_form = dx_chart_form_processing(request, user_profile)
-    items_per_page_form = update_items_per_page_form(request, user_profile)
-    admin = create_admin_info(request)
-    study_list = create_paginated_study_list(request, f, user_profile)
-
-    return_structure = {
-        "filter": f,
-        "study_list": study_list,
-        "admin": admin,
-        "chartOptionsForm": chart_options_form,
-        "itemsPerPageForm": items_per_page_form,
-    }
+    return_structure["chartOptionsForm"] = chart_options_form
 
     if user_profile.plotCharts:
         return_structure["required_charts"] = generate_required_dx_charts_list(
@@ -210,6 +239,7 @@ def dx_summary_list_filter(request):
 @login_required
 def dx_detail_view(request, pk=None):
     """Detail view for a DX study."""
+
     try:
         study = GeneralStudyModuleAttr.objects.get(pk=pk)
     except:
@@ -217,6 +247,7 @@ def dx_detail_view(request, pk=None):
         return redirect(reverse_lazy("dx_summary_list_filter"))
 
     admin = create_admin_info(request)
+    enable_standard_names = standard_name_settings()
 
     projection_set = study.projectionxrayradiationdose_set.get()
     events_all = projection_set.irradeventxraydata_set.select_related(
@@ -227,6 +258,7 @@ def dx_detail_view(request, pk=None):
         "patient_orientation_modifier_cid",
         "acquisition_plane",
     ).all()
+
     accum_set = projection_set.accumxraydose_set.all()
     # accum_integrated = projection_set.accumxraydose_set.get().accumintegratedprojradiogdose_set.get()
 
@@ -239,6 +271,7 @@ def dx_detail_view(request, pk=None):
             "projection_set": projection_set,
             "events_all": events_all,
             "accum_set": accum_set,
+            "showStandardNames": enable_standard_names,
         },
     )
 
@@ -246,24 +279,39 @@ def dx_detail_view(request, pk=None):
 @login_required
 def rf_summary_list_filter(request):
     """Obtain data for radiographic summary view."""
-    if request.user.groups.filter(name="pidgroup"):
-        f = RFFilterPlusPid(
-            request.GET,
-            queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact="RF")
-            .order_by("-study_date", "-study_time")
-            .distinct(),
-        )
-    else:
-        f = RFSummaryListFilter(
-            request.GET,
-            queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact="RF")
-            .order_by("-study_date", "-study_time")
-            .distinct(),
-        )
 
-    user_profile = get_or_create_user(request)
+    enable_standard_names = standard_name_settings()
+    queryset = (
+        GeneralStudyModuleAttr.objects.filter(modality_type__exact="RF")
+        .order_by("-study_date", "-study_time")
+        .distinct()
+    )
+
+    if request.user.groups.filter(name="pidgroup"):
+        if enable_standard_names:
+            f = RFFilterPlusPidPlusStdNames(
+                request.GET,
+                queryset=queryset,
+            )
+        else:
+            f = RFFilterPlusPid(
+                request.GET,
+                queryset=queryset,
+            )
+    else:
+        if enable_standard_names:
+            f = RFFilterPlusStdNames(
+                request.GET,
+                queryset=queryset,
+            )
+        else:
+            f = RFSummaryListFilter(
+                request.GET,
+                queryset=queryset,
+            )
+
+    user_profile, return_structure = generate_return_structure(request, f)
     chart_options_form = rf_chart_form_processing(request, user_profile)
-    items_per_page_form = update_items_per_page_form(request, user_profile)
 
     # Import total DAP and total dose at reference point alert levels. Create with default values if not found.
     try:
@@ -277,18 +325,8 @@ def rf_summary_list_filter(request):
         "accum_dose_delta_weeks",
     )[0]
 
-    admin = create_admin_info(request)
-
-    study_list = create_paginated_study_list(request, f, user_profile)
-
-    return_structure = {
-        "filter": f,
-        "study_list": study_list,
-        "admin": admin,
-        "chartOptionsForm": chart_options_form,
-        "itemsPerPageForm": items_per_page_form,
-        "alertLevels": alert_levels,
-    }
+    return_structure["chartOptionsForm"] = chart_options_form
+    return_structure["alertLevels"] = alert_levels
 
     if user_profile.plotCharts:
         return_structure["required_charts"] = generate_required_rf_charts_list(
@@ -301,6 +339,9 @@ def rf_summary_list_filter(request):
 @login_required
 def rf_detail_view(request, pk=None):
     """Detail view for an RF study."""
+
+    enable_standard_names = standard_name_settings()
+
     try:
         study = GeneralStudyModuleAttr.objects.get(pk=pk)
     except ObjectDoesNotExist:
@@ -331,6 +372,7 @@ def rf_detail_view(request, pk=None):
         "patient_orientation_modifier_cid",
         "acquisition_plane",
     ).all()
+
     for dose_ds in accumxraydose_set_all_planes:
         accum_dose_ds = dose_ds.accumprojxraydose_set.get()
         try:
@@ -492,6 +534,7 @@ def rf_detail_view(request, pk=None):
             "events_all": events_all,
             "alert_levels": alert_levels,
             "studies_in_week_delta": included_studies,
+            "showStandardNames": enable_standard_names,
         },
     )
 
@@ -593,19 +636,10 @@ def nm_summary_list_filter(request):
     """Obtain data for NM summary view."""
     pid = bool(request.user.groups.filter(name="pidgroup"))
     f = nm_filter(request.GET, pid=pid)
-    user_profile = get_or_create_user(request)
-    chart_options_form = nm_chart_form_processing(request, user_profile)
-    items_per_page_form = update_items_per_page_form(request, user_profile)
-    admin = create_admin_info(request)
-    study_list = create_paginated_study_list(request, f, user_profile)
 
-    return_structure = {
-        "filter": f,
-        "study_list": study_list,
-        "admin": admin,
-        "chartOptionsForm": chart_options_form,
-        "itemsPerPageForm": items_per_page_form,
-    }
+    user_profile, return_structure = generate_return_structure(request, f)
+    chart_options_form = nm_chart_form_processing(request, user_profile)
+    return_structure["chartOptionsForm"] = chart_options_form
 
     if user_profile.plotCharts:
         return_structure["required_charts"] = generate_required_nm_charts_list(
@@ -630,6 +664,7 @@ def nm_detail_view(request, pk=None):
     ).first()
 
     admin = create_admin_info(request)
+    enable_standard_names = standard_name_settings()
 
     return render(
         request,
@@ -638,6 +673,7 @@ def nm_detail_view(request, pk=None):
             "generalstudymoduleattr": study,
             "admin": admin,
             "associated_ct": associated_ct,
+            "showStandardNames": enable_standard_names,
         },
     )
 
@@ -647,19 +683,10 @@ def ct_summary_list_filter(request):
     """Obtain data for CT summary view."""
     pid = bool(request.user.groups.filter(name="pidgroup"))
     f = ct_acq_filter(request.GET, pid=pid)
-    user_profile = get_or_create_user(request)
-    chart_options_form = ct_chart_form_processing(request, user_profile)
-    items_per_page_form = update_items_per_page_form(request, user_profile)
-    admin = create_admin_info(request)
-    study_list = create_paginated_study_list(request, f, user_profile)
 
-    return_structure = {
-        "filter": f,
-        "study_list": study_list,
-        "admin": admin,
-        "chartOptionsForm": chart_options_form,
-        "itemsPerPageForm": items_per_page_form,
-    }
+    user_profile, return_structure = generate_return_structure(request, f)
+    chart_options_form = ct_chart_form_processing(request, user_profile)
+    return_structure["chartOptionsForm"] = chart_options_form
 
     if user_profile.plotCharts:
         return_structure["required_charts"] = generate_required_ct_charts_list(
@@ -672,6 +699,9 @@ def ct_summary_list_filter(request):
 @login_required
 def ct_detail_view(request, pk=None):
     """Detail view for a CT study."""
+
+    enable_standard_names = standard_name_settings()
+
     try:
         study = GeneralStudyModuleAttr.objects.get(pk=pk)
     except ObjectDoesNotExist:
@@ -701,6 +731,7 @@ def ct_detail_view(request, pk=None):
             "admin": admin,
             "events_all": events_all,
             "associated_nm": associated_nm,
+            "showStandardNames": enable_standard_names,
         },
     )
 
@@ -708,38 +739,44 @@ def ct_detail_view(request, pk=None):
 @login_required
 def mg_summary_list_filter(request):
     """Mammography data for summary view."""
+
+    enable_standard_names = standard_name_settings()
     filter_data = request.GET.copy()
     if "page" in filter_data:
         del filter_data["page"]
 
+    queryset = (
+        GeneralStudyModuleAttr.objects.filter(modality_type__exact="MG")
+        .order_by("-study_date", "-study_time")
+        .distinct()
+    )
+
     if request.user.groups.filter(name="pidgroup"):
-        f = MGFilterPlusPid(
-            filter_data,
-            queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact="MG")
-            .order_by("-study_date", "-study_time")
-            .distinct(),
-        )
+        if enable_standard_names:
+            f = MGFilterPlusPidPlusStdNames(
+                filter_data,
+                queryset=queryset,
+            )
+        else:
+            f = MGFilterPlusPid(
+                filter_data,
+                queryset=queryset,
+            )
     else:
-        f = MGSummaryListFilter(
-            filter_data,
-            queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact="MG")
-            .order_by("-study_date", "-study_time")
-            .distinct(),
-        )
+        if enable_standard_names:
+            f = MGFilterPlusStdNames(
+                filter_data,
+                queryset=queryset,
+            )
+        else:
+            f = MGSummaryListFilter(
+                filter_data,
+                queryset=queryset,
+            )
 
-    user_profile = get_or_create_user(request)
+    user_profile, return_structure = generate_return_structure(request, f)
     chart_options_form = mg_chart_form_processing(request, user_profile)
-    items_per_page_form = update_items_per_page_form(request, user_profile)
-    admin = create_admin_info(request)
-    study_list = create_paginated_study_list(request, f, user_profile)
-
-    return_structure = {
-        "filter": f,
-        "study_list": study_list,
-        "admin": admin,
-        "chartOptionsForm": chart_options_form,
-        "itemsPerPageForm": items_per_page_form,
-    }
+    return_structure["chartOptionsForm"] = chart_options_form
 
     if user_profile.plotCharts:
         return_structure["required_charts"] = generate_required_mg_charts_list(
@@ -752,6 +789,9 @@ def mg_summary_list_filter(request):
 @login_required
 def mg_detail_view(request, pk=None):
     """Detail view for a CT study."""
+
+    enable_standard_names = standard_name_settings()
+
     try:
         study = GeneralStudyModuleAttr.objects.get(pk=pk)
     except:
@@ -779,6 +819,7 @@ def mg_detail_view(request, pk=None):
             "projection_xray_dose_set": projection_xray_dose_set,
             "accum_mammo_set": accum_mammo_set,
             "events_all": events_all,
+            "showStandardNames": enable_standard_names,
         },
     )
 

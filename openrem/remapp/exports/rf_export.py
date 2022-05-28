@@ -35,7 +35,12 @@ from openrem.remapp.tools.background import get_or_generate_task_uuid
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Avg, Max, Min
 
-from remapp.models import GeneralStudyModuleAttr, IrradEventXRayData
+from remapp.models import (
+    GeneralStudyModuleAttr,
+    IrradEventXRayData,
+    StandardNameSettings,
+)
+
 from ..exports.export_common import (
     text_and_date_formats,
     common_headers,
@@ -52,7 +57,12 @@ from ..exports.export_common import (
     create_export_task,
     get_patient_study_data,
 )
-from ..interface.mod_filters import RFSummaryListFilter, RFFilterPlusPid
+from ..interface.mod_filters import (
+    RFSummaryListFilter,
+    RFFilterPlusPid,
+    RFFilterPlusStdNames,
+    RFFilterPlusPidPlusStdNames,
+)
 from ..tools.get_values import return_for_export
 
 logger = logging.getLogger(__name__)
@@ -156,6 +166,16 @@ def _get_series_data(event, filter_data):
     :param event: evnt in question
     :return: list of data
     """
+
+    # Obtain the system-level enable_standard_names setting
+    try:
+        StandardNameSettings.objects.get()
+    except ObjectDoesNotExist:
+        StandardNameSettings.objects.create()
+    enable_standard_names = StandardNameSettings.objects.values_list(
+        "enable_standard_names", flat=True
+    )[0]
+
     try:
         source_data = event.irradeventxraysourcedata_set.get()
         pulse_rate = source_data.pulse_rate
@@ -190,6 +210,20 @@ def _get_series_data(event, filter_data):
         str(event.date_time_started),
         event.irradiation_event_type.code_meaning,
         event.acquisition_protocol,
+    ]
+
+    if enable_standard_names:
+        try:
+            standard_protocol = event.standard_protocols.first().standard_name
+        except AttributeError:
+            standard_protocol = ""
+
+        if standard_protocol:
+            series_data += [standard_protocol]
+        else:
+            series_data += [""]
+
+    series_data = series_data + [
         event.acquisition_plane.code_meaning,
         ii_field_size,
         filter_data["filter_material"],
@@ -254,6 +288,15 @@ def rfxlsx(filterdict, pid=False, name=None, patid=None, user=None):
     :return: Saves xlsx file into Media directory for user to download
     """
 
+    # Obtain the system-level enable_standard_names setting
+    try:
+        StandardNameSettings.objects.get()
+    except ObjectDoesNotExist:
+        StandardNameSettings.objects.create()
+    enable_standard_names = StandardNameSettings.objects.values_list(
+        "enable_standard_names", flat=True
+    )[0]
+
     datestamp = datetime.datetime.now()
     task_id = get_or_generate_task_uuid()
     tsk = create_export_task(
@@ -272,15 +315,36 @@ def rfxlsx(filterdict, pid=False, name=None, patid=None, user=None):
 
     # Get the data
     if pid:
-        df_filtered_qs = RFFilterPlusPid(
-            filterdict,
-            queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact="RF"),
-        )
+        if enable_standard_names:
+            df_filtered_qs = RFFilterPlusPidPlusStdNames(
+                filterdict,
+                queryset=GeneralStudyModuleAttr.objects.filter(
+                    modality_type__exact="RF"
+                ).distinct(),
+            )
+        else:
+            df_filtered_qs = RFFilterPlusPid(
+                filterdict,
+                queryset=GeneralStudyModuleAttr.objects.filter(
+                    modality_type__exact="RF"
+                ).distinct(),
+            )
     else:
-        df_filtered_qs = RFSummaryListFilter(
-            filterdict,
-            queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact="RF"),
-        )
+        if enable_standard_names:
+            df_filtered_qs = RFFilterPlusStdNames(
+                filterdict,
+                queryset=GeneralStudyModuleAttr.objects.filter(
+                    modality_type__exact="RF"
+                ).distinct(),
+            )
+        else:
+            df_filtered_qs = RFSummaryListFilter(
+                filterdict,
+                queryset=GeneralStudyModuleAttr.objects.filter(
+                    modality_type__exact="RF"
+                ).distinct(),
+            )
+
     e = df_filtered_qs.qs
 
     tsk.num_records = e.count()
@@ -304,6 +368,14 @@ def rfxlsx(filterdict, pid=False, name=None, patid=None, user=None):
         "Time",
         "Type",
         "Protocol",
+    ]
+
+    if enable_standard_names:
+        protocolheaders += [
+            "Standard acquisition name",
+        ]
+
+    protocolheaders += [
         "Plane",
         "Field size",
         "Filter material",
@@ -381,6 +453,16 @@ def rfxlsx(filterdict, pid=False, name=None, patid=None, user=None):
                     filter_thick = None
 
                 protocol = inst[0].acquisition_protocol
+
+                standard_protocol = ""
+                if enable_standard_names:
+                    try:
+                        standard_protocol = (
+                            inst[0].standard_protocols.first().standard_name
+                        )
+                    except AttributeError:
+                        standard_protocol = ""
+
                 event_type = inst[0].irradiation_event_type.code_meaning
 
                 similarexposures = inst
@@ -479,6 +561,15 @@ def rfxlsx(filterdict, pid=False, name=None, patid=None, user=None):
                 examdata += [
                     event_type,
                     protocol,
+                ]
+
+                if enable_standard_names:
+                    if standard_protocol:
+                        examdata += [standard_protocol]
+                    else:
+                        examdata += [""]
+
+                examdata += [
                     similarexposures.count(),
                     plane,
                     pulse_rate,
@@ -549,10 +640,27 @@ def rfxlsx(filterdict, pid=False, name=None, patid=None, user=None):
                         sheetlist[tab_text]["count"], 0, common_exam_data + series_data
                     )
 
+                if enable_standard_names:
+                    if standard_protocol:
+                        tab_text = sheet_name("[standard] " + standard_protocol)
+                        filter_data = {
+                            "filter_material": filter_material,
+                            "filter_thick": filter_thick,
+                        }
+                        for exposure in similarexposures:
+                            series_data = _get_series_data(exposure, filter_data)
+                            sheetlist[tab_text]["count"] += 1
+                            sheetlist[tab_text]["sheet"].write_row(
+                                sheetlist[tab_text]["count"],
+                                0,
+                                common_exam_data + series_data,
+                            )
+
             if num_groups_this_exam > num_groups_max:
                 num_groups_max = num_groups_this_exam
 
             wsalldata.write_row(row + 1, 0, examdata)
+
         except ObjectDoesNotExist:
             error_message = (
                 "DoesNotExist error whilst exporting study {0} of {1},  study UID {2}, accession number"
@@ -574,6 +682,12 @@ def rfxlsx(filterdict, pid=False, name=None, patid=None, user=None):
         all_data_headers += [
             "G" + str(h + 1) + " Type",
             "G" + str(h + 1) + " Protocol",
+        ]
+
+        if enable_standard_names:
+            all_data_headers += ["G" + str(h + 1) + " Standard acquisition name"]
+
+        all_data_headers += [
             "G" + str(h + 1) + " No. exposures",
             "G" + str(h + 1) + " Plane",
             "G" + str(h + 1) + " Pulse rate",
@@ -631,6 +745,15 @@ def exportFL2excel(filterdict, pid=False, name=None, patid=None, user=None):
     :return: Saves csv file into Media directory for user to download
     """
 
+    # Obtain the system-level enable_standard_names setting
+    try:
+        StandardNameSettings.objects.get()
+    except ObjectDoesNotExist:
+        StandardNameSettings.objects.create()
+    enable_standard_names = StandardNameSettings.objects.values_list(
+        "enable_standard_names", flat=True
+    )[0]
+
     datestamp = datetime.datetime.now()
     task_id = get_or_generate_task_uuid()
     tsk = create_export_task(
@@ -649,15 +772,36 @@ def exportFL2excel(filterdict, pid=False, name=None, patid=None, user=None):
 
     # Get the data!
     if pid:
-        df_filtered_qs = RFFilterPlusPid(
-            filterdict,
-            queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact="RF"),
-        )
+        if enable_standard_names:
+            df_filtered_qs = RFFilterPlusPidPlusStdNames(
+                filterdict,
+                queryset=GeneralStudyModuleAttr.objects.filter(
+                    modality_type__exact="RF"
+                ).distinct(),
+            )
+        else:
+            df_filtered_qs = RFFilterPlusPid(
+                filterdict,
+                queryset=GeneralStudyModuleAttr.objects.filter(
+                    modality_type__exact="RF"
+                ).distinct(),
+            )
     else:
-        df_filtered_qs = RFSummaryListFilter(
-            filterdict,
-            queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact="RF"),
-        )
+        if enable_standard_names:
+            df_filtered_qs = RFFilterPlusStdNames(
+                filterdict,
+                queryset=GeneralStudyModuleAttr.objects.filter(
+                    modality_type__exact="RF"
+                ).distinct(),
+            )
+        else:
+            df_filtered_qs = RFSummaryListFilter(
+                filterdict,
+                queryset=GeneralStudyModuleAttr.objects.filter(
+                    modality_type__exact="RF"
+                ).distinct(),
+            )
+
     e = df_filtered_qs.qs
 
     tsk.num_records = e.count()

@@ -25,6 +25,15 @@
                 <li>Study description: {{ study.study_description }}</li>
                 <li>Procedure: {{ study.procedure_code_meaning }}</li>
                 <li>Requested procedure: {{ study.requested_procedure_code_meaning }}</li>
+              {% if showStandardNames %}
+                <li>Standard study names:
+                    <ul>
+                    {% for std_name in study.standard_names.all %}
+                        <li>{{ std_name.standard_name }}</li>
+                    {% endfor %}
+                    </ul>
+                </li>
+              {% endif %}
                 <li>Patient age: {{ patientstudy.patient_age_decimal|floatformat:1 }} years</li>
                 <li>Patient height and weight: {{ patientstudy.patient_size|floatformat:2 }} m, {{ patientstudy.patient_weight|floatformat:1 }} kg</li>
                 {% for record in accumxraydose_set_all_planes %}
@@ -426,6 +435,9 @@
 <table class="table table-striped table-bordered small sortable" aria-describedby="Exposure details for each acquisition contained in the study">
   <th scope="col">Time</th>
   <th scope="col">Acquisition protocol</th>
+{% if showStandardNames %}
+  <th scope="col">Standard acquisition protocol</th>
+{% endif %}
   <th scope="col">Event type</th>
   <th scope="col">Pulse rate <span style="white-space:nowrap">(s<sup>-1</sup>)</span></th>
   <th scope="col">Plane</th>
@@ -448,6 +460,15 @@
     <tr>
         <td>{{ event.date_time_started|time:"H:i.s" }}</td>
         <td>{{ event.acquisition_protocol }}</td>
+{% if showStandardNames %}
+        <td>
+            <table>
+            {% for std_name in event.standard_protocols.all %}
+                <tr><td class="nowrap">{{ std_name.standard_name|default_if_none:"-" }}</td></tr>
+            {% endfor %}
+            </table>
+        </td>
+{% endif %}
         <td>{{ event.irradiation_event_type.code_meaning }}</td>
         <td>{{ sourcedata.pulse_rate|floatformat:2 }}</td>
         <td>{{ event.acquisition_plane.code_meaning }}</td>

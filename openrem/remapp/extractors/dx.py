@@ -76,6 +76,7 @@ from .extract_common import (  # pylint: disable=wrong-import-order, wrong-impor
     get_study_check_dup,
     populate_dx_rf_summary,
     patient_module_attributes,
+    add_standard_names,
 )
 from remapp.models import (  # pylint: disable=wrong-import-order, wrong-import-position
     AccumXRayDose,
@@ -750,6 +751,9 @@ def _generalstudymoduleattributes(dataset, g):
         g.projectionxrayradiationdose_set.get().irradeventxraydata_set.count()
     )
     g.save()
+
+    # Add standard names
+    add_standard_names(g)
 
 
 # The routine will accept three types of image:

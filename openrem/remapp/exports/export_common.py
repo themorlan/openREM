@@ -38,9 +38,14 @@ import uuid
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.files.base import ContentFile
+from django.db.models import Q
 from xlsxwriter.workbook import Workbook
 
-from remapp.models import Exports
+from remapp.models import (
+    Exports,
+    StandardNames,
+    StandardNameSettings,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -123,6 +128,16 @@ def common_headers(modality=None, pid=False, name=None, patid=None):
     :param patid: has patient ID been selected for export
     :return: list of strings
     """
+
+    # Obtain the system-level enable_standard_names setting
+    try:
+        StandardNameSettings.objects.get()
+    except ObjectDoesNotExist:
+        StandardNameSettings.objects.create()
+    enable_standard_names = StandardNameSettings.objects.values_list(
+        "enable_standard_names", flat=True
+    )[0]
+
     pid_headings = []
     if pid and name:
         pid_headings += ["Patient name"]
@@ -149,7 +164,19 @@ def common_headers(modality=None, pid=False, name=None, patid=None):
     headers += [
         "Test patient?",
         "Study description",
+    ]
+    if enable_standard_names:
+        headers += [
+            "Standard study name (study)",
+        ]
+    headers += [
         "Requested procedure",
+    ]
+    if enable_standard_names:
+        headers += [
+            "Standard study name (request)",
+        ]
+    headers += [
         "Study Comments",
         "No. events",
     ]
@@ -192,6 +219,15 @@ def generate_sheets(
     :param patid: has patient ID been selected for export
     :return: book
     """
+    # Obtain the system-level enable_standard_names setting
+    try:
+        StandardNameSettings.objects.get()
+    except ObjectDoesNotExist:
+        StandardNameSettings.objects.create()
+    enable_standard_names = StandardNameSettings.objects.values_list(
+        "enable_standard_names", flat=True
+    )[0]
+
     sheet_list = {}
     protocols_list = []
     for exams in studies:
@@ -211,6 +247,24 @@ def generate_sheets(
                     safe_protocol = "Unknown"
                 if safe_protocol not in protocols_list:
                     protocols_list.append(safe_protocol)
+
+                if enable_standard_names:
+                    try:
+                        if s.standard_protocols.first().standard_name:
+                            safe_protocol = (
+                                "[standard] "
+                                + s.standard_protocols.first().standard_name
+                            )
+
+                        if safe_protocol not in protocols_list:
+                            protocols_list.append(safe_protocol)
+
+                    except AttributeError:
+                        pass
+
+                    if safe_protocol not in protocols_list:
+                        protocols_list.append(safe_protocol)
+
         except ObjectDoesNotExist:
             logger.error(
                 "Study missing during generation of sheet names; most likely due to study being deleted "
@@ -280,6 +334,15 @@ def get_common_data(modality, exams, pid=None, name=None, patid=None):
     :param patid: has patient ID been selected for export
     :return: the common data for that exam
     """
+
+    # Obtain the system-level enable_standard_names setting
+    try:
+        StandardNameSettings.objects.get()
+    except ObjectDoesNotExist:
+        StandardNameSettings.objects.create()
+    enable_standard_names = StandardNameSettings.objects.values_list(
+        "enable_standard_names", flat=True
+    )[0]
 
     patient_birth_date = None
     patient_name = None
@@ -420,7 +483,52 @@ def get_common_data(modality, exams, pid=None, name=None, patid=None):
     examdata += [
         not_patient_indicator,
         exams.study_description,
+    ]
+
+    std_name_modality = modality
+    if std_name_modality in ["CR", "PX"]:
+        std_name_modality = "DX"
+
+    std_name = None
+    if enable_standard_names:
+        std_names = StandardNames.objects.filter(modality=std_name_modality)
+
+        # Get standard name that matches study_description
+        std_name = std_names.filter(
+            Q(study_description=exams.study_description)
+            & Q(study_description__isnull=False)
+        ).values_list("standard_name", flat=True)
+
+        if std_name:
+            examdata += [
+                list(std_name)[0],
+            ]
+        else:
+            examdata += [
+                "",
+            ]
+
+    examdata += [
         exams.requested_procedure_code_meaning,
+    ]
+
+    if enable_standard_names:
+        # Get standard name that matches requested_procedure_code_meaning
+        std_name = std_names.filter(
+            Q(requested_procedure_code_meaning=exams.requested_procedure_code_meaning)
+            & Q(requested_procedure_code_meaning__isnull=False)
+        ).values_list("standard_name", flat=True)
+
+        if std_name:
+            examdata += [
+                list(std_name)[0],
+            ]
+        else:
+            examdata += [
+                "",
+            ]
+
+    examdata += [
         comment,
     ]
     if modality in "CT":
@@ -698,7 +806,9 @@ def create_summary_sheet(
     # Generate list of Study Descriptions
     summary_sheet.write(5, 0, "Study Description")
     summary_sheet.write(5, 1, "Frequency")
-    study_descriptions = studies.values("study_description").annotate(n=Count("pk"))
+    study_descriptions = studies.values("study_description").annotate(
+        n=Count("pk", distinct=True)
+    )
     for row, item in enumerate(study_descriptions.order_by("n").reverse()):
         summary_sheet.write(row + 6, 0, item["study_description"])
         summary_sheet.write(row + 6, 1, item["n"])
@@ -708,7 +818,7 @@ def create_summary_sheet(
     summary_sheet.write(5, 3, "Requested Procedure")
     summary_sheet.write(5, 4, "Frequency")
     requested_procedure = studies.values("requested_procedure_code_meaning").annotate(
-        n=Count("pk")
+        n=Count("pk", distinct=True)
     )
     for row, item in enumerate(requested_procedure.order_by("n").reverse()):
         summary_sheet.write(row + 6, 3, item["requested_procedure_code_meaning"])
@@ -722,12 +832,59 @@ def create_summary_sheet(
         sorted_protocols = sorted(
             iter(sheet_list.items()), key=lambda k_v: k_v[1]["count"], reverse=True
         )
-        for row, item in enumerate(sorted_protocols):
-            summary_sheet.write(
-                row + 6, 6, ", ".join(item[1]["protocolname"])
-            )  # Join - can't write list to a single cell.
-            summary_sheet.write(row + 6, 7, item[1]["count"])
+
+        # Exclude any [standard] protocols
+        protocols = [
+            x
+            for x in sorted_protocols
+            if not x[1]["protocolname"][0].startswith("[standard]")
+        ]
+        for row, item in enumerate(protocols):
+            if not item[1]["protocolname"][0].startswith("[standard]"):
+                summary_sheet.write(
+                    row + 6, 6, ", ".join(item[1]["protocolname"])
+                )  # Join - can't write list to a single cell.
+                summary_sheet.write(row + 6, 7, item[1]["count"])
         summary_sheet.set_column("G:G", 15)
+
+    # Obtain the system-level enable_standard_names setting
+    try:
+        StandardNameSettings.objects.get()
+    except ObjectDoesNotExist:
+        StandardNameSettings.objects.create()
+    enable_standard_names = StandardNameSettings.objects.values_list(
+        "enable_standard_names", flat=True
+    )[0]
+
+    if enable_standard_names:
+        # Generate list of standard study names
+        summary_sheet.write(5, 9, "Standard study name")
+        summary_sheet.write(5, 10, "Frequency")
+        standard_names = (
+            studies.exclude(standard_names__standard_name__isnull=True)
+            .values("standard_names__standard_name")
+            .annotate(n=Count("pk", distinct=True))
+        )
+
+        for row, item in enumerate(standard_names.order_by("n").reverse()):
+            summary_sheet.write(row + 6, 9, item["standard_names__standard_name"])
+            summary_sheet.write(row + 6, 10, item["n"])
+        summary_sheet.set_column("J:J", 25)
+
+        # Write standard acquisition names
+        # Only include [standard] protocols
+        summary_sheet.write(5, 12, "Standard acquisition name")
+        summary_sheet.write(5, 13, "Frequency")
+        protocols = [
+            x
+            for x in sorted_protocols
+            if x[1]["protocolname"][0].startswith("[standard]")
+        ]
+
+        for row, item in enumerate(protocols):
+            summary_sheet.write(row + 6, 12, item[1]["protocolname"][0])
+            summary_sheet.write(row + 6, 13, item[1]["count"])
+        summary_sheet.set_column("M:M", 25)
 
 
 def abort_if_zero_studies(num_studies, tsk):

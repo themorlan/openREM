@@ -620,21 +620,38 @@ class UserProfile(models.Model, CommonVariables):
 
     # Plotting controls
     plotCharts = models.BooleanField(default=False)
+
     plotDXAcquisitionMeanDAP = models.BooleanField(default=True)
+    plotDXAcquisitionMeankVp = models.BooleanField(default=False)
+    plotDXAcquisitionMeanmAs = models.BooleanField(default=False)
     plotDXAcquisitionFreq = models.BooleanField(default=False)
     plotDXAcquisitionDAPvsMass = models.BooleanField(default=False)
+    plotDXAcquisitionMeanDAPOverTime = models.BooleanField(default=False)
+    plotDXAcquisitionMeankVpOverTime = models.BooleanField(default=False)
+    plotDXAcquisitionMeanmAsOverTime = models.BooleanField(default=False)
+
+    plotDXStandardAcquisitionMeanDAP = models.BooleanField(default=False)
+    plotDXStandardAcquisitionMeankVp = models.BooleanField(default=False)
+    plotDXStandardAcquisitionMeanmAs = models.BooleanField(default=False)
+    plotDXStandardAcquisitionFreq = models.BooleanField(default=False)
+    plotDXStandardAcquisitionDAPvsMass = models.BooleanField(default=False)
+    plotDXStandardAcquisitionMeanDAPOverTime = models.BooleanField(default=False)
+    plotDXStandardAcquisitionMeankVpOverTime = models.BooleanField(default=False)
+    plotDXStandardAcquisitionMeanmAsOverTime = models.BooleanField(default=False)
+
     plotDXStudyMeanDAP = models.BooleanField(default=True)
     plotDXStudyFreq = models.BooleanField(default=True)
     plotDXStudyDAPvsMass = models.BooleanField(default=False)
+    plotDXStudyPerDayAndHour = models.BooleanField(default=False)
     plotDXRequestMeanDAP = models.BooleanField(default=True)
     plotDXRequestFreq = models.BooleanField(default=True)
     plotDXRequestDAPvsMass = models.BooleanField(default=False)
-    plotDXAcquisitionMeankVp = models.BooleanField(default=False)
-    plotDXAcquisitionMeanmAs = models.BooleanField(default=False)
-    plotDXStudyPerDayAndHour = models.BooleanField(default=False)
-    plotDXAcquisitionMeankVpOverTime = models.BooleanField(default=False)
-    plotDXAcquisitionMeanmAsOverTime = models.BooleanField(default=False)
-    plotDXAcquisitionMeanDAPOverTime = models.BooleanField(default=False)
+
+    plotDXStandardStudyMeanDAP = models.BooleanField(default=False)
+    plotDXStandardStudyFreq = models.BooleanField(default=False)
+    plotDXStandardStudyDAPvsMass = models.BooleanField(default=False)
+    plotDXStandardStudyPerDayAndHour = models.BooleanField(default=False)
+
     plotDXAcquisitionMeanDAPOverTimePeriod = models.CharField(
         max_length=13,
         choices=CommonVariables.TIME_PERIOD,
@@ -669,6 +686,13 @@ class UserProfile(models.Model, CommonVariables):
     plotCTAcquisitionDLPvsMass = models.BooleanField(default=False)
     plotCTAcquisitionCTDIOverTime = models.BooleanField(default=False)
     plotCTAcquisitionDLPOverTime = models.BooleanField(default=False)
+    plotCTStandardAcquisitionFreq = models.BooleanField(default=False)
+    plotCTStandardAcquisitionMeanDLP = models.BooleanField(default=False)
+    plotCTStandardAcquisitionMeanCTDI = models.BooleanField(default=False)
+    plotCTStandardAcquisitionDLPOverTime = models.BooleanField(default=False)
+    plotCTStandardAcquisitionCTDIOverTime = models.BooleanField(default=False)
+    plotCTStandardAcquisitionCTDIvsMass = models.BooleanField(default=False)
+    plotCTStandardAcquisitionDLPvsMass = models.BooleanField(default=False)
     plotCTStudyMeanDLP = models.BooleanField(default=True)
     plotCTStudyMeanCTDI = models.BooleanField(default=True)
     plotCTStudyFreq = models.BooleanField(default=False)
@@ -679,6 +703,11 @@ class UserProfile(models.Model, CommonVariables):
     plotCTRequestDLPOverTime = models.BooleanField(default=False)
     plotCTStudyPerDayAndHour = models.BooleanField(default=False)
     plotCTStudyMeanDLPOverTime = models.BooleanField(default=False)
+    plotCTStandardStudyMeanDLP = models.BooleanField(default=False)
+    plotCTStandardStudyNumEvents = models.BooleanField(default=False)
+    plotCTStandardStudyFreq = models.BooleanField(default=False)
+    plotCTStandardStudyPerDayAndHour = models.BooleanField(default=False)
+    plotCTStandardStudyMeanDLPOverTime = models.BooleanField(default=False)
     plotCTOverTimePeriod = models.CharField(
         max_length=13,
         choices=CommonVariables.TIME_PERIOD,
@@ -703,6 +732,12 @@ class UserProfile(models.Model, CommonVariables):
     plotRFRequestDAP = models.BooleanField(default=True)
     plotRFRequestFreq = models.BooleanField(default=True)
     plotRFRequestDAPOverTime = models.BooleanField(default=False)
+
+    plotRFStandardStudyFreq = models.BooleanField(default=False)
+    plotRFStandardStudyDAP = models.BooleanField(default=False)
+    plotRFStandardStudyDAPOverTime = models.BooleanField(default=False)
+    plotRFStandardStudyPerDayAndHour = models.BooleanField(default=False)
+
     plotRFOverTimePeriod = models.CharField(
         max_length=13,
         choices=CommonVariables.TIME_PERIOD,
@@ -723,6 +758,16 @@ class UserProfile(models.Model, CommonVariables):
     plotMGaverageAGD = models.BooleanField(default=False)
     plotMGacquisitionFreq = models.BooleanField(default=False)
     plotMGAcquisitionAGDOverTime = models.BooleanField(default=False)
+
+    plotMGStandardStudyPerDayAndHour = models.BooleanField(default=False)
+    plotMGStandardAGDvsThickness = models.BooleanField(default=False)
+    plotMGStandardkVpvsThickness = models.BooleanField(default=False)
+    plotMGStandardmAsvsThickness = models.BooleanField(default=False)
+    plotMGStandardAverageAGDvsThickness = models.BooleanField(default=False)
+    plotMGStandardAverageAGD = models.BooleanField(default=False)
+    plotMGStandardAcquisitionFreq = models.BooleanField(default=False)
+    plotMGStandardAcquisitionAGDOverTime = models.BooleanField(default=False)
+
     plotMGOverTimePeriod = models.CharField(
         max_length=13,
         choices=CommonVariables.TIME_PERIOD,
@@ -826,6 +871,52 @@ class UniqueEquipmentNames(models.Model):
 
     def __unicode__(self):
         return self.display_name
+
+
+class StandardNames(models.Model):
+    """
+    Table to store standard study description, requested procedure, procedure or acquisition names
+    """
+
+    standard_name = models.TextField(blank=True, null=True)
+    modality = models.CharField(max_length=16, blank=True, null=True)
+    study_description = models.TextField(blank=True, null=True)
+    requested_procedure_code_meaning = models.TextField(blank=True, null=True)
+    procedure_code_meaning = models.TextField(blank=True, null=True)
+    acquisition_protocol = models.TextField(blank=True, null=True)
+
+    class Meta(object):
+        """
+        Define unique_together Meta class to ensure that each study description, requested procedure,
+        procedure and acquisition protocol can only appear in one standard name per modality
+        """
+
+        unique_together = (
+            ("modality", "study_description"),
+            ("modality", "requested_procedure_code_meaning"),
+            ("modality", "procedure_code_meaning"),
+            ("modality", "acquisition_protocol"),
+        )
+
+    def __unicode__(self):
+        return self.standard_name
+
+    def get_absolute_url(self):
+        return reverse("standard_names_view")
+
+
+class StandardNameSettings(SingletonModel):
+    """
+    Table to store standard name mapping settings
+    """
+
+    enable_standard_names = models.BooleanField(
+        default=False,
+        verbose_name="Enable standard name mapping?",
+    )
+
+    def get_absolute_url(self):
+        return reverse("standard_name_settings", kwargs={"pk": 1})
 
 
 class SizeUpload(models.Model):
@@ -970,6 +1061,8 @@ class GeneralStudyModuleAttr(models.Model):  # C.7.2.1
         max_digits=16, decimal_places=8, blank=True, null=True
     )  # for legacy
     number_of_planes = models.IntegerField(blank=True, null=True)
+
+    standard_names = models.ManyToManyField(StandardNames)
 
     def __unicode__(self):
         return self.study_instance_uid
@@ -1347,6 +1440,7 @@ class IrradEventXRayData(models.Model):  # TID 10003
         max_digits=16, decimal_places=8, blank=True, null=True
     )  # TID 4007
     comment = models.TextField(blank=True, null=True)
+    standard_protocols = models.ManyToManyField(StandardNames)
 
     def __unicode__(self):
         return self.irradiation_event_uid
@@ -2131,6 +2225,11 @@ class GeneralEquipmentModuleAttr(models.Model):  # C.7.5.1
                     "general_study_module_attributes",
                 ]
             ),
+            models.Index(
+                fields=[
+                    "unique_equipment_name",
+                ]
+            ),
         ]
 
 
@@ -2734,6 +2833,7 @@ class CtIrradiationEventData(models.Model):  # TID 10013
     # Not in DICOM standard:
     date_time_started = models.DateTimeField(blank=True, null=True)
     series_description = models.TextField(blank=True, null=True)
+    standard_protocols = models.ManyToManyField(StandardNames)
 
     class Meta:
         indexes = [
