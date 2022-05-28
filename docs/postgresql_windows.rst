@@ -6,7 +6,11 @@ PostgreSQL database (Windows)
 
 Get PostgreSQL and the python connector
 =======================================
-    
+
+.. note::
+
+    OpenREM 0.10 requires PostgreSQL 13 or earlier.
+
 + Download the installer from http://www.enterprisedb.com/products-services-training/pgdownload#windows
 + Install the Python PostgreSQL connector (activate the virtualenv first if using)::
 
