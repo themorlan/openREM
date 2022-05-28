@@ -9,6 +9,7 @@ OpenREM version history
 * :issue:`936`  Tasks: added make_skin_map to background tasks on RF RDSR import
 * :issue:`934`  DICOM Networking: QR queries are now logged and can be analysed through the web interface
 * :issue:`931`  Exports: export RF DAP as float instead of text
+* :issue:`928`  Documentation: added restriction in postgres version for earlier OpenREM releases
 * :issue:`925`  Docker: docs and config file for enabling bind mounts with SELinux
 * :issue:`922`  Database: optimise indexes and duplicate queries
 * :issue:`917`  Interface: added horizontal lines between chart option groups and shaded chart option CheckboxSelectMultiple items
