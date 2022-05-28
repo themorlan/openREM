@@ -41,6 +41,7 @@ OpenREM version history
 * :issue:`865`  Imports: enabled workaround to import Spectrum Dynamics RDSR
 * :issue:`864`  Tasks: updated Celery settings for Celery 6.
 * :issue:`863`  Interface: removed height and weight from CT study delete
+* :issue:`862`  Interface: allow mapping of request, study and acquisition names to standard versions
 * :issue:`861`  Interface: added ability to filter mammography on view code, compressed breast thickness and exposure control mode
 * :issue:`860`  DICOM Networking: removed built-in DICOM Store SCP functionality
 * :issue:`858`  DICOM Networking: query-retrieve logging, filtering and error handling improved
