@@ -57,6 +57,8 @@ def skin_map(
     """
     ref_length_squared = math.pow(d_ref, 2)
 
+    field_side_length_at_ref_dist = math.sqrt(area)
+
     skin_dose_map = np.zeros(
         (phantom.width, phantom.height + phantom.phantom_head_height),
         dtype=np.dtype(Decimal),
@@ -117,6 +119,18 @@ def skin_map(
 
                 # Calculate the dose at the skin point by correcting for distance and BSF
                 mylength_squared = pow(my_ray.length, 2)
+
+                # Field size used to look up backscatter factor in 0.10.0. This should calculate the side-length
+                # of the x-ray field at the entrance to the phantom, but it does not.
+                current_field_size_to_get_bsf = (mylength_squared / ref_length_squared)
+
+                # Proposed field size to look up backscatter factor for version 1.0. This takes the field size at the
+                # reference point and scales it by my_ray.length / d_ref, where my_ray.length is the distance from the
+                # x-ray focus to the current skin cell.
+                proposed_field_size_to_get_bsf = field_side_length_at_ref_dist * (my_ray.length / d_ref)
+
+                print("{0}, {1}, {2}, {3}, {4}".format(d_ref, my_ray.length, field_side_length_at_ref_dist, current_field_size_to_get_bsf, proposed_field_size_to_get_bsf))
+
                 iterator[0] = Decimal(
                     ref_length_squared
                     / mylength_squared
@@ -124,7 +138,7 @@ def skin_map(
                     * get_bsf(
                         tube_voltage,
                         cu_thickness,
-                        math.sqrt(mylength_squared / ref_length_squared),
+                        proposed_field_size_to_get_bsf,
                     )
                 ).quantize(Decimal("0.000000001"), rounding=ROUND_HALF_UP)
         iterator.iternext()
