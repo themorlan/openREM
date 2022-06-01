@@ -75,12 +75,38 @@ def skin_map(
         np.array([table_width / 2, 0, 0]),
     )
 
+    (triangle1, triangle2) = collimate(x_ray, area, d_ref)
+
+    # Count how many 1 cm^2 cells the field hits - this is the total skin area that is exposed
+    # and will include any curved areas of the phantom and also account for change in the field
+    # area at the skin due to non-zero secondary beam angles.
+
+    # NOTE: this will only work correctly once the bug affecting field size when there is a
+    # non-zero secondary angle has been fixed.
+    area_count = 0
+    iterator = np.nditer(skin_dose_map, op_flags=["readwrite"], flags=["multi_index", "refs_ok"])
+    while not iterator.finished:
+        lookup_row = iterator.multi_index[0]
+        lookup_col = iterator.multi_index[1]
+        my_x = phantom.phantom_map[lookup_row, lookup_col][0]
+        my_y = phantom.phantom_map[lookup_row, lookup_col][1]
+        my_z = phantom.phantom_map[lookup_row, lookup_col][2]
+        my_ray = Segment3(focus, np.array([my_x, my_y, my_z]))
+        reverse_normal = phantom.normal_map[lookup_row, lookup_col]
+        if check_orthogonal(reverse_normal, my_ray):
+            # Check to see if the beam hits the patient
+            hit1 = intersect(my_ray, triangle1)
+            hit2 = intersect(my_ray, triangle2)
+            if hit1 == "hit" or hit2 == "hit":
+                area_count = area_count + 1
+        iterator.iternext()
+    equiv_field_size_on_skin = math.sqrt(area_count)
+
     iterator = np.nditer(
         skin_dose_map, op_flags=["readwrite"], flags=["multi_index", "refs_ok"]
     )
 
-    (triangle1, triangle2) = collimate(x_ray, area, d_ref)
-
+    # Now we know the field area at the skin surface, calculate the skin dose for each cell
     while not iterator.finished:
 
         lookup_row = iterator.multi_index[0]
@@ -120,16 +146,9 @@ def skin_map(
                 # Calculate the dose at the skin point by correcting for distance and BSF
                 mylength_squared = pow(my_ray.length, 2)
 
-                # Field size used to look up backscatter factor in 0.10.0. This should calculate the side-length
-                # of the x-ray field at the entrance to the phantom, but it does not.
-                current_field_size_to_get_bsf = (mylength_squared / ref_length_squared)
+                field_size_normal_to_source_iso_direction_at_skin_dist = field_side_length_at_ref_dist * (my_ray.length / d_ref)
 
-                # Proposed field size to look up backscatter factor for version 1.0. This takes the field size at the
-                # reference point and scales it by my_ray.length / d_ref, where my_ray.length is the distance from the
-                # x-ray focus to the current skin cell.
-                proposed_field_size_to_get_bsf = field_side_length_at_ref_dist * (my_ray.length / d_ref)
-
-                print("{0}, {1}, {2}, {3}, {4}".format(d_ref, my_ray.length, field_side_length_at_ref_dist, current_field_size_to_get_bsf, proposed_field_size_to_get_bsf))
+                print("d_ref: {0}; source to cell: {1:.2f}; field size @ cell normal to SI: {2:.2f}; field size on skin: {3:.2f}".format(d_ref, my_ray.length, field_size_normal_to_source_iso_direction_at_skin_dist, equiv_field_size_on_skin))
 
                 iterator[0] = Decimal(
                     ref_length_squared
@@ -138,7 +157,7 @@ def skin_map(
                     * get_bsf(
                         tube_voltage,
                         cu_thickness,
-                        proposed_field_size_to_get_bsf,
+                        equiv_field_size_on_skin,
                     )
                 ).quantize(Decimal("0.000000001"), rounding=ROUND_HALF_UP)
         iterator.iternext()
