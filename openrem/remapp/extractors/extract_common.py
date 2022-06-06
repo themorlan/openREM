@@ -389,7 +389,7 @@ def patient_module_attributes(dataset, g):  # C.7.1.1
     pat.patient_sex = get_value_kw("PatientSex", dataset)
     pat.not_patient_indicator = get_not_pt(dataset)
     patientatt = PatientStudyModuleAttr.objects.get(general_study_module_attributes=g)
-    if patient_birth_date:
+    if patient_birth_date and g.study_date:
         patientatt.patient_age_decimal = Decimal(
             (g.study_date.date() - patient_birth_date.date()).days
         ) / Decimal("365.25")
