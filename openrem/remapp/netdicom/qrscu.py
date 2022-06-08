@@ -2077,10 +2077,10 @@ def _move_req(my_ae, assoc, d, study_no, series_no, query):
             query.move_summary = msg
             query.save()
         else:
-            status_msg = (
-                "Connection timed out, was aborted without reason given or received an invalid response. "
-                "Check remote server logs"
-            )
+            if assoc.acse.is_aborted():
+                status_msg = 'Connection was aborted - check remote server logs.'
+            else:
+                status_msg = 'Connection timed out or received an invalid response. Check remote server logs'
             msg = (
                 f"Move of study {study_no}, series {series_no}: {status_msg} "
                 f"Cumulative sub-ops completed: {query.move_completed_sub_ops}, "
