@@ -31,6 +31,7 @@ OpenREM version history
 * :issue:`886`  Code quality: addressed some SonarCloud issues
 * :issue:`882`  SkinDose: added percentage of exposures that interact with phantom
 * :issue:`881`  Charts: add option to remove multiple and trailing whitespace in category names
+* :issue:`880`  Orthanc: added XA and RF to allowed modalities to enable physics QA images to be kept
 * :issue:`879`  Charts: fixed sorting of fluoroscopy charts when split by physician
 * :issue:`877`  Charts: added acquisition type restrictions to acquisition-level CT charts
 * :issue:`872`  Charts: added ability to split fluoroscopy over-time and histogram charts by physician
