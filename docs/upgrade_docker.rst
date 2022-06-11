@@ -1,21 +1,3 @@
-########################
-Upgrade to OpenREM 1.0.0
-########################
-
-**Document not ready for translation**
-
-****************
-Headline changes
-****************
-
-* Python 3
-* Django 2.2
-* Docker or direct install on Windows and Linux
-* Celery, Flower and RabbitMQ removed from requirements
-
-* Performing physician added to standard fluoroscopy exports (:issue:`840`)
-* Station name checked at series level only, option to check at study level only instead (:issue:`772`)
-
 *******************
 Upgrade preparation
 *******************
@@ -187,17 +169,3 @@ Generate translation binary files
     $ docker-compose exec openrem python manage.py compilemessages
 
 The new OpenREM installation should now be ready to be used.
-
-***************************************************
-Upgrading an OpenREM server with no internet access
-***************************************************
-
-Follow the instructions found at :doc:`upgrade-offline`, before returning here to update the configuration, migrate the
-database and complete the upgrade.
-
-**********************************************************
-Upgrading an OpenREM server that uses a different database
-**********************************************************
-
-
-
