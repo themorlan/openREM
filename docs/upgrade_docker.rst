@@ -1,6 +1,6 @@
-*******************
-Upgrade preparation
-*******************
+*****************
+Upgrade to Docker
+*****************
 
 * These instructions assume you are upgrading from 0.10.0.
 * **Upgrades from 0.9.1 or earlier should review** :doc:`upgrade_previous_0.10.0`. -- needs changing

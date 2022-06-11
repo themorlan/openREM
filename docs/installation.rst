@@ -31,11 +31,11 @@ security updates for the operating system. However, if this is not possible the 
 computer that does have access to the internet and transferred to the 'offline' serer for installation.
 
 ..  toctree::
-    :maxdepth: 2
+    :maxdepth: 1
 
     install_docker
     upgrade_docker
-    install_offline
+    install-offline
 
 Native install on Linux
 -----------------------
@@ -48,11 +48,11 @@ the older releases, and some services that were previously required are no longe
 provided, based on an Ubuntu Server installation.
 
 ..  toctree::
-    :maxdepth: 2
+    :maxdepth: 1
 
     quick_start_linux
     upgrade_linux
-    install_offline
+    install-offline
     upgrade_offline
 
 Native install on Windows
@@ -74,7 +74,7 @@ Full upgrade instructions are provided, based on a Windows Server 2019 installat
 
     install_windows
     upgrade_windows
-    install_offline
+    install-offline
     upgrade_offline
 
 

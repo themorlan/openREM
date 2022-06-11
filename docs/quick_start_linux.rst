@@ -1,5 +1,5 @@
-One page complete Ubuntu install
-================================
+Native Linux install
+====================
 
 **Document not ready for translation**
 
