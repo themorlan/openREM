@@ -2,7 +2,15 @@
 Upgrade to Docker
 #################
 
-* These instructions assume you are upgrading from 0.10.0.
+These instructions assume:
+
+* You are upgrading from 0.10.0.
+* You are using a PostgreSQL database in the existing installation.
+* That existing Linux installs followed the instructions in the previous releases, with the *openrem-function*
+  format that changed in the 0.9.1 release (:ref:`service_name_change`).
+
+If not you will need to adapt the instructions as necessary.
+
 * **Upgrades from 0.9.1 or earlier should review** :doc:`upgrade_previous_0.10.0`. -- needs changing
 
 ..  toctree::
@@ -19,8 +27,7 @@ Upgrade process from a PostgresQL database
 Stop the existing services
 ==========================
 
-* Linux: assuming an Ubuntu install that followed the instructions in the previous releases, with the *openrem-function*
-  format that changed in the 0.9.1 release (:ref:`service_name_change`).
+* Linux:
 
     .. code-block:: console
 

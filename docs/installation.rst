@@ -50,7 +50,7 @@ provided, based on an Ubuntu Server installation.
 ..  toctree::
     :maxdepth: 1
 
-    quick_start_linux
+    install_linux
     upgrade_linux
     install-offline
     upgrade_offline

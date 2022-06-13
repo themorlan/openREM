@@ -265,7 +265,7 @@ been updated.
 
 .. _service_name_change:
 
-Ubuntu installs that followed :doc:`quick_start_linux`
+Ubuntu installs that followed :doc:`install_linux`
 ======================================================
 
 Systemd service files have been renamed in these docs to use *openrem-function* rather than *function-openrem*. To
