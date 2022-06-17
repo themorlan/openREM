@@ -12,7 +12,7 @@ django-crispy-forms
 pandas
 matplotlib
 plotly
-xlrd
+openpyxl
 testfixtures
 mock
 django-js-reverse
