@@ -1,4 +1,4 @@
-image: python:3.8
+image: python:3.10
 
 clone:
   depth: full    # SonarCloud scanner needs the full history to assign issues properly
