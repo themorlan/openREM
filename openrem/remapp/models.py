@@ -3025,8 +3025,8 @@ class CtDoseCheckDetails(models.Model):  # TID 10015
     ct_irradiation_event_data = models.ForeignKey(
         CtIrradiationEventData, on_delete=models.CASCADE
     )
-    dlp_alert_value_configured = models.NullBooleanField()
-    ctdivol_alert_value_configured = models.NullBooleanField()
+    dlp_alert_value_configured = models.BooleanField(null=True)
+    ctdivol_alert_value_configured = models.BooleanField(null=True)
     dlp_alert_value = models.DecimalField(
         max_digits=16, decimal_places=8, blank=True, null=True
     )
@@ -3041,8 +3041,8 @@ class CtDoseCheckDetails(models.Model):  # TID 10015
     )
     # alert_ added to allow two fields that are in different containers in std
     alert_reason_for_proceeding = models.TextField(blank=True, null=True)
-    dlp_notification_value_configured = models.NullBooleanField()
-    ctdivol_notification_value_configured = models.NullBooleanField()
+    dlp_notification_value_configured = models.BooleanField(null=True)
+    ctdivol_notification_value_configured = models.BooleanField(null=True)
     dlp_notification_value = models.DecimalField(
         max_digits=8, decimal_places=4, blank=True, null=True
     )
