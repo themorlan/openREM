@@ -116,8 +116,6 @@ class ExportRFxlsx(
 
         rfxlsx(filter_set, pid=pid, name=name, patid=patient_id, user=self.user)
 
-        import xlrd
-
         task = Exports.objects.all()[0]
 
         book = load_workbook(task.filename.path)
@@ -151,8 +149,6 @@ class ExportRFxlsx(
         patient_id = True
 
         rfxlsx(filter_set, pid=pid, name=name, patid=patient_id, user=self.user)
-
-        import xlrd
 
         task = Exports.objects.all()[0]
         book = load_workbook(task.filename.path)
