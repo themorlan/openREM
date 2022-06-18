@@ -6,6 +6,7 @@ import os
 from django.contrib.auth.models import User, Group
 from django.test import RequestFactory, TransactionTestCase
 from openpyxl import load_workbook
+from openpyxl.utils import get_column_letter
 
 from ..extractors import rdsr
 from ..exports.rf_export import rfxlsx
@@ -74,7 +75,7 @@ class ExportRFxlsx(
         manufacturer_col = [
             i for i, x in enumerate(headers, start=1) if x.value == "Manufacturer"
         ][0]
-        manufacturers = all_data_sheet.col(manufacturer_col)
+        manufacturers = all_data_sheet[get_column_letter(manufacturer_col)]
         siemens_row = [i for i, x in enumerate(manufacturers, start=1) if x.value == "Siemens"][
             0
         ]
@@ -87,7 +88,7 @@ class ExportRFxlsx(
             's',
         )
         self.assertEqual(
-            all_data_sheet.cell(row=siemens_row, column=a_dose_rp_col.data_type), 'n'
+            all_data_sheet.cell(row=siemens_row, column=a_dose_rp_col).data_type, 'n'
         )
 
         self.assertEqual(
@@ -119,10 +120,10 @@ class ExportRFxlsx(
 
         task = Exports.objects.all()[0]
 
-        book = xlrd.open_workbook(task.filename.path)
-        philips_sheet = book.sheet_by_name("abdomen_2fps_25%")
-        siemens_sheet = book.sheet_by_name("fl_-_ang")
-        headers = siemens_sheet.row(0)
+        book = load_workbook(task.filename.path)
+        philips_sheet = book["abdomen_2fps_25%"]
+        siemens_sheet = book["fl_-_ang"]
+        headers = siemens_sheet[1]
 
         filter_material_col = [
             i for i, x in enumerate(headers, start=1) if x.value == "Filter material"
@@ -131,7 +132,7 @@ class ExportRFxlsx(
             i for i, x in enumerate(headers, start=1) if x.value == "Mean filter thickness (mm)"
         ][0]
 
-        self.assertEqual(philips_sheet.cell(row=1, column=filter_material_col).value, "Cu | Al")
+        self.assertEqual(philips_sheet.cell(row=2, column=filter_material_col).value, "Cu | Al")
         self.assertEqual(
             philips_sheet.cell(row=2, column=filter_thickness_col).value, "0.1000 | 1.0000"
         )
@@ -154,10 +155,10 @@ class ExportRFxlsx(
         import xlrd
 
         task = Exports.objects.all()[0]
-        book = xlrd.open_workbook(task.filename.path)
+        book = load_workbook(task.filename.path)
 
-        eurocolumbus_sheet = book.sheet_by_name("vascular-knee-scopy-dose_level_")
-        eurocolumbus_headers = eurocolumbus_sheet.row(0)
+        eurocolumbus_sheet = book["vascular-knee-scopy-dose_level_"]
+        eurocolumbus_headers = eurocolumbus_sheet[1]
         kvp_col = [i for i, x in enumerate(eurocolumbus_headers, start=1) if x.value == "kVp"][0]
         ma_col = [i for i, x in enumerate(eurocolumbus_headers, start=1) if x.value == "mA"][0]
         pulse_width_col = [
@@ -169,12 +170,12 @@ class ExportRFxlsx(
             i for i, x in enumerate(eurocolumbus_headers, start=1) if x.value == "Time"
         ][0]
         target_row = 0
-        for row_num in range(eurocolumbus_sheet.nrows):
+        for row_num in range(eurocolumbus_sheet.max_row):
             if (
-                eurocolumbus_sheet.cell(row=row_num, column=exposure_time_col).value
+                eurocolumbus_sheet.cell(row=row_num+1, column=exposure_time_col).value
                 == "2018-01-10 12:35:29"
             ):
-                target_row = row_num
+                target_row = row_num+1
                 break
 
         self.assertAlmostEqual(
