@@ -63,9 +63,9 @@ class ExportDXxlsx(TestCase):
         all_data_sheet = book["All data"]
         headers = all_data_sheet[1]
 
-        patient_id_col = [i for i, x in enumerate(headers, start=1) if x.value == "Patient ID"][
-            0
-        ]
+        patient_id_col = [
+            i for i, x in enumerate(headers, start=1) if x.value == "Patient ID"
+        ][0]
         accession_number_col = [
             i for i, x in enumerate(headers, start=1) if x.value == "Accession number"
         ][0]
@@ -73,17 +73,25 @@ class ExportDXxlsx(TestCase):
             i for i, x in enumerate(headers, start=1) if x.value == "E1 Exposure index"
         ][0]
 
-        self.assertEqual(all_data_sheet.cell(row=2, column=patient_id_col).data_type, 's')
         self.assertEqual(
-            all_data_sheet.cell(row=2, column=accession_number_col).data_type, 's'
+            all_data_sheet.cell(row=2, column=patient_id_col).data_type, "s"
         )
         self.assertEqual(
-            all_data_sheet.cell(row=2, column=exposure_index_col).data_type, 'n'
+            all_data_sheet.cell(row=2, column=accession_number_col).data_type, "s"
+        )
+        self.assertEqual(
+            all_data_sheet.cell(row=2, column=exposure_index_col).data_type, "n"
         )
 
-        self.assertEqual(all_data_sheet.cell(row=2, column=patient_id_col).value, "00098765")
-        self.assertEqual(all_data_sheet.cell(row=2, column=accession_number_col).value, "00938475")
-        self.assertEqual(all_data_sheet.cell(row=2, column=exposure_index_col).value, 51.745061)
+        self.assertEqual(
+            all_data_sheet.cell(row=2, column=patient_id_col).value, "00098765"
+        )
+        self.assertEqual(
+            all_data_sheet.cell(row=2, column=accession_number_col).value, "00938475"
+        )
+        self.assertEqual(
+            all_data_sheet.cell(row=2, column=exposure_index_col).value, 51.745061
+        )
 
         # cleanup
         task.filename.delete()  # delete file so local testing doesn't get too messy!
@@ -105,15 +113,21 @@ class ExportDXxlsx(TestCase):
         aec_sheet = book["aec"]
         headers = aec_sheet[1]
 
-        filter_col = [i for i, x in enumerate(headers, start=1) if x.value == "Filters"][0]
+        filter_col = [
+            i for i, x in enumerate(headers, start=1) if x.value == "Filters"
+        ][0]
         filter_thick_col = [
-            i for i, x in enumerate(headers, start=1) if x.value == "Filter thicknesses (mm)"
+            i
+            for i, x in enumerate(headers, start=1)
+            if x.value == "Filter thicknesses (mm)"
         ][0]
 
         self.assertEqual(aec_sheet.cell(row=2, column=filter_col).value, "Al")
         self.assertEqual(aec_sheet.cell(row=2, column=filter_thick_col).value, "1.0000")
         self.assertEqual(aec_sheet.cell(row=3, column=filter_col).value, "Al | Cu")
-        self.assertEqual(aec_sheet.cell(row=3, column=filter_thick_col).value, "1.0000 | 0.2000")
+        self.assertEqual(
+            aec_sheet.cell(row=3, column=filter_thick_col).value, "1.0000 | 0.2000"
+        )
 
         # cleanup
         task.filename.delete()  # delete file so local testing doesn't get too messy!

@@ -63,41 +63,46 @@ class ExportRFxlsx(
         all_data_sheet = book["All data"]
         headers = all_data_sheet[1]
 
-        patient_id_col = [i for i, x in enumerate(headers, start=1) if x.value == "Patient ID"][
-            0
-        ]
+        patient_id_col = [
+            i for i, x in enumerate(headers, start=1) if x.value == "Patient ID"
+        ][0]
         accession_number_col = [
             i for i, x in enumerate(headers, start=1) if x.value == "Accession number"
         ][0]
         a_dose_rp_col = [
-            i for i, x in enumerate(headers, start=1) if x.value == "A Dose RP total (Gy)"
+            i
+            for i, x in enumerate(headers, start=1)
+            if x.value == "A Dose RP total (Gy)"
         ][0]
         manufacturer_col = [
             i for i, x in enumerate(headers, start=1) if x.value == "Manufacturer"
         ][0]
         manufacturers = all_data_sheet[get_column_letter(manufacturer_col)]
-        siemens_row = [i for i, x in enumerate(manufacturers, start=1) if x.value == "Siemens"][
-            0
-        ]
+        siemens_row = [
+            i for i, x in enumerate(manufacturers, start=1) if x.value == "Siemens"
+        ][0]
 
         self.assertEqual(
-            all_data_sheet.cell(row=siemens_row, column=patient_id_col).data_type, 's'
+            all_data_sheet.cell(row=siemens_row, column=patient_id_col).data_type, "s"
         )
         self.assertEqual(
             all_data_sheet.cell(row=siemens_row, column=accession_number_col).data_type,
-            's',
+            "s",
         )
         self.assertEqual(
-            all_data_sheet.cell(row=siemens_row, column=a_dose_rp_col).data_type, 'n'
+            all_data_sheet.cell(row=siemens_row, column=a_dose_rp_col).data_type, "n"
         )
 
         self.assertEqual(
             all_data_sheet.cell(row=siemens_row, column=patient_id_col).value, "098765"
         )
         self.assertEqual(
-            all_data_sheet.cell(row=siemens_row, column=accession_number_col).value, "1234.5678"
+            all_data_sheet.cell(row=siemens_row, column=accession_number_col).value,
+            "1234.5678",
         )
-        self.assertEqual(all_data_sheet.cell(row=siemens_row, column=a_dose_rp_col).value, 0.00252)
+        self.assertEqual(
+            all_data_sheet.cell(row=siemens_row, column=a_dose_rp_col).value, 0.00252
+        )
 
         # cleanup
         task.filename.delete()  # delete file so local testing doesn't get too messy!
@@ -127,15 +132,24 @@ class ExportRFxlsx(
             i for i, x in enumerate(headers, start=1) if x.value == "Filter material"
         ][0]
         filter_thickness_col = [
-            i for i, x in enumerate(headers, start=1) if x.value == "Mean filter thickness (mm)"
+            i
+            for i, x in enumerate(headers, start=1)
+            if x.value == "Mean filter thickness (mm)"
         ][0]
 
-        self.assertEqual(philips_sheet.cell(row=2, column=filter_material_col).value, "Cu | Al")
         self.assertEqual(
-            philips_sheet.cell(row=2, column=filter_thickness_col).value, "0.1000 | 1.0000"
+            philips_sheet.cell(row=2, column=filter_material_col).value, "Cu | Al"
         )
-        self.assertEqual(siemens_sheet.cell(row=2, column=filter_material_col).value, "Cu")
-        self.assertEqual(siemens_sheet.cell(row=2, column=filter_thickness_col).value, "0.6000")
+        self.assertEqual(
+            philips_sheet.cell(row=2, column=filter_thickness_col).value,
+            "0.1000 | 1.0000",
+        )
+        self.assertEqual(
+            siemens_sheet.cell(row=2, column=filter_material_col).value, "Cu"
+        )
+        self.assertEqual(
+            siemens_sheet.cell(row=2, column=filter_thickness_col).value, "0.6000"
+        )
 
         # cleanup
         task.filename.delete()  # delete file so local testing doesn't get too messy!
@@ -155,8 +169,12 @@ class ExportRFxlsx(
 
         eurocolumbus_sheet = book["vascular-knee-scopy-dose_level_"]
         eurocolumbus_headers = eurocolumbus_sheet[1]
-        kvp_col = [i for i, x in enumerate(eurocolumbus_headers, start=1) if x.value == "kVp"][0]
-        ma_col = [i for i, x in enumerate(eurocolumbus_headers, start=1) if x.value == "mA"][0]
+        kvp_col = [
+            i for i, x in enumerate(eurocolumbus_headers, start=1) if x.value == "kVp"
+        ][0]
+        ma_col = [
+            i for i, x in enumerate(eurocolumbus_headers, start=1) if x.value == "mA"
+        ][0]
         pulse_width_col = [
             i
             for i, x in enumerate(eurocolumbus_headers, start=1)
@@ -168,16 +186,19 @@ class ExportRFxlsx(
         target_row = 0
         for row_num in range(eurocolumbus_sheet.max_row):
             if (
-                eurocolumbus_sheet.cell(row=row_num+1, column=exposure_time_col).value
+                eurocolumbus_sheet.cell(row=row_num + 1, column=exposure_time_col).value
                 == "2018-01-10 12:35:29"
             ):
-                target_row = row_num+1
+                target_row = row_num + 1
                 break
 
         self.assertAlmostEqual(
-            eurocolumbus_sheet.cell(row=target_row, column=kvp_col).value, 56.6666666666667
+            eurocolumbus_sheet.cell(row=target_row, column=kvp_col).value,
+            56.6666666666667,
         )
-        self.assertAlmostEqual(eurocolumbus_sheet.cell(row=target_row, column=ma_col).value, 50.0)
+        self.assertAlmostEqual(
+            eurocolumbus_sheet.cell(row=target_row, column=ma_col).value, 50.0
+        )
         self.assertAlmostEqual(
             eurocolumbus_sheet.cell(row=target_row, column=pulse_width_col).value, 8.0
         )

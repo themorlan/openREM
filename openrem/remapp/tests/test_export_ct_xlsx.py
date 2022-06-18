@@ -60,9 +60,9 @@ class ExportCTxlsx(TestCase):
         all_data_sheet = book["All data"]
         headers = all_data_sheet[1]
 
-        patient_id_col = [i for i, x in enumerate(headers, start=1) if x.value == "Patient ID"][
-            0
-        ]
+        patient_id_col = [
+            i for i, x in enumerate(headers, start=1) if x.value == "Patient ID"
+        ][0]
         accession_number_col = [
             i for i, x in enumerate(headers, start=1) if x.value == "Accession number"
         ][0]
@@ -70,33 +70,49 @@ class ExportCTxlsx(TestCase):
             i for i, x in enumerate(headers, start=1) if x.value == "DLP total (mGy.cm)"
         ][0]
         e1_dose_check_col = [
-            i for i, x in enumerate(headers, start=1) if x.value == "E1 Dose check details"
+            i
+            for i, x in enumerate(headers, start=1)
+            if x.value == "E1 Dose check details"
         ][0]
         e2_dose_check_col = [
-            i for i, x in enumerate(headers, start=1) if x.value == "E2 Dose check details"
+            i
+            for i, x in enumerate(headers, start=1)
+            if x.value == "E2 Dose check details"
         ][0]
 
-        self.assertEqual(all_data_sheet.cell(row=3, column=patient_id_col).data_type, 's')
-        self.assertEqual(all_data_sheet.cell(row=4, column=patient_id_col).data_type, 's')
         self.assertEqual(
-            all_data_sheet.cell(row=3, column=accession_number_col).data_type, 's'
+            all_data_sheet.cell(row=3, column=patient_id_col).data_type, "s"
         )
         self.assertEqual(
-            all_data_sheet.cell(row=4, column=accession_number_col).data_type, 's'
+            all_data_sheet.cell(row=4, column=patient_id_col).data_type, "s"
         )
         self.assertEqual(
-            all_data_sheet.cell(row=3, column=dlp_total_col).data_type, 'n'
+            all_data_sheet.cell(row=3, column=accession_number_col).data_type, "s"
+        )
+        self.assertEqual(
+            all_data_sheet.cell(row=4, column=accession_number_col).data_type, "s"
+        )
+        self.assertEqual(
+            all_data_sheet.cell(row=3, column=dlp_total_col).data_type, "n"
         )
 
-        self.assertEqual(all_data_sheet.cell(row=3, column=patient_id_col).value, "008F/g234")
-        self.assertEqual(all_data_sheet.cell(row=4, column=patient_id_col).value, "00001234")
         self.assertEqual(
-            all_data_sheet.cell(row=3, column=accession_number_col).value, "001234512345678"
+            all_data_sheet.cell(row=3, column=patient_id_col).value, "008F/g234"
         )
         self.assertEqual(
-            all_data_sheet.cell(row=4, column=accession_number_col).value, "0012345.12345678"
+            all_data_sheet.cell(row=4, column=patient_id_col).value, "00001234"
         )
-        self.assertEqual(all_data_sheet.cell(row=3, column=dlp_total_col).value, 2002.39)
+        self.assertEqual(
+            all_data_sheet.cell(row=3, column=accession_number_col).value,
+            "001234512345678",
+        )
+        self.assertEqual(
+            all_data_sheet.cell(row=4, column=accession_number_col).value,
+            "0012345.12345678",
+        )
+        self.assertEqual(
+            all_data_sheet.cell(row=3, column=dlp_total_col).value, 2002.39
+        )
 
         e1_dose_check_string = (
             "Dose Check Alerts: DLP alert is configured at 100.00 mGy.cm with an accumulated "
@@ -109,10 +125,12 @@ class ExportCTxlsx(TestCase):
             "accumulated forward estimate of 10.60 mGy. Person authorizing irradiation: Luuk. "
         )
         self.assertEqual(
-            all_data_sheet.cell(row=2, column=e1_dose_check_col).value, e1_dose_check_string
+            all_data_sheet.cell(row=2, column=e1_dose_check_col).value,
+            e1_dose_check_string,
         )
         self.assertEqual(
-            all_data_sheet.cell(row=2, column=e2_dose_check_col).value, e2_dose_check_string
+            all_data_sheet.cell(row=2, column=e2_dose_check_col).value,
+            e2_dose_check_string,
         )
 
         # cleanup
@@ -205,13 +223,19 @@ class ExportCTxlsx(TestCase):
         book = load_workbook(task.filename.path)
         phe_sheet = book["PHE CT 2019"]
 
-        self.assertEqual(phe_sheet.cell(column=5, row=2).value, 487)  # first series imaged length
+        self.assertEqual(
+            phe_sheet.cell(column=5, row=2).value, 487
+        )  # first series imaged length
         self.assertEqual(phe_sheet.cell(row=3, column=5).value, 5)
         self.assertEqual(phe_sheet.cell(row=4, column=5).value, 418.75)
-        self.assertEqual(phe_sheet.cell(row=2, column=11).value, 5.3)  # first series CTDIvol
+        self.assertEqual(
+            phe_sheet.cell(row=2, column=11).value, 5.3
+        )  # first series CTDIvol
         self.assertEqual(phe_sheet.cell(row=3, column=11).value, 32.83)
         self.assertEqual(phe_sheet.cell(row=4, column=11).value, 3.23)
-        self.assertEqual(phe_sheet.cell(row=2, column=20).value, 251.2)  # second series DLP
+        self.assertEqual(
+            phe_sheet.cell(row=2, column=20).value, 251.2
+        )  # second series DLP
         self.assertEqual(phe_sheet.cell(row=3, column=20).value, 429.19)
         self.assertEqual(phe_sheet.cell(row=4, column=20).value, 259.85)
         self.assertEqual(phe_sheet.cell(row=2, column=37).value, 502.4)  # total DLP

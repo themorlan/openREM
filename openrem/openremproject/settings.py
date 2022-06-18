@@ -20,7 +20,7 @@ DATABASES = {
     }
 }
 
-DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
 SECRET_KEY = os.environ.get("SECRET_KEY", default="shouldn'tbethisone")
 
