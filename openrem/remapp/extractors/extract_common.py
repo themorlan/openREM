@@ -798,7 +798,7 @@ def generalstudymoduleattributes(dataset, g, logger):  # C.7.2.1
         g.accession_hashed = True
     g.accession_number = accession_number
     g.study_description = get_value_kw("StudyDescription", dataset)
-    g.physician_of_record = list_to_string(get_value_kw("PhysicianOfRecord", dataset))
+    g.physician_of_record = list_to_string(get_value_kw("PhysiciansOfRecord", dataset))
     g.name_of_physician_reading_study = list_to_string(
         get_value_kw("NameOfPhysiciansReadingStudy", dataset)
     )

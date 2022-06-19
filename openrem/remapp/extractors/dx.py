@@ -345,7 +345,6 @@ def _irradiationeventxraysourcedata(dataset, event):
             "AverageXRayTubeCurrent", dataset
         )
     source.exposure_time = get_value_kw("ExposureTime", dataset)
-    source.irradiation_duration = get_value_kw("IrradiationDuration", dataset)
     source.focal_spot_size = get_value_kw("FocalSpots", dataset)
     collimated_field_area = get_value_kw("FieldOfViewDimensions", dataset)
     if collimated_field_area:
@@ -429,9 +428,6 @@ def _irradiationeventxraymechanicaldata(dataset, event):
     )
     mech.magnification_factor = get_value_kw(
         "EstimatedRadiographicMagnificationFactor", dataset
-    )
-    mech.dxdr_mechanical_configuration = get_value_kw(
-        "DX/DRMechanicalConfiguration", dataset
     )
     mech.primary_angle = get_value_kw("PositionerPrimaryAngle", dataset)
     mech.secondary_angle = get_value_kw("PositionerSecondaryAngle", dataset)
@@ -670,7 +666,7 @@ def _generalstudymoduleattributes(dataset, g):
     if not g.study_description:
         g.study_description = get_seq_code_meaning("ProcedureCodeSequence", dataset)
     g.modality_type = get_value_kw("Modality", dataset)
-    g.physician_of_record = list_to_string(get_value_kw("PhysicianOfRecord", dataset))
+    g.physician_of_record = list_to_string(get_value_kw("PhysiciansOfRecord", dataset))
     g.name_of_physician_reading_study = list_to_string(
         get_value_kw("NameOfPhysiciansReadingStudy", dataset)
     )

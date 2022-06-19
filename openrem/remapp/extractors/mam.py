@@ -470,9 +470,9 @@ def _generalstudymoduleattributes(dataset, g):
     g.accession_number = accession_number
     g.study_description = get_value_kw("StudyDescription", dataset)
     g.modality_type = get_value_kw("Modality", dataset)
-    g.physician_of_record = list_to_string(get_value_kw("PhysicianOfRecord", dataset))
+    g.physician_of_record = list_to_string(get_value_kw("PhysiciansOfRecord", dataset))
     g.name_of_physician_reading_study = list_to_string(
-        get_value_kw("NameOfPhysicianReadingStudy", dataset)
+        get_value_kw("NameOfPhysiciansReadingStudy", dataset)
     )
     g.performing_physician_name = list_to_string(
         get_value_kw("PerformingPhysicianName", dataset)
