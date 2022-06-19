@@ -435,8 +435,6 @@ def _irradiationeventxraymechanicaldata(dataset, event):
     )
     mech.primary_angle = get_value_kw("PositionerPrimaryAngle", dataset)
     mech.secondary_angle = get_value_kw("PositionerSecondaryAngle", dataset)
-    mech.primary_end_angle = get_value_kw("PositionerPrimaryEndAngle", dataset)
-    mech.secondary_angle = get_value_kw("PositionerSecondaryEndAngle", dataset)
     mech.column_angulation = get_value_kw("ColumnAngulation", dataset)
     mech.table_head_tilt_angle = get_value_kw("TableHeadTiltAngle", dataset)
     mech.table_horizontal_rotation_angle = get_value_kw(
@@ -659,9 +657,6 @@ def _generalstudymoduleattributes(dataset, g):
     g.referring_physician_name = list_to_string(
         get_value_kw("ReferringPhysicianName", dataset)
     )
-    g.referring_physician_identification = list_to_string(
-        get_value_kw("ReferringPhysicianIdentification", dataset)
-    )
     g.study_id = get_value_kw("StudyID", dataset)
     accession_number = get_value_kw("AccessionNumber", dataset)
     patient_id_settings = PatientIDSettings.objects.get()
@@ -677,7 +672,7 @@ def _generalstudymoduleattributes(dataset, g):
     g.modality_type = get_value_kw("Modality", dataset)
     g.physician_of_record = list_to_string(get_value_kw("PhysicianOfRecord", dataset))
     g.name_of_physician_reading_study = list_to_string(
-        get_value_kw("NameOfPhysicianReadingStudy", dataset)
+        get_value_kw("NameOfPhysiciansReadingStudy", dataset)
     )
     g.performing_physician_name = list_to_string(
         get_value_kw("PerformingPhysicianName", dataset)

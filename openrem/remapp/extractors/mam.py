@@ -461,9 +461,6 @@ def _generalstudymoduleattributes(dataset, g):
     g.referring_physician_name = list_to_string(
         get_value_kw("ReferringPhysicianName", dataset)
     )
-    g.referring_physician_identification = list_to_string(
-        get_value_kw("ReferringPhysicianIdentification", dataset)
-    )
     g.study_id = get_value_kw("StudyID", dataset)
     accession_number = get_value_kw("AccessionNumber", dataset)
     patient_id_settings = PatientIDSettings.objects.get()
