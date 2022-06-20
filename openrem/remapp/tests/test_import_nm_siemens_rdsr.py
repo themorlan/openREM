@@ -140,7 +140,7 @@ class ImportNMRDSR(ImportTest):
                             },
                             "radionuclide": {"code_meaning": "^18^Fluorine"},
                             "radionuclide_half_life": Decimal(6586.2),
-                            "radiopharmaceutical_administration_event_uid": "1.3.12.2.1107.5.1.4.11090.20220224104830.000000",
+                            "radiopharmaceutical_administration_event_uid": "1.3.12.2.1107.5.1.4.11090.20220224104830.0",
                             "radiopharmaceutical_start_datetime": datetime(
                                 2022, 2, 24, 10, 40, 30, 0
                             ),
@@ -245,7 +245,7 @@ class ImportNMRDSR(ImportTest):
                             "radionuclide": {"code_meaning": "^18^Fluorine"},
                             "radionuclide_half_life": Decimal(6586.2),
                             "radiopharmaceutical_specific_activity": Decimal(10.1),
-                            "radiopharmaceutical_administration_event_uid": "1.3.12.2.1107.5.1.4.11090.20220223082918.000000",
+                            "radiopharmaceutical_administration_event_uid": "1.3.12.2.1107.5.1.4.11090.20220223082918.0",
                             "intravenousextravasationsymptoms_set": {
                                 "first": {
                                     "intravenous_extravasation_symptoms": {

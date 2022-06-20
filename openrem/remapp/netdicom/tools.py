@@ -24,7 +24,11 @@
 # 1.3.6.1.4.1.45593.1.2.879675987937815483yyyymmddssssssss
 # would be 55 characters - process ID could be longer.
 # Includes an extra 1. after the root UID to enable future use for
-# anthing else.
+# anything else.
+
+# UIDs used for test code will be pydicom.uid.generate_uid with prefix of
+# 1.3.6.1.4.1.45593.999.
+
 
 import logging
 
