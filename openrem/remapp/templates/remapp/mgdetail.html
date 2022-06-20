@@ -84,6 +84,7 @@
 {% endif %}
     <th scope="col">Laterality</th>
     <th scope="col">View code</th>
+    <th scope="col">View modifier</th>
     <th scope="col">Compression thickness (mm)</th>
     <th scope="col">Target</th>
     <th scope="col">Filter</th>
@@ -110,6 +111,11 @@
 {% endif %}
         <td>{{ event.laterality.code_meaning }}</td>
         <td>{{ event.image_view.code_meaning }}</td>
+        <td>
+            {% for modifier in event.imageviewmodifier_set.all %}
+                {{ modifier.image_view_modifier.code_meaning }}
+            {% endfor %}
+        </td>
         <td>{{ event.irradeventxraymechanicaldata_set.get.compression_thickness|floatformat:0  }}</td>
         <td>{{ source_data.anode_target_material.code_meaning }}</td>
         <td>{{ source_data.xrayfilters_set.get.xray_filter_material.code_meaning }}</td>
