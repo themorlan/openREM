@@ -5,6 +5,7 @@ OpenREM version history
 
 1.0.0b1 (2022-xx-xx)
 --------------------
+* :issue:`941`  Interface: the filtering submit button now updates chart options for fluoroscopy and mammography
 * :issue:`937`  Interface: correcting bottom row of exports table
 * :issue:`936`  Tasks: added make_skin_map to background tasks on RF RDSR import
 * :issue:`934`  DICOM Networking: QR queries are now logged and can be analysed through the web interface
