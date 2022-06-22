@@ -10,7 +10,7 @@ django-solo
 django-crispy-forms
 pandas
 matplotlib
-plotly
+plotly==5.8.2
 openpyxl
 testfixtures
 mock
