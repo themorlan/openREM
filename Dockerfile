@@ -1,5 +1,5 @@
 # pull official base image
-FROM python:3.8-slim
+FROM python:3.10-slim
 
 RUN useradd -ms /bin/bash app \
  && adduser www-data app
@@ -33,8 +33,7 @@ COPY ./requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
-RUN mv $HOME/stuff/0002_0_7_fresh_install_add_median.py.inactive $APP_HOME/remapp/migrations/ \
- && mv $HOME/stuff/v1initial.py $APP_HOME/remapp/migrations/0001_initial.py.1-0-upgrade \
+RUN mv $HOME/stuff/v1initial.py $APP_HOME/remapp/migrations/0001_initial.py.1-0-upgrade \
  && mv $APP_HOME/openremproject/wsgi.py.example $APP_HOME/openremproject/wsgi.py
 
 RUN chmod -R 775 $APP_HOME/mediafiles \
