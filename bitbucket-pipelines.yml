@@ -191,6 +191,10 @@ pipelines:
           deployment: testing  # deployment has $server as a variable = testing.openrem.org
     deploy-to-docker:
       - step: *build-and-deploy-to-docker
+    test-python-3.8:
+      - step: *test-python3.8
+    test-python-3.9:
+      - step: *test-python3.9
   default:  # Standard commits are tested but not deployed
     - step: *test
     - step: *flake8
