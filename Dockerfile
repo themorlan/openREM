@@ -28,11 +28,9 @@ RUN python -m venv $APP_VENV
 ENV PATH="$APP_VENV/bin:$PATH"
 # install dependencies
 # hadolint ignore=DL3013
-RUN pip install --upgrade pip
-COPY ./requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-
 COPY . .
+RUN pip install --upgrade pip && pip install -e .
+
 RUN mv $HOME/stuff/v1initial.py $APP_HOME/remapp/migrations/0001_initial.py.1-0-upgrade \
  && mv $APP_HOME/openremproject/wsgi.py.example $APP_HOME/openremproject/wsgi.py
 
@@ -43,8 +41,6 @@ RUN chmod -R 775 $APP_HOME/mediafiles \
  && mkdir /logs \
  && mkdir /imports \
  && chmod 555 $HOME/pixelmed/pixelmed.jar
-
-RUN pip install -e .
 
 WORKDIR $APP_HOME
 
