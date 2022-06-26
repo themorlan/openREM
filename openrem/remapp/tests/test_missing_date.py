@@ -31,11 +31,11 @@ class FilterViewTests(TestCase):
         Initial test to ensure five studies are listed with no filter
         """
         self.client.login(username="temporary", password="temporary")
-        self.client.cookies.load({settings.LANGUAGE_COOKIE_NAME: 'en'})
+        self.client.cookies.load({settings.LANGUAGE_COOKIE_NAME: "en"})
         response = self.client.post(
             reverse("update_latest_studies"),
-            data={'modality': 'DX'},
-            HTTP_X_REQUESTED_WITH='XMLHttpRequest'
+            data={"modality": "DX"},
+            HTTP_X_REQUESTED_WITH="XMLHttpRequest",
         )
         self.assertEqual(response.status_code, 200)
         responses_text = "DX Date Removed KODAK7500"

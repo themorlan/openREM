@@ -482,9 +482,9 @@ def calc_facet_rows_and_height(df, facet_col_name, facet_col_wrap):
     :return: two-element list containing the chart height in pixels (int) and the number of facet rows (int)
     """
     n_facet_rows = math.ceil(len(df[facet_col_name].unique()) / facet_col_wrap)
-    chart_height = n_facet_rows * 500
-    if chart_height < 500:
-        chart_height = 500
+    chart_height = n_facet_rows * 750
+    if chart_height < 750:
+        chart_height = 750
     return chart_height, n_facet_rows
 
 
@@ -1658,7 +1658,7 @@ def plotly_scatter(
             category_orders=sorting_categories,
             opacity=0.6,
             height=chart_height,
-            render_mode="webgl",
+            render_mode="svg", #"webgl",
         )
 
         fig.update_traces(marker_line=dict(width=1, color="LightSlateGray"))
