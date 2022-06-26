@@ -2,6 +2,8 @@
 Upgrade to OpenREM 0.10.0 from before 0.9.1
 ###########################################
 
+*doc not ready for translation*
+
 *******************
 Upgrade preparation
 *******************
@@ -245,7 +247,7 @@ If you are a Windows user you may also wish to review :doc:`celery-windows` as t
 been updated.
 
 
-Ubuntu installs that followed :doc:`quick_start_linux`
+Ubuntu installs that followed :doc:`install_linux`
 ======================================================
 
 Systemd service files have been renamed in these docs to use *openrem-function* rather than *function-openrem*. To

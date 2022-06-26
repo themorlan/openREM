@@ -1,26 +1,16 @@
-########################
-Upgrade to OpenREM 1.0.0
-########################
+#################
+Upgrade to Docker
+#################
 
-**Document not ready for translation**
+These instructions assume:
 
-****************
-Headline changes
-****************
+* You are upgrading from 0.10.0.
+* You are using a PostgreSQL database in the existing installation.
+* That existing Linux installs followed the instructions in the previous releases, with the *openrem-function*
+  format that changed in the 0.9.1 release (:ref:`service_name_change`).
 
-* Python 3
-* Django 2.2
-* Docker or direct install on Windows and Linux
-* Celery, Flower and RabbitMQ removed from requirements
+If not you will need to adapt the instructions as necessary.
 
-* Performing physician added to standard fluoroscopy exports (:issue:`840`)
-* Station name checked at series level only, option to check at study level only instead (:issue:`772`)
-
-*******************
-Upgrade preparation
-*******************
-
-* These instructions assume you are upgrading from 0.10.0.
 * **Upgrades from 0.9.1 or earlier should review** :doc:`upgrade_previous_0.10.0`. -- needs changing
 
 ..  toctree::
@@ -37,8 +27,7 @@ Upgrade process from a PostgresQL database
 Stop the existing services
 ==========================
 
-* Linux: assuming an Ubuntu install that followed the instructions in the previous releases, with the *openrem-function*
-  format that changed in the 0.9.1 release (:ref:`service_name_change`).
+* Linux:
 
     .. code-block:: console
 
@@ -187,17 +176,3 @@ Generate translation binary files
     $ docker-compose exec openrem python manage.py compilemessages
 
 The new OpenREM installation should now be ready to be used.
-
-***************************************************
-Upgrading an OpenREM server with no internet access
-***************************************************
-
-Follow the instructions found at :doc:`upgrade-offline`, before returning here to update the configuration, migrate the
-database and complete the upgrade.
-
-**********************************************************
-Upgrading an OpenREM server that uses a different database
-**********************************************************
-
-
-

@@ -323,7 +323,8 @@ class CTChartOptionsForm(forms.Form):
     )
     plotCTAcquisitionDLPOverTime.group = "Acquisition protocol"
     plotCTAcquisitionCTDIOverTime = forms.BooleanField(
-        label=mark_safe(_("Acquisition CTDI<sub>vol</sub> over time")), required=False  # nosec
+        label=mark_safe(_("Acquisition CTDI<sub>vol</sub> over time")),  # nosec
+        required=False,
     )
     plotCTAcquisitionCTDIOverTime.group = "Acquisition protocol"
     plotCTAcquisitionDLPvsMass = forms.BooleanField(
@@ -331,7 +332,8 @@ class CTChartOptionsForm(forms.Form):
     )
     plotCTAcquisitionDLPvsMass.group = "Acquisition protocol"
     plotCTAcquisitionCTDIvsMass = forms.BooleanField(
-        label=mark_safe(_("Acquisition CTDI<sub>vol</sub> vs mass")), required=False  # nosec
+        label=mark_safe(_("Acquisition CTDI<sub>vol</sub> vs mass")),  # nosec
+        required=False,
     )
     plotCTAcquisitionCTDIvsMass.group = "Acquisition protocol"
     plotCTAcquisitionTypes = forms.MultipleChoiceField(
@@ -393,7 +395,8 @@ class CTChartOptionsFormIncStandard(CTChartOptionsForm):
     )
     plotCTStandardAcquisitionMeanDLP.group = "Standard acquisition name"
     plotCTStandardAcquisitionMeanCTDI = forms.BooleanField(
-        label=mark_safe("Standard acquisition name CTDI<sub>vol</sub>"), required=False  # nosec
+        label=mark_safe("Standard acquisition name CTDI<sub>vol</sub>"),  # nosec
+        required=False,
     )
     plotCTStandardAcquisitionMeanCTDI.group = "Standard acquisition name"
     plotCTStandardAcquisitionDLPOverTime = forms.BooleanField(
@@ -401,7 +404,9 @@ class CTChartOptionsFormIncStandard(CTChartOptionsForm):
     )
     plotCTStandardAcquisitionDLPOverTime.group = "Standard acquisition name"
     plotCTStandardAcquisitionCTDIOverTime = forms.BooleanField(
-        label=mark_safe("Standard acquisition name CTDI<sub>vol</sub> over time"),  # nosec
+        label=mark_safe(  # nosec
+            "Standard acquisition name CTDI<sub>vol</sub> over time"
+        ),
         required=False,
     )
     plotCTStandardAcquisitionCTDIOverTime.group = "Standard acquisition name"
@@ -410,7 +415,9 @@ class CTChartOptionsFormIncStandard(CTChartOptionsForm):
     )
     plotCTStandardAcquisitionDLPvsMass.group = "Standard acquisition name"
     plotCTStandardAcquisitionCTDIvsMass = forms.BooleanField(
-        label=mark_safe("Standard acquisition name CTDI<sub>vol</sub> vs mass"),  # nosec
+        label=mark_safe(  # nosec
+            "Standard acquisition name CTDI<sub>vol</sub> vs mass"
+        ),
         required=False,
     )
     plotCTStandardAcquisitionCTDIvsMass.group = "Standard acquisition name"
@@ -1012,7 +1019,8 @@ class CTChartOptionsDisplayForm(forms.Form):
         label=_("Acquisition DLP over time"), required=False
     )
     plotCTAcquisitionCTDIOverTime = forms.BooleanField(
-        label=mark_safe(_("Acquisition CTDI<sub>vol</sub> over time")), required=False  # nosec
+        label=mark_safe(_("Acquisition CTDI<sub>vol</sub> over time")),  # nosec
+        required=False,
     )
     plotCTAcquisitionDLPvsMass = forms.BooleanField(
         label=_("Acquisition DLP vs mass"), required=False
@@ -1072,17 +1080,22 @@ class CTChartOptionsDisplayFormIncStandard(CTChartOptionsDisplayForm):
         label="Standard acquisition DLP", required=False
     )
     plotCTStandardAcquisitionMeanCTDI = forms.BooleanField(
-        label=mark_safe("Standard acquisition CTDI<sub>vol</sub>"), required=False  # nosec
+        label=mark_safe("Standard acquisition CTDI<sub>vol</sub>"),  # nosec
+        required=False,
     )
     plotCTStandardAcquisitionDLPOverTime = forms.BooleanField(
         label="Standard acquisition name DLP over time", required=False
     )
     plotCTStandardAcquisitionCTDIOverTime = forms.BooleanField(
-        label=mark_safe("Standard acquisition name CTDI<sub>vol</sub> over time"),  # nosec
+        label=mark_safe(  # nosec
+            "Standard acquisition name CTDI<sub>vol</sub> over time"
+        ),
         required=False,
     )
     plotCTStandardAcquisitionCTDIvsMass = forms.BooleanField(
-        label=mark_safe("Standard acquisition name CTDI<sub>vol</sub> vs mass"),  # nosec
+        label=mark_safe(  # nosec
+            "Standard acquisition name CTDI<sub>vol</sub> vs mass"
+        ),
         required=False,
     )
     plotCTStandardAcquisitionDLPvsMass = forms.BooleanField(
@@ -1638,7 +1651,7 @@ class DicomStoreForm(forms.ModelForm):
 
 
 class StandardNameFormBase(forms.ModelForm):
-    """For configuring standard names for study description, requested procedure, procedure and acquisition name. """
+    """For configuring standard names for study description, requested procedure, procedure and acquisition name."""
 
     class Meta(object):
         model = StandardNames

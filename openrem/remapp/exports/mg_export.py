@@ -75,6 +75,7 @@ def _series_headers(max_events):
     for series_number in range(max_events):
         series_headers += [
             "E" + str(series_number + 1) + " View",
+            "E" + str(series_number + 1) + " View Modifier",
             "E" + str(series_number + 1) + " Laterality",
             "E" + str(series_number + 1) + " Acquisition",
         ]
@@ -181,6 +182,14 @@ def _mg_get_series_data(event):
         view = event.image_view.code_meaning
     else:
         view = None
+    view_modifiers = event.imageviewmodifier_set.order_by("pk")
+    modifier = ""
+    if view_modifiers:
+        for view_modifier in view_modifiers:
+            try:
+                modifier += f"{view_modifier.image_view_modifier.code_meaning} "
+            except AttributeError:
+                pass
     if event.laterality:
         laterality = event.laterality.code_meaning
     else:
@@ -188,6 +197,7 @@ def _mg_get_series_data(event):
 
     series_data = [
         view,
+        modifier,
         laterality,
         event.acquisition_protocol,
     ]
@@ -344,6 +354,7 @@ def exportMG2excel(filterdict, pid=False, name=None, patid=None, user=None, xlsx
     all_data_headings = list(headings)
     headings += [
         "View",
+        "View Modifier",
         "Laterality",
         "Acquisition",
     ]

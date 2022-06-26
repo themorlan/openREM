@@ -1,12 +1,9 @@
-One page complete Ubuntu install
-================================
+Native Linux install
+====================
 
 **Document not ready for translation**
 
-This setup is no longer recommended - the Docker :doc:`installation` method is instead. If a non-Docker installation is
-required then this guide can be followed.
-
-This install is based on Ubuntu 18.04 using:
+This install is based on Ubuntu 22.04 using:
 
 * Python 3.8 running in a virtualenv
 * Database: PostgreSQL
