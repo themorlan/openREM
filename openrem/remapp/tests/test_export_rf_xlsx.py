@@ -2,8 +2,12 @@
 # test_export_rf_xlsx.py
 
 import os
+
 from django.contrib.auth.models import User, Group
 from django.test import RequestFactory, TransactionTestCase
+from openpyxl import load_workbook
+from openpyxl.utils import get_column_letter
+
 from ..extractors import rdsr
 from ..exports.rf_export import rfxlsx
 from ..models import PatientIDSettings, Exports, GeneralStudyModuleAttr
@@ -53,49 +57,52 @@ class ExportRFxlsx(
 
         rfxlsx(filter_set, pid=pid, name=name, patid=patient_id, user=self.user)
 
-        import xlrd
-
         task = Exports.objects.all()[0]
 
-        book = xlrd.open_workbook(task.filename.path)
-        all_data_sheet = book.sheet_by_name("All data")
-        headers = all_data_sheet.row(0)
+        book = load_workbook(task.filename.path)
+        all_data_sheet = book["All data"]
+        headers = all_data_sheet[1]
 
-        patient_id_col = [i for i, x in enumerate(headers) if x.value == "Patient ID"][
-            0
-        ]
+        patient_id_col = [
+            i for i, x in enumerate(headers, start=1) if x.value == "Patient ID"
+        ][0]
         accession_number_col = [
-            i for i, x in enumerate(headers) if x.value == "Accession number"
+            i for i, x in enumerate(headers, start=1) if x.value == "Accession number"
         ][0]
         a_dose_rp_col = [
-            i for i, x in enumerate(headers) if x.value == "A Dose RP total (Gy)"
+            i
+            for i, x in enumerate(headers, start=1)
+            if x.value == "A Dose RP total (Gy)"
         ][0]
         manufacturer_col = [
-            i for i, x in enumerate(headers) if x.value == "Manufacturer"
+            i for i, x in enumerate(headers, start=1) if x.value == "Manufacturer"
         ][0]
-        manufacturers = all_data_sheet.col(manufacturer_col)
-        siemens_row = [i for i, x in enumerate(manufacturers) if x.value == "Siemens"][
-            0
-        ]
+        manufacturers = all_data_sheet[get_column_letter(manufacturer_col)]
+        siemens_row = [
+            i for i, x in enumerate(manufacturers, start=1) if x.value == "Siemens"
+        ][0]
 
         self.assertEqual(
-            all_data_sheet.cell_type(siemens_row, patient_id_col), xlrd.XL_CELL_TEXT
+            all_data_sheet.cell(row=siemens_row, column=patient_id_col).data_type, "s"
         )
         self.assertEqual(
-            all_data_sheet.cell_type(siemens_row, accession_number_col),
-            xlrd.XL_CELL_TEXT,
+            all_data_sheet.cell(row=siemens_row, column=accession_number_col).data_type,
+            "s",
         )
         self.assertEqual(
-            all_data_sheet.cell_type(siemens_row, a_dose_rp_col), xlrd.XL_CELL_NUMBER
+            all_data_sheet.cell(row=siemens_row, column=a_dose_rp_col).data_type, "n"
         )
 
         self.assertEqual(
-            all_data_sheet.cell_value(siemens_row, patient_id_col), "098765"
+            all_data_sheet.cell(row=siemens_row, column=patient_id_col).value, "098765"
         )
         self.assertEqual(
-            all_data_sheet.cell_value(siemens_row, accession_number_col), "1234.5678"
+            all_data_sheet.cell(row=siemens_row, column=accession_number_col).value,
+            "1234.5678",
         )
-        self.assertEqual(all_data_sheet.cell_value(siemens_row, a_dose_rp_col), 0.00252)
+        self.assertEqual(
+            all_data_sheet.cell(row=siemens_row, column=a_dose_rp_col).value, 0.00252
+        )
 
         # cleanup
         task.filename.delete()  # delete file so local testing doesn't get too messy!
@@ -114,28 +121,35 @@ class ExportRFxlsx(
 
         rfxlsx(filter_set, pid=pid, name=name, patid=patient_id, user=self.user)
 
-        import xlrd
-
         task = Exports.objects.all()[0]
 
-        book = xlrd.open_workbook(task.filename.path)
-        philips_sheet = book.sheet_by_name("abdomen_2fps_25%")
-        siemens_sheet = book.sheet_by_name("fl_-_ang")
-        headers = siemens_sheet.row(0)
+        book = load_workbook(task.filename.path)
+        philips_sheet = book["abdomen_2fps_25%"]
+        siemens_sheet = book["fl_-_ang"]
+        headers = siemens_sheet[1]
 
         filter_material_col = [
-            i for i, x in enumerate(headers) if x.value == "Filter material"
+            i for i, x in enumerate(headers, start=1) if x.value == "Filter material"
         ][0]
         filter_thickness_col = [
-            i for i, x in enumerate(headers) if x.value == "Mean filter thickness (mm)"
+            i
+            for i, x in enumerate(headers, start=1)
+            if x.value == "Mean filter thickness (mm)"
         ][0]
 
-        self.assertEqual(philips_sheet.cell_value(1, filter_material_col), "Cu | Al")
         self.assertEqual(
-            philips_sheet.cell_value(1, filter_thickness_col), "0.1000 | 1.0000"
+            philips_sheet.cell(row=2, column=filter_material_col).value, "Cu | Al"
         )
-        self.assertEqual(siemens_sheet.cell_value(1, filter_material_col), "Cu")
-        self.assertEqual(siemens_sheet.cell_value(1, filter_thickness_col), "0.6000")
+        self.assertEqual(
+            philips_sheet.cell(row=2, column=filter_thickness_col).value,
+            "0.1000 | 1.0000",
+        )
+        self.assertEqual(
+            siemens_sheet.cell(row=2, column=filter_material_col).value, "Cu"
+        )
+        self.assertEqual(
+            siemens_sheet.cell(row=2, column=filter_thickness_col).value, "0.6000"
+        )
 
         # cleanup
         task.filename.delete()  # delete file so local testing doesn't get too messy!
@@ -150,38 +164,43 @@ class ExportRFxlsx(
 
         rfxlsx(filter_set, pid=pid, name=name, patid=patient_id, user=self.user)
 
-        import xlrd
-
         task = Exports.objects.all()[0]
-        book = xlrd.open_workbook(task.filename.path)
+        book = load_workbook(task.filename.path)
 
-        eurocolumbus_sheet = book.sheet_by_name("vascular-knee-scopy-dose_level_")
-        eurocolumbus_headers = eurocolumbus_sheet.row(0)
-        kvp_col = [i for i, x in enumerate(eurocolumbus_headers) if x.value == "kVp"][0]
-        ma_col = [i for i, x in enumerate(eurocolumbus_headers) if x.value == "mA"][0]
+        eurocolumbus_sheet = book["vascular-knee-scopy-dose_level_"]
+        eurocolumbus_headers = eurocolumbus_sheet[1]
+        kvp_col = [
+            i for i, x in enumerate(eurocolumbus_headers, start=1) if x.value == "kVp"
+        ][0]
+        ma_col = [
+            i for i, x in enumerate(eurocolumbus_headers, start=1) if x.value == "mA"
+        ][0]
         pulse_width_col = [
             i
-            for i, x in enumerate(eurocolumbus_headers)
+            for i, x in enumerate(eurocolumbus_headers, start=1)
             if x.value == "Pulse width (ms)"
         ][0]
         exposure_time_col = [
-            i for i, x in enumerate(eurocolumbus_headers) if x.value == "Time"
+            i for i, x in enumerate(eurocolumbus_headers, start=1) if x.value == "Time"
         ][0]
         target_row = 0
-        for row_num in range(eurocolumbus_sheet.nrows):
+        for row_num in range(eurocolumbus_sheet.max_row):
             if (
-                eurocolumbus_sheet.cell_value(row_num, exposure_time_col)
+                eurocolumbus_sheet.cell(row=row_num + 1, column=exposure_time_col).value
                 == "2018-01-10 12:35:29"
             ):
-                target_row = row_num
+                target_row = row_num + 1
                 break
 
         self.assertAlmostEqual(
-            eurocolumbus_sheet.cell_value(target_row, kvp_col), 56.6666666666667
+            eurocolumbus_sheet.cell(row=target_row, column=kvp_col).value,
+            56.6666666666667,
         )
-        self.assertAlmostEqual(eurocolumbus_sheet.cell_value(target_row, ma_col), 50.0)
         self.assertAlmostEqual(
-            eurocolumbus_sheet.cell_value(target_row, pulse_width_col), 8.0
+            eurocolumbus_sheet.cell(row=target_row, column=ma_col).value, 50.0
+        )
+        self.assertAlmostEqual(
+            eurocolumbus_sheet.cell(row=target_row, column=pulse_width_col).value, 8.0
         )
 
         # cleanup

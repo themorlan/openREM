@@ -389,7 +389,7 @@ def patient_module_attributes(dataset, g):  # C.7.1.1
     pat.patient_sex = get_value_kw("PatientSex", dataset)
     pat.not_patient_indicator = get_not_pt(dataset)
     patientatt = PatientStudyModuleAttr.objects.get(general_study_module_attributes=g)
-    if patient_birth_date:
+    if patient_birth_date and g.study_date:
         patientatt.patient_age_decimal = Decimal(
             (g.study_date.date() - patient_birth_date.date()).days
         ) / Decimal("365.25")
@@ -790,9 +790,6 @@ def generalstudymoduleattributes(dataset, g, logger):  # C.7.2.1
     g.referring_physician_name = list_to_string(
         get_value_kw("ReferringPhysicianName", dataset)
     )
-    g.referring_physician_identification = list_to_string(
-        get_value_kw("ReferringPhysicianIdentification", dataset)
-    )
     g.study_id = get_value_kw("StudyID", dataset)
     accession_number = get_value_kw("AccessionNumber", dataset)
     patient_id_settings = PatientIDSettings.objects.get()
@@ -801,7 +798,7 @@ def generalstudymoduleattributes(dataset, g, logger):  # C.7.2.1
         g.accession_hashed = True
     g.accession_number = accession_number
     g.study_description = get_value_kw("StudyDescription", dataset)
-    g.physician_of_record = list_to_string(get_value_kw("PhysicianOfRecord", dataset))
+    g.physician_of_record = list_to_string(get_value_kw("PhysiciansOfRecord", dataset))
     g.name_of_physician_reading_study = list_to_string(
         get_value_kw("NameOfPhysiciansReadingStudy", dataset)
     )

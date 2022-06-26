@@ -36,7 +36,7 @@ import os
 import gzip
 import json
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date, time
 from decimal import Decimal
 import pickle  # nosec
 from collections import OrderedDict
@@ -1077,9 +1077,14 @@ def update_latest_studies(request):
             latestuid = display_name_studies.filter(
                 study_date__exact=latestdate
             ).latest("study_time")
-            latestdatetime = datetime.combine(
-                latestuid.study_date, latestuid.study_time
-            )
+            try:
+                latestdatetime = datetime.combine(
+                    latestuid.study_date, latestuid.study_time
+                )
+            except TypeError:
+                latestdatetime = datetime.combine(
+                    date(year=1900, month=1, day=1), time(hour=0, minute=0)
+                )
             deltaseconds = int((datetime.now() - latestdatetime).total_seconds())
 
             modalitydata[display_name] = {
