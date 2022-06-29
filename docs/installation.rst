@@ -19,7 +19,7 @@ Docker
 This is the quickest and easiest way of installing a fully functioning OpenREM instance, complete with database,
 web server and DICOM server, on any operating system that supports Docker with Linux containers. This includes Windows
 10 with Docker Desktop, but currently excludes Windows Server, though this may change with availability of WSL2 for
-Windows Server 2019.
+Windows Server 2022.
 
 The Docker installation has mostly been tested with Ubuntu server, but has also been used successfully with Podman on
 Redhat Enterprise Linux and other distributions.

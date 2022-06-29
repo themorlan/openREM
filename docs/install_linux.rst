@@ -5,18 +5,21 @@ Native Linux install
 
 This install is based on Ubuntu 22.04 using:
 
-* Python 3.8 running in a virtualenv
+* Python 3.10 running in a virtualenv
 * Database: PostgreSQL
 * DICOM Store SCP: Orthanc running on port 104
 * Webserver: NGINX with Gunicorn
 * All OpenREM files in ``/var/dose/`` with group owner of ``openrem``
 * Collects any Physics (QA) images and zips them
 
-The instructions should work for Ubuntu 20.04 too, references to bionic will be focal instead.
+The instructions should work for Ubuntu 20.04 too, references to jammy will be focal instead and Python 3.9.
 
 Initial prep
 ^^^^^^^^^^^^
 
+
+Install apt packages and direct downloads
+-----------------------------------------
 **Apt sources**
 
 We will need the ``universe`` repository enabled. Check first:
@@ -27,10 +30,22 @@ We will need the ``universe`` repository enabled. Check first:
 
 Look for::
 
-    deb http://archive.ubuntu.com/ubuntu/ bionic universe
-    deb http://archive.ubuntu.com/ubuntu/ bionic-updates universe
+    deb http://archive.ubuntu.com/ubuntu/ jammy universe
+    deb http://archive.ubuntu.com/ubuntu/ jammy-updates universe
 
 If these two lines are not there, add them in (``sudo nano /etc/apt/sources.list``).
+
+.. code-block:: console
+
+    $ sudo apt update && sudo apt upgrade
+
+.. code-block:: console
+
+    $ sudo apt install acl python3.10 python3.10-dev python3.10-distutils python3.10-venv python3-pip postgresql  \
+      nginx orthanc dcmtk default-jre zip
+
+Folders and permissions
+-----------------------
 
 **Groups**
 
@@ -57,35 +72,68 @@ be added to the ``openrem`` group, and the 'sticky' group setting below will ena
 .. code-block:: console
 
     $ sudo mkdir /var/dose
+
+.. code-block:: console
+
     $ sudo chown $USER:openrem /var/dose
+
+.. code-block:: console
+
     $ sudo chmod 775 /var/dose
 
 .. code-block:: console
 
     $ cd /var/dose
+
+.. code-block:: console
+
     $ mkdir log
+
+.. code-block:: console
+
     $ mkdir media
+
+.. code-block:: console
+
     $ mkdir -p orthanc/dicom
+
+.. code-block:: console
+
     $ mkdir -p orthanc/physics
+
+.. code-block:: console
+
     $ mkdir pixelmed
+
+.. code-block:: console
+
     $ mkdir static
+
+.. code-block:: console
+
     $ mkdir veopenrem3
 
 .. code-block:: console
 
     $ sudo chown -R $USER:openrem /var/dose/*
+
+.. code-block:: console
+
     $ sudo chmod -R g+s /var/dose/*
+
+.. code-block:: console
+
     $ sudo setfacl -R -dm u::rwx,g::rwx,o::r /var/dose/
 
 
-Install apt packages and direct downloads
------------------------------------------
+Pixelmed download
+-----------------
 
 .. code-block:: console
 
     $ sudo apt update && sudo apt upgrade
-    $ sudo apt install python3.8 python3.8-dev python3.8-distutils python3.8-venv \
-    install postgresql nginx orthanc dcmtk default-jre zip
+    $ sudo apt install acl python3.10 python3.10-dev python3.10-distutils python3.10-venv python3-pip postgresql  \
+      nginx orthanc dcmtk default-jre zip
 
 .. code-block:: console
 
@@ -99,7 +147,7 @@ Create a virtualenv (Python local environment) in the folder we created:
 
 .. code-block:: console
 
-    $ python3.8 -m venv /var/dose/veopenrem3
+    $ python3.10 -m venv /var/dose/veopenrem3
 
 .. _activatevirtualenv:
 
