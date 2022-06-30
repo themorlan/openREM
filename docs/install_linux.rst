@@ -18,8 +18,8 @@ Initial prep
 ^^^^^^^^^^^^
 
 
-Install apt packages and direct downloads
------------------------------------------
+Install apt packages
+--------------------
 **Apt sources**
 
 We will need the ``universe`` repository enabled. Check first:
@@ -37,7 +37,7 @@ If these two lines are not there, add them in (``sudo nano /etc/apt/sources.list
 
 .. code-block:: console
 
-    $ sudo apt update && sudo apt upgrade
+    $ sudo -- sh -c 'apt update && apt upgrade'
 
 .. code-block:: console
 
@@ -70,15 +70,7 @@ be added to the ``openrem`` group, and the 'sticky' group setting below will ena
 
 .. code-block:: console
 
-    $ sudo mkdir /var/dose
-
-.. code-block:: console
-
-    $ sudo chown $USER:openrem /var/dose
-
-.. code-block:: console
-
-    $ sudo chmod 775 /var/dose
+    $ sudo -- sh -c 'mkdir /var/dose && chown $USER:openrem /var/dose && chmod 775 /var/dose'
 
 .. code-block:: console
 
@@ -86,39 +78,15 @@ be added to the ``openrem`` group, and the 'sticky' group setting below will ena
 
 .. code-block:: console
 
-    $ mkdir log
+    $ mkdir {log,media,pixelmed,static,veopenrem3}
 
 .. code-block:: console
 
-    $ mkdir media
+    $ mkdir -p orthanc/dicom && mkdir -p orthanc/physics
 
 .. code-block:: console
 
-    $ mkdir -p orthanc/dicom
-
-.. code-block:: console
-
-    $ mkdir -p orthanc/physics
-
-.. code-block:: console
-
-    $ mkdir pixelmed
-
-.. code-block:: console
-
-    $ mkdir static
-
-.. code-block:: console
-
-    $ mkdir veopenrem3
-
-.. code-block:: console
-
-    $ sudo chown -R $USER:openrem /var/dose/*
-
-.. code-block:: console
-
-    $ sudo chmod -R g+s /var/dose/*
+    $ sudo -- sh -c 'chown -R $USER:openrem /var/dose/* && chmod -R g+s /var/dose/*'
 
 .. code-block:: console
 
@@ -585,3 +553,57 @@ Now add a 'sym-link' to the new users home directory (again, replace the user na
 
 The new user should now be able to get to the physics folder by clicking on the ``physicsimages`` link when they log in,
 and should be able to browse, copy and delete the zip files and folders.
+
+
+
+
+discarded code - temp
+^^^^^^^^^^^^^^^^^^^^^
+
+.. code-block:: console
+
+    $ sudo mkdir /var/dose
+
+.. code-block:: console
+
+    $ sudo chown $USER:openrem /var/dose
+
+.. code-block:: console
+
+    $ sudo chmod 775 /var/dose
+
+.. code-block:: console
+
+    $ mkdir log
+
+.. code-block:: console
+
+    $ mkdir media
+
+.. code-block:: console
+
+    $ mkdir -p orthanc/dicom
+
+.. code-block:: console
+
+    $ mkdir -p orthanc/physics
+
+.. code-block:: console
+
+    $ mkdir pixelmed
+
+.. code-block:: console
+
+    $ mkdir static
+
+.. code-block:: console
+
+    $ mkdir veopenrem3
+
+.. code-block:: console
+
+    $ sudo chown -R $USER:openrem /var/dose/*
+
+.. code-block:: console
+
+    $ sudo chmod -R g+s /var/dose/*
