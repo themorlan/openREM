@@ -12,7 +12,10 @@ This install is based on Ubuntu 22.04 using:
 * All OpenREM files in ``/var/dose/`` with group owner of ``openrem``
 * Collects any Physics (QA) images and zips them
 
-The instructions should work for Ubuntu 20.04 too, references to jammy will be focal instead and Python 3.9.
+The instructions should work for Ubuntu 20.04 too, references to jammy will be focal instead.
+
+There are various commands and paths that reference the Python version 3.10 in these instructions. If you are using
+Python 3.8 or Python 3.9 then these will need to be modified accordingly.
 
 Initial prep
 ^^^^^^^^^^^^
@@ -41,7 +44,7 @@ If these two lines are not there, add them in (``sudo nano /etc/apt/sources.list
 
 .. code-block:: console
 
-    $ sudo apt install acl python3.10 python3.10-dev python3.10-distutils python3.10-venv python3-pip postgresql nginx orthanc dcmtk default-jre zip
+    $ sudo apt install acl python3.10 python3.10-dev python3.10-distutils python3.10-venv python3-pip postgresql nginx orthanc dcmtk default-jre zip gettext
 
 Folders and permissions
 -----------------------
@@ -53,11 +56,7 @@ running as) :
 
 .. code-block:: console
 
-    $ sudo groupadd openrem
-
-.. code-block:: console
-
-    $ sudo adduser $USER openrem
+    $ sudo -- sh -c 'groupadd openrem && adduser $USER openrem'
 
 .. note::
 
@@ -70,7 +69,11 @@ be added to the ``openrem`` group, and the 'sticky' group setting below will ena
 
 .. code-block:: console
 
-    $ sudo -- sh -c 'mkdir /var/dose && chown $USER:openrem /var/dose && chmod 775 /var/dose'
+    $ sudo -- sh -c 'mkdir /var/dose && chmod 775 /var/dose'
+
+.. code-block:: console
+
+    $ sudo chown $USER:openrem /var/dose
 
 .. code-block:: console
 
@@ -86,7 +89,11 @@ be added to the ``openrem`` group, and the 'sticky' group setting below will ena
 
 .. code-block:: console
 
-    $ sudo -- sh -c 'chown -R $USER:openrem /var/dose/* && chmod -R g+s /var/dose/*'
+    $ sudo chown -R $USER:openrem /var/dose/*
+
+.. code-block:: console
+
+    $ sudo chmod -R g+s /var/dose/*'
 
 .. code-block:: console
 
@@ -95,12 +102,6 @@ be added to the ``openrem`` group, and the 'sticky' group setting below will ena
 
 Pixelmed download
 -----------------
-
-.. code-block:: console
-
-    $ sudo apt update && sudo apt upgrade
-    $ sudo apt install acl python3.10 python3.10-dev python3.10-distutils python3.10-venv python3-pip postgresql  \
-      nginx orthanc dcmtk default-jre zip
 
 .. code-block:: console
 
@@ -143,11 +144,7 @@ Add orthanc and www-data users to openrem group
 
 .. code-block:: console
 
-    $ sudo adduser orthanc openrem
-
-.. code-block:: console
-
-    $ sudo adduser www-data openrem
+    $ sudo -- sh -c 'adduser orthanc openrem && adduser www-data openrem'
 
 .. _Linux-DB:
 
@@ -168,16 +165,17 @@ when configuring OpenREM:
 
     $ sudo -u postgres createdb -T template1 -O openremuser -E 'UTF8' openremdb
 
-If you are migrating from another server, you could at this point create a template0 database to restore into. See
+If you are migrating from another server, you could at this point create a ``template0`` database to restore into. See
 :ref:`restore-psql-linux` for details.
 
 Update the PostgreSQL client authentication configuration. Add the following line anywhere near the bottom of the file,
 for example in the gap before ``# DO NOT DISABLE`` or anywhere in the table that follows. The number of spaces between
-each word is not important (one or more).
+each word is not important (one or more). If you are not using PostgreSQL 14 then substitute the version number in the
+file path.
 
 .. code-block:: console
 
-    $ sudo nano /etc/postgresql/10/main/pg_hba.conf
+    $ sudo nano /etc/postgresql/14/main/pg_hba.conf
 
 .. code-block:: none
 
@@ -199,7 +197,7 @@ First navigate to the Python openrem folder and copy the example local_settings 
 
 .. code-block:: console
 
-    $ cd /var/dose/veopenrem3/lib/python3.8/site-packages/openrem/
+    $ cd /var/dose/veopenrem3/lib/python3.10/site-packages/openrem/
     $ cp openremproject/local_settings.py{.example,}
     $ cp openremproject/wsgi.py{.example,}
 
@@ -213,10 +211,10 @@ Edit the new local_settings file
 
     DATABASES = {
         'default': {
-            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'ENGINE': 'django.db.backends.postgresql',
             'NAME': 'openremdb',
             'USER': 'openremuser',
-            'PASSWORD': 'mysecretpassword',     # This needs changing, hopefully!
+            'PASSWORD': 'mysecretpassword',     # This is the password you set earlier
             'HOST': '',
             'PORT': '',
         }
@@ -240,11 +238,11 @@ Edit the new local_settings file
         '10.123.213.22',
     ]
 
-    LOG_ROOT = "/var/dose/log"
-    LOG_FILENAME = os.path.join(LOG_ROOT, "openrem.log")
-    QR_FILENAME = os.path.join(LOG_ROOT, "openrem_qr.log")
-    STORE_FILENAME = os.path.join(LOG_ROOT, "openrem_store.log")
-    EXTRACTOR_FILENAME = os.path.join(LOG_ROOT, "openrem_extractor.log")
+    LOG_ROOT = '/var/dose/log'
+    LOG_FILENAME = os.path.join(LOG_ROOT, 'openrem.log')
+    QR_FILENAME = os.path.join(LOG_ROOT, 'openrem_qr.log')
+    STORE_FILENAME = os.path.join(LOG_ROOT, 'openrem_store.log')
+    EXTRACTOR_FILENAME = os.path.join(LOG_ROOT, 'openrem_extractor.log')
 
     # Removed comment hashes to enable log file rotation:
     LOGGING['handlers']['file']['class'] = 'logging.handlers.RotatingFileHandler'
@@ -273,7 +271,7 @@ the virtualenv is active — prompt will look like
 
 .. code-block:: console
 
-    (veopenrem3)username@hostname:/var/dose/veopenrem3/lib/python3.8/site-packages/openrem/$
+    (veopenrem3)username@hostname:/var/dose/veopenrem3/lib/python3.10/site-packages/openrem/$
 
 Otherwise see :ref:`activatevirtualenv` and navigate back to that folder:
 
@@ -291,18 +289,17 @@ Otherwise see :ref:`activatevirtualenv` and navigate back to that folder:
 
 .. code-block:: console
 
-    $ python manage.py createsuperuser
+    $ python manage.py collectstatic --no-input --clear
 
 .. code-block:: console
 
-    $ mv remapp/migrations/0002_0_7_fresh_install_add_median.py{.inactive,}
-    $ python manage.py migrate
+    $ python manage.py createsuperuser
 
 Generate translation binary files
 
 .. code-block:: console
 
-    $ python django-admin compilemessages
+    $ python manage.py compilemessages
 
 Webserver
 ^^^^^^^^^
@@ -343,13 +340,6 @@ Remove the default config and make ours active:
 
     $ sudo ln -s /etc/nginx/sites-available/openrem-server /etc/nginx/sites-enabled/openrem-server
 
-Add the static files to the static folder for NGINX to serve. Again, you need to ensure the virtualenv is active in your
-console and you are in the ``site-packages/openrem/`` folder:
-
-.. code-block:: console
-
-    $ python manage.py collectstatic
-
 Create the Gunicorn systemd service file:
 
 .. code-block:: console
@@ -364,7 +354,7 @@ Create the Gunicorn systemd service file:
     [Service]
     Restart=on-failure
     User=www-data
-    WorkingDirectory=/var/dose/veopenrem3/lib/python3.8/site-packages/openrem
+    WorkingDirectory=/var/dose/veopenrem3/lib/python3.10/site-packages/openrem
 
     ExecStart=/var/dose/veopenrem3/bin/gunicorn \
         --bind unix:/tmp/openrem-server.socket \
@@ -389,8 +379,7 @@ Start the Gunicorn service, and restart the NGINX service:
 
 .. code-block:: console
 
-    $ sudo systemctl start openrem-gunicorn.service
-    $ sudo systemctl restart nginx.service
+    $ sudo -- sh -c 'systemctl start openrem-gunicorn.service && restart nginx.service'
 
 Test the webserver
 ------------------
@@ -401,11 +390,7 @@ You can check that NGINX and Gunicorn are running with the following two command
 
 .. code-block:: console
 
-    $ sudo systemctl status openrem-gunicorn.service
-
-.. code-block:: console
-
-    $ sudo systemctl status nginx.service
+    $ sudo -- sh -c 'systemctl status openrem-gunicorn.service && systemctl status nginx.service'
 
 
 DICOM Store SCP
@@ -553,57 +538,3 @@ Now add a 'sym-link' to the new users home directory (again, replace the user na
 
 The new user should now be able to get to the physics folder by clicking on the ``physicsimages`` link when they log in,
 and should be able to browse, copy and delete the zip files and folders.
-
-
-
-
-discarded code - temp
-^^^^^^^^^^^^^^^^^^^^^
-
-.. code-block:: console
-
-    $ sudo mkdir /var/dose
-
-.. code-block:: console
-
-    $ sudo chown $USER:openrem /var/dose
-
-.. code-block:: console
-
-    $ sudo chmod 775 /var/dose
-
-.. code-block:: console
-
-    $ mkdir log
-
-.. code-block:: console
-
-    $ mkdir media
-
-.. code-block:: console
-
-    $ mkdir -p orthanc/dicom
-
-.. code-block:: console
-
-    $ mkdir -p orthanc/physics
-
-.. code-block:: console
-
-    $ mkdir pixelmed
-
-.. code-block:: console
-
-    $ mkdir static
-
-.. code-block:: console
-
-    $ mkdir veopenrem3
-
-.. code-block:: console
-
-    $ sudo chown -R $USER:openrem /var/dose/*
-
-.. code-block:: console
-
-    $ sudo chmod -R g+s /var/dose/*
