@@ -93,7 +93,7 @@ be added to the ``openrem`` group, and the 'sticky' group setting below will ena
 
 .. code-block:: console
 
-    $ sudo chmod -R g+s /var/dose/*'
+    $ sudo chmod -R g+s /var/dose/*
 
 .. code-block:: console
 
@@ -278,28 +278,11 @@ Otherwise see :ref:`activatevirtualenv` and navigate back to that folder:
 .. code-block:: console
 
     $ python manage.py makemigrations remapp
-
-.. code-block:: console
-
     $ python manage.py migrate
-
-.. code-block:: console
-
     $ python manage.py loaddata openskin_safelist.json
-
-.. code-block:: console
-
     $ python manage.py collectstatic --no-input --clear
-
-.. code-block:: console
-
-    $ python manage.py createsuperuser
-
-Generate translation binary files
-
-.. code-block:: console
-
     $ python manage.py compilemessages
+    $ python manage.py createsuperuser
 
 Webserver
 ^^^^^^^^^
@@ -379,7 +362,7 @@ Start the Gunicorn service, and restart the NGINX service:
 
 .. code-block:: console
 
-    $ sudo -- sh -c 'systemctl start openrem-gunicorn.service && restart nginx.service'
+    $ sudo -- sh -c 'systemctl start openrem-gunicorn.service && systemctl restart nginx.service'
 
 Test the webserver
 ------------------
@@ -390,7 +373,11 @@ You can check that NGINX and Gunicorn are running with the following two command
 
 .. code-block:: console
 
-    $ sudo -- sh -c 'systemctl status openrem-gunicorn.service && systemctl status nginx.service'
+    $ sudo systemctl status openrem-gunicorn.service
+
+.. code-block:: console
+
+    $ sudo systemctl status nginx.service
 
 
 DICOM Store SCP
@@ -472,6 +459,16 @@ all the objects as soon as they are processed, you won't see much!):
 To see the Orthanc web interface, go to http://openremserver:8042/ -- of course change the server name to that of your
 server!
 
+Set the AE Title and port:
+
+.. code-block:: json-object
+
+    // The DICOM Application Entity Title
+    "DicomAet" : "OPENREM",
+
+    // The DICOM port
+    "DicomPort" : 104,
+
 Allow Orthanc to use DICOM port
 -------------------------------
 
@@ -482,19 +479,6 @@ to give the Orthanc binary special permission to do so:
 
     $ sudo setcap CAP_NET_BIND_SERVICE=+eip /usr/sbin/Orthanc
 
-Then edit the Orthanc configuration again:
-
-.. code-block:: console
-
-    $ sudo nano /etc/orthanc/orthanc.json
-
-.. code-block:: json-object
-
-    // The DICOM Application Entity Title
-    "DicomAet" : "OPENREM",
-
-    // The DICOM port
-    "DicomPort" : 104,
 
 Finish off
 ----------
