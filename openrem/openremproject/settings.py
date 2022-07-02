@@ -68,10 +68,6 @@ USE_TZ = os.environ.get("USE_TZ", default=False)
 XLSX_DATE = os.environ.get("XLSX_DATE", default="dd/mm/yyyy")
 XLSX_TIME = os.environ.get("XLSX_TIME", default="hh:mm:ss")
 
-# Additional locations of static files
-STATICFILES_DIRS = (os.path.join(ROOT_PROJECT, "remapp", "static"),)
-
-
 # URL name of the login page (as defined in urls.py)
 LOGIN_URL = "login"
 
