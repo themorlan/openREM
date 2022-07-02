@@ -522,3 +522,13 @@ Now add a 'sym-link' to the new users home directory (again, replace the user na
 
 The new user should now be able to get to the physics folder by clicking on the ``physicsimages`` link when they log in,
 and should be able to browse, copy and delete the zip files and folders.
+
+Asciinema demo of this install
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Test for now
+
+<script id="asciicast-8CqCcLMlUG5DlWj7NhrQV8b8L" src="https://asciinema.org/a/8CqCcLMlUG5DlWj7NhrQV8b8L.js" async></script>
+
+`link to asciinema <https://asciinema.org/a/8CqCcLMlUG5DlWj7NhrQV8b8L>`_
+
