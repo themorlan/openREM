@@ -208,6 +208,7 @@ Edit the new local_settings file
     $ nano openremproject/local_settings.py
 
 .. code-block:: python
+    :emphasize-lines: 3,6,12,14,30,36,60-66
 
     DATABASES = {
         'default': {
@@ -438,6 +439,7 @@ Add the Lua script to the Orthanc config:
     $ sudo nano /etc/orthanc/orthanc.json
 
 .. code-block:: json-object
+    :emphasize-lines: 4
 
     // List of paths to the custom Lua scripts that are to be loaded
     // into this instance of Orthanc
@@ -462,6 +464,7 @@ server!
 Set the AE Title and port:
 
 .. code-block:: json-object
+    :emphasize-lines: 2,5
 
     // The DICOM Application Entity Title
     "DicomAet" : "OPENREM",
@@ -526,9 +529,5 @@ and should be able to browse, copy and delete the zip files and folders.
 Asciinema demo of this install
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Test for now
-
-<script id="asciicast-8CqCcLMlUG5DlWj7NhrQV8b8L" src="https://asciinema.org/a/8CqCcLMlUG5DlWj7NhrQV8b8L.js" async></script>
-
-`link to asciinema <https://asciinema.org/a/8CqCcLMlUG5DlWj7NhrQV8b8L>`_
+Link to `asciinema <https://asciinema.org/a/8CqCcLMlUG5DlWj7NhrQV8b8L>`_ demo of this install
 
