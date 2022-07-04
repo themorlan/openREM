@@ -19,16 +19,17 @@ Back up the database:
 
     $ pg_dump -U openremuser -d openremdb -F c -f pre-1-0-upgrade-dump.bak
 
-Stop any Celery workers, Flower, RabbitMQ and Gunicorn, disable DICOM Store SCP (service names will be reversed if they
-weren't changed with the 0.9.1 upgrade):
+Stop any Celery workers, Flower, RabbitMQ, Gunicorn, NGINX, and Orthanc (OpenREM service names will be
+reversed if they weren't changed with the 0.9.1 upgrade):
 
 .. code-block:: console
 
     $ sudo systemctl stop openrem-celery
     $ sudo systemctl stop openrem-flower
     $ sudo systemctl stop openrem-gunicorn
-    $ sudo systmectl stop orthanc
     $ sudo systemctl stop rabbitmq-server
+    $ sudo systmectl stop nginx
+    $ sudo systmectl stop orthanc
 
 Update apt and install any updates:
 
