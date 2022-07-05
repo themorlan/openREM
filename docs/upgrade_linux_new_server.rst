@@ -27,7 +27,15 @@ Database migration
 Get the data from the old server
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Get local settings
+Get `local_settings.py` file from:
+
+* Ubuntu 'One page install': `/var/dose/veopenrem/lib/python2.7/site-packages/openrem/openremproject/local_settings.py`
+* Ubuntu linux: ``/usr/local/lib/python2.7/dist-packages/openrem/openremproject/local_settings.py``
+* Other linux: ``/usr/lib/python2.7/site-packages/openrem/openremproject/local_settings.py``
+* Linux virtualenv: ``vitualenvfolder/lib/python2.7/site-packages/openrem/openremproject/local_settings.py``
+* Windows: ``C:\Python27\Lib\site-packages\openrem\openremproject\local_settings.py``
+* Windows virtualenv: ``virtualenvfolder\Lib\site-packages\openrem\openremproject\local_settings.py``
+
 
 Export the old database on the old server - you will need the password for `openremuser` that will be in your
 `local_settings.py` file:

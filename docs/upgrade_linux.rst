@@ -62,12 +62,15 @@ Install the new version of OpenREM
 Update the local_settings.py file
 =================================
 
+Copy the old `local_settings.py` file to the new venv:
 
-**Move it from the old venv**
+.. code-block:: console
+
+    $ cp /var/dose/veopenrem/lib/python2.7/site-packages/openrem/openremproject/local_settings.py /var/dose/veopenrem3/lib/python3.10/site-packages/openrem/openremproject/local_settings.py
 
 * Remove the first line ``LOCAL_SETTINGS = True``
 * Change second line to ``from .settings import *``
-* Compare file to local_settings.py.example to see if there are other sections that should be updated
+* Compare file to `local_settings.py.example` to see if there are other sections that should be updated
 
 Migrate the database
 ====================
