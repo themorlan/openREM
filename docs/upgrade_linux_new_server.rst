@@ -17,9 +17,9 @@ This install is based on Ubuntu 22.04 using:
 Preparation
 ===========
 
-Start by following the :ref:`install_linux` instructions until the :ref:`Linux-DB` section, then return here.
+Start by following the :doc:`install_linux` instructions until the :ref:`Linux-DB` section, then return here.
 
-.. _Upgrade Linux DB migration:
+.. _Upgrade Linux new server DB migration:
 
 Database migration
 ==================
