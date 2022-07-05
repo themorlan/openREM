@@ -151,8 +151,10 @@ Add orthanc and www-data users to openrem group
 Database and OpenREM config
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-If you are upgrading to a new Linux server, carry on at :ref:`Upgrade Linux new server DB migration` in the upgrade to
-a new Linux server docs.
+.. note::
+
+    If you are upgrading to a new Linux server, carry on at :ref:`Upgrade Linux new server DB migration` in the upgrade
+    to a new Linux server docs.
 
 Setup PostgreSQL database
 -------------------------
