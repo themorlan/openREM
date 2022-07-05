@@ -52,6 +52,7 @@ provided, based on an Ubuntu Server installation.
 
     install_linux
     upgrade_linux
+    upgrade_linux_new_server
     install-offline
     upgrade_offline
 
