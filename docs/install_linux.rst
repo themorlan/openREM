@@ -151,6 +151,9 @@ Add orthanc and www-data users to openrem group
 Database and OpenREM config
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+*If you are upgrading to a new Linux server, carry on at :ref:`Upgrade Linux DB migration` in the upgrade to a new
+Linux server docs.*
+
 Setup PostgreSQL database
 -------------------------
 
@@ -208,7 +211,7 @@ Edit the new local_settings file
     $ nano openremproject/local_settings.py
 
 .. code-block:: python
-    :emphasize-lines: 3,6,12,14,30,36,50-56
+    :emphasize-lines: 3,6,12,14,25-27,30,36,50-56
 
     DATABASES = {
         'default': {
@@ -284,6 +287,8 @@ Otherwise see :ref:`activatevirtualenv` and navigate back to that folder:
     $ python manage.py collectstatic --no-input --clear
     $ python manage.py compilemessages
     $ python manage.py createsuperuser
+
+.. _Install Linux webserver:
 
 Webserver
 ^^^^^^^^^

@@ -42,7 +42,7 @@ Stop the existing services
         $ sudo systemctl disable openrem-gunicorn
         $ sudo systemctl disable openrem-flower
         $ sudo systemctl disable openrem-celery
-        $ sudo systemctl disable_qr rabbitmq-server
+        $ sudo systemctl disable rabbitmq-server
 
 * Windows: stop the following services
 

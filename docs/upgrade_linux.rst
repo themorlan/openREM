@@ -6,7 +6,7 @@ These instructions assume a configuration similar to the 'One page complete Ubun
 0.8.1 and later. If you are running an older distribution, consider upgrading the operating system or migrating
 the service to a new host. This release will run on Python 3.8 or 3.9, but Python 3.10 is recommended.
 
-If upgrading to a new host, follow these instructions that haven't been written yet *here*.
+If upgrading to a new host, follow the :ref:`upgrade_linux_new_server` docs instead.
 
 If a different release of Python is being used, substitute 3.10 for that version where necessary below.
 
@@ -61,6 +61,9 @@ Install the new version of OpenREM
 
 Update the local_settings.py file
 =================================
+
+
+**Move it from the old venv**
 
 * Remove the first line ``LOCAL_SETTINGS = True``
 * Change second line to ``from .settings import *``
