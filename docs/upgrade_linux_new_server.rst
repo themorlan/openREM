@@ -27,9 +27,9 @@ Database migration
 Get the data from the old server
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Get `local_settings.py` file from:
+Get ``local_settings.py`` file from the old server - it should be in one of these locations:
 
-* Ubuntu 'One page install': `/var/dose/veopenrem/lib/python2.7/site-packages/openrem/openremproject/local_settings.py`
+* Ubuntu 'One page install': ``/var/dose/veopenrem/lib/python2.7/site-packages/openrem/openremproject/local_settings.py``
 * Ubuntu linux: ``/usr/local/lib/python2.7/dist-packages/openrem/openremproject/local_settings.py``
 * Other linux: ``/usr/lib/python2.7/site-packages/openrem/openremproject/local_settings.py``
 * Linux virtualenv: ``vitualenvfolder/lib/python2.7/site-packages/openrem/openremproject/local_settings.py``
@@ -37,14 +37,37 @@ Get `local_settings.py` file from:
 * Windows virtualenv: ``virtualenvfolder\Lib\site-packages\openrem\openremproject\local_settings.py``
 
 
-Export the old database on the old server - you will need the password for `openremuser` that will be in your
-`local_settings.py` file:
+Export the old database on the old server - you will need the password for ``openremuser`` that will be in your
+``local_settings.py`` file:
 
 .. code-block:: console
 
     $ pg_dump -U openremuser -d openremdb -F c -f pre-1-0-upgrade-dump.bak
 
-etc etc
+Copy these two files to your new server.
+
+Prepare the PostgreSQL database
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Create a postgres user, and create the database. You will be asked to enter a new password (twice). This will be needed
+when configuring OpenREM:
+
+.. code-block:: console
+
+    $ sudo -u postgres createuser -P openremuser
+
+.. code-block:: console
+
+    $ sudo -u postgres createdb -T template0 -O openremuser -E 'UTF8' openremdb
+
+Import the database and update it
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code-block:: console
+
+    $ sudo -u postgres pg_restore --no-privileges --no-owner -U openremuser -d openremdb pre-1-0-upgrade-dump.bak
+    $ # or, not sure which...
+    $ pg_restore -U openremuser -d openremdb pre-1-0-upgrade-dump.bak
 
 Complete the setup
 ==================
