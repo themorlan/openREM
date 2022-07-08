@@ -5,6 +5,7 @@ OpenREM version history
 
 1.0.0b1 (2022-xx-xx)
 --------------------
+* :issue:`942`  SkinDose: try to calculate number of frames using exposure time / pulse width if number of frames not available
 * :issue:`941`  Interface: the filtering submit button now updates chart options for fluoroscopy and mammography
 * :issue:`940`  Installation: upgraded Django to 3.2, packages to latest versions
 * :issue:`937`  Interface: correcting bottom row of exports table
