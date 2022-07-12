@@ -17,10 +17,6 @@ This install is based on Ubuntu 22.04 using:
 Preparation
 ===========
 
-Start by following the :doc:`install_linux` instructions until the :ref:`Linux-DB` section, then return here.
-
-.. _Upgrade Linux new server DB migration:
-
 Database migration
 ==================
 
@@ -46,30 +42,6 @@ Export the old database on the old server - you will need the password for ``ope
 
 Copy these two files to your new server.
 
-Prepare the PostgreSQL database
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Now follow the :doc:`install_linux` instructions looking out for the additional steps for upgrading to a new Linux
+server.
 
-Create a postgres user, and create the database. You will be asked to enter a new password (twice). This will be needed
-when configuring OpenREM:
-
-.. code-block:: console
-
-    $ sudo -u postgres createuser -P openremuser
-
-.. code-block:: console
-
-    $ sudo -u postgres createdb -T template0 -O openremuser -E 'UTF8' openremdb
-
-Import the database and update it
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. code-block:: console
-
-    $ sudo -u postgres pg_restore --no-privileges --no-owner -U openremuser -d openremdb pre-1-0-upgrade-dump.bak
-    $ # or, not sure which...
-    $ pg_restore -U openremuser -d openremdb pre-1-0-upgrade-dump.bak
-
-Complete the setup
-==================
-
-Return to the main Linux installation instructions at the :ref:`Install Linux webserver` section.

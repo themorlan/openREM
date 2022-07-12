@@ -151,11 +151,6 @@ Add orthanc and www-data users to openrem group
 Database and OpenREM config
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. note::
-
-    If you are upgrading to a new Linux server, carry on at :ref:`Upgrade Linux new server DB migration` in the upgrade
-    to a new Linux server docs.
-
 Setup PostgreSQL database
 -------------------------
 
@@ -170,8 +165,13 @@ when configuring OpenREM:
 
     $ sudo -u postgres createdb -T template1 -O openremuser -E 'UTF8' openremdb
 
-If you are migrating from another server, you could at this point create a ``template0`` database to restore into. See
-:ref:`restore-psql-linux` for details.
+.. note::
+
+    If you are upgrading to a new Linux server, use ``template0`` instead:
+
+    .. code-block:: console
+
+            $ sudo -u postgres createdb -T template0 -O openremuser -E 'UTF8' openremdb
 
 Update the PostgreSQL client authentication configuration. Add the following line anywhere near the bottom of the file,
 for example in the gap before ``# DO NOT DISABLE`` or anywhere in the table that follows. The number of spaces between
@@ -196,6 +196,15 @@ Reload postgres:
 
 Configure OpenREM
 -----------------
+
+.. note::
+
+    If you are upgrading to a new Linux server, you can either use the ``local_settings.py`` file you copied across and
+    update it as follows, or use a new version as described for a new install below.
+
+    * Remove the first line ``LOCAL_SETTINGS = True``
+    * Change second line to ``from .settings import *``
+    * Compare file to `local_settings.py.example` to see if there are other sections that should be updated
 
 First navigate to the Python openrem folder and copy the example local_settings and wsgi files to remove the
 ``.example`` suffixes:
@@ -279,7 +288,33 @@ the virtualenv is active — prompt will look like
 
     (veopenrem3)username@hostname:/var/dose/veopenrem3/lib/python3.10/site-packages/openrem/$
 
-Otherwise see :ref:`activatevirtualenv` and navigate back to that folder:
+Otherwise see :ref:`activatevirtualenv` and navigate back to that folder.
+
+.. note::
+
+    If you are upgrading to a new Linux server, use these additional commands before continuing with those below:
+
+    .. code-block:: console
+
+        $ mv remapp/migrations/0001_initial.py{.1-0-upgrade,}
+
+    Import the database - update the path to the database backup file you copied from the old server:
+
+    .. code-block:: console
+
+        $ pg_restore -U openremuser -d openremdb /path/to/pre-1-0-upgrade-dump.bak
+
+
+    Migrate the database:
+
+    .. code-block:: console
+
+        $ python manage.py migrate --fake-initial
+
+    .. code-block:: console
+
+        $ python manage.py migrate remapp --fake
+
 
 .. code-block:: console
 
