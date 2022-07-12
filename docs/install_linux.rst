@@ -575,4 +575,3 @@ Asciinema demo of this install
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Link to `asciinema <https://asciinema.org/a/8CqCcLMlUG5DlWj7NhrQV8b8L>`_ demo of this install
-

@@ -2,12 +2,11 @@
 Offline installation
 ********************
 
-In order to install OpenREM on a server that does not have access to the internet, or to PyPI (the Python
-package archive), you will need to download all the packages and dependencies on another computer and copy
-them across.
+In order to install OpenREM on a server that does not have access to the internet you will need to download all the
+packages and dependencies on another computer and copy them across.
 
-If you have trouble when installing the Python packages due to incorrect architecture, you may need to either download
-on a Windows system similar to the server (matching 32-bit/64-bit), or to download the files from
+If you have trouble when installing the Python packages on Windows due to incorrect architecture, you may need to either
+download on a Windows system similar to the server (matching 32-bit/64-bit), or to download the files from
 http://www.lfd.uci.edu/~gohlke/pythonlibs/ instead.
 
 It is expected and highly recommended that Windows and Linux server have access to security updates even
@@ -48,9 +47,9 @@ In a console, navigate to a suitable place and create an empty directory to coll
 
 .. code-block:: console
 
-    C:\Users\me\Desktop> mkdir openremfiles
-    C:\Users\me\Desktop> pip download -d openremfiles setuptools
-    C:\Users\me\Desktop> pip download -d openremfiles openrem
+    PS C:\Users\me\Desktop> mkdir openremfiles
+    PS C:\Users\me\Desktop> pip download -d openremfiles setuptools
+    PS C:\Users\me\Desktop> pip download -d openremfiles openrem
 
 Copy everything to the Server
 -----------------------------
@@ -74,13 +73,13 @@ Ensure ``setuptools`` is up to date:
 
 .. code-block:: console
 
-    pip install --no-index --find-links=openremfiles setuptools -U
+    $ pip install --no-index --find-links=openremfiles setuptools -U
 
 Install OpenREM and its dependencies:
 
 .. code-block:: console
 
-    pip install --no-index --find-links=openremfiles openrem
+    $ pip install --no-index --find-links=openremfiles openrem
 
 Resuming the installation
 -------------------------
