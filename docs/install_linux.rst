@@ -55,11 +55,18 @@ Folders and permissions
 **Groups**
 
 Now create new group ``openrem`` and add your user to it (``$USER`` will automatically substitute for the user you are
-running as) :
+running as):
 
 .. code-block:: console
 
-    $ sudo -- sh -c 'groupadd openrem && adduser $USER openrem'
+    $ sudo groupadd openrem
+    $ sudo adduser $USER openrem
+
+Add orthanc and www-data users to openrem group:
+
+.. code-block:: console
+
+    $ sudo -- sh -c 'adduser orthanc openrem && adduser www-data openrem'
 
 .. note::
 
@@ -67,8 +74,8 @@ running as) :
 
 **Folders**
 
-Create the folders we need, and set the permissions. In due course, the ``orthanc`` user and the ``www-data`` user will
-be added to the ``openrem`` group, and the 'sticky' group setting below will enable both users to write to the logs etc:
+Create the folders we need, and set the permissions. The 'sticky' group setting below will enable both
+``orthanc`` user and ``www-data`` user to write to the logs etc:
 
 .. code-block:: console
 
@@ -141,13 +148,6 @@ Install Python packages
 .. code-block:: console
 
     $ pip install openrem
-
-Add orthanc and www-data users to openrem group
------------------------------------------------
-
-.. code-block:: console
-
-    $ sudo -- sh -c 'adduser orthanc openrem && adduser www-data openrem'
 
 .. _Linux-DB:
 
