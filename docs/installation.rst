@@ -35,7 +35,7 @@ computer that does have access to the internet and transferred to the 'offline' 
 
     install_docker
     upgrade_docker
-    install-offline
+    install_offline_docker
 
 Native install on Linux
 -----------------------
@@ -53,7 +53,7 @@ provided, based on an Ubuntu Server installation.
     install_linux
     upgrade_linux
     upgrade_linux_new_server
-    install-offline
+    install_offline
     upgrade_offline
 
 Native install on Windows
@@ -71,11 +71,11 @@ different version of Python to the older releases, and some services that were p
 Full upgrade instructions are provided, based on a Windows Server 2019 installation.
 
 ..  toctree::
-    :maxdepth: 2
+    :maxdepth: 1
 
     install_windows
     upgrade_windows
-    install-offline
+    install_offline
     upgrade_offline
 
 

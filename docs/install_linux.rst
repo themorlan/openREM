@@ -17,6 +17,9 @@ The instructions should work for Ubuntu 20.04 too, references to jammy will be f
 There are various commands and paths that reference the Python version 3.10 in these instructions. If you are using
 Python 3.8 or Python 3.9 then these will need to be modified accordingly.
 
+If you are upgrading an existing installation on a new Linux server, go to the :doc:`upgrade_linux_new_server` docs
+first.
+
 Initial prep
 ^^^^^^^^^^^^
 
