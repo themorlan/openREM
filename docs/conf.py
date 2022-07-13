@@ -105,6 +105,7 @@ copybutton_prompt_text = (
     r">>> |\.\.\. |\$ |In \[\d*\]: | {2,5}\.\.\.: | {5,8}: |PS [A-Z]:\\[^>]*> "
 )
 copybutton_prompt_is_regexp = True
+copybutton_line_continuation_character = "\\"
 
 rst_prolog = """
     .. |openrem_orthanc_conf_link| raw:: html
