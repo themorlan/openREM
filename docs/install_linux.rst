@@ -20,6 +20,8 @@ Python 3.8 or Python 3.9 then these will need to be modified accordingly.
 If you are upgrading an existing installation on a new Linux server, go to the :doc:`upgrade_linux_new_server` docs
 first.
 
+If you are installing OpenREM on a Linux server with limited internet access, go to the :doc:`install_offline` docs.
+
 Initial prep
 ^^^^^^^^^^^^
 
@@ -47,7 +49,8 @@ If these two lines are not there, add them in (``sudo nano /etc/apt/sources.list
 
 .. code-block:: console
 
-    $ sudo apt install acl python3.10 python3.10-dev python3.10-distutils python3.10-venv python3-pip postgresql nginx orthanc dcmtk default-jre zip gettext
+    $ sudo apt install acl python3.10 python3.10-dev python3.10-distutils python3.10-venv python3-pip \
+    postgresql nginx orthanc dcmtk default-jre zip gettext
 
 Folders and permissions
 -----------------------
@@ -140,6 +143,11 @@ Activate the virtualenv (note the ``.`` -- you can also use the word ``source``)
 
 Install Python packages
 -----------------------
+
+.. note::
+
+    If you are installing this server offline, return to the Offline installation docs for
+    :ref:`Offline-python-packages`
 
 .. code-block:: console
 

@@ -10,6 +10,8 @@ If upgrading to a new host, follow the :doc:`upgrade_linux_new_server` docs inst
 
 If a different release of Python is being used, substitute 3.10 for that version where necessary below.
 
+If you are upgrading OpenREM on a Linux server with limited internet access, go to the :doc:`install_offline` docs.
+
 Preparation
 ===========
 
@@ -41,7 +43,8 @@ Install Python 3.10 and create a new virtualenv:
 
 .. code-block:: console
 
-    $ sudo apt install acl python3.10 python3.10-dev python3.10-distutils python3.10-venv python3-pip postgresql nginx orthanc dcmtk default-jre zip gettext
+    $ sudo apt install acl python3.10 python3.10-dev python3.10-distutils python3.10-venv python3-pip \
+    postgresql nginx orthanc dcmtk default-jre zip gettext
 
 .. code-block:: console
 
@@ -51,6 +54,11 @@ Install Python 3.10 and create a new virtualenv:
 Install the new version of OpenREM
 ==================================
 
+.. note::
+
+    If you are upgrading this server offline, return to the Offline installation docs for
+    :ref:`Offline-python-packages`
+
 .. code-block:: console
 
     $ pip install --upgrade pip
@@ -58,6 +66,8 @@ Install the new version of OpenREM
 .. code-block:: console
 
     $ pip install openrem==1.0.0b1
+
+.. _upgrade-linux-local-settings:
 
 Update the local_settings.py file
 =================================
