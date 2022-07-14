@@ -42,7 +42,7 @@ Stop the existing services
         $ sudo systemctl disable openrem-gunicorn
         $ sudo systemctl disable openrem-flower
         $ sudo systemctl disable openrem-celery
-        $ sudo systemctl disable_qr rabbitmq-server
+        $ sudo systemctl disable rabbitmq-server
 
 * Windows: stop the following services
 
@@ -125,7 +125,7 @@ your backup filename.
 
 .. code-block:: console
 
-    $ docker-compose exec db pg_restore --no-privileges --no-owner -U openrem_user -d openrem_prod /db_backup/openremdump.bak
+    $ docker-compose exec db pg_restore --no-privileges --no-owner -U openremuser -d openrem_prod /db_backup/openremdump.bak
 
 It is normal to get an error about the public schema, for example:
 

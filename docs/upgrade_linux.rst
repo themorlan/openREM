@@ -3,7 +3,14 @@ Upgrading a native Linux install
 ********************************
 
 These instructions assume a configuration similar to the 'One page complete Ubuntu install' provided with release
-0.8.1 and later.
+0.8.1 and later. If you are running an older distribution, consider upgrading the operating system or migrating
+the service to a new host. This release will run on Python 3.8 or 3.9, but Python 3.10 is recommended.
+
+If upgrading to a new host, follow the :doc:`upgrade_linux_new_server` docs instead.
+
+If a different release of Python is being used, substitute 3.10 for that version where necessary below.
+
+If you are upgrading OpenREM on a Linux server with limited internet access, go to the :doc:`install_offline` docs.
 
 Preparation
 ===========
@@ -14,29 +21,43 @@ Back up the database:
 
     $ pg_dump -U openremuser -d openremdb -F c -f pre-1-0-upgrade-dump.bak
 
-Stop any Celery workers, Flower and Gunicorn, disable DICOM Store SCP:
+Stop any Celery workers, Flower, RabbitMQ, Gunicorn, NGINX, and Orthanc (OpenREM service names will be
+reversed if they weren't changed with the 0.9.1 upgrade):
 
 .. code-block:: console
 
     $ sudo systemctl stop openrem-celery
     $ sudo systemctl stop openrem-flower
     $ sudo systemctl stop openrem-gunicorn
+    $ sudo systemctl stop rabbitmq-server
+    $ sudo systmectl stop nginx
     $ sudo systmectl stop orthanc
 
-Install Python 3.8 and create a new virtualenv:
+Update apt and install any updates:
 
 .. code-block:: console
 
-    $ sudo apt install python3.8 python3.8-dev python3.8-distutils python3.8-venv
+    $ sudo -- sh -c 'apt update && apt upgrade'
+
+Install Python 3.10 and create a new virtualenv:
 
 .. code-block:: console
 
-    $ cd /var/dose
-    $ python3.8 -m venv veopenrem3
-    $ . veopenrem3/bin/activate
+    $ sudo apt install acl python3.10 python3.10-dev python3.10-distutils python3.10-venv python3-pip \
+    postgresql nginx orthanc dcmtk default-jre zip gettext
+
+.. code-block:: console
+
+    $ python3.10 -m venv /var/dose/veopenrem3
+    $ . /var/dose/veopenrem3/bin/activate
 
 Install the new version of OpenREM
 ==================================
+
+.. note::
+
+    If you are upgrading this server offline, return to the Offline installation docs for
+    :ref:`Offline-python-packages`
 
 .. code-block:: console
 
@@ -46,12 +67,20 @@ Install the new version of OpenREM
 
     $ pip install openrem==1.0.0b1
 
+.. _upgrade-linux-local-settings:
+
 Update the local_settings.py file
 =================================
 
+Copy the old `local_settings.py` file to the new venv:
+
+.. code-block:: console
+
+    $ cp /var/dose/veopenrem/lib/python2.7/site-packages/openrem/openremproject/local_settings.py /var/dose/veopenrem3/lib/python3.10/site-packages/openrem/openremproject/local_settings.py
+
 * Remove the first line ``LOCAL_SETTINGS = True``
 * Change second line to ``from .settings import *``
-* Compare file to local_settings.py.example to see if there are other sections that should be updated
+* Compare file to `local_settings.py.example` to see if there are other sections that should be updated
 
 Migrate the database
 ====================
@@ -60,7 +89,7 @@ In a shell/command window, move into the ``openrem`` folder:
 
 .. code-block:: console
 
-    $ cd /var/dose/veopenrem3/lib/python3.8/site-packages/openrem/
+    $ cd /var/dose/veopenrem3/lib/python3.10/site-packages/openrem/
 
 Prepare the migrations folder:
 
@@ -69,8 +98,8 @@ Prepare the migrations folder:
 
 .. code-block:: console
 
-    $ rm remapp/migrations/0*.py
-    $ rm remapp/migrations/0*.pyc  # may result in 'cannot remove' if there are none
+    $ rm -r remapp/migrations/0*.py
+    $ rm -r remapp/migrations/0*.pyc  # may result in 'cannot remove' if there are none
     $ mv remapp/migrations/0001_initial.py{.1-0-upgrade,}
 
 Migrate the database:
@@ -125,7 +154,7 @@ Generate translation binary files
 
 .. code-block:: console
 
-    $ python django-admin compilemessages
+    $ python manage.py compilemessages
 
 Update all the services configurations
 ======================================
@@ -137,6 +166,7 @@ Edit the Gunicorn systemd file ``WorkingDirectory`` and ``ExecStart``:
     $ sudo nano /etc/systemd/system/openrem-gunicorn.service
 
 .. code-block:: none
+    :emphasize-lines: 1,3
 
     WorkingDirectory=/var/dose/veopenrem3/lib/python3.8/site-packages/openrem
 
@@ -144,6 +174,19 @@ Edit the Gunicorn systemd file ``WorkingDirectory`` and ``ExecStart``:
         --bind unix:/tmp/openrem-server.socket \
         openremproject.wsgi:application --timeout 300 --workers 4
 
+Celery, Flower and RabbitMQ are no longer required for this release, so their Systemd control files
+can be disabled, and RabbitMQ can be removed (assuming it is not in use for any other services on this
+server):
+
+.. code-block:: console
+
+    $ sudo systemctl disable openrem-celery.service
+    $ sudo systemctl disable openrem-flower.service
+
+.. code-block:: console
+
+    $ sudo apt remove rabbitmq-server
+    $ sudo apt purge rabbitmq-server
 
 Reload systemd and restart the services
 =======================================
