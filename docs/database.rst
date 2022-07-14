@@ -12,7 +12,7 @@ Database backup
 
 .. code-block:: console
 
-    $ docker-compose exec db pg_dump -U openrem_user -d openrem_prod -F c -f /db_backup/openremdump.bak
+    $ docker-compose exec db pg_dump -U openremuser -d openrem_prod -F c -f /db_backup/openremdump.bak
 
 * To automate a regular backup (**recommended**) adapt the following command in a bash script:
 
@@ -20,14 +20,14 @@ Database backup
 
     #!/bin/bash
     TODAY=$(date "+%Y-%m-%d")
-    docker-compose -f /path/to/docker-compose.yml exec db pg_dump -U openrem_user -d openrem_prod -F c -f "/db_backup/openremdump-"$TODAY".bak"
+    docker-compose -f /path/to/docker-compose.yml exec db pg_dump -U openremuser -d openrem_prod -F c -f "/db_backup/openremdump-"$TODAY".bak"
 
 * or powershell script:
 
 .. code-block:: powershell
 
     $dateString = "{0:yyyy-MM-dd}" -f (get-date)
-    docker-compose -f C:\Path\To\docker-compose.yml exec db pg_dump -U openrem_user -d openrem_prod -F c -f /db_backup/openremdump-$dateString.bak
+    docker-compose -f C:\Path\To\docker-compose.yml exec db pg_dump -U openremuser -d openrem_prod -F c -f /db_backup/openremdump-$dateString.bak
 
 You will need to ensure the backups are either regularly deleted/moved, or overwritten so that the backups don't fill
 the disk.
@@ -47,7 +47,7 @@ server on a different system for testing or other purposes.
 
 .. code-block:: console
 
-    $ docker-compose exec db pg_restore --no-privileges --no-owner -U openrem_user -d openrem_prod /db_backup/openremdump.bak
+    $ docker-compose exec db pg_restore --no-privileges --no-owner -U openremuser -d openrem_prod /db_backup/openremdump.bak
 
 You may get an error about the public schema, this is normal.
 
@@ -88,7 +88,7 @@ Start the PostgreSQL console:
 
 .. code-block:: console
 
-    $ docker-compose exec db psql -U openrem_user openrem_prod
+    $ docker-compose exec db psql -U openremuser openrem_prod
 
 .. sourcecode:: psql
 

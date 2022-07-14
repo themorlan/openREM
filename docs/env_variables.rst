@@ -156,7 +156,7 @@ Variables that should only be changed if you know what you are doing
     SQL_ENGINE=django.db.backends.postgresql
     SQL_PORT=5432
     DATABASE=postgres
-    POSTGRES_USER=openrem_user
+    POSTGRES_USER=openremuser
     POSTGRES_PASSWORD=openrem_pass
     POSTGRES_DB=openrem_prod
 
