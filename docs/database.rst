@@ -4,9 +4,12 @@ Database administration
 
 **Document not ready for translation**
 
-***************
+********************
+Docker installations
+********************
+
 Database backup
-***************
+===============
 
 * Open a shell (command prompt) in the Docker folder
 
@@ -32,9 +35,8 @@ Database backup
 You will need to ensure the backups are either regularly deleted/moved, or overwritten so that the backups don't fill
 the disk.
 
-****************
 Database restore
-****************
+================
 
 To restore a database backup to a new Docker container, install using the :doc:`installation` instructions and bring
 the containers up, but don't run the database commands. These instructions can also be used to create a duplicate
@@ -75,14 +77,13 @@ You may get an error about the public schema, this is normal.
 
 The OpenREM server should now be ready to use again.
 
-********
 Advanced
-********
+========
 
 These methods should not be required in normal use; only do this if you know what you are doing!
 
 psql
-====
+^^^^
 
 Start the PostgreSQL console:
 
@@ -102,7 +103,7 @@ Start the PostgreSQL console:
     \q
 
 pgAdmin or other PostgreSQL connections
-=======================================
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 To access the database directly by pgAdmin or other software, the ports must be exposed.
 
@@ -123,9 +124,9 @@ To access the database directly by pgAdmin or other software, the ports must be 
     $ docker-compose down
     $ docker-compose up -d
 
-********************************
-non-Docker PostgreSQL
-********************************
+*******************
+Linux installations
+*******************
 
 .. _backup-psql-db:
 
@@ -177,10 +178,9 @@ Database restore
 
 .. _database-windows:
 
-********************
-Databases on Windows
-********************
+*********************
+Windows installations
+*********************
 
 TODO
 
-For upgrades between older versions, please refer to the docs that accompany those versions.
