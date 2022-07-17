@@ -109,7 +109,7 @@ def collimate(a_ray, area, d_ref):
     )  # point at 10 cm up on the midline of the ray
 
     xvector = np.array([np.sin(a_ray.xangle), 0, -np.cos(a_ray.xangle)])
-    yvector = np.array([0, np.sin(a_ray.yangle), -np.cos(a_ray.yangle)])
+    yvector = np.array([0, np.sin(a_ray.yangle), np.cos(a_ray.yangle)])
     point_a = (
         centre_point + ((side_length / 2) * xvector) + ((side_length / 2) * yvector)
     )
