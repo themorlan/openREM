@@ -67,8 +67,12 @@ class Segment3:
         self.vector = point_3b - point_3a
         self.length = np.linalg.norm(self.vector)
 
-        self.xangle = np.arctan2(self.vector[0], self.vector[1]) + np.pi/2.0
-        self.yangle = np.arctan2(self.vector[1], self.vector[2]) + np.pi/2.0
+        if self.vector[0] < 0.0:
+            self.xangle = np.arctan2(self.vector[0], self.vector[1]) + np.pi/2.0
+        else:
+            self.xangle = np.arctan2(self.vector[1], self.vector[2])
+
+        self.yangle = np.arctan2(self.vector[2], self.vector[0]) - np.pi/2.0
 
 
 class PhantomFlat:
