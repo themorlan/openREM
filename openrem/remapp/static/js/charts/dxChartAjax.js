@@ -161,6 +161,121 @@ $(document).ready(function() {
                 $("#requestDAPvsMassChartDiv").html(json.requestDAPvsMass);
             }
 
+            // DAP per standard acquisition name chart data
+            if(typeof json.standardAcquisitionMeanDAPData !== "undefined") {
+                $("#standardAcquisitionMeanDAPChartDiv").html(json.standardAcquisitionMeanDAPData);
+                $("#standardAcquisitionMeanDAPChartParentDiv").append(json.standardAcquisitionMeanDAPDataCSV);
+            }
+            if(typeof json.standardAcquisitionMedianDAPData !== "undefined") {
+                $("#standardAcquisitionMedianDAPChartDiv").html(json.standardAcquisitionMedianDAPData);
+                $("#standardAcquisitionMedianDAPChartParentDiv").append(json.standardAcquisitionMedianDAPDataCSV);
+            }
+            if(typeof json.standardAcquisitionBoxplotDAPData !=="undefined") {
+                $("#standardAcquisitionBoxplotDAPChartDiv").html(json.standardAcquisitionBoxplotDAPData);
+            }
+            if(typeof json.standardAcquisitionHistogramDAPData !=="undefined") {
+                $("#standardAcquisitionHistogramDAPChartDiv").html(json.standardAcquisitionHistogramDAPData);
+            }
+
+            // Standard acquisition name frequency chart data start
+            if(typeof json.standardAcquisitionFrequencyData !== "undefined") {
+                $("#standardAcquisitionFrequencyChartDiv").html(json.standardAcquisitionFrequencyData);
+                $("#standardAcquisitionFrequencyChartParentDiv").append(json.standardAcquisitionFrequencyDataCSV);
+            }
+
+            // kVp per standard acquisition name chart data
+            if(typeof json.standardAcquisitionMeankVpData !== "undefined") {
+                $("#standardAcquisitionMeankVpChartDiv").html(json.standardAcquisitionMeankVpData);
+                $("#standardAcquisitionMeankVpChartParentDiv").append(json.standardAcquisitionMeankVpDataCSV);
+            }
+            if(typeof json.standardAcquisitionMediankVpData !== "undefined") {
+                $("#standardAcquisitionMediankVpChartDiv").html(json.standardAcquisitionMediankVpData);
+                $("#standardAcquisitionMediankVpChartParentDiv").append(json.standardAcquisitionMediankVpDataCSV);
+            }
+            if(typeof json.standardAcquisitionBoxplotkVpData !=="undefined") {
+                $("#standardAcquisitionBoxplotkVpChartDiv").html(json.standardAcquisitionBoxplotkVpData);
+            }
+            if(typeof json.standardAcquisitionHistogramkVpData !=="undefined") {
+                $("#standardAcquisitionHistogramkVpChartDiv").html(json.standardAcquisitionHistogramkVpData);
+            }
+
+            // mAs per standard acquisition name chart data
+            if(typeof json.standardAcquisitionMeanmAsData !== "undefined") {
+                $("#standardAcquisitionMeanmAsChartDiv").html(json.standardAcquisitionMeanmAsData);
+                $("#standardAcquisitionMeanmAsChartParentDiv").append(json.standardAcquisitionMeanmAsDataCSV);
+            }
+            if(typeof json.standardAcquisitionMedianmAsData !== "undefined") {
+                $("#standardAcquisitionMedianmAsChartDiv").html(json.standardAcquisitionMedianmAsData);
+                $("#standardAcquisitionMedianmAsChartParentDiv").append(json.standardAcquisitionMedianmAsDataCSV);
+            }
+            if(typeof json.standardAcquisitionBoxplotmAsData !=="undefined") {
+                $("#standardAcquisitionBoxplotmAsChartDiv").html(json.standardAcquisitionBoxplotmAsData);
+            }
+            if(typeof json.standardAcquisitionHistogrammAsData !=="undefined") {
+                $("#standardAcquisitionHistogrammAsChartDiv").html(json.standardAcquisitionHistogrammAsData);
+            }
+
+            // Standard acquisition name DAP over time chart data
+            if(typeof json.standardAcquisitionMeanDAPOverTime !== "undefined") {
+                $("#standardAcquisitionMeanDAPOverTimeChartDiv").html(json.standardAcquisitionMeanDAPOverTime);
+            }
+            if(typeof json.standardAcquisitionMedianDAPOverTime !== "undefined") {
+                $("#standardAcquisitionMedianDAPOverTimeChartDiv").html(json.standardAcquisitionMedianDAPOverTime);
+            }
+
+            // Standard acquisition name kVp over time chart data
+            if(typeof json.standardAcquisitionMeankVpOverTime !== "undefined") {
+                $("#standardAcquisitionMeankVpOverTimeChartDiv").html(json.standardAcquisitionMeankVpOverTime);
+            }
+            if(typeof json.standardAcquisitionMediankVpOverTime !== "undefined") {
+                $("#standardAcquisitionMediankVpOverTimeChartDiv").html(json.standardAcquisitionMediankVpOverTime);
+            }
+
+            // Standard acquisition name mAs over time chart data
+            if(typeof json.standardAcquisitionMeanmAsOverTime !== "undefined") {
+                $("#standardAcquisitionMeanmAsOverTimeChartDiv").html(json.standardAcquisitionMeanmAsOverTime);
+            }
+            if(typeof json.standardAcquisitionMedianmAsOverTime !== "undefined") {
+                $("#standardAcquisitionMedianmAsOverTimeChartDiv").html(json.standardAcquisitionMedianmAsOverTime);
+            }
+
+            // Standard acquisition name DAP vs mass
+            if(typeof json.standardAcquisitionDAPvsMass !== "undefined") {
+                $("#standardAcquisitionDAPvsMassChartDiv").html(json.standardAcquisitionDAPvsMass);
+            }
+
+            // DAP per standard study name chart data
+            if(typeof json.standardStudyMeanDAPData !== "undefined") {
+                $("#standardStudyMeanDAPChartDiv").html(json.standardStudyMeanDAPData);
+                $("#standardStudyMeanDAPChartParentDiv").append(json.standardStudyMeanDAPDataCSV);
+            }
+            if(typeof json.standardStudyMedianDAPData !== "undefined") {
+                $("#standardStudyMedianDAPChartDiv").html(json.standardStudyMedianDAPData);
+                $("#standardStudyMedianDAPChartParentDiv").append(json.standardStudyMedianDAPDataCSV);
+            }
+            if(typeof json.standardStudyBoxplotDAPData !=="undefined") {
+                $("#standardStudyBoxplotDAPChartDiv").html(json.standardStudyBoxplotDAPData);
+            }
+            if(typeof json.standardStudyHistogramDAPData !=="undefined") {
+                $("#standardStudyHistogramDAPChartDiv").html(json.standardStudyHistogramDAPData);
+            }
+
+            // Standard study name frequency chart data start
+            if(typeof json.standardStudyFrequencyData !== "undefined") {
+                $("#standardStudyFrequencyChartDiv").html(json.standardStudyFrequencyData);
+                $("#standardStudyFrequencyChartParentDiv").append(json.standardStudyFrequencyDataCSV);
+            }
+
+            // Standard study name workload chart data
+            if(typeof json.standardStudyWorkloadData !== "undefined") {
+                $("#standardStudyWorkloadChartDiv").html(json.standardStudyWorkloadData);
+            }
+
+            // Standard study name DAP vs mass
+            if(typeof json.standardStudyDAPvsMass !== "undefined") {
+                $("#standardStudyDAPvsMassChartDiv").html(json.standardStudyDAPvsMass);
+            }
+
             $(".ajax-progress").hide();
         },
         error: function( xhr, status, errorThrown ) {

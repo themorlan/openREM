@@ -27,12 +27,18 @@
     :synopsis: Django forms definitions
 """
 
+import os
 import logging
+import operator
+from functools import reduce
 
 from django import forms
+from django.db.models import Q
+from django.contrib.admin.widgets import FilteredSelectMultiple
 from django.conf import settings
 from django.utils.safestring import mark_safe
 from django.urls import reverse
+from django.utils.translation import gettext as _
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Submit, HTML, Div
 from crispy_forms.bootstrap import (
@@ -53,6 +59,11 @@ from .models import (
     HighDoseMetricAlertSettings,
     CommonVariables,
     OpenSkinSafeList,
+    StandardNames,
+    StandardNameSettings,
+    GeneralStudyModuleAttr,
+    CtIrradiationEventData,
+    IrradEventXRayData,
 )
 
 logger = logging.getLogger()
@@ -61,7 +72,7 @@ logger = logging.getLogger()
 class SizeUploadForm(forms.Form):
     """Form for patient size csv file upload"""
 
-    sizefile = forms.FileField(label="Select a file")
+    sizefile = forms.FileField(label=_("Select a file"))
 
 
 class SizeHeadersForm(forms.Form):
@@ -86,8 +97,8 @@ class SizeHeadersForm(forms.Form):
                 choices=my_choice, widget=forms.Select(attrs={"class": "form-control"})
             )
             ID_TYPES = (
-                ("acc-no", "Accession Number"),
-                ("si-uid", "Study instance UID"),
+                ("acc-no", _("Accession Number")),
+                ("si-uid", _("Study instance UID")),
             )
             self.fields["id_type"] = forms.ChoiceField(
                 choices=ID_TYPES, widget=forms.Select(attrs={"class": "form-control"})
@@ -96,166 +107,419 @@ class SizeHeadersForm(forms.Form):
 
 class itemsPerPageForm(forms.Form):
     itemsPerPage = forms.ChoiceField(
-        label="Items per page", choices=CommonVariables.ITEMS_PER_PAGE, required=False
+        label=_("Items per page"),
+        choices=CommonVariables.ITEMS_PER_PAGE,
+        required=False,
     )
 
 
 class DXChartOptionsForm(forms.Form):
     """Form for DX chart options"""
 
-    plotCharts = forms.BooleanField(label="Plot charts?", required=False)
-    plotDXAcquisitionFreq = forms.BooleanField(
-        label="Acquisition frequency", required=False
-    )
-    plotDXAcquisitionMeanDAP = forms.BooleanField(
-        label="Acquisition DAP", required=False
-    )
-    plotDXAcquisitionMeanmAs = forms.BooleanField(
-        label="Acquisition mAs", required=False
-    )
-    plotDXAcquisitionMeankVp = forms.BooleanField(
-        label="Acquisition kVp", required=False
-    )
-    plotDXAcquisitionMeanDAPOverTime = forms.BooleanField(
-        label="Acquisition DAP over time", required=False
-    )
-    plotDXAcquisitionMeanmAsOverTime = forms.BooleanField(
-        label="Acquisition mAs over time", required=False
-    )
-    plotDXAcquisitionMeankVpOverTime = forms.BooleanField(
-        label="Acquisition kVp over time", required=False
-    )
-    plotDXAcquisitionDAPvsMass = forms.BooleanField(
-        label="Acquisition DAP vs mass", required=False
-    )
-    plotDXStudyFreq = forms.BooleanField(label="Study frequency", required=False)
-    plotDXStudyMeanDAP = forms.BooleanField(label="Study DAP", required=False)
-    plotDXStudyDAPvsMass = forms.BooleanField(label="Study DAP vs mass", required=False)
-    plotDXStudyPerDayAndHour = forms.BooleanField(
-        label="Study workload", required=False
-    )
-    plotDXRequestFreq = forms.BooleanField(
-        label="Requested procedure frequency", required=False
-    )
-    plotDXRequestMeanDAP = forms.BooleanField(
-        label="Requested procedure DAP", required=False
-    )
-    plotDXRequestDAPvsMass = forms.BooleanField(
-        label="Requested procedure DAP vs mass", required=False
-    )
+    plotCharts = forms.BooleanField(label=_("Plot charts?"), required=False)
+    plotCharts.group = "PlotCharts"
     plotDXAcquisitionMeanDAPOverTimePeriod = forms.ChoiceField(
         label="Time period", choices=CommonVariables.TIME_PERIOD, required=False
     )
+    plotDXAcquisitionMeanDAPOverTimePeriod.group = "General"
     plotAverageChoice = forms.MultipleChoiceField(
         label="Average plots",
         choices=CommonVariables.AVERAGES,
         required=False,
         widget=forms.CheckboxSelectMultiple(attrs={"class": "CheckboxSelectMultiple"}),
     )
-    plotGrouping = forms.ChoiceField(  # nosec
-        label=mark_safe("Grouping choice"),
+    plotAverageChoice.group = "General"
+    plotGrouping = forms.ChoiceField(
+        label=mark_safe("Grouping choice"),  # nosec
         choices=CommonVariables.CHART_GROUPING,
         required=False,
     )
+    plotGrouping.group = "General"
     plotSeriesPerSystem = forms.BooleanField(
         label="Plot a series per system", required=False
     )
+    plotSeriesPerSystem.group = "General"
     plotHistograms = forms.BooleanField(
         label="Calculate histogram data", required=False
     )
+    plotHistograms.group = "General"
     plotDXInitialSortingChoice = forms.ChoiceField(
         label="Chart sorting", choices=CommonVariables.SORTING_CHOICES, required=False
     )
+    plotDXInitialSortingChoice.group = "General"
     plotInitialSortingDirection = forms.ChoiceField(
         label="Sorting direction",
         choices=CommonVariables.SORTING_DIRECTION,
         required=False,
     )
+    plotInitialSortingDirection.group = "General"
+    plotDXAcquisitionFreq = forms.BooleanField(
+        label=_("Acquisition frequency"), required=False
+    )
+    plotDXAcquisitionFreq.group = "Acquisition protocol"
+    plotDXAcquisitionMeanDAP = forms.BooleanField(
+        label=_("Acquisition DAP"), required=False
+    )
+    plotDXAcquisitionMeanDAP.group = "Acquisition protocol"
+    plotDXAcquisitionMeanmAs = forms.BooleanField(
+        label=_("Acquisition mAs"), required=False
+    )
+    plotDXAcquisitionMeanmAs.group = "Acquisition protocol"
+    plotDXAcquisitionMeankVp = forms.BooleanField(
+        label=_("Acquisition kVp"), required=False
+    )
+    plotDXAcquisitionMeankVp.group = "Acquisition protocol"
+    plotDXAcquisitionMeanDAPOverTime = forms.BooleanField(
+        label=_("Acquisition DAP over time"), required=False
+    )
+    plotDXAcquisitionMeanDAPOverTime.group = "Acquisition protocol"
+    plotDXAcquisitionMeanmAsOverTime = forms.BooleanField(
+        label=_("Acquisition mAs over time"), required=False
+    )
+    plotDXAcquisitionMeanmAsOverTime.group = "Acquisition protocol"
+    plotDXAcquisitionMeankVpOverTime = forms.BooleanField(
+        label=_("Acquisition kVp over time"), required=False
+    )
+    plotDXAcquisitionMeankVpOverTime.group = "Acquisition protocol"
+    plotDXAcquisitionDAPvsMass = forms.BooleanField(
+        label=_("Acquisition DAP vs mass"), required=False
+    )
+    plotDXAcquisitionDAPvsMass.group = "Acquisition protocol"
+    plotDXStudyFreq = forms.BooleanField(label=_("Study frequency"), required=False)
+    plotDXStudyFreq.group = "Study description"
+    plotDXStudyMeanDAP = forms.BooleanField(label=_("Study DAP"), required=False)
+    plotDXStudyMeanDAP.group = "Study description"
+    plotDXStudyDAPvsMass = forms.BooleanField(
+        label=_("Study DAP vs mass"), required=False
+    )
+    plotDXStudyDAPvsMass.group = "Study description"
+    plotDXStudyPerDayAndHour = forms.BooleanField(
+        label=_("Study workload"), required=False
+    )
+    plotDXStudyPerDayAndHour.group = "Study description"
+    plotDXRequestFreq = forms.BooleanField(
+        label=_("Requested procedure frequency"), required=False
+    )
+    plotDXRequestFreq.group = "Requested procedure"
+    plotDXRequestMeanDAP = forms.BooleanField(
+        label=_("Requested procedure DAP"), required=False
+    )
+    plotDXRequestMeanDAP.group = "Requested procedure"
+    plotDXRequestDAPvsMass = forms.BooleanField(
+        label=_("Requested procedure DAP vs mass"), required=False
+    )
+    plotDXRequestDAPvsMass.group = "Requested procedure"
+
+
+class DXChartOptionsFormIncStandard(DXChartOptionsForm):
+    plotDXStandardAcquisitionFreq = forms.BooleanField(
+        label="Standard acquisition name frequency", required=False
+    )
+    plotDXStandardAcquisitionFreq.group = "Standard acquisition name"
+    plotDXStandardAcquisitionMeanDAP = forms.BooleanField(
+        label="Standard acquisition name DAP", required=False
+    )
+    plotDXStandardAcquisitionMeanDAP.group = "Standard acquisition name"
+    plotDXStandardAcquisitionMeanmAs = forms.BooleanField(
+        label="Standard acquisition name mAs", required=False
+    )
+    plotDXStandardAcquisitionMeanmAs.group = "Standard acquisition name"
+    plotDXStandardAcquisitionMeankVp = forms.BooleanField(
+        label="Standard acquisition name kVp", required=False
+    )
+    plotDXStandardAcquisitionMeankVp.group = "Standard acquisition name"
+    plotDXStandardAcquisitionMeanDAPOverTime = forms.BooleanField(
+        label="Standard acquisition name DAP over time", required=False
+    )
+    plotDXStandardAcquisitionMeanDAPOverTime.group = "Standard acquisition name"
+    plotDXStandardAcquisitionMeanmAsOverTime = forms.BooleanField(
+        label="Standard acquisition name mAs over time", required=False
+    )
+    plotDXStandardAcquisitionMeanmAsOverTime.group = "Standard acquisition name"
+    plotDXStandardAcquisitionMeankVpOverTime = forms.BooleanField(
+        label="Standard acquisition name kVp over time", required=False
+    )
+    plotDXStandardAcquisitionMeankVpOverTime.group = "Standard acquisition name"
+    plotDXStandardAcquisitionDAPvsMass = forms.BooleanField(
+        label="Standard acquisition name DAP vs mass", required=False
+    )
+    plotDXStandardAcquisitionDAPvsMass.group = "Standard acquisition name"
+
+    plotDXStandardStudyFreq = forms.BooleanField(
+        label="Standard study name frequency", required=False
+    )
+    plotDXStandardStudyFreq.group = "Standard study name"
+    plotDXStandardStudyMeanDAP = forms.BooleanField(
+        label="Standard study name DAP", required=False
+    )
+    plotDXStandardStudyMeanDAP.group = "Standard study name"
+    plotDXStandardStudyDAPvsMass = forms.BooleanField(
+        label="Standard study name DAP vs mass", required=False
+    )
+    plotDXStandardStudyDAPvsMass.group = "Standard study name"
+    plotDXStandardStudyPerDayAndHour = forms.BooleanField(
+        label="Standard study name workload", required=False
+    )
+    plotDXStandardStudyPerDayAndHour.group = "Standard study name"
 
 
 class CTChartOptionsForm(forms.Form):
     """Form for CT chart options"""
 
     plotCharts = forms.BooleanField(label="Plot charts?", required=False)
+    plotCharts.group = "PlotCharts"
+    plotCTOverTimePeriod = forms.ChoiceField(
+        label="Time period", choices=CommonVariables.TIME_PERIOD, required=False
+    )
+    plotCTOverTimePeriod.group = "General"
+    plotAverageChoice = forms.MultipleChoiceField(
+        label=_("Average plots"),
+        choices=CommonVariables.AVERAGES,
+        required=False,
+        widget=forms.CheckboxSelectMultiple(attrs={"class": "CheckboxSelectMultiple"}),
+    )
+    plotAverageChoice.group = "General"
+    plotGrouping = forms.ChoiceField(
+        label=mark_safe(_("Grouping choice")),  # nosec
+        choices=CommonVariables.CHART_GROUPING,
+        required=False,
+    )
+    plotGrouping.group = "General"
+    plotSeriesPerSystem = forms.BooleanField(
+        label=_("Plot a series per system"), required=False
+    )
+    plotSeriesPerSystem.group = "General"
+    plotHistograms = forms.BooleanField(
+        label=_("Calculate histogram data"), required=False
+    )
+    plotHistograms.group = "General"
+    plotCTInitialSortingChoice = forms.ChoiceField(
+        label=_("Chart sorting"),
+        choices=CommonVariables.SORTING_CHOICES,
+        required=False,
+    )
+    plotCTInitialSortingChoice.group = "General"
+    plotInitialSortingDirection = forms.ChoiceField(
+        label=_("Sorting direction"),
+        choices=CommonVariables.SORTING_DIRECTION,
+        required=False,
+    )
+    plotInitialSortingDirection.group = "General"
+
     plotCTAcquisitionFreq = forms.BooleanField(
-        label="Acquisition frequency", required=False
+        label=_("Acquisition frequency"), required=False
     )
+    plotCTAcquisitionFreq.group = "Acquisition protocol"
     plotCTAcquisitionMeanDLP = forms.BooleanField(
-        label="Acquisition DLP", required=False
+        label=_("Acquisition DLP"), required=False
     )
-    plotCTAcquisitionMeanCTDI = forms.BooleanField(  # nosec
-        label=mark_safe("Acquisition CTDI<sub>vol</sub>"), required=False
+    plotCTAcquisitionMeanDLP.group = "Acquisition protocol"
+    plotCTAcquisitionMeanCTDI = forms.BooleanField(
+        label=mark_safe(_("Acquisition CTDI<sub>vol</sub>")), required=False  # nosec
     )
+    plotCTAcquisitionMeanCTDI.group = "Acquisition protocol"
     plotCTAcquisitionDLPOverTime = forms.BooleanField(
-        label="Acquisition DLP over time", required=False
+        label=_("Acquisition DLP over time"), required=False
     )
-    plotCTAcquisitionCTDIOverTime = forms.BooleanField(  # nosec
-        label=mark_safe("Acquisition CTDI<sub>vol</sub> over time"), required=False
+    plotCTAcquisitionDLPOverTime.group = "Acquisition protocol"
+    plotCTAcquisitionCTDIOverTime = forms.BooleanField(
+        label=mark_safe(_("Acquisition CTDI<sub>vol</sub> over time")),  # nosec
+        required=False,
     )
+    plotCTAcquisitionCTDIOverTime.group = "Acquisition protocol"
     plotCTAcquisitionDLPvsMass = forms.BooleanField(
-        label="Acquisition DLP vs mass", required=False
+        label=_("Acquisition DLP vs mass"), required=False
     )
-    plotCTAcquisitionCTDIvsMass = forms.BooleanField(  # nosec
-        label=mark_safe("Acquisition CTDI<sub>vol</sub> vs mass"), required=False
+    plotCTAcquisitionDLPvsMass.group = "Acquisition protocol"
+    plotCTAcquisitionCTDIvsMass = forms.BooleanField(
+        label=mark_safe(_("Acquisition CTDI<sub>vol</sub> vs mass")),  # nosec
+        required=False,
     )
-    plotCTAcquisitionTypes = forms.MultipleChoiceField(  # nosec
-        label=mark_safe(
-            "Acquisition types to include<br/>in acquisition-level chart<br/>calculations"
+    plotCTAcquisitionCTDIvsMass.group = "Acquisition protocol"
+    plotCTAcquisitionTypes = forms.MultipleChoiceField(
+        label=mark_safe(  # nosec
+            _(
+                "Acquisition types to include<br/>in acquisition-level chart<br/>calculations"
+            )
         ),
         choices=CommonVariables.CT_ACQUISITION_TYPES,
         required=False,
         widget=forms.CheckboxSelectMultiple(attrs={"class": "CheckboxSelectMultiple"}),
     )
+    plotCTAcquisitionTypes.group = "Acquisition protocol"
+
     plotCTStudyFreq = forms.BooleanField(label="Study frequency", required=False)
+    plotCTStudyFreq.group = "Study description"
     plotCTStudyMeanDLP = forms.BooleanField(label="Study DLP", required=False)
-    plotCTStudyMeanCTDI = forms.BooleanField(  # nosec
-        label=mark_safe("Study CTDI<sub>vol</sub>"), required=False
+    plotCTStudyMeanDLP.group = "Study description"
+    plotCTStudyMeanCTDI = forms.BooleanField(
+        label=mark_safe(_("Study CTDI<sub>vol</sub>")), required=False  # nosec
     )
+    plotCTStudyMeanCTDI.group = "Study description"
     plotCTStudyNumEvents = forms.BooleanField(label="Study events", required=False)
+    plotCTStudyNumEvents.group = "Study description"
     plotCTStudyMeanDLPOverTime = forms.BooleanField(
-        label="Study DLP over time", required=False
+        label=_("Study DLP over time"), required=False
     )
+    plotCTStudyMeanDLPOverTime.group = "Study description"
     plotCTStudyPerDayAndHour = forms.BooleanField(
-        label="Study workload", required=False
+        label=_("Study workload"), required=False
     )
+    plotCTStudyPerDayAndHour.group = "Study description"
+
     plotCTRequestFreq = forms.BooleanField(
-        label="Requested procedure frequency", required=False
+        label=_("Requested procedure frequency"), required=False
     )
+    plotCTRequestFreq.group = "Requested procedure"
     plotCTRequestMeanDLP = forms.BooleanField(
-        label="Requested procedure DLP", required=False
+        label=_("Requested procedure DLP"), required=False
     )
+    plotCTRequestMeanDLP.group = "Requested procedure"
     plotCTRequestNumEvents = forms.BooleanField(
-        label="Requested procedure events", required=False
+        label=_("Requested procedure events"), required=False
     )
+    plotCTRequestNumEvents.group = "Requested procedure"
     plotCTRequestDLPOverTime = forms.BooleanField(
-        label="Requested procedure DLP over time", required=False
+        label=_("Requested procedure DLP over time"), required=False
     )
-    plotCTOverTimePeriod = forms.ChoiceField(
-        label="Time period", choices=CommonVariables.TIME_PERIOD, required=False
+    plotCTRequestDLPOverTime.group = "Requested procedure"
+
+
+class CTChartOptionsFormIncStandard(CTChartOptionsForm):
+    plotCTStandardAcquisitionFreq = forms.BooleanField(
+        label="Standard acquisition name frequency", required=False
+    )
+    plotCTStandardAcquisitionFreq.group = "Standard acquisition name"
+    plotCTStandardAcquisitionMeanDLP = forms.BooleanField(
+        label="Standard acquisition name DLP", required=False
+    )
+    plotCTStandardAcquisitionMeanDLP.group = "Standard acquisition name"
+    plotCTStandardAcquisitionMeanCTDI = forms.BooleanField(
+        label=mark_safe("Standard acquisition name CTDI<sub>vol</sub>"),  # nosec
+        required=False,
+    )
+    plotCTStandardAcquisitionMeanCTDI.group = "Standard acquisition name"
+    plotCTStandardAcquisitionDLPOverTime = forms.BooleanField(
+        label="Standard acquisition name DLP over time", required=False
+    )
+    plotCTStandardAcquisitionDLPOverTime.group = "Standard acquisition name"
+    plotCTStandardAcquisitionCTDIOverTime = forms.BooleanField(
+        label=mark_safe(  # nosec
+            "Standard acquisition name CTDI<sub>vol</sub> over time"
+        ),
+        required=False,
+    )
+    plotCTStandardAcquisitionCTDIOverTime.group = "Standard acquisition name"
+    plotCTStandardAcquisitionDLPvsMass = forms.BooleanField(
+        label="Standard acquisition name DLP vs mass", required=False
+    )
+    plotCTStandardAcquisitionDLPvsMass.group = "Standard acquisition name"
+    plotCTStandardAcquisitionCTDIvsMass = forms.BooleanField(
+        label=mark_safe(  # nosec
+            "Standard acquisition name CTDI<sub>vol</sub> vs mass"
+        ),
+        required=False,
+    )
+    plotCTStandardAcquisitionCTDIvsMass.group = "Standard acquisition name"
+
+    plotCTStandardStudyFreq = forms.BooleanField(
+        label="Standard study frequency", required=False
+    )
+    plotCTStandardStudyFreq.group = "Standard study name"
+    plotCTStandardStudyMeanDLP = forms.BooleanField(
+        label="Standard study DLP", required=False
+    )
+    plotCTStandardStudyMeanDLP.group = "Standard study name"
+    plotCTStandardStudyNumEvents = forms.BooleanField(
+        label="Standard study events", required=False
+    )
+    plotCTStandardStudyNumEvents.group = "Standard study name"
+    plotCTStandardStudyMeanDLPOverTime = forms.BooleanField(
+        label="Standard study DLP over time", required=False
+    )
+    plotCTStandardStudyMeanDLPOverTime.group = "Standard study name"
+    plotCTStandardStudyPerDayAndHour = forms.BooleanField(
+        label="Standard study workload", required=False
+    )
+    plotCTStandardStudyPerDayAndHour.group = "Standard study name"
+
+
+class NMChartOptionsForm(forms.Form):
+    """
+    Form for NM chart options
+    """
+
+    plotCharts = forms.BooleanField(label=_("Plot charts?"), required=False)
+
+    plotNMStudyFreq = forms.BooleanField(label=_("Study frequency"), required=False)
+    plotNMStudyPerDayAndHour = forms.BooleanField(
+        label=_("Study workload"), required=False
+    )
+    plotNMInjectedDosePerStudy = forms.BooleanField(
+        label=_("Injected Dose per Study"), required=False
+    )
+    plotNMInjectedDoseOverTime = forms.BooleanField(
+        label=_("Injected Dose over Time"), required=False
+    )
+    plotNMInjectedDoseOverWeight = forms.BooleanField(
+        label=_("Injected Dose over Weight"), required=False
+    )
+    plotNMOverTimePeriod = forms.ChoiceField(
+        label=_("Time period"), choices=CommonVariables.TIME_PERIOD, required=False
     )
     plotAverageChoice = forms.MultipleChoiceField(
-        label="Average plots",
+        label=_("Average plots"),
         choices=CommonVariables.AVERAGES,
         required=False,
         widget=forms.CheckboxSelectMultiple(attrs={"class": "CheckboxSelectMultiple"}),
     )
-    plotGrouping = forms.ChoiceField(  # nosec
-        label=mark_safe("Grouping choice"),
+    plotGrouping = forms.ChoiceField(
+        label=mark_safe(_("Grouping choice")),  # nosec
         choices=CommonVariables.CHART_GROUPING,
         required=False,
     )
     plotSeriesPerSystem = forms.BooleanField(
-        label="Plot a series per system", required=False
+        label=_("Plot a series per system"), required=False
     )
     plotHistograms = forms.BooleanField(
-        label="Calculate histogram data", required=False
+        label=_("Calculate histogram data"), required=False
     )
-    plotCTInitialSortingChoice = forms.ChoiceField(
-        label="Chart sorting", choices=CommonVariables.SORTING_CHOICES, required=False
+    plotNMInitialSortingChoice = forms.ChoiceField(
+        label=_("Chart sorting"),
+        choices=CommonVariables.SORTING_CHOICES,
+        required=False,
     )
     plotInitialSortingDirection = forms.ChoiceField(
-        label="Sorting direction",
+        label=_("Sorting direction"),
         choices=CommonVariables.SORTING_DIRECTION,
+        required=False,
+    )
+
+
+class NMChartOptionsDisplayForm(forms.Form):
+    """
+    Form for NM chart display options
+    """
+
+    plotNMStudyFreq = forms.BooleanField(label=_("Study frequency"), required=False)
+    plotNMStudyPerDayAndHour = forms.BooleanField(
+        label=_("Study workload"), required=False
+    )
+    plotNMInjectedDosePerStudy = forms.BooleanField(
+        label=_("Injected Dose per Study"), required=False
+    )
+    plotNMInjectedDoseOverTime = forms.BooleanField(
+        label=_("Injected Dose over Time"), required=False
+    )
+    plotNMInjectedDoseOverWeight = forms.BooleanField(
+        label=_("Injected Dose over Weight"), required=False
+    )
+    plotNMOverTimePeriod = forms.ChoiceField(
+        label=_("Time period"), choices=CommonVariables.TIME_PERIOD, required=False
+    )
+    plotNMInitialSortingChoice = forms.ChoiceField(
+        label=_("Chart sorting"),
+        choices=CommonVariables.SORTING_CHOICES,
         required=False,
     )
 
@@ -264,351 +528,690 @@ class RFChartOptionsForm(forms.Form):
     """Form for RF chart options"""
 
     plotCharts = forms.BooleanField(label="Plot charts?", required=False)
-    plotRFStudyFreq = forms.BooleanField(label="Study frequency", required=False)
-    plotRFStudyDAP = forms.BooleanField(label="Study DAP", required=False)
-    plotRFStudyDAPOverTime = forms.BooleanField(
-        label="Study DAP over time", required=False
-    )
-    plotRFStudyPerDayAndHour = forms.BooleanField(
-        label="Study workload", required=False
-    )
-    plotRFRequestFreq = forms.BooleanField(
-        label="Requested procedure frequency", required=False
-    )
-    plotRFRequestDAP = forms.BooleanField(
-        label="Requested procedure DAP", required=False
-    )
-    plotRFRequestDAPOverTime = forms.BooleanField(
-        label="Requested procedure DAP over time", required=False
-    )
+    plotCharts.group = "PlotCharts"
     plotRFOverTimePeriod = forms.ChoiceField(
         label="Time period", choices=CommonVariables.TIME_PERIOD, required=False
     )
+    plotRFOverTimePeriod.group = "General"
     plotAverageChoice = forms.MultipleChoiceField(
-        label="Average plots",
+        label=_("Average plots"),
         choices=CommonVariables.AVERAGES,
         required=False,
         widget=forms.CheckboxSelectMultiple(attrs={"class": "CheckboxSelectMultiple"}),
     )
+    plotAverageChoice.group = "General"
     plotRFSplitByPhysician = forms.BooleanField(
         label="Split plots by physician", required=False
     )
-    plotGrouping = forms.ChoiceField(  # nosec
-        label=mark_safe("Grouping choice"),
+    plotRFSplitByPhysician.group = "General"
+    plotGrouping = forms.ChoiceField(
+        label=mark_safe(_("Grouping choice")),  # nosec
         choices=CommonVariables.CHART_GROUPING_RF,
         required=False,
     )
+    plotGrouping.group = "General"
     plotSeriesPerSystem = forms.BooleanField(
-        label="Plot a series per system", required=False
+        label=_("Plot a series per system"), required=False
     )
+    plotSeriesPerSystem.group = "General"
     plotHistograms = forms.BooleanField(
-        label="Calculate histogram data", required=False
+        label=_("Calculate histogram data"), required=False
     )
+    plotHistograms.group = "General"
     plotRFInitialSortingChoice = forms.ChoiceField(
         label="Chart sorting", choices=CommonVariables.SORTING_CHOICES, required=False
     )
+    plotRFInitialSortingChoice.group = "General"
     plotInitialSortingDirection = forms.ChoiceField(
-        label="Sorting direction",
+        label=_("Sorting direction"),
         choices=CommonVariables.SORTING_DIRECTION,
         required=False,
     )
+    plotInitialSortingDirection.group = "General"
+
+    plotRFStudyFreq = forms.BooleanField(label="Study frequency", required=False)
+    plotRFStudyFreq.group = "Study description"
+    plotRFStudyDAP = forms.BooleanField(label="Study DAP", required=False)
+    plotRFStudyDAP.group = "Study description"
+    plotRFStudyDAPOverTime = forms.BooleanField(
+        label=_("Study DAP over time"), required=False
+    )
+    plotRFStudyDAPOverTime.group = "Study description"
+    plotRFStudyPerDayAndHour = forms.BooleanField(
+        label=_("Study workload"), required=False
+    )
+    plotRFStudyPerDayAndHour.group = "Study description"
+
+    plotRFRequestFreq = forms.BooleanField(
+        label=_("Requested procedure frequency"), required=False
+    )
+    plotRFRequestFreq.group = "Requested procedure"
+    plotRFRequestDAP = forms.BooleanField(
+        label=_("Requested procedure DAP"), required=False
+    )
+    plotRFRequestDAP.group = "Requested procedure"
+    plotRFRequestDAPOverTime = forms.BooleanField(
+        label=_("Requested procedure DAP over time"), required=False
+    )
+    plotRFRequestDAPOverTime.group = "Requested procedure"
+
+
+class RFChartOptionsFormIncStandard(RFChartOptionsForm):
+    plotRFStandardStudyFreq = forms.BooleanField(
+        label="Standard study name frequency", required=False
+    )
+    plotRFStandardStudyFreq.group = "Standard study name"
+    plotRFStandardStudyDAP = forms.BooleanField(
+        label="Standard study name DAP", required=False
+    )
+    plotRFStandardStudyDAP.group = "Standard study name"
+    plotRFStandardStudyDAPOverTime = forms.BooleanField(
+        label="Standard study name DAP over time", required=False
+    )
+    plotRFStandardStudyDAPOverTime.group = "Standard study name"
+    plotRFStandardStudyPerDayAndHour = forms.BooleanField(
+        label="Standard study name workload", required=False
+    )
+    plotRFStandardStudyPerDayAndHour.group = "Standard study name"
 
 
 class RFChartOptionsDisplayForm(forms.Form):
     """Form for RF chart display options"""
 
-    plotRFStudyFreq = forms.BooleanField(label="Study frequency", required=False)
-    plotRFStudyDAP = forms.BooleanField(label="Study DAP", required=False)
+    plotRFStudyFreq = forms.BooleanField(label=_("Study frequency"), required=False)
+    plotRFStudyDAP = forms.BooleanField(label=_("Study DAP"), required=False)
     plotRFStudyDAPOverTime = forms.BooleanField(
-        label="Study DAP over time", required=False
+        label=_("Study DAP over time"), required=False
     )
     plotRFStudyPerDayAndHour = forms.BooleanField(
-        label="Study workload", required=False
+        label=_("Study workload"), required=False
     )
     plotRFRequestFreq = forms.BooleanField(
-        label="Requested procedure frequency", required=False
+        label=_("Requested procedure frequency"), required=False
     )
     plotRFRequestDAP = forms.BooleanField(
-        label="Requested procedure DAP", required=False
+        label=_("Requested procedure DAP"), required=False
     )
     plotRFRequestDAPOverTime = forms.BooleanField(
-        label="Requested procedure DAP over time", required=False
+        label=_("Requested procedure DAP over time"), required=False
     )
     plotRFOverTimePeriod = forms.ChoiceField(
-        label="Time period", choices=CommonVariables.TIME_PERIOD, required=False
+        label=_("Time period"), choices=CommonVariables.TIME_PERIOD, required=False
     )
     plotRFSplitByPhysician = forms.BooleanField(
-        label="Split plots by physician", required=False
+        label=_("Split plots by physician"), required=False
     )
     plotRFInitialSortingChoice = forms.ChoiceField(
-        label="Default chart sorting",
+        label=_("Default chart sorting"),
         choices=CommonVariables.SORTING_CHOICES,
         required=False,
     )
+
+
+class RFChartOptionsDisplayFormIncStandard(RFChartOptionsDisplayForm):
+    plotRFStandardStudyFreq = forms.BooleanField(
+        label="Standard study name frequency", required=False
+    )
+    plotRFStandardStudyDAP = forms.BooleanField(
+        label="Standard study name DAP", required=False
+    )
+    plotRFStandardStudyDAPOverTime = forms.BooleanField(
+        label="Standard study name DAP over time", required=False
+    )
+    plotRFStandardStudyPerDayAndHour = forms.BooleanField(
+        label="Standard study name workload", required=False
+    )
+
+    field_order = [
+        "plotRFStudyFreq",
+        "plotRFStudyDAP",
+        "plotRFStudyDAPOverTime",
+        "plotRFStudyPerDayAndHour",
+        "plotRFRequestFreq",
+        "plotRFRequestDAP",
+        "plotRFRequestDAPOverTime",
+        "plotRFStandardStudyFreq",
+        "plotRFStandardStudyDAP",
+        "plotRFStandardStudyDAPOverTime",
+        "plotRFStandardStudyPerDayAndHour",
+        "plotRFOverTimePeriod",
+        "plotRFSplitByPhysician",
+        "plotRFInitialSortingChoice",
+    ]
 
 
 class MGChartOptionsForm(forms.Form):
     """Form for MG chart options"""
 
     plotCharts = forms.BooleanField(label="Plot charts?", required=False)
-    plotMGacquisitionFreq = forms.BooleanField(
-        label="Acquisition frequency", required=False
-    )
-    plotMGaverageAGD = forms.BooleanField(
-        label="Acquisition average AGD", required=False
-    )
-    plotMGaverageAGDvsThickness = forms.BooleanField(
-        label="Acquisition average AGD vs. compressed thickness", required=False
-    )
-    plotMGAcquisitionAGDOverTime = forms.BooleanField(
-        label="Acquisition AGD over time", required=False
-    )
-    plotMGAGDvsThickness = forms.BooleanField(
-        label="Acquisition AGD vs. compressed thickness", required=False
-    )
-    plotMGmAsvsThickness = forms.BooleanField(
-        label="Acquisition mAs vs. compressed thickness", required=False
-    )
-    plotMGkVpvsThickness = forms.BooleanField(
-        label="Acquisition kVp vs. compressed thickness", required=False
-    )
-    plotMGStudyPerDayAndHour = forms.BooleanField(
-        label="Study workload", required=False
-    )
+    plotCharts.group = "PlotCharts"
     plotMGOverTimePeriod = forms.ChoiceField(
-        label="Time period", choices=CommonVariables.TIME_PERIOD, required=False
+        label=_("Time period"), choices=CommonVariables.TIME_PERIOD, required=False
     )
+    plotMGOverTimePeriod.group = "General"
     plotAverageChoice = forms.MultipleChoiceField(
-        label="Average plots",
+        label=_("Average plots"),
         choices=CommonVariables.AVERAGES,
         required=False,
         widget=forms.CheckboxSelectMultiple(attrs={"class": "CheckboxSelectMultiple"}),
     )
-    plotGrouping = forms.ChoiceField(  # nosec
-        label=mark_safe("Grouping choice"),
+    plotAverageChoice.group = "General"
+    plotGrouping = forms.ChoiceField(
+        label=mark_safe(_("Grouping choice")),  # nosec
         choices=CommonVariables.CHART_GROUPING,
         required=False,
     )
+    plotGrouping.group = "General"
     plotSeriesPerSystem = forms.BooleanField(
-        label="Plot a series per system", required=False
+        label=_("Plot a series per system"), required=False
     )
+    plotSeriesPerSystem.group = "General"
     plotHistograms = forms.BooleanField(
-        label="Calculate histogram data", required=False
+        label=_("Calculate histogram data"), required=False
     )
+    plotHistograms.group = "General"
     plotMGInitialSortingChoice = forms.ChoiceField(
-        label="Chart sorting", choices=CommonVariables.SORTING_CHOICES, required=False
+        label=_("Chart sorting"),
+        choices=CommonVariables.SORTING_CHOICES,
+        required=False,
     )
+    plotMGInitialSortingChoice.group = "General"
     plotInitialSortingDirection = forms.ChoiceField(
-        label="Sorting direction",
+        label=_("Sorting direction"),
         choices=CommonVariables.SORTING_DIRECTION,
         required=False,
     )
+    plotInitialSortingDirection.group = "General"
+    plotMGacquisitionFreq = forms.BooleanField(
+        label="Acquisition frequency", required=False
+    )
+    plotMGacquisitionFreq.group = "Acquisition protocol"
+    plotMGaverageAGD = forms.BooleanField(
+        label="Acquisition average AGD", required=False
+    )
+    plotMGaverageAGD.group = "Acquisition protocol"
+    plotMGaverageAGDvsThickness = forms.BooleanField(
+        label="Acquisition average AGD vs. compressed thickness", required=False
+    )
+    plotMGaverageAGDvsThickness.group = "Acquisition protocol"
+    plotMGAcquisitionAGDOverTime = forms.BooleanField(
+        label="Acquisition AGD over time", required=False
+    )
+    plotMGAcquisitionAGDOverTime.group = "Acquisition protocol"
+    plotMGAGDvsThickness = forms.BooleanField(
+        label="Acquisition AGD vs. compressed thickness", required=False
+    )
+    plotMGAGDvsThickness.group = "Acquisition protocol"
+    plotMGmAsvsThickness = forms.BooleanField(
+        label="Acquisition mAs vs. compressed thickness", required=False
+    )
+    plotMGmAsvsThickness.group = "Acquisition protocol"
+    plotMGkVpvsThickness = forms.BooleanField(
+        label="Acquisition kVp vs. compressed thickness", required=False
+    )
+    plotMGkVpvsThickness.group = "Acquisition protocol"
+    plotMGStudyPerDayAndHour = forms.BooleanField(
+        label="Study workload", required=False
+    )
+    plotMGStudyPerDayAndHour.group = "Study description"
+
+
+class MGChartOptionsFormIncStandard(MGChartOptionsForm):
+    plotMGStandardAcquisitionFreq = forms.BooleanField(
+        label="Standard acquisition name frequency", required=False
+    )
+    plotMGStandardAcquisitionFreq.group = "Standard acquisition name"
+    plotMGStandardAverageAGD = forms.BooleanField(
+        label="Standard acquisition name average AGD", required=False
+    )
+    plotMGStandardAverageAGD.group = "Standard acquisition name"
+    plotMGStandardAverageAGDvsThickness = forms.BooleanField(
+        label="Standard acquisition name average AGD vs. compressed thickness",
+        required=False,
+    )
+    plotMGStandardAverageAGDvsThickness.group = "Standard acquisition name"
+    plotMGStandardAcquisitionAGDOverTime = forms.BooleanField(
+        label="Standard acquisition name AGD over time", required=False
+    )
+    plotMGStandardAcquisitionAGDOverTime.group = "Standard acquisition name"
+    plotMGStandardAGDvsThickness = forms.BooleanField(
+        label="Standard acquisition name AGD vs. compressed thickness", required=False
+    )
+    plotMGStandardAGDvsThickness.group = "Standard acquisition name"
+    plotMGStandardmAsvsThickness = forms.BooleanField(
+        label="Standard acquisition name mAs vs. compressed thickness", required=False
+    )
+    plotMGStandardmAsvsThickness.group = "Standard acquisition name"
+    plotMGStandardkVpvsThickness = forms.BooleanField(
+        label="Standard acquisition name kVp vs. compressed thickness", required=False
+    )
+    plotMGStandardkVpvsThickness.group = "Standard acquisition name"
+    plotMGStandardStudyPerDayAndHour = forms.BooleanField(
+        label="Standard study name workload", required=False
+    )
+    plotMGStandardStudyPerDayAndHour.group = "Standard study name"
 
 
 class MGChartOptionsDisplayForm(forms.Form):
     """Form for MG chart display options"""
 
     plotMGacquisitionFreq = forms.BooleanField(
-        label="Acquisition frequency", required=False
+        label=_("Acquisition frequency"), required=False
     )
     plotMGaverageAGD = forms.BooleanField(
-        label="Acquisition average AGD", required=False
+        label=_("Acquisition average AGD"), required=False
     )
     plotMGaverageAGDvsThickness = forms.BooleanField(
-        label="Acquisition average AGD vs. compressed thickness", required=False
+        label=_("Acquisition average AGD vs. compressed thickness"), required=False
     )
     plotMGAcquisitionAGDOverTime = forms.BooleanField(
-        label="Acquisition AGD over time", required=False
+        label=_("Acquisition AGD over time"), required=False
     )
     plotMGAGDvsThickness = forms.BooleanField(
-        label="Acquisition AGD vs. compressed thickness", required=False
+        label=_("Acquisition AGD vs. compressed thickness"), required=False
     )
     plotMGmAsvsThickness = forms.BooleanField(
-        label="Acquisition mAs vs. compressed thickness", required=False
+        label=_("Acquisition mAs vs. compressed thickness"), required=False
     )
     plotMGkVpvsThickness = forms.BooleanField(
-        label="Acquisition kVp vs. compressed thickness", required=False
+        label=_("Acquisition kVp vs. compressed thickness"), required=False
     )
     plotMGStudyPerDayAndHour = forms.BooleanField(
-        label="Study workload", required=False
+        label=_("Study workload"), required=False
     )
     plotMGOverTimePeriod = forms.ChoiceField(
-        label="Time period", choices=CommonVariables.TIME_PERIOD, required=False
+        label=_("Time period"), choices=CommonVariables.TIME_PERIOD, required=False
     )
     plotMGInitialSortingChoice = forms.ChoiceField(
-        label="Chart sorting", choices=CommonVariables.SORTING_CHOICES, required=False
+        label=_("Chart sorting"),
+        choices=CommonVariables.SORTING_CHOICES,
+        required=False,
     )
+
+
+class MGChartOptionsDisplayFormIncStandard(MGChartOptionsDisplayForm):
+    plotMGStandardAcquisitionFreq = forms.BooleanField(
+        label="Standard acquisition name frequency", required=False
+    )
+    plotMGStandardAverageAGD = forms.BooleanField(
+        label="Standard acquisition name average AGD", required=False
+    )
+    plotMGStandardAverageAGDvsThickness = forms.BooleanField(
+        label="Standard acquisition name average AGD vs. compressed thickness",
+        required=False,
+    )
+    plotMGStandardAcquisitionAGDOverTime = forms.BooleanField(
+        label="Standard acquisition name AGD over time", required=False
+    )
+    plotMGStandardAGDvsThickness = forms.BooleanField(
+        label="Standard acquisition name AGD vs. compressed thickness", required=False
+    )
+    plotMGStandardmAsvsThickness = forms.BooleanField(
+        label="Standard acquisition name mAs vs. compressed thickness", required=False
+    )
+    plotMGStandardkVpvsThickness = forms.BooleanField(
+        label="Standard acquisition name kVp vs. compressed thickness", required=False
+    )
+    plotMGStandardStudyPerDayAndHour = forms.BooleanField(
+        label="Standard study name", required=False
+    )
+
+    field_order = [
+        "plotMGacquisitionFreq",
+        "plotMGaverageAGD",
+        "plotMGaverageAGDvsThickness",
+        "plotMGAcquisitionAGDOverTime",
+        "plotMGAGDvsThickness",
+        "plotMGmAsvsThickness",
+        "plotMGkVpvsThickness",
+        "plotMGStandardAcquisitionFreq",
+        "plotMGStandardAverageAGD",
+        "plotMGStandardAverageAGDvsThickness",
+        "plotMGStandardAcquisitionAGDOverTime",
+        "plotMGStandardAGDvsThickness",
+        "plotMGStandardmAsvsThickness",
+        "plotMGStandardkVpvsThickness",
+        "plotMGStudyPerDayAndHour",
+        "plotMGStandardStudyPerDayAndHour",
+        "plotMGOverTimePeriod",
+        "plotMGInitialSortingChoice",
+    ]
 
 
 class DXChartOptionsDisplayForm(forms.Form):
     """Form for DX chart display options"""
 
     plotDXAcquisitionFreq = forms.BooleanField(
-        label="Acquisition frequency", required=False
+        label=_("Acquisition frequency"), required=False
     )
     plotDXAcquisitionMeanDAP = forms.BooleanField(
-        label="Acquisition DAP", required=False
+        label=_("Acquisition DAP"), required=False
     )
     plotDXAcquisitionMeanmAs = forms.BooleanField(
-        label="Acquisition mAs", required=False
+        label=_("Acquisition mAs"), required=False
     )
     plotDXAcquisitionMeankVp = forms.BooleanField(
-        label="Acquisition kVp", required=False
+        label=_("Acquisition kVp"), required=False
     )
     plotDXAcquisitionMeanDAPOverTime = forms.BooleanField(
-        label="Acquisition DAP over time", required=False
+        label=_("Acquisition DAP over time"), required=False
     )
     plotDXAcquisitionMeanmAsOverTime = forms.BooleanField(
-        label="Acquisition mAs over time", required=False
+        label=_("Acquisition mAs over time"), required=False
     )
     plotDXAcquisitionMeankVpOverTime = forms.BooleanField(
-        label="Acquisition kVp over time", required=False
+        label=_("Acquisition kVp over time"), required=False
     )
     plotDXAcquisitionDAPvsMass = forms.BooleanField(
-        label="Acquisition DAP vs mass", required=False
+        label=_("Acquisition DAP vs mass"), required=False
     )
-    plotDXStudyFreq = forms.BooleanField(label="Study frequency", required=False)
-    plotDXStudyMeanDAP = forms.BooleanField(label="Study DAP", required=False)
-    plotDXStudyDAPvsMass = forms.BooleanField(label="Study DAP vs mass", required=False)
+    plotDXStudyFreq = forms.BooleanField(label=_("Study frequency"), required=False)
+    plotDXStudyMeanDAP = forms.BooleanField(label=_("Study DAP"), required=False)
+    plotDXStudyDAPvsMass = forms.BooleanField(
+        label=_("Study DAP vs mass"), required=False
+    )
     plotDXStudyPerDayAndHour = forms.BooleanField(
-        label="Study workload", required=False
+        label=_("Study workload"), required=False
     )
     plotDXRequestFreq = forms.BooleanField(
-        label="Requested procedure frequency", required=False
+        label=_("Requested procedure frequency"), required=False
     )
     plotDXRequestMeanDAP = forms.BooleanField(
-        label="Requested procedure DAP", required=False
+        label=_("Requested procedure DAP"), required=False
     )
     plotDXRequestDAPvsMass = forms.BooleanField(
-        label="Requested procedure DAP vs mass", required=False
+        label=_("Requested procedure DAP vs mass"), required=False
     )
     plotDXAcquisitionMeanDAPOverTimePeriod = forms.ChoiceField(
-        label="Time period", choices=CommonVariables.TIME_PERIOD, required=False
+        label=_("Time period"), choices=CommonVariables.TIME_PERIOD, required=False
     )
     plotDXInitialSortingChoice = forms.ChoiceField(
-        label="Default chart sorting",
+        label=_("Default chart sorting"),
         choices=CommonVariables.SORTING_CHOICES,
         required=False,
     )
+
+
+class DXChartOptionsDisplayFormIncStandard(DXChartOptionsDisplayForm):
+    plotDXStandardAcquisitionFreq = forms.BooleanField(
+        label="Standard acquisition name frequency", required=False
+    )
+    plotDXStandardAcquisitionMeanDAP = forms.BooleanField(
+        label="Standard acquisition name DAP", required=False
+    )
+    plotDXStandardAcquisitionMeanmAs = forms.BooleanField(
+        label="Standard acquisition name mAs", required=False
+    )
+    plotDXStandardAcquisitionMeankVp = forms.BooleanField(
+        label="Standard acquisition name kVp", required=False
+    )
+    plotDXStandardAcquisitionMeanDAPOverTime = forms.BooleanField(
+        label="Standard acquisition name DAP over time", required=False
+    )
+    plotDXStandardAcquisitionMeanmAsOverTime = forms.BooleanField(
+        label="Standard acquisition name mAs over time", required=False
+    )
+    plotDXStandardAcquisitionMeankVpOverTime = forms.BooleanField(
+        label="Standard acquisition name kVp over time", required=False
+    )
+    plotDXStandardAcquisitionDAPvsMass = forms.BooleanField(
+        label="Standard acquisition name DAP vs mass", required=False
+    )
+    plotDXStandardStudyFreq = forms.BooleanField(
+        label="Standard study name frequency", required=False
+    )
+    plotDXStandardStudyMeanDAP = forms.BooleanField(
+        label="Standard study name DAP", required=False
+    )
+    plotDXStandardStudyDAPvsMass = forms.BooleanField(
+        label="Standard study name DAP vs mass", required=False
+    )
+    plotDXStandardStudyPerDayAndHour = forms.BooleanField(
+        label="Standard study name workload", required=False
+    )
+
+    field_order = [
+        "plotDXAcquisitionFreq",
+        "plotDXAcquisitionMeanDAP",
+        "plotDXAcquisitionMeanmAs",
+        "plotDXAcquisitionMeankVp",
+        "plotDXAcquisitionMeanDAPOverTime",
+        "plotDXAcquisitionMeanmAsOverTime",
+        "plotDXAcquisitionMeankVpOverTime",
+        "plotDXAcquisitionDAPvsMass",
+        "plotDXStandardAcquisitionFreq",
+        "plotDXStandardAcquisitionMeanDAP",
+        "plotDXStandardAcquisitionMeanmAs",
+        "plotDXStandardAcquisitionMeankVp",
+        "plotDXStandardAcquisitionMeanDAPOverTime",
+        "plotDXStandardAcquisitionMeanmAsOverTime",
+        "plotDXStandardAcquisitionMeankVpOverTime",
+        "plotDXStandardAcquisitionDAPvsMass",
+        "plotDXStudyFreq",
+        "plotDXStudyMeanDAP",
+        "plotDXStudyDAPvsMass",
+        "plotDXStudyPerDayAndHour",
+        "plotDXRequestFreq",
+        "plotDXRequestMeanDAP",
+        "plotDXRequestDAPvsMass",
+        "plotDXStandardStudyFreq",
+        "plotDXStandardStudyMeanDAP",
+        "plotDXStandardStudyDAPvsMass",
+        "plotDXStandardStudyPerDayAndHour",
+        "plotDXAcquisitionMeanDAPOverTimePeriod",
+        "plotDXInitialSortingChoice",
+    ]
 
 
 class CTChartOptionsDisplayForm(forms.Form):
     """Form for CT chart display options"""
 
     plotCTAcquisitionFreq = forms.BooleanField(
-        label="Acquisition frequency", required=False
+        label=_("Acquisition frequency"), required=False
     )
     plotCTAcquisitionMeanDLP = forms.BooleanField(
-        label="Acquisition DLP", required=False
+        label=_("Acquisition DLP"), required=False
     )
-    plotCTAcquisitionMeanCTDI = forms.BooleanField(  # nosec
-        label=mark_safe("Acquisition CTDI<sub>vol</sub>"), required=False
+    plotCTAcquisitionMeanCTDI = forms.BooleanField(
+        label=mark_safe(_("Acquisition CTDI<sub>vol</sub>")), required=False  # nosec
     )
     plotCTAcquisitionDLPOverTime = forms.BooleanField(
-        label="Acquisition DLP over time", required=False
+        label=_("Acquisition DLP over time"), required=False
     )
-    plotCTAcquisitionCTDIOverTime = forms.BooleanField(  # nosec
-        label=mark_safe("Acquisition CTDI<sub>vol</sub> over time"), required=False
+    plotCTAcquisitionCTDIOverTime = forms.BooleanField(
+        label=mark_safe(_("Acquisition CTDI<sub>vol</sub> over time")),  # nosec
+        required=False,
     )
     plotCTAcquisitionDLPvsMass = forms.BooleanField(
-        label="Acquisition DLP vs mass", required=False
+        label=_("Acquisition DLP vs mass"), required=False
     )
     plotCTAcquisitionCTDIvsMass = forms.BooleanField(
-        label="Acquisition CTDI vs mass", required=False
+        label=_("Acquisition CTDI vs mass"), required=False
     )
-    plotCTAcquisitionTypes = forms.MultipleChoiceField(  # nosec
-        label=mark_safe(
-            "Acquisition types to include<br/>in acquisition-level chart<br/>calculations"
+    plotCTAcquisitionTypes = forms.MultipleChoiceField(
+        label=mark_safe(  # nosec
+            _(
+                "Acquisition types to include<br/>in acquisition-level chart<br/>calculations"
+            )
         ),
         choices=CommonVariables.CT_ACQUISITION_TYPES,
         required=False,
         widget=forms.CheckboxSelectMultiple(attrs={"class": "CheckboxSelectMultiple"}),
     )
-    plotCTStudyFreq = forms.BooleanField(label="Study frequency", required=False)
-    plotCTStudyMeanDLP = forms.BooleanField(label="Study DLP", required=False)
-    plotCTStudyMeanCTDI = forms.BooleanField(  # nosec
-        label=mark_safe("Study CTDI<sub>vol</sub>"), required=False
+    plotCTStudyFreq = forms.BooleanField(label=_("Study frequency"), required=False)
+    plotCTStudyMeanDLP = forms.BooleanField(label=_("Study DLP"), required=False)
+    plotCTStudyMeanCTDI = forms.BooleanField(
+        label=mark_safe(_("Study CTDI<sub>vol</sub>")), required=False  # nosec
     )
-    plotCTStudyNumEvents = forms.BooleanField(label="Study events", required=False)
+    plotCTStudyNumEvents = forms.BooleanField(label=_("Study events"), required=False)
     plotCTStudyMeanDLPOverTime = forms.BooleanField(
-        label="Study DLP over time", required=False
+        label=_("Study DLP over time"), required=False
     )
     plotCTStudyPerDayAndHour = forms.BooleanField(
-        label="Study workload", required=False
+        label=_("Study workload"), required=False
     )
     plotCTRequestFreq = forms.BooleanField(
-        label="Requested procedure frequency", required=False
+        label=_("Requested procedure frequency"), required=False
     )
     plotCTRequestMeanDLP = forms.BooleanField(
-        label="Requested procedure DLP", required=False
+        label=_("Requested procedure DLP"), required=False
     )
     plotCTRequestNumEvents = forms.BooleanField(
-        label="Requested procedure events", required=False
+        label=_("Requested procedure events"), required=False
     )
     plotCTRequestDLPOverTime = forms.BooleanField(
-        label="Requested procedure DLP over time", required=False
+        label=_("Requested procedure DLP over time"), required=False
     )
     plotCTOverTimePeriod = forms.ChoiceField(
-        label="Time period", choices=CommonVariables.TIME_PERIOD, required=False
+        label=_("Time period"), choices=CommonVariables.TIME_PERIOD, required=False
     )
     plotCTInitialSortingChoice = forms.ChoiceField(
-        label="Chart sorting", choices=CommonVariables.SORTING_CHOICES, required=False
+        label=_("Chart sorting"),
+        choices=CommonVariables.SORTING_CHOICES,
+        required=False,
     )
+
+
+class CTChartOptionsDisplayFormIncStandard(CTChartOptionsDisplayForm):
+    plotCTStandardAcquisitionFreq = forms.BooleanField(
+        label="Standard acquisition name frequency", required=False
+    )
+    plotCTStandardAcquisitionMeanDLP = forms.BooleanField(
+        label="Standard acquisition DLP", required=False
+    )
+    plotCTStandardAcquisitionMeanCTDI = forms.BooleanField(
+        label=mark_safe("Standard acquisition CTDI<sub>vol</sub>"),  # nosec
+        required=False,
+    )
+    plotCTStandardAcquisitionDLPOverTime = forms.BooleanField(
+        label="Standard acquisition name DLP over time", required=False
+    )
+    plotCTStandardAcquisitionCTDIOverTime = forms.BooleanField(
+        label=mark_safe(  # nosec
+            "Standard acquisition name CTDI<sub>vol</sub> over time"
+        ),
+        required=False,
+    )
+    plotCTStandardAcquisitionCTDIvsMass = forms.BooleanField(
+        label=mark_safe(  # nosec
+            "Standard acquisition name CTDI<sub>vol</sub> vs mass"
+        ),
+        required=False,
+    )
+    plotCTStandardAcquisitionDLPvsMass = forms.BooleanField(
+        label="Standard acquisition name DLP vs mass", required=False
+    )
+
+    plotCTStandardStudyMeanDLP = forms.BooleanField(
+        label="Standard study DLP", required=False
+    )
+    plotCTStandardStudyNumEvents = forms.BooleanField(
+        label="Standard study events", required=False
+    )
+    plotCTStandardStudyFreq = forms.BooleanField(
+        label="Standard study frequency", required=False
+    )
+    plotCTStandardStudyMeanDLPOverTime = forms.BooleanField(
+        label="Standard study DLP over time", required=False
+    )
+    plotCTStandardStudyPerDayAndHour = forms.BooleanField(
+        label="Standard study workload", required=False
+    )
+
+    field_order = [
+        "plotCTAcquisitionFreq",
+        "plotCTAcquisitionMeanDLP",
+        "plotCTAcquisitionMeanCTDI",
+        "plotCTAcquisitionDLPOverTime",
+        "plotCTAcquisitionCTDIOverTime",
+        "plotCTAcquisitionDLPvsMass",
+        "plotCTAcquisitionCTDIvsMass",
+        "plotCTAcquisitionTypes",
+        "plotCTStandardAcquisitionFreq",
+        "plotCTStandardAcquisitionMeanDLP",
+        "plotCTStandardAcquisitionMeanCTDI",
+        "plotCTStandardAcquisitionDLPOverTime",
+        "plotCTStandardAcquisitionCTDIOverTime",
+        "plotCTStandardAcquisitionDLPvsMass",
+        "plotCTStandardAcquisitionCTDIvsMass",
+        "plotCTStudyFreq",
+        "plotCTStudyMeanDLP",
+        "plotCTStudyMeanCTDI",
+        "plotCTStudyNumEvents",
+        "plotCTStudyMeanDLPOverTime",
+        "plotCTStudyPerDayAndHour",
+        "plotCTRequestFreq",
+        "plotCTRequestMeanDLP",
+        "plotCTRequestNumEvents",
+        "plotCTRequestDLPOverTime",
+        "plotCTStandardStudyFreq",
+        "plotCTStandardStudyMeanDLP",
+        "plotCTStandardStudyNumEvents",
+        "plotCTStandardStudyMeanDLPOverTime",
+        "plotCTStandardStudyPerDayAndHour",
+        "plotCTOverTimePeriod",
+        "plotCTInitialSortingChoice",
+    ]
 
 
 class GeneralChartOptionsDisplayForm(forms.Form):
     """Form for general chart display options"""
 
-    plotCharts = forms.BooleanField(label="Plot charts?", required=False)
+    plotCharts = forms.BooleanField(label=_("Plot charts?"), required=False)
     plotAverageChoice = forms.MultipleChoiceField(
-        label="Average plots",
+        label=_("Average plots"),
         choices=CommonVariables.AVERAGES,
         required=False,
         widget=forms.CheckboxSelectMultiple(attrs={"class": "CheckboxSelectMultiple"}),
     )
     plotInitialSortingDirection = forms.ChoiceField(
-        label="Sorting direction",
+        label=_("Sorting direction"),
         choices=CommonVariables.SORTING_DIRECTION,
         required=False,
     )
     plotSeriesPerSystem = forms.BooleanField(
-        label="Plot a series per system", required=False
+        label=_("Plot a series per system"), required=False
     )
     plotHistograms = forms.BooleanField(
-        label="Calculate histogram data", required=False
+        label=_("Calculate histogram data"), required=False
     )
     plotHistogramBins = forms.IntegerField(
-        label="Number of histogram bins", min_value=2, max_value=40, required=False
+        label=_("Number of histogram bins"), min_value=2, max_value=40, required=False
     )
     plotHistogramGlobalBins = forms.BooleanField(
-        label="Fixed histogram bins across subplots", required=False
+        label=_("Fixed histogram bins across subplots"), required=False
     )
     plotCaseInsensitiveCategories = forms.BooleanField(
-        label="Case-insensitive categories", required=False
+        label=_("Case-insensitive categories"), required=False
     )
     plotRemoveCategoryWhitespacePadding = forms.BooleanField(
-        label="Remove category whitespace padding", required=False
+        label=_("Remove category whitespace padding"), required=False
     )
     plotLabelCharWrap = forms.IntegerField(
-        label="Chart label character wrap length",
+        label=_("Chart label character wrap length"),
         min_value=10,
         max_value=500,
         required=False,
     )
     plotGrouping = forms.ChoiceField(
-        label="Chart grouping", choices=CommonVariables.CHART_GROUPING, required=False
+        label=_("Chart grouping"),
+        choices=CommonVariables.CHART_GROUPING,
+        required=False,
     )
     plotThemeChoice = forms.ChoiceField(
-        label="Chart theme", choices=CommonVariables.CHART_THEMES, required=False
+        label=_("Chart theme"), choices=CommonVariables.CHART_THEMES, required=False
     )
     plotColourMapChoice = forms.ChoiceField(
-        label="Colour map choice",
+        label=_("Colour map choice"),
         choices=CommonVariables.CHART_COLOUR_MAPS,
         required=False,
         widget=forms.RadioSelect(attrs={"id": "value"}),
     )
     plotFacetColWrapVal = forms.IntegerField(
-        label="Number of sub-charts per row", min_value=1, max_value=10, required=False
+        label=_("Number of sub-charts per row"),
+        min_value=1,
+        max_value=10,
+        required=False,
     )
 
 
@@ -677,13 +1280,13 @@ class HomepageOptionsForm(forms.Form):
     """Form for displaying and changing the home page options"""
 
     dayDeltaA = forms.IntegerField(
-        label="Primary time period to sum studies (days)", required=False
+        label=_("Primary time period to sum studies (days)"), required=False
     )
     dayDeltaB = forms.IntegerField(
-        label="Secondary time period to sum studies (days)", required=False
+        label=_("Secondary time period to sum studies (days)"), required=False
     )
     enable_workload_stats = forms.BooleanField(
-        label="Enable calculation and display of workload stats on home page?",
+        label=_("Enable calculation and display of workload stats on home page?"),
         required=False,
     )
 
@@ -692,7 +1295,9 @@ class MergeOnDeviceObserverUIDForm(forms.Form):
     """Form for displaying and changing the option for merging on Device Observer UID"""
 
     match_on_device_observer_uid = forms.BooleanField(
-        label="Set Display Name and Modality type if Device Observer UID is matching",
+        label=_(
+            "Set Display Name and Modality type if Device Observer UID is matching"
+        ),
         required=False,
     )
 
@@ -703,10 +1308,11 @@ class DicomQueryForm(forms.Form):
     from datetime import date
 
     MODALITIES = (
-        ("CT", "CT"),
-        ("FL", "Fluoroscopy (XA and RF)"),
-        ("DX", "DX, including CR"),
-        ("MG", "Mammography"),
+        ("CT", _("CT")),
+        ("FL", _("Fluoroscopy (XA and RF)")),
+        ("DX", _("DX, including CR")),
+        ("MG", _("Mammography")),
+        ("NM", _("Nuclear Medicine")),
     )
 
     remote_host_field = forms.ChoiceField(
@@ -716,72 +1322,85 @@ class DicomQueryForm(forms.Form):
         choices=[], widget=forms.Select(attrs={"class": "form-control"})
     )
     date_from_field = forms.DateField(
-        label="Date from",
+        label=_("Date from"),
         widget=forms.DateInput(attrs={"class": "form-control datepicker"}),
         required=False,
         initial=date.today().isoformat(),
-        help_text="Format yyyy-mm-dd, restrict as much as possible for best results",
+        help_text=_("Format yyyy-mm-dd, restrict as much as possible for best results"),
     )
     date_until_field = forms.DateField(
-        label="Date until",
+        label=_("Date until"),
         widget=forms.DateInput(attrs={"class": "form-control datepicker"}),
         required=False,
-        help_text="Format yyyy-mm-dd, restrict as much as possible for best results",
+        help_text=_("Format yyyy-mm-dd, restrict as much as possible for best results"),
     )
     modality_field = forms.MultipleChoiceField(
         choices=MODALITIES,
         widget=forms.CheckboxSelectMultiple(attrs={"checked": ""}),
         required=False,
         help_text=(
-            "At least one modality must be ticked - if SR only is ticked (Advanced) these "
-            "modalities will be ignored"
+            _(
+                "At least one modality must be ticked - if SR only is ticked (Advanced) these "
+                "modalities will be ignored"
+            )
         ),
     )
     inc_sr_field = forms.BooleanField(
-        label="Include SR only studies?",
+        label=_("Include SR only studies?"),
         required=False,
         initial=False,
-        help_text="Only use with stores containing only RDSRs, with no accompanying images",
+        help_text=_(
+            "Only use with stores containing only RDSRs, with no accompanying images"
+        ),
     )
     duplicates_field = forms.BooleanField(
-        label="Ignore studies already in the database?",
+        label=_("Ignore studies already in the database?"),
         required=False,
         initial=True,
-        help_text="Objects that have already been processed won't be imported, so there isn't any point getting them!",
+        help_text=_(
+            "Objects that have already been processed won't be imported, "
+            "so there isn't any point getting them!"
+        ),
     )
     desc_exclude_field = forms.CharField(
         required=False,
-        label="Exclude studies with these terms in the study description:",
-        help_text="Comma separated list of terms",
+        label=_("Exclude studies with these terms in the study description:"),
+        help_text=_("Comma separated list of terms"),
     )
     desc_include_field = forms.CharField(
         required=False,
-        label="Only keep studies with these terms in the study description:",
-        help_text="Comma separated list of terms",
+        label=_("Only keep studies with these terms in the study description:"),
+        help_text=_("Comma separated list of terms"),
     )
     stationname_exclude_field = forms.CharField(
         required=False,
-        label="Exclude studies or series with these terms in the station name:",
-        help_text="Comma separated list of terms, tested at series level — see Advanced",
+        label=_("Exclude studies or series with these terms in the station name:"),
+        help_text=_(
+            "Comma separated list of terms, tested at series level — see Advanced"
+        ),
     )
     stationname_include_field = forms.CharField(
         required=False,
-        label="Only keep studies or series with these terms in the station name:",
-        help_text="Comma separated list of terms, tested at series level — see Advanced",
+        label=_("Only keep studies or series with these terms in the station name:"),
+        help_text=_(
+            "Comma separated list of terms, tested at series level — see Advanced"
+        ),
     )
     get_toshiba_images_field = forms.BooleanField(
-        label="Attempt to get Toshiba dose images",
+        label=_("Attempt to get Toshiba dose images"),
         required=False,
-        help_text="Only applicable if using Toshiba RDSR generator extension, see docs",
+        help_text=_(
+            "Only applicable if using Toshiba RDSR generator extension, see docs"
+        ),
     )
     get_empty_sr_field = forms.BooleanField(
-        label="Get SR series that return nothing at image level query",
-        help_text="Only use if suggested in qrscu log, see docs",
+        label=_("Get SR series that return nothing at image level query"),
+        help_text=_("Only use if suggested in qrscu log, see docs"),
         required=False,
     )
     stationname_study_level_field = forms.BooleanField(
-        label="Check station name include/exclude at study level",
-        help_text="Default from v1.0 is to check at series level only",
+        label=_("Check station name include/exclude at study level"),
+        help_text=_("Default from v1.0 is to check at series level only"),
         required=False,
     )
 
@@ -876,6 +1495,7 @@ class DicomDeleteSettingsForm(forms.ModelForm):
                 "del_mg_im",
                 "del_dx_im",
                 "del_ct_phil",
+                "del_nm_im",
             ),
             FormActions(Submit("submit", "Submit")),
             Div(
@@ -895,7 +1515,14 @@ class DicomDeleteSettingsForm(forms.ModelForm):
 
     class Meta(object):
         model = DicomDeleteSettings
-        fields = ["del_no_match", "del_rdsr", "del_mg_im", "del_dx_im", "del_ct_phil"]
+        fields = [
+            "del_no_match",
+            "del_rdsr",
+            "del_mg_im",
+            "del_dx_im",
+            "del_ct_phil",
+            "del_nm_im",
+        ]
 
 
 class DicomQRForm(forms.ModelForm):
@@ -1023,6 +1650,523 @@ class DicomStoreForm(forms.ModelForm):
             ] = "Port: set to the same as the DICOM_PORT setting in docker-compose.yml"
 
 
+class StandardNameFormBase(forms.ModelForm):
+    """For configuring standard names for study description, requested procedure, procedure and acquisition name."""
+
+    class Meta(object):
+        model = StandardNames
+        fields = [
+            "standard_name",
+            "modality",
+            "study_description",
+            "requested_procedure_code_meaning",
+            "procedure_code_meaning",
+            "acquisition_protocol",
+        ]
+        widgets = {
+            "standard_name": forms.TextInput,
+            "modality": forms.HiddenInput,
+        }
+
+    def clean_study_description(self):
+        if self.cleaned_data["study_description"] == "":
+            return None
+        else:
+            return self.cleaned_data["study_description"]
+
+    def clean_requested_procedure_code_meaning(self):
+        if self.cleaned_data["requested_procedure_code_meaning"] == "":
+            return None
+        else:
+            return self.cleaned_data["requested_procedure_code_meaning"]
+
+    def clean_procedure_code_meaning(self):
+        if self.cleaned_data["procedure_code_meaning"] == "":
+            return None
+        else:
+            return self.cleaned_data["procedure_code_meaning"]
+
+    def clean_acquisition_protocol(self):
+        if self.cleaned_data["acquisition_protocol"] == "":
+            return None
+        else:
+            return self.cleaned_data["acquisition_protocol"]
+
+
+class StandardNameFormCT(StandardNameFormBase):
+    """Form for configuring standard names for study description, requested procedure, procedure and acquisition name"""
+
+    def __init__(self, *args, **kwargs):
+        super(StandardNameFormCT, self).__init__(*args, **kwargs)
+        self.fields["modality"].initial = "CT"
+
+        all_studies = GeneralStudyModuleAttr.objects.filter(modality_type__iexact="CT")
+
+        field_names = [
+            ("study_description", "Study description"),
+            ("requested_procedure_code_meaning", "Requested procedure name"),
+            ("procedure_code_meaning", "Procedure name"),
+        ]
+
+        for field_name, label_name in field_names:
+            # Exclude items already in the CT standard names entries except for the current value of the field
+            items_to_exclude = (
+                StandardNames.objects.all()
+                .filter(modality="CT")
+                .values(field_name)
+                .exclude(**{field_name: None})
+            )
+            if "standard_name" in self.initial:
+                items_to_exclude = items_to_exclude.exclude(
+                    standard_name=self.initial["standard_name"]
+                )
+
+            query = (
+                all_studies.values_list(field_name, flat=True)
+                .exclude(**{field_name + "__in": items_to_exclude})
+                .distinct()
+                .order_by(field_name)
+            )
+            query_choices = [("", "None")] + [(item, item) for item in query]
+
+            initial_choices = (
+                StandardNames.objects.all()
+                .filter(modality="CT")
+                .exclude(**{field_name: None})
+                .order_by(field_name)
+            )
+            if "standard_name" in self.initial:
+                initial_choices = initial_choices.filter(
+                    standard_name=self.initial["standard_name"]
+                )
+
+            self.initial[field_name] = list(
+                initial_choices.values_list(field_name, flat=True)
+            )
+
+            self.fields[field_name] = forms.MultipleChoiceField(
+                choices=query_choices,
+                required=False,
+                widget=FilteredSelectMultiple(
+                    label_name.lower() + "s", is_stacked=False
+                ),
+            )
+
+        field_name, label_name = ("acquisition_protocol", "Acquisition protocol name")
+        items_to_exclude = (
+            StandardNames.objects.all().values(field_name).exclude(**{field_name: None})
+        )
+        if "standard_name" in self.initial:
+            items_to_exclude = items_to_exclude.exclude(
+                standard_name=self.initial["standard_name"]
+            )
+        query = (
+            CtIrradiationEventData.objects.values_list(field_name, flat=True)
+            .exclude(**{field_name + "__in": items_to_exclude})
+            .distinct()
+            .order_by(field_name)
+        )
+        query_choices = [("", "None")] + [(item, item) for item in query]
+
+        initial_choices = (
+            StandardNames.objects.all()
+            .filter(modality="CT")
+            .exclude(**{field_name: None})
+            .order_by(field_name)
+        )
+        if "standard_name" in self.initial:
+            initial_choices = initial_choices.filter(
+                standard_name=self.initial["standard_name"]
+            )
+
+        self.initial[field_name] = list(
+            initial_choices.values_list(field_name, flat=True)
+        )
+
+        self.fields[field_name] = forms.MultipleChoiceField(
+            choices=query_choices,
+            required=False,
+            widget=FilteredSelectMultiple(label_name.lower() + "s", is_stacked=False),
+        )
+
+        class Media:
+            css = {
+                "all": (
+                    os.path.join(settings.BASE_DIR, "/static/admin/css/widgets.css"),
+                ),
+            }
+            js = ("/admin/jsi18n",)
+
+
+class StandardNameFormDX(StandardNameFormBase):
+    """Form for configuring standard names for study description, requested procedure, procedure and acquisition name"""
+
+    def __init__(self, *args, **kwargs):
+        super(StandardNameFormDX, self).__init__(*args, **kwargs)
+        self.fields["modality"].initial = "DX"
+
+        all_studies = GeneralStudyModuleAttr.objects.filter(
+            Q(modality_type__iexact="DX")
+            | Q(modality_type__iexact="CR")
+            | Q(modality_type__iexact="PX")
+        )
+
+        field_names = [
+            ("study_description", "Study description"),
+            ("requested_procedure_code_meaning", "Requested procedure name"),
+            ("procedure_code_meaning", "Procedure name"),
+        ]
+
+        for field_name, label_name in field_names:
+            # Exclude items already in the DX standard names entries except for the current value of the field
+            items_to_exclude = (
+                StandardNames.objects.all()
+                .filter(modality="DX")
+                .values(field_name)
+                .exclude(**{field_name: None})
+            )
+            if "standard_name" in self.initial:
+                items_to_exclude = items_to_exclude.exclude(
+                    standard_name=self.initial["standard_name"]
+                )
+
+            query = (
+                all_studies.values_list(field_name, flat=True)
+                .exclude(**{field_name + "__in": items_to_exclude})
+                .distinct()
+                .order_by(field_name)
+            )
+            query_choices = [("", "None")] + [(item, item) for item in query]
+
+            initial_choices = (
+                StandardNames.objects.all()
+                .filter(modality="DX")
+                .exclude(**{field_name: None})
+                .order_by(field_name)
+            )
+            if "standard_name" in self.initial:
+                initial_choices = initial_choices.filter(
+                    standard_name=self.initial["standard_name"]
+                )
+
+            self.initial[field_name] = list(
+                initial_choices.values_list(field_name, flat=True)
+            )
+
+            self.fields[field_name] = forms.MultipleChoiceField(
+                choices=query_choices,
+                required=False,
+                widget=FilteredSelectMultiple(
+                    label_name.lower() + "s", is_stacked=False
+                ),
+            )
+
+        q = ["DX", "CR", "PX"]
+        q_criteria = reduce(
+            operator.or_,
+            (
+                Q(
+                    projection_xray_radiation_dose__general_study_module_attributes__modality_type__icontains=item
+                )
+                for item in q
+            ),
+        )
+        field_name, label_name = ("acquisition_protocol", "Acquisition protocol name")
+        items_to_exclude = (
+            StandardNames.objects.all().values(field_name).exclude(**{field_name: None})
+        )
+        if "standard_name" in self.initial:
+            items_to_exclude = items_to_exclude.exclude(
+                standard_name=self.initial["standard_name"]
+            )
+        query = (
+            IrradEventXRayData.objects.filter(q_criteria)
+            .values_list(field_name, flat=True)
+            .exclude(**{field_name + "__in": items_to_exclude})
+            .distinct()
+            .order_by(field_name)
+        )
+        query_choices = [("", "None")] + [(item, item) for item in query]
+
+        initial_choices = (
+            StandardNames.objects.all()
+            .filter(modality="DX")
+            .exclude(**{field_name: None})
+            .order_by(field_name)
+        )
+        if "standard_name" in self.initial:
+            initial_choices = initial_choices.filter(
+                standard_name=self.initial["standard_name"]
+            )
+
+        self.initial[field_name] = list(
+            initial_choices.values_list(field_name, flat=True)
+        )
+
+        self.fields[field_name] = forms.MultipleChoiceField(
+            choices=query_choices,
+            required=False,
+            widget=FilteredSelectMultiple(label_name.lower() + "s", is_stacked=False),
+        )
+
+        class Media:
+            css = {
+                "all": (
+                    os.path.join(settings.BASE_DIR, "/static/admin/css/widgets.css"),
+                ),
+            }
+            js = ("/admin/jsi18n",)
+
+
+class StandardNameFormMG(StandardNameFormBase):
+    """Form for configuring standard names for study description, requested procedure, procedure and acquisition name"""
+
+    def __init__(self, *args, **kwargs):
+        super(StandardNameFormMG, self).__init__(*args, **kwargs)
+        self.fields["modality"].initial = "MG"
+
+        all_studies = GeneralStudyModuleAttr.objects.filter(modality_type__iexact="MG")
+
+        field_names = [
+            ("study_description", "Study description"),
+            ("requested_procedure_code_meaning", "Requested procedure name"),
+            ("procedure_code_meaning", "Procedure name"),
+        ]
+
+        for field_name, label_name in field_names:
+            # Exclude items already in the MG standard names entries except for the current value of the field
+            items_to_exclude = (
+                StandardNames.objects.all()
+                .filter(modality="MG")
+                .values(field_name)
+                .exclude(**{field_name: None})
+            )
+            if "standard_name" in self.initial:
+                items_to_exclude = items_to_exclude.exclude(
+                    standard_name=self.initial["standard_name"]
+                )
+
+            query = (
+                all_studies.values_list(field_name, flat=True)
+                .exclude(**{field_name + "__in": items_to_exclude})
+                .distinct()
+                .order_by(field_name)
+            )
+            query_choices = [("", "None")] + [(item, item) for item in query]
+
+            initial_choices = (
+                StandardNames.objects.all()
+                .filter(modality="MG")
+                .exclude(**{field_name: None})
+                .order_by(field_name)
+            )
+            if "standard_name" in self.initial:
+                initial_choices = initial_choices.filter(
+                    standard_name=self.initial["standard_name"]
+                )
+
+            self.initial[field_name] = list(
+                initial_choices.values_list(field_name, flat=True)
+            )
+
+            self.fields[field_name] = forms.MultipleChoiceField(
+                choices=query_choices,
+                required=False,
+                widget=FilteredSelectMultiple(
+                    label_name.lower() + "s", is_stacked=False
+                ),
+            )
+
+        q = ["MG"]
+        q_criteria = reduce(
+            operator.or_,
+            (
+                Q(
+                    projection_xray_radiation_dose__general_study_module_attributes__modality_type__icontains=item
+                )
+                for item in q
+            ),
+        )
+        field_name, label_name = ("acquisition_protocol", "Acquisition protocol name")
+        items_to_exclude = (
+            StandardNames.objects.all().values(field_name).exclude(**{field_name: None})
+        )
+        if "standard_name" in self.initial:
+            items_to_exclude = items_to_exclude.exclude(
+                standard_name=self.initial["standard_name"]
+            )
+        query = (
+            IrradEventXRayData.objects.filter(q_criteria)
+            .values_list(field_name, flat=True)
+            .exclude(**{field_name + "__in": items_to_exclude})
+            .distinct()
+            .order_by(field_name)
+        )
+        query_choices = [("", "None")] + [(item, item) for item in query]
+
+        initial_choices = (
+            StandardNames.objects.all()
+            .filter(modality="MG")
+            .exclude(**{field_name: None})
+            .order_by(field_name)
+        )
+        if "standard_name" in self.initial:
+            initial_choices = initial_choices.filter(
+                standard_name=self.initial["standard_name"]
+            )
+
+        self.initial[field_name] = list(
+            initial_choices.values_list(field_name, flat=True)
+        )
+
+        self.fields[field_name] = forms.MultipleChoiceField(
+            choices=query_choices,
+            required=False,
+            widget=FilteredSelectMultiple(label_name.lower() + "s", is_stacked=False),
+        )
+
+        class Media:
+            css = {
+                "all": (
+                    os.path.join(settings.BASE_DIR, "/static/admin/css/widgets.css"),
+                ),
+            }
+            js = ("/admin/jsi18n",)
+
+
+class StandardNameFormRF(StandardNameFormBase):
+    """Form for configuring standard names for study description, requested procedure, procedure and acquisition name"""
+
+    def __init__(self, *args, **kwargs):
+        super(StandardNameFormRF, self).__init__(*args, **kwargs)
+        self.fields["modality"].initial = "RF"
+
+        all_studies = GeneralStudyModuleAttr.objects.filter(modality_type__iexact="RF")
+
+        field_names = [
+            ("study_description", "Study description"),
+            ("requested_procedure_code_meaning", "Requested procedure name"),
+            ("procedure_code_meaning", "Procedure name"),
+        ]
+
+        for field_name, label_name in field_names:
+            # Exclude items already in the RF standard names entries except for the current value of the field
+            items_to_exclude = (
+                StandardNames.objects.all()
+                .filter(modality="RF")
+                .values(field_name)
+                .exclude(**{field_name: None})
+            )
+            if "standard_name" in self.initial:
+                items_to_exclude = items_to_exclude.exclude(
+                    standard_name=self.initial["standard_name"]
+                )
+
+            query = (
+                all_studies.values_list(field_name, flat=True)
+                .exclude(**{field_name + "__in": items_to_exclude})
+                .distinct()
+                .order_by(field_name)
+            )
+            query_choices = [("", "None")] + [(item, item) for item in query]
+
+            initial_choices = (
+                StandardNames.objects.all()
+                .filter(modality="RF")
+                .exclude(**{field_name: None})
+                .order_by(field_name)
+            )
+            if "standard_name" in self.initial:
+                initial_choices = initial_choices.filter(
+                    standard_name=self.initial["standard_name"]
+                )
+
+            self.initial[field_name] = list(
+                initial_choices.values_list(field_name, flat=True)
+            )
+
+            self.fields[field_name] = forms.MultipleChoiceField(
+                choices=query_choices,
+                required=False,
+                widget=FilteredSelectMultiple(
+                    label_name.lower() + "s", is_stacked=False
+                ),
+            )
+
+        q = ["RF"]
+        q_criteria = reduce(
+            operator.or_,
+            (
+                Q(
+                    projection_xray_radiation_dose__general_study_module_attributes__modality_type__icontains=item
+                )
+                for item in q
+            ),
+        )
+        field_name, label_name = ("acquisition_protocol", "Acquisition protocol name")
+        items_to_exclude = (
+            StandardNames.objects.all().values(field_name).exclude(**{field_name: None})
+        )
+        if "standard_name" in self.initial:
+            items_to_exclude = items_to_exclude.exclude(
+                standard_name=self.initial["standard_name"]
+            )
+        query = (
+            IrradEventXRayData.objects.filter(q_criteria)
+            .values_list(field_name, flat=True)
+            .exclude(**{field_name + "__in": items_to_exclude})
+            .distinct()
+            .order_by(field_name)
+        )
+        query_choices = [("", "None")] + [(item, item) for item in query]
+
+        initial_choices = (
+            StandardNames.objects.all()
+            .filter(modality="RF")
+            .exclude(**{field_name: None})
+            .order_by(field_name)
+        )
+        if "standard_name" in self.initial:
+            initial_choices = initial_choices.filter(
+                standard_name=self.initial["standard_name"]
+            )
+
+        self.initial[field_name] = list(
+            initial_choices.values_list(field_name, flat=True)
+        )
+
+        self.fields[field_name] = forms.MultipleChoiceField(
+            choices=query_choices,
+            required=False,
+            widget=FilteredSelectMultiple(label_name.lower() + "s", is_stacked=False),
+        )
+
+        class Media:
+            css = {
+                "all": (
+                    os.path.join(settings.BASE_DIR, "/static/admin/css/widgets.css"),
+                ),
+            }
+            js = ("/admin/jsi18n",)
+
+
+class StandardNameSettingsForm(forms.ModelForm):
+    """Form for configuring whether standard names are shown / used"""
+
+    def __init__(self, *args, **kwargs):
+        super(StandardNameSettingsForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper(self)
+        self.helper.form_class = "form-horizontal"
+        self.helper.layout = Layout(
+            Div("enable_standard_names"),
+            FormActions(Submit("submit", "Submit")),
+        )
+
+    class Meta(object):
+        model = StandardNameSettings
+        fields = ["enable_standard_names"]
+
+
 class SkinDoseMapCalcSettingsForm(forms.ModelForm):
     """Form for configuring whether skin dose maps are shown / calculated"""
 
@@ -1032,7 +2176,7 @@ class SkinDoseMapCalcSettingsForm(forms.ModelForm):
         self.helper.form_class = "form-horizontal"
         self.helper.layout = Layout(
             Div("enable_skin_dose_maps", "calc_on_import", "allow_safelist_modify"),
-            FormActions(Submit("submit", "submit")),
+            FormActions(Submit("submit", "Submit")),
         )
 
     class Meta(object):

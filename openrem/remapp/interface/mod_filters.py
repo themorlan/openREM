@@ -32,14 +32,16 @@
 from decimal import Decimal, InvalidOperation
 import logging
 
-import django_filters
 from django import forms
+from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
+import django_filters
 
 from remapp.models import (
     GeneralStudyModuleAttr,
-    IrradEventXRayData,
     CtIrradiationEventData,
+    StandardNames,
+    StandardNameSettings,
 )
 from ..tools.hash_id import hash_id
 
@@ -297,6 +299,18 @@ class RFSummaryListFilter(django_filters.FilterSet):
     )
 
 
+class RFFilterPlusStdNames(RFSummaryListFilter):
+    """Adding standard name fields"""
+
+    standard_names__standard_name = django_filters.CharFilter(
+        lookup_expr="icontains",
+        label="Standard study name",
+    )
+    projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name = django_filters.CharFilter(
+        lookup_expr="icontains", label="Standard acquisition name"
+    )
+
+
 class RFFilterPlusPid(RFSummaryListFilter):
 
     """Adding patient name and ID to filter if permissions allow"""
@@ -309,6 +323,18 @@ class RFFilterPlusPid(RFSummaryListFilter):
         self.filters["patient_id"] = django_filters.CharFilter(
             method=custom_id_filter, label="Patient ID"
         )
+
+
+class RFFilterPlusPidPlusStdNames(RFFilterPlusPid):
+    """Adding standard name fields"""
+
+    standard_names__standard_name = django_filters.CharFilter(
+        lookup_expr="icontains",
+        label="Standard study name",
+    )
+    projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name = django_filters.CharFilter(
+        lookup_expr="icontains", label="Standard acquisition name"
+    )
 
 
 EVENT_NUMBER_CHOICES = (
@@ -360,7 +386,6 @@ def _specify_event_numbers(queryset, name, value):
         else:
             return queryset
         return filtered
-        return queryset
     if "num_events" in name:
         filtered = queryset.filter(number_of_events__exact=value)
     elif "num_spiral_events" in name:
@@ -556,6 +581,19 @@ class CTSummaryListFilter(django_filters.FilterSet):
     )
 
 
+class CTFilterPlusStdNames(CTSummaryListFilter):
+    """Adding standard name fields"""
+
+    standard_names__standard_name = django_filters.CharFilter(
+        lookup_expr="icontains", label="Standard study name"
+    )
+    ctradiationdose__ctirradiationeventdata__standard_protocols__standard_name = (
+        django_filters.CharFilter(
+            lookup_expr="icontains", label="Standard acquisition name"
+        )
+    )
+
+
 class CTFilterPlusPid(CTSummaryListFilter):
 
     """Adding patient name and ID to filter if permissions allow"""
@@ -570,117 +608,49 @@ class CTFilterPlusPid(CTSummaryListFilter):
         )
 
 
+class CTFilterPlusPidPlusStdNames(CTFilterPlusPid):
+    """Adding standard name fields"""
+
+    standard_names__standard_name = django_filters.CharFilter(
+        lookup_expr="icontains", label="Standard study name"
+    )
+    ctradiationdose__ctirradiationeventdata__standard_protocols__standard_name = (
+        django_filters.CharFilter(
+            lookup_expr="icontains", label="Standard acquisition name"
+        )
+    )
+
+
 def ct_acq_filter(filters, pid=False):
 
-    """Additional filters at event level"""
-
-    filteredInclude = []
-    if "acquisition_protocol" in filters and (
-        "acquisition_ctdi_min" in filters
-        or "acquisition_ctdi_max" in filters
-        or "acquisition_dlp_min" in filters
-        or "acquisition_dlp_max" in filters
-    ):
-        if ("studyhist" in filters) and ("study_description" in filters):
-            events = CtIrradiationEventData.objects.select_related().filter(
-                ct_radiation_dose_id__general_study_module_attributes__study_description=filters[
-                    "study_description"
-                ]
-            )
-        else:
-            events = CtIrradiationEventData.objects.filter(
-                acquisition_protocol__iexact=filters["acquisition_protocol"]
-            )
-        if "acquisition_ctdi_min" in filters:
-            try:
-                Decimal(filters["acquisition_ctdi_min"])
-                events = events.filter(
-                    mean_ctdivol__gte=filters["acquisition_ctdi_min"]
-                )
-            except InvalidOperation:
-                pass
-        if "acquisition_ctdi_max" in filters:
-            try:
-                Decimal(filters["acquisition_ctdi_max"])
-                events = events.filter(
-                    mean_ctdivol__lte=filters["acquisition_ctdi_max"]
-                )
-            except InvalidOperation:
-                pass
-        if "acquisition_dlp_min" in filters:
-            try:
-                Decimal(filters["acquisition_dlp_min"])
-                events = events.filter(dlp__gte=filters["acquisition_dlp_min"])
-            except InvalidOperation:
-                pass
-        if "acquisition_dlp_max" in filters:
-            try:
-                Decimal(filters["acquisition_dlp_max"])
-                events = events.filter(dlp__lte=filters["acquisition_dlp_max"])
-            except InvalidOperation:
-                pass
-        if "ct_acquisition_type" in filters:
-            try:
-                events = events.filter(
-                    ct_acquisition_type__code_meaning__iexact=filters[
-                        "ct_acquisition_type"
-                    ]
-                )
-            except InvalidOperation:
-                pass
-        filteredInclude = events.values_list(
-            "ct_radiation_dose__general_study_module_attributes__study_instance_uid"
-        ).distinct()
-
-    elif (
-        ("study_description" in filters)
-        and ("acquisition_ctdi_min" in filters)
-        and ("acquisition_ctdi_max" in filters)
-    ):
-        events = CtIrradiationEventData.objects.select_related().filter(
-            ct_radiation_dose_id__general_study_module_attributes__study_description=filters[
-                "study_description"
-            ]
-        )
-        if "acquisition_ctdi_min" in filters:
-            try:
-                Decimal(filters["acquisition_ctdi_min"])
-                events = events.filter(
-                    mean_ctdivol__gte=filters["acquisition_ctdi_min"]
-                )
-            except InvalidOperation:
-                pass
-        if "acquisition_ctdi_max" in filters:
-            try:
-                Decimal(filters["acquisition_ctdi_max"])
-                events = events.filter(
-                    mean_ctdivol__lte=filters["acquisition_ctdi_max"]
-                )
-            except InvalidOperation:
-                pass
-        if "ct_acquisition_type" in filters:
-            try:
-                events = events.filter(
-                    ct_acquisition_type__code_meaning__iexact=filters[
-                        "ct_acquisition_type"
-                    ]
-                )
-            except InvalidOperation:
-                pass
-        filteredInclude = events.values_list(
-            "ct_radiation_dose__general_study_module_attributes__study_instance_uid"
-        ).distinct()
+    # Obtain the system-level enable_standard_names setting
+    try:
+        StandardNameSettings.objects.get()
+    except ObjectDoesNotExist:
+        StandardNameSettings.objects.create()
+    enable_standard_names = StandardNameSettings.objects.values_list(
+        "enable_standard_names", flat=True
+    )[0]
 
     studies = GeneralStudyModuleAttr.objects.filter(modality_type__exact="CT")
-    if filteredInclude:
-        studies = studies.filter(study_instance_uid__in=filteredInclude)
+
     if pid:
-        return CTFilterPlusPid(
+        if enable_standard_names:
+            return CTFilterPlusPidPlusStdNames(
+                filters, studies.order_by("-study_date", "-study_time").distinct()
+            )
+        else:
+            return CTFilterPlusPid(
+                filters, studies.order_by("-study_date", "-study_time").distinct()
+            )
+    if enable_standard_names:
+        return CTFilterPlusStdNames(
             filters, studies.order_by("-study_date", "-study_time").distinct()
         )
-    return CTSummaryListFilter(
-        filters, studies.order_by("-study_date", "-study_time").distinct()
-    )
+    else:
+        return CTSummaryListFilter(
+            filters, studies.order_by("-study_date", "-study_time").distinct()
+        )
 
 
 class MGSummaryListFilter(django_filters.FilterSet):
@@ -833,6 +803,18 @@ class MGSummaryListFilter(django_filters.FilterSet):
     )
 
 
+class MGFilterPlusStdNames(MGSummaryListFilter):
+    """Adding standard name fields"""
+
+    standard_names__standard_name = django_filters.CharFilter(
+        lookup_expr="icontains",
+        label="Standard study name",
+    )
+    projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name = django_filters.CharFilter(
+        lookup_expr="icontains", label="Standard acquisition name"
+    )
+
+
 class MGFilterPlusPid(MGSummaryListFilter):
     """Adding patient name and ID to filter if permissions allow"""
 
@@ -844,6 +826,18 @@ class MGFilterPlusPid(MGSummaryListFilter):
         self.filters["patient_id"] = django_filters.CharFilter(
             method=custom_id_filter, label="Patient ID"
         )
+
+
+class MGFilterPlusPidPlusStdNames(MGFilterPlusPid):
+    """Adding standard name fields"""
+
+    standard_names__standard_name = django_filters.CharFilter(
+        lookup_expr="icontains",
+        label="Standard study name",
+    )
+    projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name = django_filters.CharFilter(
+        lookup_expr="icontains", label="Standard acquisition name"
+    )
 
 
 class DXSummaryListFilter(django_filters.FilterSet):
@@ -1006,6 +1000,17 @@ class DXSummaryListFilter(django_filters.FilterSet):
     )
 
 
+class DXFilterPlusStdNames(DXSummaryListFilter):
+    """Adding standard name fields"""
+
+    standard_names__standard_name = django_filters.CharFilter(
+        lookup_expr="icontains", label="Standard study name"
+    )
+    projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name = django_filters.CharFilter(
+        lookup_expr="icontains", label="Standard acquisition name"
+    )
+
+
 class DXFilterPlusPid(DXSummaryListFilter):
 
     """Adding patient name and ID to filter if permissions allow"""
@@ -1020,80 +1025,27 @@ class DXFilterPlusPid(DXSummaryListFilter):
         )
 
 
+class DXFilterPlusPidPlusStdNames(DXFilterPlusPid):
+    """Adding standard name fields"""
+
+    standard_names__standard_name = django_filters.CharFilter(
+        lookup_expr="icontains", label="Standard study name"
+    )
+    projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name = django_filters.CharFilter(
+        lookup_expr="icontains", label="Standard acquisition name"
+    )
+
+
 def dx_acq_filter(filters, pid=False):
 
-    """Additional filters at event level"""
-    filteredInclude = []
-    if "acquisition_protocol" in filters and (
-        "acquisition_dap_min" in filters
-        or "acquisition_dap_max" in filters
-        or "acquisition_kvp_min" in filters
-        or "acquisition_kvp_max" in filters
-        or "acquisition_mas_min" in filters
-        or "acquisition_mas_max" in filters
-    ):
-        events = IrradEventXRayData.objects.filter(
-            acquisition_protocol__iexact=filters["acquisition_protocol"]
-        )
-        if "acquisition_dap_min" in filters:
-            try:
-                Decimal(filters["acquisition_dap_min"])
-                events = events.filter(
-                    dose_area_product__gte=filters["acquisition_dap_min"]
-                )
-            except InvalidOperation:
-                pass
-        if "acquisition_dap_max" in filters:
-            try:
-                Decimal(filters["acquisition_dap_max"])
-                events = events.filter(
-                    dose_area_product__lte=filters["acquisition_dap_max"]
-                )
-            except InvalidOperation:
-                pass
-        if "acquisition_kvp_min" in filters:
-            try:
-                Decimal(filters["acquisition_kvp_min"])
-                events = events.filter(
-                    irradeventxraysourcedata__kvp__kvp__gte=filters[
-                        "acquisition_kvp_min"
-                    ]
-                )
-            except InvalidOperation:
-                pass
-        if "acquisition_kvp_max" in filters:
-            try:
-                Decimal(filters["acquisition_kvp_max"])
-                events = events.filter(
-                    irradeventxraysourcedata__kvp__kvp__lte=filters[
-                        "acquisition_kvp_max"
-                    ]
-                )
-            except InvalidOperation:
-                pass
-        if "acquisition_mas_min" in filters:
-            try:
-                Decimal(filters["acquisition_mas_min"])
-                events = events.filter(
-                    irradeventxraysourcedata__exposure__exposure__gte=filters[
-                        "acquisition_mas_min"
-                    ]
-                )
-            except InvalidOperation:
-                pass
-        if "acquisition_mas_max" in filters:
-            try:
-                Decimal(filters["acquisition_mas_max"])
-                events = events.filter(
-                    irradeventxraysourcedata__exposure__exposure__lte=filters[
-                        "acquisition_mas_max"
-                    ]
-                )
-            except InvalidOperation:
-                pass
-        filteredInclude = events.values_list(
-            "projection_xray_radiation_dose__general_study_module_attributes__study_instance_uid"
-        ).distinct()
+    # Obtain the system-level enable_standard_names setting
+    try:
+        StandardNameSettings.objects.get()
+    except ObjectDoesNotExist:
+        StandardNameSettings.objects.create()
+    enable_standard_names = StandardNameSettings.objects.values_list(
+        "enable_standard_names", flat=True
+    )[0]
 
     studies = GeneralStudyModuleAttr.objects.filter(
         Q(modality_type__exact="DX")
@@ -1101,12 +1053,191 @@ def dx_acq_filter(filters, pid=False):
         | Q(modality_type__exact="PX")
     )
 
-    if filteredInclude:
-        studies = studies.filter(study_instance_uid__in=filteredInclude)
     if pid:
-        return DXFilterPlusPid(
+        if enable_standard_names:
+            return DXFilterPlusPidPlusStdNames(
+                filters,
+                queryset=studies.order_by("-study_date", "-study_time").distinct(),
+            )
+        else:
+            return DXFilterPlusPid(
+                filters,
+                queryset=studies.order_by("-study_date", "-study_time").distinct(),
+            )
+    if enable_standard_names:
+        return DXFilterPlusStdNames(
             filters, queryset=studies.order_by("-study_date", "-study_time").distinct()
         )
-    return DXSummaryListFilter(
-        filters, queryset=studies.order_by("-study_date", "-study_time").distinct()
+    else:
+        return DXSummaryListFilter(
+            filters, queryset=studies.order_by("-study_date", "-study_time").distinct()
+        )
+
+
+class NMSummaryListFilter(django_filters.FilterSet):
+    """
+    Filter for NM studies to display in web interface.
+    """
+
+    study_date__gt = django_filters.DateFilter(
+        lookup_expr="gte",
+        label="Date from",
+        field_name="study_date",
+        widget=forms.TextInput(attrs={"class": "datepicker"}),
+    )
+    study_date__lt = django_filters.DateFilter(
+        lookup_expr="lte",
+        label="Date until",
+        field_name="study_date",
+        widget=forms.TextInput(attrs={"class": "datepicker"}),
+    )
+    study_description = django_filters.CharFilter(
+        lookup_expr="icontains", label="Study description"
+    )
+    procedure_code_meaning = django_filters.CharFilter(
+        lookup_expr="icontains", label="Procedure"
+    )
+    requested_procedure_code_meaning = django_filters.CharFilter(
+        lookup_expr="icontains", label="Requested procedure"
+    )
+    patientstudymoduleattr__patient_age_decimal__gte = django_filters.NumberFilter(
+        lookup_expr="gte",
+        label="Min age (yrs)",
+        field_name="patientstudymoduleattr__patient_age_decimal",
+    )
+    patientstudymoduleattr__patient_age_decimal__lte = django_filters.NumberFilter(
+        lookup_expr="lte",
+        label="Max age (yrs)",
+        field_name="patientstudymoduleattr__patient_age_decimal",
+    )
+    patientstudymoduleattr__patient_weight__gte = django_filters.NumberFilter(
+        lookup_expr="gte",
+        label="Min weight (kg)",
+        field_name="patientstudymoduleattr__patient_weight",
+    )
+    patientstudymoduleattr__patient_weight__lte = django_filters.NumberFilter(
+        lookup_expr="lte",
+        label="Max weight (kg)",
+        field_name="patientstudymoduleattr__patient_weight",
+    )
+    generalequipmentmoduleattr__institution_name = django_filters.CharFilter(
+        lookup_expr="icontains", label="Hospital"
+    )
+    generalequipmentmoduleattr__manufacturer = django_filters.CharFilter(
+        lookup_expr="icontains", label="Make"
+    )
+    generalequipmentmoduleattr__manufacturer_model_name = django_filters.CharFilter(
+        lookup_expr="icontains", label="Model"
+    )
+    generalequipmentmoduleattr__station_name = django_filters.CharFilter(
+        lookup_expr="icontains", label="Station name"
+    )
+    accession_number = django_filters.CharFilter(
+        method=_custom_acc_filter, label="Accession number"
+    )
+    radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__administered_activity_gte = django_filters.NumberFilter(
+        lookup_expr="gte",
+        label="Min administered dose (MBq)",
+        field_name="radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__administered_activity",
+    )
+    radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__administered_activity_lte = django_filters.NumberFilter(
+        lookup_expr="lte",
+        label="Max administered dose (MBq)",
+        field_name="radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__administered_activity",
+    )
+    generalequipmentmoduleattr__unique_equipment_name__display_name = (
+        django_filters.CharFilter(lookup_expr="icontains", label="Display name")
+    )
+    test_data = django_filters.ChoiceFilter(
+        lookup_expr="isnull",
+        label="Include possible test data",
+        field_name="patientmoduleattr__not_patient_indicator",
+        choices=TEST_CHOICES,
+        widget=forms.Select,
+    )
+
+    class Meta:
+        """
+        Lists fields and order-by information for django-filter filtering
+        """
+
+        model = GeneralStudyModuleAttr
+        fields = [
+            "study_date__gt",
+            "study_date__lt",
+            "study_description",
+            "procedure_code_meaning",
+            "requested_procedure_code_meaning",
+            "generalequipmentmoduleattr__institution_name",
+            "generalequipmentmoduleattr__manufacturer",
+            "generalequipmentmoduleattr__manufacturer_model_name",
+            "generalequipmentmoduleattr__station_name",
+            "patientstudymoduleattr__patient_age_decimal__gte",
+            "patientstudymoduleattr__patient_age_decimal__lte",
+            "patientstudymoduleattr__patient_weight__gte",
+            "patientstudymoduleattr__patient_weight__lte",
+            "accession_number",
+            "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__administered_activity_gte",
+            "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__administered_activity_lte",
+            "generalequipmentmoduleattr__unique_equipment_name__display_name",
+            "test_data",
+        ]
+
+    o = DateTimeOrderingFilter(
+        choices=(
+            ("study_description", "Study Description"),
+            ("generalequipmentmoduleattr__institution_name", "Hospital"),
+            ("generalequipmentmoduleattr__manufacturer", "Make"),
+            ("generalequipmentmoduleattr__manufacturer_model_name", "Model"),
+            (
+                "generalequipmentmoduleattr__unique_equipment_name__display_name",
+                "Display name",
+            ),
+            ("study_description", "Study description"),
+        ),
+        fields=(
+            ("study_description", "study_description"),
+            (
+                "generalequipmentmoduleattr__institution_name",
+                "generalequipmentmoduleattr__institution_name",
+            ),
+            (
+                "generalequipmentmoduleattr__manufacturer",
+                "generalequipmentmoduleattr__manufacturer",
+            ),
+            (
+                "generalequipmentmoduleattr__manufacturer_model_name",
+                "generalequipmentmoduleattr__manufacturer_model_name",
+            ),
+            (
+                "generalequipmentmoduleattr__unique_equipment_name__display_name",
+                "generalequipmentmoduleattr__unique_equipment_name__display_name",
+            ),
+            ("study_description", "study_description"),
+        ),
+    )
+
+
+class NMFilterPlusPid(NMSummaryListFilter):
+
+    """Adding patient name and ID to filter if permissions allow"""
+
+    def __init__(self, *args, **kwargs):
+        super(NMFilterPlusPid, self).__init__(*args, **kwargs)
+        self.filters["patient_name"] = django_filters.CharFilter(
+            method=custom_name_filter, label="Patient name"
+        )
+        self.filters["patient_id"] = django_filters.CharFilter(
+            method=custom_id_filter, label="Patient ID"
+        )
+
+
+def nm_filter(filters, pid=False):
+    studies = GeneralStudyModuleAttr.objects.filter(modality_type__exact="NM")
+    if pid:
+        return NMFilterPlusPid(
+            filters, studies.order_by("-study_date", "-study_time").distinct()
+        )
+    return NMSummaryListFilter(
+        filters, studies.order_by("-study_date", "-study_time").distinct()
     )

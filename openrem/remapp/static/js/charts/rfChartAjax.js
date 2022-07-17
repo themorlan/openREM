@@ -80,6 +80,41 @@ $(document).ready(function() {
                 $("#studyWorkloadChartDiv").html(json.studyWorkloadData);
             }
 
+            // DLP per standard study namechart data
+            if(typeof json.standardStudyMeanData !== "undefined") {
+                $("#standardStudyMeanDAPChartDiv").html(json.standardStudyMeanData);
+                $("#standardStudyMeanDAPChartParentDiv").append(json.standardStudyMeanDataCSV);
+            }
+            if(typeof json.standardStudyMedianData !=="undefined") {
+                $("#standardStudyMedianDAPChartDiv").html(json.standardStudyMedianData);
+                $("#standardStudyMedianDAPChartParentDiv").append(json.standardStudyMedianDataCSV);
+            }
+            if(typeof json.standardStudyBoxplotData !=="undefined") {
+                $("#standardStudyBoxplotDAPChartDiv").html(json.standardStudyBoxplotData);
+            }
+            if(typeof json.standardStudyHistogramData !=="undefined") {
+                $("#standardStudyHistogramDAPChartDiv").html(json.standardStudyHistogramData);
+            }
+
+            // Standard study nameDAP over time chart data
+            if(typeof json.standardStudyMeanDAPOverTime !== "undefined") {
+                $("#standardStudyMeanDAPOverTimeChartDiv").html(json.standardStudyMeanDAPOverTime);
+            }
+            if(typeof json.standardStudyMedianDAPOverTime !== "undefined") {
+                $("#standardStudyMedianDAPOverTimeChartDiv").html(json.standardStudyMedianDAPOverTime);
+            }
+
+            // Standard study namefrequency chart data start
+            if(typeof json.standardStudyFrequencyData !== "undefined") {
+                $("#standardStudyFrequencyChartDiv").html(json.standardStudyFrequencyData);
+                $("#standardStudyFrequencyChartParentDiv").append(json.standardStudyFrequencyDataCSV);
+            }
+
+            // Standard study nameworkload chart data
+            if(typeof json.standardStudyWorkloadData !== "undefined") {
+                $("#standardStudyWorkloadChartDiv").html(json.standardStudyWorkloadData);
+            }
+
             $(".ajax-progress").hide();
         },
         error: function( xhr, status, errorThrown ) {

@@ -156,7 +156,7 @@ Variables that should only be changed if you know what you are doing
     SQL_ENGINE=django.db.backends.postgresql
     SQL_PORT=5432
     DATABASE=postgres
-    POSTGRES_USER=openrem_user
+    POSTGRES_USER=openremuser
     POSTGRES_PASSWORD=openrem_pass
     POSTGRES_DB=openrem_prod
 
@@ -164,10 +164,6 @@ Variables that should only be changed if you know what you are doing
     MEDIA_ROOT=/home/app/openrem/mediafiles
     STATIC_ROOT=/home/app/openrem/staticfiles
     LOG_ROOT=/logs
-
-    ## RabbitMQ/Celery/Flower
-    BROKER_MGMT_URL=http://broker:15672/
-    FLOWER_URL=http://flower
 
 Variables that shouldn't be changed
 -----------------------------------

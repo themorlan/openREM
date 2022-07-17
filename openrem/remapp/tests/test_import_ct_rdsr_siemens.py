@@ -17,12 +17,12 @@ from remapp.models import (
 class ImportCTRDSR(TestCase):
     def setUp(self):
         """Adds the not-patient patterns to match against - set to be the same as in release 0.7.4"""
-        NotPatientIndicatorsID(not_patient_id=u"*qa*").save()
-        NotPatientIndicatorsID(not_patient_id=u"*phy*").save()
-        NotPatientIndicatorsID(not_patient_id=u"*test*").save()
-        NotPatientIndicatorsName(not_patient_name=u"*phys*").save()
-        NotPatientIndicatorsName(not_patient_name=u"*test*").save()
-        NotPatientIndicatorsName(not_patient_name=u"*qa*").save()
+        NotPatientIndicatorsID(not_patient_id="*qa*").save()
+        NotPatientIndicatorsID(not_patient_id="*phy*").save()
+        NotPatientIndicatorsID(not_patient_id="*test*").save()
+        NotPatientIndicatorsName(not_patient_name="*phys*").save()
+        NotPatientIndicatorsName(not_patient_name="*test*").save()
+        NotPatientIndicatorsName(not_patient_name="*qa*").save()
 
     def test_import_ct_rdsr_siemens(self):
         """
@@ -48,7 +48,7 @@ class ImportCTRDSR(TestCase):
         self.assertEqual(study.accession_number, "ACC12345601")
         self.assertEqual(study.study_description, "Thorax^TAP (Adult)")
         self.assertEqual(study.modality_type, "CT")
-        self.assertEqual(study.referring_physician_name, u"Müller")
+        self.assertEqual(study.referring_physician_name, "Müller")
 
         self.assertEqual(
             study.generalequipmentmoduleattr_set.get().institution_name,
@@ -170,7 +170,7 @@ class ImportCTRDSR(TestCase):
             study.ctradiationdose_set.get()
             .ctirradiationeventdata_set.order_by("id")[0]
             .acquisition_protocol,
-            u"test\xc3\xa6\xc3\xb8\xc3\xa5",
+            "test\xc3\xa6\xc3\xb8\xc3\xa5",
         )
         self.assertAlmostEqual(
             study.ctradiationdose_set.get()
@@ -700,7 +700,7 @@ class ImportCTRDSR(TestCase):
         # Test that not-patient indicators are identified
         self.assertEqual(
             study.patientmoduleattr_set.get().not_patient_indicator,
-            u"IDs: *qa* | Names: ",
+            "IDs: *qa* | Names: ",
         )
 
         # Test that study level data is recorded correctly
@@ -709,7 +709,7 @@ class ImportCTRDSR(TestCase):
         self.assertEqual(study.accession_number, "74624646290")
         self.assertEqual(study.study_description, "Specials^PhysicsTesting (Adult)")
         self.assertEqual(study.modality_type, "CT")
-        self.assertEqual(study.referring_physician_name, u"Müller | Smith")
+        self.assertEqual(study.referring_physician_name, "Müller | Smith")
 
         # Test that dual energy axial event data is recorded correctly
         self.assertAlmostEqual(

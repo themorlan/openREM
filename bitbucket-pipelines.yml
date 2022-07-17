@@ -1,4 +1,4 @@
-image: python:3.8
+image: python:3.10
 
 clone:
   depth: full    # SonarCloud scanner needs the full history to assign issues properly
@@ -80,6 +80,76 @@ definitions:
           - postgres
         caches:
           - pip
+    - step: &test-python3.8
+        trigger: manual
+        image: python:3.8
+        name: run django tests against Python 3.8
+        script:
+          - mv openrem/openremproject/local_settings.py{.example,}
+          - sed -i "s/INFO/DEBUG/g" openrem/openremproject/local_settings.py
+          - >-
+            sed -i "/'ENGINE':/c\        'ENGINE': 'django.db.backends.postgresql_psycopg2'," openrem/openremproject/local_settings.py
+          - >-
+            sed -i "/'NAME':/c\        'NAME': 'openremdb'," openrem/openremproject/local_settings.py
+          - >-
+            sed -i "/'USER':/c\        'USER': 'openremuser'," openrem/openremproject/local_settings.py
+          - >-
+            sed -i "/'PASSWORD':/c\        'PASSWORD': 'openremuserpass'," openrem/openremproject/local_settings.py
+          - >-
+            sed -i "/'HOST':/c\        'HOST': '127.0.0.1'," openrem/openremproject/local_settings.py
+          - >-
+            sed -i "/'PORT':/c\        'PORT': '5432'," openrem/openremproject/local_settings.py
+          - mv openrem/openremproject/wsgi.py{.example,}
+          - pip install -e .
+          - pip install coverage
+          - pip install coveralls
+          - pip install tblib
+          - python openrem/manage.py makemigrations remapp
+          - coverage run openrem/manage.py test remapp --parallel
+          - coverage combine
+          - coveralls
+          - coverage xml
+        artifacts:
+          - coverage.xml
+        services:
+          - postgres
+        caches:
+          - pip
+    - step: &test-python3.9
+        trigger: manual
+        image: python:3.9
+        name: run django tests against Python 3.9
+        script:
+          - mv openrem/openremproject/local_settings.py{.example,}
+          - sed -i "s/INFO/DEBUG/g" openrem/openremproject/local_settings.py
+          - >-
+            sed -i "/'ENGINE':/c\        'ENGINE': 'django.db.backends.postgresql_psycopg2'," openrem/openremproject/local_settings.py
+          - >-
+            sed -i "/'NAME':/c\        'NAME': 'openremdb'," openrem/openremproject/local_settings.py
+          - >-
+            sed -i "/'USER':/c\        'USER': 'openremuser'," openrem/openremproject/local_settings.py
+          - >-
+            sed -i "/'PASSWORD':/c\        'PASSWORD': 'openremuserpass'," openrem/openremproject/local_settings.py
+          - >-
+            sed -i "/'HOST':/c\        'HOST': '127.0.0.1'," openrem/openremproject/local_settings.py
+          - >-
+            sed -i "/'PORT':/c\        'PORT': '5432'," openrem/openremproject/local_settings.py
+          - mv openrem/openremproject/wsgi.py{.example,}
+          - pip install -e .
+          - pip install coverage
+          - pip install coveralls
+          - pip install tblib
+          - python openrem/manage.py makemigrations remapp
+          - coverage run openrem/manage.py test remapp --parallel
+          - coverage combine
+          - coveralls
+          - coverage xml
+        artifacts:
+          - coverage.xml
+        services:
+          - postgres
+        caches:
+          - pip
     - step: &deploy-to-openrem-org
         name: deploy to $server
         deployment: develop  # deployment has $server as a variable = dev.openrem.org
@@ -106,7 +176,7 @@ definitions:
           - export IMAGE_NAME=openrem/openrem:$BITBUCKET_BRANCH-$BITBUCKET_COMMIT
           - docker build -t openrem/openrem:$BITBUCKET_BRANCH-$BITBUCKET_COMMIT -t openrem/openrem:$BITBUCKET_BRANCH .
           - docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PASSWORD
-          - docker push openrem/openrem
+          - docker push --all-tags openrem/openrem
         services:
           - docker
         caches:
@@ -121,11 +191,17 @@ pipelines:
           deployment: testing  # deployment has $server as a variable = testing.openrem.org
     deploy-to-docker:
       - step: *build-and-deploy-to-docker
+    test-python-3.8:
+      - step: *test-python3.8
+    test-python-3.9:
+      - step: *test-python3.9
   default:  # Standard commits are tested but not deployed
     - step: *test
     - step: *flake8
     - step: *sonarcloud
     - step: *sonarcloudqualitygate
+    - step: *test-python3.8
+    - step: *test-python3.9
   branches:
     develop:  # Commits to the develop branch are tested and deployed to dev.openrem.org on success
       - step:

@@ -41,11 +41,16 @@ from random import random
 import sys
 from time import sleep
 
-from celery import shared_task
 import django
 from django.core.exceptions import ObjectDoesNotExist
 import pydicom
 from pydicom.valuerep import MultiValue
+
+from openrem.remapp.tools.background import (
+    record_task_error_exit,
+    record_task_related_query,
+    record_task_info,
+)
 
 from ..tools import check_uid
 from ..tools.dcmdatetime import get_date, get_time, make_date_time
@@ -71,6 +76,7 @@ from .extract_common import (  # pylint: disable=wrong-import-order, wrong-impor
     get_study_check_dup,
     populate_dx_rf_summary,
     patient_module_attributes,
+    add_standard_names,
 )
 from remapp.models import (  # pylint: disable=wrong-import-order, wrong-import-position
     AccumXRayDose,
@@ -339,7 +345,6 @@ def _irradiationeventxraysourcedata(dataset, event):
             "AverageXRayTubeCurrent", dataset
         )
     source.exposure_time = get_value_kw("ExposureTime", dataset)
-    source.irradiation_duration = get_value_kw("IrradiationDuration", dataset)
     source.focal_spot_size = get_value_kw("FocalSpots", dataset)
     collimated_field_area = get_value_kw("FieldOfViewDimensions", dataset)
     if collimated_field_area:
@@ -424,13 +429,8 @@ def _irradiationeventxraymechanicaldata(dataset, event):
     mech.magnification_factor = get_value_kw(
         "EstimatedRadiographicMagnificationFactor", dataset
     )
-    mech.dxdr_mechanical_configuration = get_value_kw(
-        "DX/DRMechanicalConfiguration", dataset
-    )
     mech.primary_angle = get_value_kw("PositionerPrimaryAngle", dataset)
     mech.secondary_angle = get_value_kw("PositionerSecondaryAngle", dataset)
-    mech.primary_end_angle = get_value_kw("PositionerPrimaryEndAngle", dataset)
-    mech.secondary_angle = get_value_kw("PositionerSecondaryEndAngle", dataset)
     mech.column_angulation = get_value_kw("ColumnAngulation", dataset)
     mech.table_head_tilt_angle = get_value_kw("TableHeadTiltAngle", dataset)
     mech.table_horizontal_rotation_angle = get_value_kw(
@@ -653,9 +653,6 @@ def _generalstudymoduleattributes(dataset, g):
     g.referring_physician_name = list_to_string(
         get_value_kw("ReferringPhysicianName", dataset)
     )
-    g.referring_physician_identification = list_to_string(
-        get_value_kw("ReferringPhysicianIdentification", dataset)
-    )
     g.study_id = get_value_kw("StudyID", dataset)
     accession_number = get_value_kw("AccessionNumber", dataset)
     patient_id_settings = PatientIDSettings.objects.get()
@@ -669,9 +666,9 @@ def _generalstudymoduleattributes(dataset, g):
     if not g.study_description:
         g.study_description = get_seq_code_meaning("ProcedureCodeSequence", dataset)
     g.modality_type = get_value_kw("Modality", dataset)
-    g.physician_of_record = list_to_string(get_value_kw("PhysicianOfRecord", dataset))
+    g.physician_of_record = list_to_string(get_value_kw("PhysiciansOfRecord", dataset))
     g.name_of_physician_reading_study = list_to_string(
-        get_value_kw("NameOfPhysicianReadingStudy", dataset)
+        get_value_kw("NameOfPhysiciansReadingStudy", dataset)
     )
     g.performing_physician_name = list_to_string(
         get_value_kw("PerformingPhysicianName", dataset)
@@ -746,6 +743,9 @@ def _generalstudymoduleattributes(dataset, g):
     )
     g.save()
 
+    # Add standard names
+    add_standard_names(g)
+
 
 # The routine will accept three types of image:
 # CR image storage                               (SOP UID = '1.2.840.10008.5.1.4.1.1.1')
@@ -766,7 +766,12 @@ def _test_if_dx(dataset):
 def _dx2db(dataset):
     study_uid = get_value_kw("StudyInstanceUID", dataset)
     if not study_uid:
-        sys.exit("No UID returned")
+        error = "In dx import: No UID returned"
+        logger.error(error)
+        record_task_error_exit(error)
+        return
+    record_task_info(f"UID: {study_uid.replace('.', '. ')}")
+    record_task_related_query(study_uid)
     study_in_db = check_uid.check_uid(study_uid)
 
     if study_in_db:
@@ -783,6 +788,11 @@ def _dx2db(dataset):
                 this_study.projectionxrayradiationdose_set.get().irradeventxraydata_set.count()
             )
             this_study.save()
+        else:
+            error = f"Study {study_uid.replace('.', '. ')} already in DB"
+            logger.error(error)
+            record_task_error_exit(error)
+            return
 
     if not study_in_db:
         # study doesn't exist, start from scratch
@@ -801,7 +811,10 @@ def _dx2db(dataset):
         if study_in_db == 1:
             _generalstudymoduleattributes(dataset, g)
         elif not study_in_db:
-            sys.exit("Something went wrong, GeneralStudyModuleAttr wasn't created")
+            error = "Something went wrong, GeneralStudyModuleAttr wasn't created"
+            record_task_error_exit(error)
+            logger.error(error)
+            return
         elif study_in_db > 1:
             sleep(random())  # nosec - not being used for cryptography
             # Check if other instance(s) has deleted the study yet
@@ -897,7 +910,6 @@ def _fix_kodak_filters(dataset):
             dict.__setitem__(dataset, 0x187054, thick2)
 
 
-@shared_task(name="remapp.extractors.dx.dx")
 def dx(dig_file):
     """Extract radiation dose structured report related data from DX radiographic images
 
@@ -922,7 +934,10 @@ def dx(dig_file):
             dataset.decode()
     isdx = _test_if_dx(dataset)
     if not isdx:
-        return "{0} is not a DICOM DX radiographic image".format(dig_file)
+        error = "{0} is not a DICOM DX radiographic image".format(dig_file)
+        logger.error(error)
+        record_task_error_exit(error)
+        return 1
 
     logger.debug("About to launch _dx2db")
     _dx2db(dataset)
@@ -931,14 +946,3 @@ def dx(dig_file):
         os.remove(dig_file)
 
     return 0
-
-
-if __name__ == "__main__":
-    import sys
-
-    if len(sys.argv) != 2:
-        sys.exit(
-            "Error: Supply exactly one argument - the DICOM DX radiographic image file"
-        )
-
-    sys.exit(dx(sys.argv[1]))

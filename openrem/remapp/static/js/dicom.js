@@ -17,14 +17,7 @@ function retrieveProgress(json ) {
                 };
                 retrieveProgress( data );
             }, 100);
-        },
-        error: function( xhr, status, errorThrown ) {
-            alert( "Sorry, there was a problem getting the status!" );
-            // console.log( "Error: " + errorThrown );
-            // console.log( "Status: " + status );
-            // console.dir( xhr );
         }
-
     });
 
 }
@@ -32,7 +25,8 @@ function queryProgress(json ) {
     $.ajax({
         url: Urls.query_update(),
         data: {
-            queryID: json.queryID
+            queryID: json.queryID,
+            showDetailsLink: json.showDetailsLink
         },
         type: "POST",
         dataType: "json",
@@ -41,45 +35,52 @@ function queryProgress(json ) {
             $( "#subops" ).html( json.subops );
             if (json.status === "not complete") setTimeout(function(){
                 var data = {
-                    queryID: json.queryID
+                    queryID: json.queryID,
+                    showDetailsLink: json.showDetailsLink
                 };
                 queryProgress( data );
             }, 500);
             if (json.status === "complete"){
                 var data = {
-                    queryID: json.queryID
+                    queryID: json.queryID,
                 };
-                var moveHtml = '<div><button type="button" class="btn btn-default" id="move" data-id="'
-                    + json.queryID
-                    + '">Move</button></div>';
-                $( "#move-button").html( moveHtml );
-                $("#move").click(function(){
-                    // console.log("In the move function");
-                    var queryID = $(this).data("id");
-                    // console.log(queryID);
-                    $( "#move-button").html( "" );
-                    $.ajax({
-                        url: Urls.start_retrieve(),
-                        data: {
-                            queryID: queryID
-                        },
-                        type: "POST",
-                        dataType: "json",
-                        success: function( json ) {
-                            // console.log("In the qr success function.");
-                            retrieveProgress( json );
+                $.ajax({
+                    url: Urls.move_update(),
+                    data: data,
+                    type: "POST",
+                    dataType: "json",
+                    success: function( json ) {
+                        if (json.status === "not started") {
+                            var moveHtml = '<div><button type="button" class="btn btn-default" id="move" data-id="'
+                                + json.queryID
+                                + '">Move</button></div>';
+                            $( "#move-button").html( moveHtml );
+                            $("#move").click(function(){
+                                // console.log("In the move function");
+                                var queryID = $(this).data("id");
+                                // console.log(queryID);
+                                $( "#move-button").html( "" );
+                                $.ajax({
+                                    url: Urls.start_retrieve(),
+                                    data: {
+                                        queryID: queryID
+                                    },
+                                    type: "POST",
+                                    dataType: "json",
+                                    success: function( json ) {
+                                        // console.log("In the qr success function.");
+                                        retrieveProgress( json );
+                                    }
+                                });
+                            });
                         }
-                    });
+                        else {
+                            retrieveProgress( {queryID: json.queryID });
+                        }
+                    }
                 });
             }
-        },
-        error: function( xhr, status, errorThrown ) {
-            alert( "Sorry, there was a problem getting the status!" );
-            // console.log( "Error: " + errorThrown );
-            // console.log( "Status: " + status );
-            // console.dir( xhr );
         }
-
     });
 
 }
@@ -100,13 +101,12 @@ $(document).ready(function(){
             data: serializedForm,
             dataType: "json",
             success: function( json ) {
+                // This is only ever executed on the import page. When used on the details view it is None. (No link shown)
+                json.showDetailsLink = "yes";
                 queryProgress( json );
             },
             error: function( xhr, status, errorThrown ) {
                 alert( "Sorry, there was a problem starting the job!" );
-                // console.log( "Error: " + errorThrown );
-                // console.log( "Status: " + status );
-                // console.dir( xhr );
             }
         });
     });

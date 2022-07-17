@@ -55,7 +55,7 @@ class FilterViewTests(TestCase):
         self.client.login(username="temporary", password="temporary")
         response = self.client.get(reverse("dx_summary_list_filter"), follow=True)
         self.assertEqual(response.status_code, 200)
-        responses_text = u"There are 5 studies in this list."
+        responses_text = "There are 5 studies in this list."
         self.assertContains(response, responses_text)
 
     def test_filter_study_desc(self):
@@ -68,10 +68,10 @@ class FilterViewTests(TestCase):
             follow=True,
         )
         self.assertEqual(response.status_code, 200)
-        one_responses_text = u"There are 2 studies in this list."
+        one_responses_text = "There are 2 studies in this list."
         self.assertContains(response, one_responses_text)
-        accession_number1 = u"3599305798462538"  # Accession number of study with matching study description
-        accession_number2 = u"7698466579781854"  # Accession number of study with matching study description
+        accession_number1 = "3599305798462538"  # Accession number of study with matching study description
+        accession_number2 = "7698466579781854"  # Accession number of study with matching study description
         self.assertContains(response, accession_number1)
         self.assertContains(response, accession_number2)
 
@@ -86,7 +86,7 @@ class FilterViewTests(TestCase):
             follow=True,
         )
         self.assertEqual(response.status_code, 200)
-        one_responses_text = u"There are 1 studies in this list."
+        one_responses_text = "There are 1 studies in this list."
         self.assertContains(response, one_responses_text)
-        accession_number = u"7698466579781854"  # Accession number of study with matching acquisition protocol
+        accession_number = "7698466579781854"  # Accession number of study with matching acquisition protocol
         self.assertContains(response, accession_number)

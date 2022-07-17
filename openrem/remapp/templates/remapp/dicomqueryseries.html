@@ -1,0 +1,110 @@
+{% extends "remapp/base.html" %}
+
+{% block headextras %}
+  <script src="{{ STATIC_URL }}js/sorttable.js"></script>
+  <script src="{{ STATIC_URL }}js/django_reverse/reverse.js"></script>
+{% endblock %}
+
+{% block mainblock %} 
+
+<div class="row">
+    <div class="col-md-8">
+        <h4>
+            <p>
+                The first table below shows all the series that the remote PACS/DICOM node sent and where
+                considered for downloading (moving). Click on any to see which files 
+                (usually images or structured reports) where considered for downloading. 
+            </p><p>
+                If the study was already ignored (for example because of a filter), maybe
+                the series got never asked for and hence are not listed here even if present on
+                the remote.
+            </p><p>
+                The second table displays all import tasks that were run for this study. At the moment
+                displaying Toshiba and weight/size imports is not supported.
+            </p>
+            You are viewing series of the study 
+            <a href="{% url 'get_query_details' queryseries.first.dicom_qr_rsp_study.dicom_query.pk %}">study {{queryseries.first.dicom_qr_rsp_study.study_instance_uid}}</a>.
+        </h4>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-8">
+        <table class="table table-bordered table-hover table-sortable row-clickable" aria-describedby="Table of series in query response">
+            <tr>
+                <th>Series UID</th>
+                <th>Series description</th>
+                <th>Modality</th>
+                <th>Downloaded?</th>
+            </tr>
+            {% for qseries in queryseries %} 
+                <tr>
+                    <td>
+                        <a href="{% url 'get_query_images' qseries.pk %}">
+                            {{qseries.series_instance_uid}}
+                        </a>
+                    </td>
+                    <td>
+                        <a href="{% url 'get_query_images' qseries.pk %}">
+                            {{qseries.series_description}}
+                        </a>
+                    </td>
+                    <td>
+                        <a href="{% url 'get_query_images' qseries.pk %}">
+                            {{qseries.modality}}
+                        </a>
+                    </td>
+                    <td>
+                        <a href="{% url 'get_query_images' qseries.pk %}">
+                            {{qseries.deleted_reason}}
+                        </a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-8">
+        <table class="table table-bordered table-hover table-sortable" aria-describedby="Table of import tasks run for this study.">
+            <tr>
+                <th>Task UUID</th>
+                <th>Task type</th>
+                <th>Error</th>
+                <th>Status</th>
+            </tr>
+            {% for import in studyimports %} 
+                {% if import.completed_successfully %} 
+                    <tr class="success">
+                {% else %} 
+                    {% if import.complete %}
+                        <tr class="danger">
+                    {% else %} 
+                        <tr>
+                    {% endif %}
+                {% endif %}
+                    <td>{{import.uuid}}</td>
+                    <td>{{import.task_type}}</td>
+                    <td>
+                        {% if not import.completed_successfully %}
+                            {{import.error}}
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if import.complete %}
+                            {% if import.completed_successfully %}
+                                Import finished successfully
+                            {% else %} 
+                                Error
+                            {% endif %} 
+                        {% else %} 
+                            Currently running
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+</div>
+
+
+{% endblock %}

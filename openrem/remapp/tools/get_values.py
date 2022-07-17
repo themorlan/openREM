@@ -28,7 +28,7 @@
 ..  moduleauthor:: Ed McDonagh
 
 """
-from builtins import str  # pylint: disable=redefined-builtin
+from decimal import Decimal  # pylint: disable=redefined-builtin
 from pydicom import charset
 from pydicom.charset import default_encoding
 from django.utils.encoding import smart_text
@@ -167,6 +167,19 @@ def test_numeric_value(string_number):
         return string_number
     except (ValueError, TypeError):
         return None
+
+
+def to_decimal_value(string_number):
+    """
+    Tests if string can be converted to a float. If yes returns it
+    as decimal.
+    :param string_number: string to test if a number
+    :return: Decimal if convertable, None otherwise
+    """
+    if test_numeric_value(string_number) is None:
+        return None
+    else:
+        return Decimal(string_number)
 
 
 def list_to_string(dicom_value):

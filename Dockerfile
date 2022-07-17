@@ -1,5 +1,5 @@
 # pull official base image
-FROM python:3.8-slim
+FROM python:3.10-slim
 
 RUN useradd -ms /bin/bash app \
  && adduser www-data app
@@ -23,18 +23,12 @@ RUN apt-get update && apt-get -y dist-upgrade && apt install -y netcat dcmtk def
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/*
 
-RUN python -m venv $APP_VENV
-# Make sure we use the virtualenv:
-ENV PATH="$APP_VENV/bin:$PATH"
-# install dependencies
-# hadolint ignore=DL3013
-RUN pip install --upgrade pip
 COPY ./requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --upgrade pip && pip install --no-cache-dir -r requirements.txt
 
 COPY . .
-RUN mv $HOME/stuff/0002_0_7_fresh_install_add_median.py.inactive $APP_HOME/remapp/migrations/ \
- && mv $HOME/stuff/v1initial.py $APP_HOME/remapp/migrations/0001_initial.py.1-0-upgrade \
+
+RUN mv $HOME/stuff/v1initial.py $APP_HOME/remapp/migrations/0001_initial.py.1-0-upgrade \
  && mv $APP_HOME/openremproject/wsgi.py.example $APP_HOME/openremproject/wsgi.py
 
 RUN chmod -R 775 $APP_HOME/mediafiles \

@@ -29,11 +29,14 @@
 """
 from django.contrib.auth import views as auth_views
 from django.urls import include, path
+from django.conf.urls import url
+from django import views as django_views
 
 from . import (
     views,
     views_admin,
     views_charts_ct,
+    views_charts_nm,
     views_charts_dx,
     views_charts_mg,
     views_charts_rf,
@@ -59,6 +62,11 @@ main_patterns = [
         views.rf_detail_view_skin_map,
         name="rf_detail_view_skin_map",
     ),
+    path("nm/", views.nm_summary_list_filter, name="nm_summary_list_filter"),
+    path(
+        "nm/chart/", views_charts_nm.nm_summary_chart_data, name="nm_summary_chart_data"
+    ),
+    path("nm/<int:pk>/", views.nm_detail_view, name="nm_detail_view"),
     path("ct/", views.ct_summary_list_filter, name="ct_summary_list_filter"),
     path(
         "ct/chart/", views_charts_ct.ct_summary_chart_data, name="ct_summary_chart_data"
@@ -126,22 +134,12 @@ main_patterns = [
 
 
 tasks_patterns = [
+    path("tasks/task_admin/", views_admin.display_tasks, name="task_admin"),
+    path("tasks/get_tasks/<str:stage>/", views_admin.tasks, name="get_tasks"),
     path(
-        "rabbitmq/purge_queue/<str:queue>/",
-        views_admin.rabbitmq_purge,
-        name="rabbitmq_purge",
-    ),
-    path("celery/", views_admin.celery_admin, name="celery_admin"),
-    path("celery/tasks/<str:stage>/", views_admin.celery_tasks, name="celery_tasks"),
-    path(
-        "celery/abort_task/<uuid:task_id>/<str:type>/",
-        views_admin.celery_abort,
-        name="celery_abort",
-    ),
-    path(
-        "celery/service_status/",
-        views_admin.task_service_status,
-        name="task_service_status",
+        "tasks/abort_task/<uuid:task_id>/",
+        views_admin.task_abort,
+        name="abort_task",
     ),
 ]
 
@@ -301,6 +299,8 @@ export_patterns = [
     path("ctcsv1/<int:name>/<int:pat_id>/", exportviews.ctcsv1, name="ctcsv1"),
     path("ctxlsx1/<int:name>/<int:pat_id>/", exportviews.ctxlsx1, name="ctxlsx1"),
     path("ctphe2019/", exportviews.ct_xlsx_phe2019, name="ct_xlsx_phe2019"),
+    path("nmcsv1/<int:name>/<int:pat_id>/", exportviews.nmcsv1, name="nmcsv1"),
+    path("nmxlsx1/<int:name>/<int:pat_id>/", exportviews.nmxlsx1, name="nmxlsx1"),
     path("dxcsv1/<int:name>/<int:pat_id>/", exportviews.dxcsv1, name="dxcsv1"),
     path("dxxlsx1/<int:name>/<int:pat_id>/", exportviews.dxxlsx1, name="dxxlsx1"),
     path(
@@ -317,7 +317,7 @@ export_patterns = [
     path("mgnhsbsp/", exportviews.mgnhsbsp, name="mgnhsbsp"),
     path("download/<uuid:task_id>/", exportviews.download, name="download"),
     path("deletefile/", exportviews.deletefile, name="deletefile"),
-    path("abort/<int:pk>/", exportviews.export_abort, name="export_abort"),
+    path("abort/<str:pk>/", exportviews.export_abort, name="export_abort"),
     path("updateactive/", exportviews.update_active, name="update_active"),
     path("updateerror/", exportviews.update_error, name="update_error"),
     path("updatecomplete/", exportviews.update_complete, name="update_complete"),
@@ -351,10 +351,69 @@ dicom_patterns = [
     path("moveupdate", dicomviews.r_update, name="move_update"),
     path("qrnodestatus", dicomviews.get_qr_status, name="get_qr_status"),
     path("storenodestatus", dicomviews.get_store_status, name="get_store_status"),
+    path("querysummary", dicomviews.get_query_summary, name="get_query_summary"),
+    path(
+        "querydetails/<int:pk>", dicomviews.get_query_details, name="get_query_details"
+    ),
+    path("queryseries/<int:pk>", dicomviews.get_query_series, name="get_query_series"),
+    path("queryimages/<int:pk>", dicomviews.get_query_images, name="get_query_images"),
+    path("deletequeries/", dicomviews.delete_queries, name="delete_queries"),
 ]
 
 import_patterns = [  # pylint: disable=invalid-name
     path("from_docker/", import_views.import_from_docker, name="import_docker")
+]
+
+standard_name_patterns = [  # pylint: disable=invalid-name
+    path("add_name_ct/", views_admin.StandardNameAddCT.as_view(), name="add_name_ct"),
+    path("add_name_dx/", views_admin.StandardNameAddDX.as_view(), name="add_name_dx"),
+    path("add_name_rf/", views_admin.StandardNameAddRF.as_view(), name="add_name_rf"),
+    path("add_name_mg/", views_admin.StandardNameAddMG.as_view(), name="add_name_mg"),
+    path(
+        "update_name/<int:std_name_pk>/<str:modality>/",
+        views_admin.standard_name_update,
+        name="update_name",
+    ),
+    path(
+        "update_name_ct/<int:pk>/",
+        views_admin.StandardNameUpdateCT.as_view(),
+        name="update_name_ct",
+    ),
+    path(
+        "update_name_dx/<int:pk>/",
+        views_admin.StandardNameUpdateDX.as_view(),
+        name="update_name_dx",
+    ),
+    path(
+        "update_name_rf/<int:pk>/",
+        views_admin.StandardNameUpdateRF.as_view(),
+        name="update_name_rf",
+    ),
+    path(
+        "update_name_mg/<int:pk>/",
+        views_admin.StandardNameUpdateMG.as_view(),
+        name="update_name_mg",
+    ),
+    path(
+        "view_standard_names/",
+        views_admin.standard_names_view,
+        name="standard_names_view",
+    ),
+    path(
+        "populate_standard_names",
+        views_admin.standard_names_populate,
+        name="standard_names_populate",
+    ),
+    path(
+        "standard_name/<int:pk>/delete/",
+        views_admin.StandardNameDelete.as_view(),
+        name="standard_name_delete",
+    ),
+    path(
+        "standard_name_settings/<int:pk>/",
+        views_admin.StandardNameSettingsUpdate.as_view(),
+        name="standard_name_settings",
+    ),
 ]
 
 urlpatterns = [
@@ -366,4 +425,6 @@ urlpatterns = [
     path("review/", include(review_patterns)),
     path("tasks/", include(tasks_patterns)),
     path("import/", include(import_patterns)),
+    path("names/", include(standard_name_patterns)),
+    url(r"^jsi18n/$", django_views.i18n.JavaScriptCatalog.as_view(), name="jsi18n"),
 ]

@@ -1,0 +1,255 @@
+{% extends "remapp/filteredbase.html" %}
+
+{% block navnm%}<li class="active">{% endblock %}
+
+{% block toprow %}
+
+    <p>
+        There are {{ study_list.paginator.count }} studies in this list.
+    </p>
+
+{% endblock %}
+
+{% block col2 %}
+    <div class="panel panel-info small">
+        <div class="panel-heading">
+            <h3 class="panel-title">Data export</h3>
+        </div>
+        <div class="panel-body">
+            {% if admin.exportgroup %}
+                <p><strong>Note:</strong> Apply the exam filter first to refine what is exported.</p>
+                <p>
+                    <a href="{% url 'nmcsv1' 0 0 %}?{{ request.GET.urlencode }}"
+                       class="btn btn-default btn-sm" role="button">Export to CSV&nbsp;</a>
+                    {% if admin.pidgroup %}
+                        <a href="{%  url 'nmcsv1' 1 0 %}?{{ request.GET.urlencode }}"
+                           class="btn btn-default btn-sm" role="button">With names</a>
+                        <a href="{% url 'nmcsv1' 0 1 %}?{{ request.GET.urlencode }}"
+                           class="btn btn-default btn-sm" role="button">With ID</a>
+                        <a href="{% url 'nmcsv1' 1 1 %}?{{ request.GET.urlencode }}"
+                           class="btn btn-default btn-sm" role="button">With both</a>
+                        </p>
+                        <p>
+                    {% endif %}
+                    <a href="{% url 'nmxlsx1' 0 0 %}?{{ request.GET.urlencode }}"
+                       class="btn btn-default btn-sm" role="button">Export to XLSX</a>
+                    {% if admin.pidgroup %}
+                        <a href="{% url 'nmxlsx1' 1 0 %}?{{ request.GET.urlencode }}"
+                           class="btn btn-default btn-sm" role="button">With names</a>
+                        <a href="{% url 'nmxlsx1' 0 1 %}?{{ request.GET.urlencode }}"
+                           class="btn btn-default btn-sm" role="button">With ID</a>
+                        <a href="{% url 'nmxlsx1' 1 1 %}?{{ request.GET.urlencode }}"
+                           class="btn btn-default btn-sm" role="button">With both</a>
+                    {% endif %}
+                </p>
+
+            {% else %}
+                <p>
+                    No export permissions
+                </p>
+            {% endif %}
+
+
+        </div>
+    </div>
+
+    {{ studyfilter }}
+
+    <form action="" method="get" class="form-horizontal" role="form">
+        <div class="panel panel-info small">
+            <div class="panel-heading">
+                <h3 class="panel-title">Exam filter</h3>
+            </div>
+            <div class="panel-body">
+                <em>Date format yyyy-mm-dd</em>
+                {% for field in filter.form.visible_fields %}
+                    <div class="form-group">
+                        <div class="col-xs-4">
+                            <label>{{ field.label_tag }}</label>
+                        </div>
+                        <div class="col-xs-8">
+                            {{ field.errors }}
+                            {{ field }}
+                        </div>
+                    </div>
+                {% endfor %}
+                {% for field in filter.form.hidden_fields %}
+                    <div style="display:none">{{ field }}</div>
+                {% endfor %}
+                <input class="btn btn-default" name="submit" type="submit" />
+            </div>
+            <div class="panel-heading">
+                <h3 class="panel-title">Chart options</h3>
+            </div>
+            <div class="panel-body">
+                <table aria-describedby="CT chart options">
+                    {% csrf_token %}
+                    {% for field in chartOptionsForm %}
+                        <tr>
+                        {% if field.field.widget.attrs.class == 'CheckboxSelectMultiple' %}
+                            <td class="shaded_top_bottom_border"><label for="{{ field.auto_id }}">{{ field.label }}</label></td>
+                            <td class="shaded_top_bottom_border">{{ field }}</td>
+                        {% elif field.label == 'Study frequency' or field.label == 'Time period' %}
+                            <td class="top_border"><label for="{{ field.auto_id }}">{{ field.label }}</label></td>
+                            <td class="top_border">{{ field }}</td>
+                        {% else %}
+                            <td><label for="{{ field.auto_id }}">{{ field.label }}</label></td>
+                            <td>{{ field }}</td>
+                        {% endif %}
+                        </tr>
+                    {% endfor %}
+                </table>
+                <input class="btn btn-default" name="submit" type="submit" />
+            </div>
+            <div class="panel-heading">
+                <h3 class="panel-title">Table options</h3>
+            </div>
+            <div class="panel-body">
+                <table aria-describedby="Number of rows per page option">
+                    {{ itemsPerPageForm }}
+                </table>
+                <input class="btn btn-default" name="submit" type="submit" />
+            </div>
+        </div>
+    </form>
+
+    <script src="{{ STATIC_URL }}js/datepicker.js"></script>
+    <script src="{{ STATIC_URL }}js/formatDate.js"></script>
+
+{% endblock %}
+
+{% block col1 %}
+
+
+    <table class="table table-bordered table-hover row-clickable small" aria-describedby="Study summary table">
+        <tr>
+            <th>Institution</th>
+            <th>
+                <table aria-describedby="Make, model and display name">
+                    <tr><th scope="col">Make</th></tr>
+                    <tr><th scope="col">Model</th></tr>
+                    <tr><th scope="col" class="nowrap">Display name</th></tr>
+                </table>
+            </th>
+            <th>Date</th>
+            <th>
+                <table aria-describedby="Study description, procedure, requested procedure and accession number">
+                    <tr><th scope="col" class="nowrap">Study description</th></tr>
+                    <tr><th scope="col" class="nowrap">Procedure</th></tr>
+                    <tr><th scope="col" class="nowrap">Requested Procedure</th></tr>
+                    <tr><th scope="col" class="nowrap">Accession number</th></tr>
+                </table>
+            </th>
+            <th>Radiopharmaceutical</th>
+            <th>Administered Dose (MBq)</th>
+            {% if admin.admingroup %}
+                <th>Delete?</th>
+            {% endif %}
+        </tr>
+        {% for exam in study_list %}
+          {% with equipment=exam.generalequipmentmoduleattr_set.get %}
+            {% with radioadmin=exam.radiopharmaceuticalradiationdose_set.get.radiopharmaceuticaladministrationeventdata_set.get %}
+                <tr>
+                    <td>
+                        <a href="{% url 'nm_detail_view' pk=exam.id %}">
+                            {{ equipment.institution_name }}
+                        </a>
+                    </td>
+                    <td>
+                        <a href="{% url 'nm_detail_view' pk=exam.id %}">
+                            <table onclick="window.location='{% url 'nm_detail_view' pk=exam.id %}';" aria-describedby="Manufacturer, model and display name">
+                                <tr><td class="nowrap">{{ equipment.manufacturer }}</td></tr>
+                                <tr><td class="nowrap">{{ equipment.manufacturer_model_name }}</td></tr>
+                                <tr><td class="nowrap">{{ equipment.unique_equipment_name.display_name }}</td></tr>
+                            </table>
+                        </a>
+                    </td>
+                    <td>
+                        <a href="{% url 'nm_detail_view' pk=exam.id %}">
+                            {{ exam.study_date|date:"Y-m-d" }} {{ exam.study_time|date:"H:i" }}</td>
+                    </a>
+                    <td>
+                        <a href="{% url 'nm_detail_view' pk=exam.id %}">
+                            <table onclick="window.location='{% url 'nm_detail_view' pk=exam.id %}';" aria-describedby="Study description, procedure and requested procedure name">
+                                <tr><td class="nowrap">{{ exam.study_description }}</td></tr>
+                                <tr><td class="nowrap">{{ exam.procedure_code_meaning }}</td></tr>
+                                <tr><td class="nowrap">{{ exam.requested_procedure_code_meaning }}</td></tr>
+                                {% if not exam.accession_hashed %}
+                                    <tr><td class="nowrap">{{ exam.accession_number }}</td></tr>
+                                {% endif %}
+                            </table>
+                        </a>
+                    </td>
+                    <td>
+                        <a href="{% url 'nm_detail_view' pk=exam.id %}">
+                            {% if radioadmin.radiopharmaceutical_agent %}
+                                {{radioadmin.radiopharmaceutical_agent.code_meaning}}
+                            {% else %} 
+                                {{radioadmin.radiopharmaceutical_agent_string}}
+                            {% endif %}
+                        </a>
+                    </td>
+                    <td>
+                        <a href="{% url 'nm_detail_view' pk=exam.id %}">
+                            {{radioadmin.administered_activity|floatformat:2}}
+                        </a>
+                    </td>
+                    {% if admin.admingroup %}
+                        <td>
+                            <a href="{% url 'study_delete' exam.id %}">Delete</a>
+                        </td>
+                    {% endif %}
+            </tr>
+            {% endwith %}
+          {% endwith %}
+        {% endfor %}
+    </table>
+
+
+{% endblock %}
+
+{% block jsblock %}
+{% endblock %}
+
+{% block plotdata %}
+
+    {% if request.user.userprofile.plotCharts %}
+
+        <script src="{{ STATIC_URL }}js/django_reverse/reverse.js"></script>
+
+        <div class="ajax-progress"><img src="{{ STATIC_URL }}img/ajax-loader.gif" alt="ajax loading spinner"></div>
+
+        <!-- JavaScript to enable Plotly charts -->
+        <script src="{{ STATIC_URL }}js/charts/plotly-2.12.1.min.js"></script>
+        <!-- End of JavaScript to enable Plotly charts -->
+
+        <!-- JavaScript Plotly chart resizing code. -->
+        <script src="{{ STATIC_URL }}js/charts/chartFullScreen.js"></script>
+        <!-- End of JavaScript Plotly chart resizing code. -->
+
+        <!-- JavaScript chart AJAX code. -->
+        <script src="{{ STATIC_URL }}js/charts/nmChartAjax.js"></script>
+        <!-- End of JavaScript chart AJAX code. -->
+
+        {% for chart in required_charts %}
+            <div class="panel-group" id="{{ chart.var_name }}accordion">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                            <a data-toggle="collapse" data-parent="#{{ chart.var_name }}accordion" href="#collapse{{ chart.var_name }}" onclick="setTimeout(function() {triggerResizeEvent();}, 0);">
+                                {{ chart.title }}
+                            </a>
+                        </h4>
+                    </div>
+                    <div id="collapse{{ chart.var_name }}" class="panel-collapse collapse">
+                        <div id="{{ chart.var_name }}ChartParentDiv" class="panel-body">
+                            <div id="{{ chart.var_name }}ChartDiv"></div>
+                            <a onclick="enterFullScreenPlotly('{{ chart.var_name }}ChartDiv', '{{ chart.var_name }}ChartParentDiv');"
+                               class="btn btn-default btn-sm" role="button">Toggle fullscreen</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endblock %}

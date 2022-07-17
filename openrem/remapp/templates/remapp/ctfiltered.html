@@ -64,8 +64,9 @@
             <div class="panel-heading">
                 <h3 class="panel-title">Exam filter</h3>
             </div>
+
             <div class="panel-body">
-                <i>Date format yyyy-mm-dd</i>
+                <em>Date format yyyy-mm-dd</em>
                 {% for field in filter.form.visible_fields %}
                     <div class="form-group">
                         <div class="col-xs-4">
@@ -77,43 +78,84 @@
                         </div>
                     </div>
                 {% endfor %}
+
                 {% for field in filter.form.hidden_fields %}
                     <div style="display:none">{{ field }}</div>
                 {% endfor %}
+
                 <input class="btn btn-default" name="submit" type="submit" />
             </div>
+
             <div class="panel-heading">
                 <h3 class="panel-title">Chart options</h3>
             </div>
+
             <div class="panel-body">
-                <table aria-describedby="CT chart options">
-                    {% csrf_token %}
-                    {% for field in chartOptionsForm %}
-                        <tr>
-                        {% if field.field.widget.attrs.class == 'CheckboxSelectMultiple' %}
-                            <td class="shaded_top_bottom_border"><label for="{{ field.auto_id }}">{{ field.label }}</label></td>
-                            <td class="shaded_top_bottom_border">{{ field }}</td>
-                        {% elif field.label == 'Acquisition frequency' or field.label == 'Requested procedure frequency' or field.label == 'Time period' %}
-                            <td class="top_border"><label for="{{ field.auto_id }}">{{ field.label }}</label></td>
-                            <td class="top_border">{{ field }}</td>
-                        {% else %}
-                            <td><label for="{{ field.auto_id }}">{{ field.label }}</label></td>
-                            <td>{{ field }}</td>
-                        {% endif %}
-                        </tr>
-                    {% endfor %}
-                </table>
+
+                {% csrf_token %}
+                {% regroup chartOptionsForm by field.group as field_groups %}
+
+                {% for field_group in field_groups %}
+
+                    {% if field_group.grouper == 'PlotCharts' %}
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h4 class="panel-title">
+                                    <label style="font-weight: normal" for="{{ field_group.list.0.auto_id }}">{{ field_group.list.0.label }}</label>&nbsp;{{ field_group.list.0 }}
+                                </h4>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="panel panel-default">
+
+                            <div class="panel-heading">
+                                <h4 class="panel-title">
+                                    <a class="no-decoration" data-toggle="collapse" data-target="#{{ field_group.grouper|cut:" " }}">{{ field_group.grouper }}</a>
+                                </h4>
+                            </div>
+
+                            <div id="{{ field_group.grouper|cut:" " }}" class="panel-collapse collapse in">
+                                <div class="panel-body">
+
+                                    <table class="table table-condensed">
+                                    {% for field in field_group.list %}
+                                        <tr>
+                                        {% if field.field.widget.attrs.class == 'CheckboxSelectMultiple' %}
+                                            <td class="shaded_top_bottom_border"><label for="{{ field.auto_id }}">{{ field.label }}</label></td>
+                                            <td class="shaded_top_bottom_border">{{ field }}</td>
+                                        {% elif field.label == 'Acquisition frequency' or field.label == 'Standard study frequency' or field.label == 'Requested procedure frequency' or field.label == 'Time period' %}
+                                            <td class="top_border"><label for="{{ field.auto_id }}">{{ field.label }}</label></td>
+                                            <td class="top_border">{{ field }}</td>
+                                        {% else %}
+                                            <td><label for="{{ field.auto_id }}">{{ field.label }}</label></td>
+                                            <td>{{ field }}</td>
+                                        {% endif %}
+                                        </tr>
+                                    {% endfor %}
+                                    </table>
+
+                                </div>
+                            </div>
+
+                        </div>
+                    {% endif %}
+
+                {% endfor %}
+
                 <input class="btn btn-default" name="submit" type="submit" />
             </div>
+
             <div class="panel-heading">
                 <h3 class="panel-title">Table options</h3>
             </div>
+
             <div class="panel-body">
                 <table aria-describedby="Number of rows per page option">
                     {{ itemsPerPageForm }}
                 </table>
                 <input class="btn btn-default" name="submit" type="submit" />
             </div>
+
         </div>
     </form>
 
@@ -144,6 +186,9 @@
                     <tr><th scope="col" class="nowrap">Accession number</th></tr>
                 </table>
             </th>
+        {% if showStandardNames %}
+            <th>Standard study names</th>
+        {% endif %}
             <th scope="col">Number of events</th>
             <th scope="col">Total DLP (mGy.cm)</th>
             {% if admin.admingroup %}
@@ -169,8 +214,9 @@
                 </td>
                 <td>
                     <a href="{% url 'ct_detail_view' pk=exam.id %}">
-                        {{ exam.study_date|date:"Y-m-d" }} {{ exam.study_time|date:"H:i" }}</td>
-                </a>
+                        {{ exam.study_date|date:"Y-m-d" }} {{ exam.study_time|date:"H:i" }}
+                    </a>
+                </td>
                 <td>
                     <a href="{% url 'ct_detail_view' pk=exam.id %}">
                         <table onclick="window.location='{% url 'ct_detail_view' pk=exam.id %}';" aria-describedby="Study description, procedure and requested procedure name">
@@ -183,6 +229,17 @@
                         </table>
                     </a>
                 </td>
+            {% if showStandardNames %}
+                <td>
+                    <a href="{% url 'ct_detail_view' pk=exam.id %}">
+                        <table onclick="window.location='{% url 'ct_detail_view' pk=exam.id %}';" aria-describedby="Standard study description, procedure and requested procedure names">
+                            {% for std_name in exam.standard_names.all %}
+                                <tr><td class="nowrap">{{ std_name.standard_name|default_if_none:"-" }}</td></tr>
+                            {% endfor %}
+                        </table>
+                    </a>
+                </td>
+            {% endif %}
                 <td>
                     <a href="{% url 'ct_detail_view' pk=exam.id %}">
                         {{ exam.number_of_events }}
@@ -218,7 +275,7 @@
         <div class="ajax-progress"><img src="{{ STATIC_URL }}img/ajax-loader.gif"></div>
 
         <!-- JavaScript to enable Plotly charts -->
-        <script src="{{ STATIC_URL }}js/charts/plotly-2.4.2.min.js"></script>
+        <script src="{{ STATIC_URL }}js/charts/plotly-2.12.1.min.js"></script>
         <!-- End of JavaScript to enable Plotly charts -->
 
         <!-- JavaScript Plotly chart resizing code. -->

@@ -32,37 +32,37 @@ class ImportDXRDSR(TestCase):
         self.assertEqual(study.patientmoduleattr_set.get().patient_birth_date, None)
 
         # Test that study level data is recorded correctly
-        self.assertEqual(study.accession_number, u"3599305798462538")
+        self.assertEqual(study.accession_number, "3599305798462538")
         self.assertEqual(study.study_date, datetime.date(2016, 8, 18))
         self.assertEqual(study.study_time, datetime.time(19, 25, 1, 650000))
-        self.assertEqual(study.modality_type, u"DX")
-        self.assertEqual(study.study_description, u"CR THORAX")
-        self.assertEqual(study.performing_physician_name, u"Smith^Billy")
-        self.assertEqual(study.operator_name, u"Stauss^Brook")
+        self.assertEqual(study.modality_type, "DX")
+        self.assertEqual(study.study_description, "CR THORAX")
+        self.assertEqual(study.performing_physician_name, "Smith^Billy")
+        self.assertEqual(study.operator_name, "Stauss^Brook")
 
         self.assertEqual(
-            study.generalequipmentmoduleattr_set.get().institution_name, u"OpenREM"
+            study.generalequipmentmoduleattr_set.get().institution_name, "OpenREM"
         )
         self.assertEqual(
-            study.generalequipmentmoduleattr_set.get().manufacturer, u"Canon Inc."
+            study.generalequipmentmoduleattr_set.get().manufacturer, "Canon Inc."
         )
         self.assertEqual(
             study.generalequipmentmoduleattr_set.get().manufacturer_model_name,
-            u"CXDI Control Software NE",
+            "CXDI Control Software NE",
         )
         self.assertEqual(
-            study.generalequipmentmoduleattr_set.get().station_name, u"CANONDaRt"
+            study.generalequipmentmoduleattr_set.get().station_name, "CANONDaRt"
         )
         self.assertEqual(
             study.generalequipmentmoduleattr_set.get().device_serial_number,
-            u"cabd8dc7c6d6dab5db7",
+            "cabd8dc7c6d6dab5db7",
         )
         self.assertEqual(
-            study.generalequipmentmoduleattr_set.get().software_versions, u"2.12.0.20"
+            study.generalequipmentmoduleattr_set.get().software_versions, "2.12.0.20"
         )
 
         # Test that patient level data is recorded correctly
-        self.assertEqual(study.patientstudymoduleattr_set.get().patient_age, u"058Y")
+        self.assertEqual(study.patientstudymoduleattr_set.get().patient_age, "058Y")
         self.assertAlmostEqual(
             study.patientstudymoduleattr_set.get().patient_age_decimal, Decimal(58.3)
         )
@@ -70,41 +70,41 @@ class ImportDXRDSR(TestCase):
         # Test that projectionxrayradiationdose data is stored correctly
         self.assertEqual(
             study.projectionxrayradiationdose_set.get().procedure_reported.code_meaning,
-            u"Projection X-Ray",
+            "Projection X-Ray",
         )
         self.assertEqual(
             study.projectionxrayradiationdose_set.get()
             .observercontext_set.get()
             .observer_type.code_meaning,
-            u"Device",
+            "Device",
         )
         self.assertEqual(
             study.projectionxrayradiationdose_set.get()
             .observercontext_set.get()
             .device_observer_name,
-            u"PC",
+            "PC",
         )
         self.assertEqual(
             study.projectionxrayradiationdose_set.get()
             .observercontext_set.get()
             .device_observer_manufacturer,
-            u"Canon Inc.",
+            "Canon Inc.",
         )
         self.assertEqual(
             study.projectionxrayradiationdose_set.get()
             .observercontext_set.get()
             .device_observer_model_name,
-            u"CXDI Control Software NE",
+            "CXDI Control Software NE",
         )
         self.assertEqual(
             study.projectionxrayradiationdose_set.get()
             .observercontext_set.get()
             .device_observer_serial_number,
-            u"cabd8dc7c6d6dab5db7",
+            "cabd8dc7c6d6dab5db7",
         )
         self.assertEqual(
             study.projectionxrayradiationdose_set.get().scope_of_accumulation.code_meaning,
-            u"Performed Procedure Step",
+            "Performed Procedure Step",
         )
         self.assertEqual(
             study.projectionxrayradiationdose_set.get().source_of_dose_information.code_meaning,
@@ -137,19 +137,19 @@ class ImportDXRDSR(TestCase):
             study.projectionxrayradiationdose_set.get()
             .irradeventxraydata_set.get()
             .irradiation_event_type.code_meaning,
-            u"Stationary Acquisition",
+            "Stationary Acquisition",
         )
         self.assertEqual(
             study.projectionxrayradiationdose_set.get()
             .irradeventxraydata_set.get()
             .acquisition_protocol,
-            u"THORAX AP 90kv-0,9mAs",
+            "THORAX AP 90kv-0,9mAs",
         )
         self.assertEqual(
             study.projectionxrayradiationdose_set.get()
             .irradeventxraydata_set.get()
             .target_region.code_meaning,
-            u"Chest",
+            "Chest",
         )
 
         self.assertAlmostEqual(
@@ -171,7 +171,7 @@ class ImportDXRDSR(TestCase):
             .accumxraydose_set.get()
             .accumprojxraydose_set.get()
             .reference_point_definition,
-            u"Unknown",
+            "Unknown",
         )
 
         self.assertAlmostEqual(
@@ -248,119 +248,119 @@ class ImportDXRDSR(TestCase):
         self.assertEqual(study.patientmoduleattr_set.get().patient_birth_date, None)
 
         # Test that study level data is recorded correctly
-        self.assertEqual(study.accession_number, u"7698466579781854")
+        self.assertEqual(study.accession_number, "7698466579781854")
         self.assertEqual(study.study_date, datetime.date(2016, 3, 9))
         self.assertEqual(study.study_time, datetime.time(17, 28, 33, 689000))
-        self.assertEqual(study.modality_type, u"DX")
-        self.assertEqual(study.study_description, u"CR LEG")
-        self.assertEqual(study.referring_physician_name, u"Mathis^Judy")
-        self.assertEqual(study.performing_physician_name, u"Nelson^Colin")
-        self.assertEqual(study.operator_name, u"Clark^Laurence")
+        self.assertEqual(study.modality_type, "DX")
+        self.assertEqual(study.study_description, "CR LEG")
+        self.assertEqual(study.referring_physician_name, "Mathis^Judy")
+        self.assertEqual(study.performing_physician_name, "Nelson^Colin")
+        self.assertEqual(study.operator_name, "Clark^Laurence")
 
         self.assertEqual(
-            study.generalequipmentmoduleattr_set.get().institution_name, u"OpenREM"
+            study.generalequipmentmoduleattr_set.get().institution_name, "OpenREM"
         )
         self.assertEqual(
-            study.generalequipmentmoduleattr_set.get().institution_address, u"London"
+            study.generalequipmentmoduleattr_set.get().institution_address, "London"
         )
         self.assertEqual(
-            study.generalequipmentmoduleattr_set.get().manufacturer, u"CARESTREAM"
+            study.generalequipmentmoduleattr_set.get().manufacturer, "CARESTREAM"
         )
         self.assertEqual(
             study.generalequipmentmoduleattr_set.get().manufacturer_model_name,
-            u"DRX-Evolution",
+            "DRX-Evolution",
         )
         self.assertEqual(
-            study.generalequipmentmoduleattr_set.get().station_name, u"CAREDRXEVO"
+            study.generalequipmentmoduleattr_set.get().station_name, "CAREDRXEVO"
         )
         self.assertEqual(
             study.generalequipmentmoduleattr_set.get().device_serial_number,
-            u"7664565786545",
+            "7664565786545",
         )
         self.assertEqual(
             study.generalequipmentmoduleattr_set.get().software_versions,
-            u"5.7.412.2035",
+            "5.7.412.2035",
         )
 
         # Test that patient level data is recorded correctly
-        self.assertEqual(study.patientstudymoduleattr_set.get().patient_age, u"029Y")
+        self.assertEqual(study.patientstudymoduleattr_set.get().patient_age, "029Y")
         self.assertAlmostEqual(
             study.patientstudymoduleattr_set.get().patient_age_decimal, Decimal(29.5)
         )
-        self.assertEqual(study.patientmoduleattr_set.get().patient_sex, u"F")
+        self.assertEqual(study.patientmoduleattr_set.get().patient_sex, "F")
 
         # Test that projectionxrayradiationdose data is stored correctly
         self.assertEqual(
             study.projectionxrayradiationdose_set.get().procedure_reported.code_meaning,
-            u"Projection X-Ray",
+            "Projection X-Ray",
         )
         # One of these 'observer_type's should be 'person' but it only works if they are noth set as 'device'...
         self.assertEqual(
             study.projectionxrayradiationdose_set.get()
             .observercontext_set.order_by("id")[0]
             .observer_type.code_meaning,
-            u"Device",
+            "Device",
         )
         self.assertEqual(
             study.projectionxrayradiationdose_set.get()
             .observercontext_set.order_by("id")[1]
             .observer_type.code_meaning,
-            u"Device",
+            "Device",
         )
         self.assertEqual(
             study.projectionxrayradiationdose_set.get()
             .observercontext_set.order_by("id")[0]
             .device_observer_name,
-            u"CAREDXEVO",
+            "CAREDXEVO",
         )
         self.assertEqual(
             study.projectionxrayradiationdose_set.get()
             .observercontext_set.order_by("id")[0]
             .device_observer_manufacturer,
-            u"CARESTREAM",
+            "CARESTREAM",
         )
         self.assertEqual(
             study.projectionxrayradiationdose_set.get()
             .observercontext_set.order_by("id")[0]
             .device_observer_model_name,
-            u"DRX-Evolution",
+            "DRX-Evolution",
         )
         self.assertEqual(
             study.projectionxrayradiationdose_set.get()
             .observercontext_set.order_by("id")[0]
             .device_observer_serial_number,
-            u"7664565786545",
+            "7664565786545",
         )
         self.assertEqual(
             study.projectionxrayradiationdose_set.get()
             .observercontext_set.order_by("id")[0]
             .device_role_in_procedure.code_meaning,
-            u"Irradiating Device",
+            "Irradiating Device",
         )
         self.assertEqual(
             study.projectionxrayradiationdose_set.get().scope_of_accumulation.code_meaning,
-            u"Performed Procedure Step",
+            "Performed Procedure Step",
         )
         self.assertEqual(
             study.projectionxrayradiationdose_set.get().source_of_dose_information.code_meaning,
-            u"Manual Entry",
+            "Manual Entry",
         )
 
         self.assertEqual(
             study.projectionxrayradiationdose_set.get().has_intent.code_meaning,
-            u"Diagnostic Intent",
+            "Diagnostic Intent",
         )
         self.assertEqual(
             study.projectionxrayradiationdose_set.get().xray_detector_data_available.code_meaning,
-            u"Yes",
+            "Yes",
         )
         self.assertEqual(
             study.projectionxrayradiationdose_set.get().xray_source_data_available.code_meaning,
-            u"Yes",
+            "Yes",
         )
         self.assertEqual(
             study.projectionxrayradiationdose_set.get().xray_mechanical_data_available.code_meaning,
-            u"Yes",
+            "Yes",
         )
 
         # Check that accumulated xray dose data is recorded correctly
@@ -383,7 +383,7 @@ class ImportDXRDSR(TestCase):
             .accumxraydose_set.get()
             .accumintegratedprojradiogdose_set.get()
             .reference_point_definition_code.code_meaning,
-            u"In Detector Plane",
+            "In Detector Plane",
         )
 
         # Check that x-ray irradiation event data is stored correctly
@@ -391,7 +391,7 @@ class ImportDXRDSR(TestCase):
             study.projectionxrayradiationdose_set.get()
             .irradeventxraydata_set.order_by("id")[0]
             .acquisition_plane.code_meaning,
-            u"Single Plane",
+            "Single Plane",
         )
         self.assertEqual(
             study.projectionxrayradiationdose_set.get()
@@ -403,25 +403,25 @@ class ImportDXRDSR(TestCase):
             study.projectionxrayradiationdose_set.get()
             .irradeventxraydata_set.order_by("id")[0]
             .irradiation_event_type.code_meaning,
-            u"Stationary Acquisition",
+            "Stationary Acquisition",
         )
         self.assertEqual(
             study.projectionxrayradiationdose_set.get()
             .irradeventxraydata_set.order_by("id")[0]
             .acquisition_protocol,
-            u"Thigh Right",
+            "Thigh Right",
         )
         self.assertEqual(
             study.projectionxrayradiationdose_set.get()
             .irradeventxraydata_set.order_by("id")[0]
             .anatomical_structure.code_meaning,
-            u"Hip joint",
+            "Hip joint",
         )
         self.assertEqual(
             study.projectionxrayradiationdose_set.get()
             .irradeventxraydata_set.order_by("id")[0]
             .target_region.code_meaning,
-            u"Hip joint",
+            "Hip joint",
         )
         self.assertAlmostEqual(
             study.projectionxrayradiationdose_set.get()
@@ -433,7 +433,7 @@ class ImportDXRDSR(TestCase):
             study.projectionxrayradiationdose_set.get()
             .irradeventxraydata_set.order_by("id")[0]
             .reference_point_definition.code_meaning,
-            u"In Detector Plane",
+            "In Detector Plane",
         )
 
         self.assertAlmostEqual(
@@ -510,7 +510,7 @@ class ImportDXRDSR(TestCase):
             .irradeventxraysourcedata_set.get()
             .deviceparticipant_set.get()
             .device_role_in_procedure.code_meaning,
-            u"Irradiating Device",
+            "Irradiating Device",
         )
         self.assertEqual(
             study.projectionxrayradiationdose_set.get()
@@ -518,7 +518,7 @@ class ImportDXRDSR(TestCase):
             .irradeventxraysourcedata_set.get()
             .deviceparticipant_set.get()
             .device_name,
-            u"CAREDXEVO",
+            "CAREDXEVO",
         )
         self.assertEqual(
             study.projectionxrayradiationdose_set.get()
@@ -526,7 +526,7 @@ class ImportDXRDSR(TestCase):
             .irradeventxraysourcedata_set.get()
             .deviceparticipant_set.get()
             .device_manufacturer,
-            u"CARESTREAM",
+            "CARESTREAM",
         )
         self.assertEqual(
             study.projectionxrayradiationdose_set.get()
@@ -534,7 +534,7 @@ class ImportDXRDSR(TestCase):
             .irradeventxraysourcedata_set.get()
             .deviceparticipant_set.get()
             .device_model_name,
-            u"DRX-Evolution",
+            "DRX-Evolution",
         )
         self.assertEqual(
             study.projectionxrayradiationdose_set.get()
@@ -542,14 +542,14 @@ class ImportDXRDSR(TestCase):
             .irradeventxraysourcedata_set.get()
             .deviceparticipant_set.get()
             .device_serial_number,
-            u"7664565786545",
+            "7664565786545",
         )
 
         self.assertEqual(
             study.projectionxrayradiationdose_set.get()
             .irradeventxraydata_set.order_by("id")[1]
             .acquisition_plane.code_meaning,
-            u"Single Plane",
+            "Single Plane",
         )
         self.assertEqual(
             study.projectionxrayradiationdose_set.get()
@@ -561,25 +561,25 @@ class ImportDXRDSR(TestCase):
             study.projectionxrayradiationdose_set.get()
             .irradeventxraydata_set.order_by("id")[1]
             .irradiation_event_type.code_meaning,
-            u"Stationary Acquisition",
+            "Stationary Acquisition",
         )
         self.assertEqual(
             study.projectionxrayradiationdose_set.get()
             .irradeventxraydata_set.order_by("id")[1]
             .acquisition_protocol,
-            u"Thigh Right",
+            "Thigh Right",
         )
         self.assertEqual(
             study.projectionxrayradiationdose_set.get()
             .irradeventxraydata_set.order_by("id")[1]
             .anatomical_structure.code_meaning,
-            u"Femur",
+            "Femur",
         )
         self.assertEqual(
             study.projectionxrayradiationdose_set.get()
             .irradeventxraydata_set.order_by("id")[1]
             .target_region.code_meaning,
-            u"Femur",
+            "Femur",
         )
         self.assertAlmostEqual(
             study.projectionxrayradiationdose_set.get()
@@ -591,7 +591,7 @@ class ImportDXRDSR(TestCase):
             study.projectionxrayradiationdose_set.get()
             .irradeventxraydata_set.order_by("id")[1]
             .reference_point_definition.code_meaning,
-            u"In Detector Plane",
+            "In Detector Plane",
         )
 
         self.assertAlmostEqual(
@@ -668,7 +668,7 @@ class ImportDXRDSR(TestCase):
             .irradeventxraysourcedata_set.get()
             .deviceparticipant_set.get()
             .device_role_in_procedure.code_meaning,
-            u"Irradiating Device",
+            "Irradiating Device",
         )
         self.assertEqual(
             study.projectionxrayradiationdose_set.get()
@@ -676,7 +676,7 @@ class ImportDXRDSR(TestCase):
             .irradeventxraysourcedata_set.get()
             .deviceparticipant_set.get()
             .device_name,
-            u"CAREDXEVO",
+            "CAREDXEVO",
         )
         self.assertEqual(
             study.projectionxrayradiationdose_set.get()
@@ -684,7 +684,7 @@ class ImportDXRDSR(TestCase):
             .irradeventxraysourcedata_set.get()
             .deviceparticipant_set.get()
             .device_manufacturer,
-            u"CARESTREAM",
+            "CARESTREAM",
         )
         self.assertEqual(
             study.projectionxrayradiationdose_set.get()
@@ -692,7 +692,7 @@ class ImportDXRDSR(TestCase):
             .irradeventxraysourcedata_set.get()
             .deviceparticipant_set.get()
             .device_model_name,
-            u"DRX-Evolution",
+            "DRX-Evolution",
         )
         self.assertEqual(
             study.projectionxrayradiationdose_set.get()
@@ -700,14 +700,14 @@ class ImportDXRDSR(TestCase):
             .irradeventxraysourcedata_set.get()
             .deviceparticipant_set.get()
             .device_serial_number,
-            u"7664565786545",
+            "7664565786545",
         )
 
         self.assertEqual(
             study.projectionxrayradiationdose_set.get()
             .irradeventxraydata_set.order_by("id")[2]
             .acquisition_plane.code_meaning,
-            u"Single Plane",
+            "Single Plane",
         )
         self.assertEqual(
             study.projectionxrayradiationdose_set.get()
@@ -719,31 +719,31 @@ class ImportDXRDSR(TestCase):
             study.projectionxrayradiationdose_set.get()
             .irradeventxraydata_set.order_by("id")[2]
             .irradiation_event_type.code_meaning,
-            u"Stationary Acquisition",
+            "Stationary Acquisition",
         )
         self.assertEqual(
             study.projectionxrayradiationdose_set.get()
             .irradeventxraydata_set.order_by("id")[2]
             .acquisition_protocol,
-            u"Thigh Right",
+            "Thigh Right",
         )
         self.assertEqual(
             study.projectionxrayradiationdose_set.get()
             .irradeventxraydata_set.order_by("id")[2]
             .anatomical_structure.code_meaning,
-            u"Femur",
+            "Femur",
         )
         self.assertEqual(
             study.projectionxrayradiationdose_set.get()
             .irradeventxraydata_set.order_by("id")[2]
             .target_region.code_meaning,
-            u"Femur",
+            "Femur",
         )
         self.assertEqual(
             study.projectionxrayradiationdose_set.get()
             .irradeventxraydata_set.order_by("id")[2]
             .image_view.code_meaning,
-            u"antero-posterior",
+            "antero-posterior",
         )
         self.assertAlmostEqual(
             study.projectionxrayradiationdose_set.get()
@@ -755,7 +755,7 @@ class ImportDXRDSR(TestCase):
             study.projectionxrayradiationdose_set.get()
             .irradeventxraydata_set.order_by("id")[2]
             .reference_point_definition.code_meaning,
-            u"In Detector Plane",
+            "In Detector Plane",
         )
 
         self.assertAlmostEqual(
@@ -832,7 +832,7 @@ class ImportDXRDSR(TestCase):
             .irradeventxraysourcedata_set.get()
             .deviceparticipant_set.get()
             .device_role_in_procedure.code_meaning,
-            u"Irradiating Device",
+            "Irradiating Device",
         )
         self.assertEqual(
             study.projectionxrayradiationdose_set.get()
@@ -840,7 +840,7 @@ class ImportDXRDSR(TestCase):
             .irradeventxraysourcedata_set.get()
             .deviceparticipant_set.get()
             .device_name,
-            u"CAREDXEVO",
+            "CAREDXEVO",
         )
         self.assertEqual(
             study.projectionxrayradiationdose_set.get()
@@ -848,7 +848,7 @@ class ImportDXRDSR(TestCase):
             .irradeventxraysourcedata_set.get()
             .deviceparticipant_set.get()
             .device_manufacturer,
-            u"CARESTREAM",
+            "CARESTREAM",
         )
         self.assertEqual(
             study.projectionxrayradiationdose_set.get()
@@ -856,7 +856,7 @@ class ImportDXRDSR(TestCase):
             .irradeventxraysourcedata_set.get()
             .deviceparticipant_set.get()
             .device_model_name,
-            u"DRX-Evolution",
+            "DRX-Evolution",
         )
         self.assertEqual(
             study.projectionxrayradiationdose_set.get()
@@ -864,14 +864,14 @@ class ImportDXRDSR(TestCase):
             .irradeventxraysourcedata_set.get()
             .deviceparticipant_set.get()
             .device_serial_number,
-            u"7664565786545",
+            "7664565786545",
         )
 
         self.assertEqual(
             study.projectionxrayradiationdose_set.get()
             .irradeventxraydata_set.order_by("id")[3]
             .acquisition_plane.code_meaning,
-            u"Single Plane",
+            "Single Plane",
         )
         self.assertEqual(
             study.projectionxrayradiationdose_set.get()
@@ -883,31 +883,31 @@ class ImportDXRDSR(TestCase):
             study.projectionxrayradiationdose_set.get()
             .irradeventxraydata_set.order_by("id")[3]
             .irradiation_event_type.code_meaning,
-            u"Stationary Acquisition",
+            "Stationary Acquisition",
         )
         self.assertEqual(
             study.projectionxrayradiationdose_set.get()
             .irradeventxraydata_set.order_by("id")[3]
             .acquisition_protocol,
-            u"Thigh Right",
+            "Thigh Right",
         )
         self.assertEqual(
             study.projectionxrayradiationdose_set.get()
             .irradeventxraydata_set.order_by("id")[3]
             .anatomical_structure.code_meaning,
-            u"Femur",
+            "Femur",
         )
         self.assertEqual(
             study.projectionxrayradiationdose_set.get()
             .irradeventxraydata_set.order_by("id")[3]
             .target_region.code_meaning,
-            u"Femur",
+            "Femur",
         )
         self.assertEqual(
             study.projectionxrayradiationdose_set.get()
             .irradeventxraydata_set.order_by("id")[3]
             .image_view.code_meaning,
-            u"antero-posterior",
+            "antero-posterior",
         )
         self.assertAlmostEqual(
             study.projectionxrayradiationdose_set.get()
@@ -919,7 +919,7 @@ class ImportDXRDSR(TestCase):
             study.projectionxrayradiationdose_set.get()
             .irradeventxraydata_set.order_by("id")[3]
             .reference_point_definition.code_meaning,
-            u"In Detector Plane",
+            "In Detector Plane",
         )
 
         self.assertAlmostEqual(
@@ -996,7 +996,7 @@ class ImportDXRDSR(TestCase):
             .irradeventxraysourcedata_set.get()
             .deviceparticipant_set.get()
             .device_role_in_procedure.code_meaning,
-            u"Irradiating Device",
+            "Irradiating Device",
         )
         self.assertEqual(
             study.projectionxrayradiationdose_set.get()
@@ -1004,7 +1004,7 @@ class ImportDXRDSR(TestCase):
             .irradeventxraysourcedata_set.get()
             .deviceparticipant_set.get()
             .device_name,
-            u"CAREDXEVO",
+            "CAREDXEVO",
         )
         self.assertEqual(
             study.projectionxrayradiationdose_set.get()
@@ -1012,7 +1012,7 @@ class ImportDXRDSR(TestCase):
             .irradeventxraysourcedata_set.get()
             .deviceparticipant_set.get()
             .device_manufacturer,
-            u"CARESTREAM",
+            "CARESTREAM",
         )
         self.assertEqual(
             study.projectionxrayradiationdose_set.get()
@@ -1020,7 +1020,7 @@ class ImportDXRDSR(TestCase):
             .irradeventxraysourcedata_set.get()
             .deviceparticipant_set.get()
             .device_model_name,
-            u"DRX-Evolution",
+            "DRX-Evolution",
         )
         self.assertEqual(
             study.projectionxrayradiationdose_set.get()
@@ -1028,7 +1028,7 @@ class ImportDXRDSR(TestCase):
             .irradeventxraysourcedata_set.get()
             .deviceparticipant_set.get()
             .device_serial_number,
-            u"7664565786545",
+            "7664565786545",
         )
 
         self.assertEqual(
@@ -1037,7 +1037,7 @@ class ImportDXRDSR(TestCase):
             .irradeventxraysourcedata_set.get()
             .deviceparticipant_set.get()
             .device_role_in_procedure.code_meaning,
-            u"Irradiating Device",
+            "Irradiating Device",
         )
         self.assertEqual(
             study.projectionxrayradiationdose_set.get()
@@ -1045,7 +1045,7 @@ class ImportDXRDSR(TestCase):
             .irradeventxraysourcedata_set.get()
             .deviceparticipant_set.get()
             .device_name,
-            u"CAREDXEVO",
+            "CAREDXEVO",
         )
         self.assertEqual(
             study.projectionxrayradiationdose_set.get()
@@ -1053,7 +1053,7 @@ class ImportDXRDSR(TestCase):
             .irradeventxraysourcedata_set.get()
             .deviceparticipant_set.get()
             .device_manufacturer,
-            u"CARESTREAM",
+            "CARESTREAM",
         )
         self.assertEqual(
             study.projectionxrayradiationdose_set.get()
@@ -1061,7 +1061,7 @@ class ImportDXRDSR(TestCase):
             .irradeventxraysourcedata_set.get()
             .deviceparticipant_set.get()
             .device_model_name,
-            u"DRX-Evolution",
+            "DRX-Evolution",
         )
         self.assertEqual(
             study.projectionxrayradiationdose_set.get()
@@ -1069,14 +1069,14 @@ class ImportDXRDSR(TestCase):
             .irradeventxraysourcedata_set.get()
             .deviceparticipant_set.get()
             .device_serial_number,
-            u"7664565786545",
+            "7664565786545",
         )
 
         self.assertEqual(
             study.projectionxrayradiationdose_set.get()
             .irradeventxraydata_set.order_by("id")[4]
             .acquisition_plane.code_meaning,
-            u"Single Plane",
+            "Single Plane",
         )
         self.assertEqual(
             study.projectionxrayradiationdose_set.get()
@@ -1088,25 +1088,25 @@ class ImportDXRDSR(TestCase):
             study.projectionxrayradiationdose_set.get()
             .irradeventxraydata_set.order_by("id")[4]
             .irradiation_event_type.code_meaning,
-            u"Stationary Acquisition",
+            "Stationary Acquisition",
         )
         self.assertEqual(
             study.projectionxrayradiationdose_set.get()
             .irradeventxraydata_set.order_by("id")[4]
             .acquisition_protocol,
-            u"Thigh Right",
+            "Thigh Right",
         )
         self.assertEqual(
             study.projectionxrayradiationdose_set.get()
             .irradeventxraydata_set.order_by("id")[4]
             .anatomical_structure.code_meaning,
-            u"Femur",
+            "Femur",
         )
         self.assertEqual(
             study.projectionxrayradiationdose_set.get()
             .irradeventxraydata_set.order_by("id")[4]
             .target_region.code_meaning,
-            u"Femur",
+            "Femur",
         )
         self.assertAlmostEqual(
             study.projectionxrayradiationdose_set.get()
@@ -1118,7 +1118,7 @@ class ImportDXRDSR(TestCase):
             study.projectionxrayradiationdose_set.get()
             .irradeventxraydata_set.order_by("id")[4]
             .reference_point_definition.code_meaning,
-            u"In Detector Plane",
+            "In Detector Plane",
         )
 
         self.assertAlmostEqual(
@@ -1195,7 +1195,7 @@ class ImportDXRDSR(TestCase):
             .irradeventxraysourcedata_set.get()
             .deviceparticipant_set.get()
             .device_role_in_procedure.code_meaning,
-            u"Irradiating Device",
+            "Irradiating Device",
         )
         self.assertEqual(
             study.projectionxrayradiationdose_set.get()
@@ -1203,7 +1203,7 @@ class ImportDXRDSR(TestCase):
             .irradeventxraysourcedata_set.get()
             .deviceparticipant_set.get()
             .device_name,
-            u"CAREDXEVO",
+            "CAREDXEVO",
         )
         self.assertEqual(
             study.projectionxrayradiationdose_set.get()
@@ -1211,7 +1211,7 @@ class ImportDXRDSR(TestCase):
             .irradeventxraysourcedata_set.get()
             .deviceparticipant_set.get()
             .device_manufacturer,
-            u"CARESTREAM",
+            "CARESTREAM",
         )
         self.assertEqual(
             study.projectionxrayradiationdose_set.get()
@@ -1219,7 +1219,7 @@ class ImportDXRDSR(TestCase):
             .irradeventxraysourcedata_set.get()
             .deviceparticipant_set.get()
             .device_model_name,
-            u"DRX-Evolution",
+            "DRX-Evolution",
         )
         self.assertEqual(
             study.projectionxrayradiationdose_set.get()
@@ -1227,7 +1227,7 @@ class ImportDXRDSR(TestCase):
             .irradeventxraysourcedata_set.get()
             .deviceparticipant_set.get()
             .device_serial_number,
-            u"7664565786545",
+            "7664565786545",
         )
 
         # Test summary fields

@@ -292,7 +292,6 @@ def create_dataframe_aggregates(df, df_name_cols, df_agg_col, stats_to_use=None)
         stats_to_use = ["count"]
 
     groupby_cols = ["x_ray_system_name"] + df_name_cols
-
     grouped_df = df.groupby(groupby_cols).agg({df_agg_col: stats_to_use})
     grouped_df.columns = grouped_df.columns.droplevel(level=0)
     grouped_df = grouped_df.reset_index()
@@ -483,9 +482,9 @@ def calc_facet_rows_and_height(df, facet_col_name, facet_col_wrap):
     :return: two-element list containing the chart height in pixels (int) and the number of facet rows (int)
     """
     n_facet_rows = math.ceil(len(df[facet_col_name].unique()) / facet_col_wrap)
-    chart_height = n_facet_rows * 500
-    if chart_height < 500:
-        chart_height = 500
+    chart_height = n_facet_rows * 750
+    if chart_height < 750:
+        chart_height = 750
     return chart_height, n_facet_rows
 
 
@@ -1050,9 +1049,13 @@ def plotly_histogram_barchart(
         )
 
     try:
+        n_cols = params["facet_col_wrap"]
+        if len(df_facet_list) < n_cols:
+            n_cols = len(df_facet_list)
+
         fig = make_subplots(
             rows=n_facet_rows,
-            cols=params["facet_col_wrap"],
+            cols=n_cols,
             vertical_spacing=0.40 / n_facet_rows,
         )
 
@@ -1130,7 +1133,7 @@ def plotly_histogram_barchart(
 
             current_facet += 1
             current_col += 1
-            if current_col > params["facet_col_wrap"]:
+            if current_col > n_cols:
                 current_row += 1
                 current_col = 1
 
@@ -1273,9 +1276,13 @@ def plotly_binned_statistic_barchart(
         )
 
     try:
+        n_cols = params["facet_col_wrap"]
+        if len(df_facet_category_list) < n_cols:
+            n_cols = len(df_facet_category_list)
+
         fig = make_subplots(
             rows=n_facet_rows,
-            cols=params["facet_col_wrap"],
+            cols=n_cols,
             vertical_spacing=0.40 / n_facet_rows,
         )
 
@@ -1379,7 +1386,7 @@ def plotly_binned_statistic_barchart(
 
             current_facet += 1
             current_col += 1
-            if current_col > params["facet_col_wrap"]:
+            if current_col > n_cols:
                 current_row += 1
                 current_col = 1
 
@@ -1651,7 +1658,7 @@ def plotly_scatter(
             category_orders=sorting_categories,
             opacity=0.6,
             height=chart_height,
-            render_mode="webgl",
+            render_mode="svg", #"webgl",
         )
 
         fig.update_traces(marker_line=dict(width=1, color="LightSlateGray"))
@@ -1993,7 +2000,8 @@ def construct_over_time_charts(
     group_by_physician=None,
 ):
     """
-    Construct a Plotly line chart of average values over time, optionally grouped by performing physician name
+    Construct a Plotly line chart of average values over time, optionally grouped by performing physician name.
+    For "boxplot" a plotly boxplot of values over time is returned instead of an plotly line chart.
 
     :param df: the Pandas DataFrame containing the data
     :param params: a dictionary of processing parameters
@@ -2006,7 +2014,7 @@ def construct_over_time_charts(
     :param params["date_title"]: (string) date title
     :param params["facet_title"]: (string) subplot title
     :param params["sorting_choice"]: 2-element list. [0] sets sort direction, [1] used to determine which field to sort
-    :param params["average_choices"]: lsit of strings containing requred averages ("mean", "median")
+    :param params["average_choices"]: list of strings containing requred averages ("mean", "median", "boxplot")
     :param params["time_period"]: string containing the time period to average over; "A" (years), "Q" (quarters),
                                   "M" (months), "W" (weeks), "D" (days)
     :param params["grouping_choice"]: (string) "series" or "system"
@@ -2015,9 +2023,10 @@ def construct_over_time_charts(
     :param params["facet_col_wrap"]: (int) number of subplots per row
     :param params["return_as_dict"]: (boolean) flag to trigger return as a dictionary rather than a HTML DIV
     :param group_by_physician: boolean flag to set whether to group by physician name
-    :return: a dictionary containing a combination of ["mean"] and ["median"] entries, each of which contains a Plotly
-             figure embedded in an HTML DIV; or Plotly figure as a dictionary (if params["return_as_dict"] is True); or
-             an error message embedded in an HTML DIV if there was a ValueError when calculating the figure
+    :return: a dictionary containing a combination of ["mean"], ["median"] and ["boxplot"] entries,
+        each of which contains a Plotly figure embedded in an HTML DIV; or Plotly figure as a
+        dictionary (if params["return_as_dict"] is True); or an error message embedded in an HTML DIV
+        if there was a ValueError when calculating the figure
     """
     sorted_categories = create_sorted_category_list(
         df, params["df_name_col"], params["df_value_col"], params["sorting_choice"]
@@ -2030,17 +2039,22 @@ def construct_over_time_charts(
             return_value["mean"] = empty_dataframe_msg(params)
         if "median" in params["average_choices"]:
             return_value["median"] = empty_dataframe_msg(params)
+        if "boxplot" in params["average_choices"]:
+            return_value["boxplot"] = empty_dataframe_msg(params)
         return return_value
 
-    df_time_series = create_dataframe_time_series(
-        df,
-        params["df_name_col"],
-        params["df_value_col"],
-        df_date_col=params["df_date_col"],
-        time_period=params["time_period"],
-        average_choices=params["average_choices"],
-        group_by_physician=group_by_physician,
-    )
+    if "mean" in params["average_choices"] or "median" in params["average_choices"]:
+        df_time_series = create_dataframe_time_series(
+            df,
+            params["df_name_col"],
+            params["df_value_col"],
+            df_date_col=params["df_date_col"],
+            time_period=params["time_period"],
+            average_choices=list(
+                set(params["average_choices"]).intersection(["mean", "median", "count"])
+            ),
+            group_by_physician=group_by_physician,
+        )
 
     category_names_col = params["df_name_col"]
     group_by_col = "x_ray_system_name"
@@ -2085,6 +2099,24 @@ def construct_over_time_charts(
             parameter_dict,
         )
 
+    if "boxplot" in params["average_choices"]:
+        df.set_index(params["df_date_col"], inplace=True)
+        df = df.to_period(freq=params["time_period"], copy=False)
+        df.reset_index(inplace=True)
+        df[params["df_date_col"]] = df[params["df_date_col"]].map(
+            lambda x: x.start_time
+        )
+        df.sort_values(params["df_date_col"], inplace=True)
+
+        parameter_dict["df_name_col"] = params["df_date_col"]
+        parameter_dict["df_value_col"] = params["df_value_col"]
+        parameter_dict["sorting_choice"] = params["sorting_choice"]
+
+        return_value["boxplot"] = plotly_boxplot(
+            df,
+            parameter_dict,
+        )
+
     return return_value
 
 
@@ -2120,3 +2152,235 @@ def download_link(
     b64 = base64.b64encode(object_to_download.encode()).decode()
 
     return f'<a class="btn btn-default btn-sm" role="button" href="data:file/txt;base64,{b64}" download="{download_filename}">{download_link_text}</a>'  # pylint: disable=line-too-long
+
+
+def generate_average_chart_group(
+    average_choices,
+    chart_message,
+    df,
+    modality_text,
+    name_field,
+    name_text,
+    return_as_dict,
+    return_structure,
+    units_text,
+    user_profile,
+    value_field,
+    value_text,
+    variable_name_start,
+    variable_value_name,
+    sorting_choice,
+):
+    # pylint: disable=too-many-locals
+    if user_profile.plotBoxplots and "median" not in average_choices:
+        average_choices = average_choices + ["median"]
+
+    if user_profile.plotMean or user_profile.plotMedian:
+
+        df_aggregated = create_dataframe_aggregates(
+            df,
+            [name_field],
+            value_field,
+            stats_to_use=average_choices + ["count"],
+        )
+
+        parameter_dict = {
+            "df_name_col": name_field,
+            "name_axis_title": name_text,
+            "colourmap": user_profile.plotColourMapChoice,
+            "facet_col": None,
+            "facet_col_wrap": user_profile.plotFacetColWrapVal,
+            "return_as_dict": return_as_dict,
+            "sorting_choice": [
+                user_profile.plotInitialSortingDirection,
+                sorting_choice,
+            ],
+            "custom_msg_line": chart_message,
+        }
+
+        if user_profile.plotMean:
+            parameter_dict["value_axis_title"] = "Mean " + value_text + " " + units_text
+            parameter_dict["filename"] = (
+                "OpenREM "
+                + modality_text
+                + " "
+                + name_text
+                + " "
+                + value_text
+                + " mean"
+            )
+            parameter_dict["average_choice"] = "mean"
+            (
+                return_structure[
+                    variable_name_start + "Mean" + variable_value_name + "Data"
+                ],
+                return_structure[
+                    variable_name_start + "Mean" + variable_value_name + "DataCSV"
+                ],
+            ) = plotly_barchart(  # pylint: disable=line-too-long
+                df_aggregated,
+                parameter_dict,
+                csv_name=variable_name_start + "Mean" + value_text + "Data.csv",
+            )
+
+            # Create a data frame to use to display the data to the user in an html table
+            table_df = df_aggregated[
+                ["x_ray_system_name", name_field, "mean", "count"]
+            ].round({"mean": 2})
+
+            # Rename the data frame columns to have user-friendly names
+            table_df.columns = [
+                "X-ray system name",
+                name_text,
+                "Mean " + value_text + " " + units_text,
+                "Count",
+            ]
+
+            # Pivot the table so that there is a column per system for the median and count
+            table_df = table_df.pivot(index=name_text, columns="X-ray system name")
+            table_df.columns = [
+                "<br>".join((col[1], str(col[0]))) for col in table_df.columns
+            ]
+            table_df = table_df.reset_index()
+
+            # Add a html table version of the data frame to the return structure
+            tableName = variable_name_start + "Mean" + variable_value_name + "DataTable"
+            return_structure[tableName] = table_df.to_html(
+                classes="table table-bordered table-sm small sortable chart-data-table-contents",
+                table_id=tableName,
+                index=False,
+                na_rep="-",
+                escape=False,
+            )
+
+        if user_profile.plotMedian:
+            parameter_dict["value_axis_title"] = (
+                "Median " + value_text + " " + units_text
+            )
+            parameter_dict["filename"] = (
+                "OpenREM "
+                + modality_text
+                + " "
+                + name_text
+                + " "
+                + value_text
+                + " median"
+            )
+            parameter_dict["average_choice"] = "median"
+            (
+                return_structure[
+                    variable_name_start + "Median" + variable_value_name + "Data"
+                ],
+                return_structure[
+                    variable_name_start + "Median" + variable_value_name + "DataCSV"
+                ],
+            ) = plotly_barchart(  # pylint: disable=line-too-long
+                df_aggregated,
+                parameter_dict,
+                csv_name=variable_name_start + "Median" + value_text + "Data.csv",
+            )
+
+            # Create a data frame to use to display the data to the user in an html table
+            table_df = df_aggregated[
+                ["x_ray_system_name", name_field, "median", "count"]
+            ].round({"median": 2})
+
+            # Rename the data frame columns to have user-friendly names
+            table_df.columns = [
+                "X-ray system name",
+                name_text,
+                "Median " + value_text + " " + units_text,
+                "Count",
+            ]
+
+            # Pivot the table so that there is a column per system for the median and count
+            table_df = table_df.pivot(index=name_text, columns="X-ray system name")
+            table_df.columns = [
+                "<br>".join((col[1], str(col[0]))) for col in table_df.columns
+            ]
+            table_df = table_df.reset_index()
+
+            # Add a html table version of the data frame to the return structure
+            tableName = (
+                variable_name_start + "Median" + variable_value_name + "DataTable"
+            )
+            return_structure[tableName] = table_df.to_html(
+                classes="table table-bordered table-sm small sortable chart-data-table-contents",
+                table_id=tableName,
+                index=False,
+                na_rep="-",
+                escape=False,
+            )
+
+    if user_profile.plotBoxplots:
+        parameter_dict = {
+            "df_name_col": name_field,
+            "df_value_col": value_field,
+            "value_axis_title": value_text + " " + units_text,
+            "name_axis_title": name_text,
+            "colourmap": user_profile.plotColourMapChoice,
+            "filename": "OpenREM "
+            + modality_text
+            + " "
+            + name_text
+            + " "
+            + variable_value_name
+            + " boxplot",
+            "facet_col": None,
+            "sorting_choice": [
+                user_profile.plotInitialSortingDirection,
+                sorting_choice,
+            ],
+            "facet_col_wrap": user_profile.plotFacetColWrapVal,
+            "return_as_dict": return_as_dict,
+            "custom_msg_line": chart_message,
+        }
+
+        return_structure[
+            variable_name_start + "Boxplot" + variable_value_name + "Data"
+        ] = plotly_boxplot(
+            df,
+            parameter_dict,
+        )
+
+    if user_profile.plotHistograms:
+        category_names_col = name_field
+        group_by_col = "x_ray_system_name"
+        legend_title = name_text
+
+        if user_profile.plotGroupingChoice == "series":
+            category_names_col = "x_ray_system_name"
+            group_by_col = name_field
+            legend_title = "System"
+
+        parameter_dict = {
+            "df_facet_col": group_by_col,
+            "df_category_col": category_names_col,
+            "df_value_col": value_field,
+            "value_axis_title": value_text + " " + units_text,
+            "legend_title": legend_title,
+            "n_bins": user_profile.plotHistogramBins,
+            "colourmap": user_profile.plotColourMapChoice,
+            "filename": "OpenREM "
+            + modality_text
+            + " "
+            + name_text
+            + " "
+            + variable_value_name
+            + " histogram",
+            "facet_col_wrap": user_profile.plotFacetColWrapVal,
+            "sorting_choice": [
+                user_profile.plotInitialSortingDirection,
+                sorting_choice,
+            ],
+            "global_max_min": user_profile.plotHistogramGlobalBins,
+            "return_as_dict": return_as_dict,
+            "custom_msg_line": chart_message,
+        }
+        return_structure[
+            variable_name_start + "Histogram" + variable_value_name + "Data"
+        ] = plotly_histogram_barchart(
+            df,
+            parameter_dict,
+        )
+    return return_structure
