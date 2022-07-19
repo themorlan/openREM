@@ -103,6 +103,7 @@ OpenREM version history
 * :issue:`772`  DICOM Networking: check for station name at series level or study, not both
 * :issue:`744`  Added overwrite mode to size import
 * :issue:`678`  Enabled import of PX modality panoramic exam data - they appear in the Radiographic section
+* :issue:`674`  Imports: fixed logging of all extractor functions instead of just Toshiba
 * :issue:`530`  Updated OpenREM to use pynetdicom 1.4
 * :issue:`513`  Internationalization: first translation strings added to documentation
 * :issue:`512`  Internationalization: first translation strings added to interface

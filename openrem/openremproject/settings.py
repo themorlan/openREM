@@ -185,7 +185,7 @@ LOGGING = {
             "level": "INFO",
             "propagate": False,
         },
-        "remapp.extractors.ct_toshiba": {
+        "remapp.extractors": {
             "handlers": ["extractor_file"],
             "level": "INFO",
             "propagate": False,
@@ -209,9 +209,9 @@ LOGGING["loggers"]["remapp"]["level"] = os.environ.get(
 LOGGING["loggers"]["remapp.netdicom.qrscu"]["level"] = os.environ.get(
     "LOG_LEVEL_QRSCU", default="INFO"
 )
-# Toshiba RDSR creation extractor logs
-LOGGING["loggers"]["remapp.extractors.ct_toshiba"]["level"] = os.environ.get(
-    "LOG_LEVEL_TOSHIBA", default="INFO"
+# Extractor logs
+LOGGING["loggers"]["remapp.extractors"]["level"] = os.environ.get(
+    "LOG_LEVEL_EXTRACTOR", default="INFO"
 )
 
 # Dummy locations of various tools for DICOM RDSR creation from CT images. Don't set value here - copy variables into
