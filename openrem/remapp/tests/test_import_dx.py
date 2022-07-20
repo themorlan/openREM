@@ -130,7 +130,7 @@ class ImportCarestreamDR7500(TestCase):
         )
         root_tests = os.path.dirname(os.path.abspath(__file__))
 
-        with LogCapture(level=logging.DEBUG) as self.log:
+        with LogCapture('remapp.extractors', level=logging.DEBUG) as self.log:
             dx.dx(os.path.join(root_tests, dx_ge_xr220_1))
             dx.dx(os.path.join(root_tests, dx_ge_xr220_2))
             dx.dx(os.path.join(root_tests, dx_ge_xr220_3))
@@ -1000,7 +1000,7 @@ class ImportDuplicateDX(TestCase):
 
         study_1_pk = GeneralStudyModuleAttr.objects.order_by("pk").first().pk
 
-        with LogCapture(level=logging.DEBUG) as log:
+        with LogCapture('remapp.extractors', level=logging.DEBUG) as log:
             dx.dx(os.path.join(root_tests, dx_ge_xr220_2))
 
         log.check_present(
@@ -1050,7 +1050,7 @@ class ImportDuplicateDX(TestCase):
 
         study_2_pk = GeneralStudyModuleAttr.objects.order_by("pk")[1].pk
 
-        with LogCapture(level=logging.DEBUG) as log:
+        with LogCapture('remapp.extractors', level=logging.DEBUG) as log:
             dx.dx(os.path.join(root_tests, dx_ge_xr220_2))
 
         log.check_present(
@@ -1098,7 +1098,7 @@ class ImportDuplicateDX(TestCase):
             study.modality_type = None
             study.save()
 
-        with LogCapture(level=logging.DEBUG) as log:
+        with LogCapture('remapp.extractors', level=logging.DEBUG) as log:
             dx.dx(os.path.join(root_tests, dx_ge_xr220_2))
 
         log.check_present(

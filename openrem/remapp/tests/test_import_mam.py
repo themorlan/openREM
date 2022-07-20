@@ -364,7 +364,7 @@ class ImportDuplicatesMG(TestCase):
         self.assertAlmostEqual(study.total_agd_left, Decimal(0.00547) * Decimal(100))
         self.assertEqual(study.number_of_events, 1)
 
-        with LogCapture(level=logging.DEBUG) as log1:
+        with LogCapture('remapp.extractors', level=logging.DEBUG) as log1:
             # Import second object, same time etc
             mam.mam(os.path.join(root_tests, mg_im1_for_proc))
 
@@ -413,7 +413,7 @@ class ImportDuplicatesMG(TestCase):
         )
         self.assertEqual(study.number_of_events, 2)
 
-        with LogCapture(level=logging.DEBUG) as log2:
+        with LogCapture('remapp.extractors', level=logging.DEBUG) as log2:
             # Import second object again - should be stopped on event UID this time
             mam.mam(os.path.join(root_tests, mg_im1_for_proc))
 
