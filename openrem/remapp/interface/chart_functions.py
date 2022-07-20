@@ -1658,7 +1658,7 @@ def plotly_scatter(
             category_orders=sorting_categories,
             opacity=0.6,
             height=chart_height,
-            render_mode="svg", #"webgl",
+            render_mode="svg",  # "webgl",
         )
 
         fig.update_traces(marker_line=dict(width=1, color="LightSlateGray"))
