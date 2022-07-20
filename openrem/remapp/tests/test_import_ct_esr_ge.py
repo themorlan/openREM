@@ -3016,19 +3016,27 @@ class ImportNonDoseSR(TestCase):
 
         from testfixtures import LogCapture
 
-        with LogCapture() as l:
+        with self.assertLogs(logger='remapp.extractors.rdsr') as l:
+
+        # with LogCapture() as l:
             rdsr.rdsr(esr_path)
             studies = GeneralStudyModuleAttr.objects.all()
 
             # Test that no studies have been imported
             self.assertEqual(studies.count(), 0)
-        # Test that log file was written to
-        l.check(
-            (
-                "remapp.extractors.rdsr",
-                "WARNING",
-                "rdsr.py not attempting to extract from {0}, not a radiation dose structured report".format(
+
+            self.assertIn(
+                "WARNING:remapp.extractors.rdsr:rdsr.py not attempting to extract from {0}, not a radiation dose structured report".format(
                     esr_path
-                ),
+                ), l.output
             )
-        )
+        # Test that log file was written to
+        # l.check(
+        #     (
+        #         "root",
+        #         "WARNING",
+        #         "rdsr.py not attempting to extract from {0}, not a radiation dose structured report".format(
+        #             esr_path
+        #         ),
+        #     )
+        # )
