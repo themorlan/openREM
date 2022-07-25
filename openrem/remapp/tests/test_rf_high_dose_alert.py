@@ -64,13 +64,13 @@ class RFHighDoseAlert(TestCase):
         rdsr.rdsr(os.path.join(root_tests, rf_siemens_zee_20160510))
         rdsr.rdsr(os.path.join(root_tests, rf_siemens_zee_20160512))
 
-        self.dap_16_text = u'<strong style="color: red;">16.0</strong>'
-        self.dap_32_text = u'<strong style="color: red;">32.0</strong>'
-        self.rp_252_text = u'<strong style="color: red;">0.00252</strong>'
-        self.rp_504_text = u'<strong style="color: red;">0.00504</strong>'
-        self.rp_000_text = u'<strong style="color: red;">0.0</strong>'
-        self.one_exam_text = u"(1 exam)"
-        self.two_exams_text = u"(2 exams)"
+        self.dap_16_text = '<strong style="color: red;">16.0</strong>'
+        self.dap_32_text = '<strong style="color: red;">32.0</strong>'
+        self.rp_252_text = '<strong style="color: red;">0.00252</strong>'
+        self.rp_504_text = '<strong style="color: red;">0.00504</strong>'
+        self.rp_000_text = '<strong style="color: red;">0.0</strong>'
+        self.one_exam_text = "(1 exam)"
+        self.two_exams_text = "(2 exams)"
 
     def test_cumulative_dap(self):
         """Test that the calculated cumulative DAP over delta weeks is correct for the two studies"""

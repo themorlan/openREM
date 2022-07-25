@@ -50,8 +50,8 @@
 
     <p>
         {% if modality == "OT" %}
-            This list is of studies that are not identified as being CT, fluoroscopy, mammography or radiography (DX and
-            CR).
+            This list is of studies that are not identified as being CT, fluoroscopy, mammography, radiography (DX and
+            CR) or nuclear medicine.
             The total number of studies associated with this equipment (before filtering out the modalities) is
             {{ count_all }}, and {{ studies_count }} after doing the exclusions.
         {% else %}
@@ -179,6 +179,7 @@
             <td colspan="2">DX/RF/MG</td>
             <td colspan="4">Accumulated data</td>
             <td colspan="4">Irradiation event data</td>
+            <td colspan="3">Radiopharmaceutical radiation dose</td>
         </tr>
         <tr>
             <th scope="col">Date</th>
@@ -198,6 +199,9 @@
             <th scope="col">Detector</th>
             <th scope="col">Source</th>
             <th scope="col">Mechanical</th>
+            <th scope="col">Template</th>
+            <th scope="col">Dose</th>
+            <th scope="col">PET Series</th>
         </tr>
         {% for study in studies %}
 

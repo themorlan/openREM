@@ -5,9 +5,15 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse
-from remapp.forms import DXChartOptionsForm
+from remapp.forms import (
+    DXChartOptionsForm,
+    DXChartOptionsFormIncStandard,
+)
 from remapp.interface.mod_filters import dx_acq_filter
-from remapp.models import create_user_profile
+from remapp.models import (
+    create_user_profile,
+    StandardNameSettings,
+)
 from remapp.views_admin import (
     set_average_chart_options,
     required_average_choices,
@@ -27,6 +33,7 @@ from .interface.chart_functions import (
     plotly_frequency_barchart,
     plotly_scatter,
     construct_over_time_charts,
+    generate_average_chart_group,
 )
 
 logger = logging.getLogger(__name__)
@@ -37,14 +44,28 @@ def generate_required_dx_charts_list(profile):
     # pylint: disable=too-many-statements
     """Obtain a list of dictionaries containing the title string and base
     variable name for each required chart"""
+
+    # Obtain the system-level enable_standard_names setting
+    try:
+        StandardNameSettings.objects.get()
+    except ObjectDoesNotExist:
+        StandardNameSettings.objects.create()
+    enable_standard_names = StandardNameSettings.objects.values_list(
+        "enable_standard_names", flat=True
+    )[0]
+
     required_charts = []
 
     charts_of_interest = [
         profile.plotDXAcquisitionMeanDAPOverTime,
         profile.plotDXAcquisitionMeanmAsOverTime,
         profile.plotDXAcquisitionMeankVpOverTime,
-        profile.plotDXAcquisitionMeankVpOverTime,
     ]
+    if enable_standard_names:
+        charts_of_interest.append(profile.plotDXStandardAcquisitionMeanDAPOverTime)
+        charts_of_interest.append(profile.plotDXStandardAcquisitionMeanmAsOverTime)
+        charts_of_interest.append(profile.plotDXStandardAcquisitionMeankVpOverTime)
+
     if any(charts_of_interest):
         keys = list(dict(profile.TIME_PERIOD).keys())
         values = list(dict(profile.TIME_PERIOD).values())
@@ -218,6 +239,227 @@ def generate_required_dx_charts_list(profile):
             }
         )
 
+    if enable_standard_names:
+        if profile.plotDXStandardAcquisitionMeanDAP:
+            if profile.plotMean:
+                required_charts.append(
+                    {
+                        "title": "Chart of mean DAP for each standard acquisition name",
+                        "var_name": "standardAcquisitionMeanDAP",
+                    }
+                )
+            if profile.plotMedian:
+                required_charts.append(
+                    {
+                        "title": "Chart of median DAP for each standard acquisition name",
+                        "var_name": "standardAcquisitionMedianDAP",
+                    }
+                )
+            if profile.plotBoxplots:
+                required_charts.append(
+                    {
+                        "title": "Boxplot of DAP for each standard acquisition name",
+                        "var_name": "standardAcquisitionBoxplotDAP",
+                    }
+                )
+            if profile.plotHistograms:
+                required_charts.append(
+                    {
+                        "title": "Histogram of DAP for each standard acquisition name",
+                        "var_name": "standardAcquisitionHistogramDAP",
+                    }
+                )
+
+        if profile.plotDXStandardAcquisitionFreq:
+            required_charts.append(
+                {
+                    "title": "Chart of standard acquisition name frequency",
+                    "var_name": "standardAcquisitionFrequency",
+                }
+            )
+
+        if profile.plotDXStandardAcquisitionMeankVp:
+            if profile.plotMean:
+                required_charts.append(
+                    {
+                        "title": "Chart of mean kVp for each standard acquisition name",
+                        "var_name": "standardAcquisitionMeankVp",
+                    }
+                )
+            if profile.plotMedian:
+                required_charts.append(
+                    {
+                        "title": "Chart of median kVp for each standard acquisition name",
+                        "var_name": "standardAcquisitionMediankVp",
+                    }
+                )
+            if profile.plotBoxplots:
+                required_charts.append(
+                    {
+                        "title": "Boxplot of kVp for each standard acquisition name",
+                        "var_name": "standardAcquisitionBoxplotkVp",
+                    }
+                )
+            if profile.plotHistograms:
+                required_charts.append(
+                    {
+                        "title": "Histogram of kVp for each standard acquisition name",
+                        "var_name": "standardAcquisitionHistogramkVp",
+                    }
+                )
+
+        if profile.plotDXStandardAcquisitionMeanmAs:
+            if profile.plotMean:
+                required_charts.append(
+                    {
+                        "title": "Chart of mean mAs for each standard acquisition name",
+                        "var_name": "standardAcquisitionMeanmAs",
+                    }
+                )
+            if profile.plotMedian:
+                required_charts.append(
+                    {
+                        "title": "Chart of median mAs for each standard acquisition name",
+                        "var_name": "standardAcquisitionMedianmAs",
+                    }
+                )
+            if profile.plotBoxplots:
+                required_charts.append(
+                    {
+                        "title": "Boxplot of mAs for each standard acquisition name",
+                        "var_name": "standardAcquisitionBoxplotmAs",
+                    }
+                )
+            if profile.plotHistograms:
+                required_charts.append(
+                    {
+                        "title": "Histogram of mAs for each standard acquisition name",
+                        "var_name": "standardAcquisitionHistogrammAs",
+                    }
+                )
+
+        if profile.plotDXStandardAcquisitionMeanDAPOverTime:
+            if profile.plotMean:
+                required_charts.append(
+                    {
+                        "title": "Chart of mean DAP per standard acquisition name over time ("
+                        + time_period
+                        + ")",
+                        "var_name": "standardAcquisitionMeanDAPOverTime",
+                    }
+                )
+            if profile.plotMedian:
+                required_charts.append(
+                    {
+                        "title": "Chart of median DAP per standard acquisition name over time ("
+                        + time_period
+                        + ")",
+                        "var_name": "standardAcquisitionMedianDAPOverTime",
+                    }
+                )
+
+        if profile.plotDXStandardAcquisitionMeankVpOverTime:
+            if profile.plotMean:
+                required_charts.append(
+                    {
+                        "title": "Chart of mean kVp per standard acquisition name over time ("
+                        + time_period
+                        + ")",
+                        "var_name": "standardAcquisitionMeankVpOverTime",
+                    }
+                )
+            if profile.plotMedian:
+                required_charts.append(
+                    {
+                        "title": "Chart of median kVp per standard acquisition name over time ("
+                        + time_period
+                        + ")",
+                        "var_name": "standardAcquisitionMediankVpOverTime",
+                    }
+                )
+
+        if profile.plotDXStandardAcquisitionMeanmAsOverTime:
+            if profile.plotMean:
+                required_charts.append(
+                    {
+                        "title": "Chart of mean mAs per standard acquisition name over time ("
+                        + time_period
+                        + ")",
+                        "var_name": "standardAcquisitionMeanmAsOverTime",
+                    }
+                )
+            if profile.plotMedian:
+                required_charts.append(
+                    {
+                        "title": "Chart of median mAs per standard acquisition name over time ("
+                        + time_period
+                        + ")",
+                        "var_name": "standardAcquisitionMedianmAsOverTime",
+                    }
+                )
+
+        if profile.plotDXStandardAcquisitionDAPvsMass:
+            required_charts.append(
+                {
+                    "title": "Chart of standard acquisition name DAP vs patient mass",
+                    "var_name": "standardAcquisitionDAPvsMass",
+                }
+            )
+
+        if profile.plotDXStandardStudyMeanDAP:
+            if profile.plotMean:
+                required_charts.append(
+                    {
+                        "title": "Chart of mean DAP for each standard study name",
+                        "var_name": "standardStudyMeanDAP",
+                    }
+                )
+            if profile.plotMedian:
+                required_charts.append(
+                    {
+                        "title": "Chart of median DAP for each standard study name",
+                        "var_name": "standardStudyMedianDAP",
+                    }
+                )
+            if profile.plotBoxplots:
+                required_charts.append(
+                    {
+                        "title": "Boxplot of DAP for each standard study name",
+                        "var_name": "standardStudyBoxplotDAP",
+                    }
+                )
+            if profile.plotHistograms:
+                required_charts.append(
+                    {
+                        "title": "Histogram of DAP for each standard study name",
+                        "var_name": "standardStudyHistogramDAP",
+                    }
+                )
+
+        if profile.plotDXStandardStudyFreq:
+            required_charts.append(
+                {
+                    "title": "Chart of standard study name frequency",
+                    "var_name": "standardStudyFrequency",
+                }
+            )
+
+        if profile.plotDXStandardStudyPerDayAndHour:
+            required_charts.append(
+                {
+                    "title": "Chart of standard study name workload",
+                    "var_name": "standardStudyWorkload",
+                }
+            )
+
+        if profile.plotDXStandardStudyDAPvsMass:
+            required_charts.append(
+                {
+                    "title": "Chart of standard study name DAP vs patient mass",
+                    "var_name": "standardStudyDAPvsMass",
+                }
+            )
+
     if profile.plotDXStudyMeanDAP:
         if profile.plotMean:
             required_charts.append(
@@ -323,7 +565,7 @@ def generate_required_dx_charts_list(profile):
 
 @login_required
 def dx_summary_chart_data(request):
-    """Obtain data for Ajax chart call"""
+    """Obtain data for Ajax chart call."""
     pid = bool(request.user.groups.filter(name="pidgroup"))
     f = dx_acq_filter(request.GET, pid=pid)
 
@@ -350,18 +592,19 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
     # pylint: disable=too-many-locals
     # pylint: disable=too-many-branches
     # pylint: disable=too-many-statements
-    """Calculations for radiographic charts"""
+    """Calculations for radiographic charts."""
     # Return an empty structure if the queryset is empty
-    if not f.qs:
+    if not f.qs.exists():
         return {}
 
-    charts_of_interest = [
-        user_profile.plotDXAcquisitionMeanDAPOverTime,
-        user_profile.plotDXAcquisitionMeankVpOverTime,
-        user_profile.plotDXAcquisitionMeanmAsOverTime,
-    ]
-    if any(charts_of_interest):
-        plot_timeunit_period = user_profile.plotDXAcquisitionMeanDAPOverTimePeriod
+    # Obtain the system-level enable_standard_names setting
+    try:
+        StandardNameSettings.objects.get()
+    except ObjectDoesNotExist:
+        StandardNameSettings.objects.create()
+    enable_standard_names = StandardNameSettings.objects.values_list(
+        "enable_standard_names", flat=True
+    )[0]
 
     # Set the Plotly chart theme
     plotly_set_default_theme(user_profile.plotThemeChoice)
@@ -373,6 +616,18 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
         average_choices.append("mean")
     if user_profile.plotMedian:
         average_choices.append("median")
+
+    charts_of_interest = [
+        user_profile.plotDXAcquisitionMeanDAPOverTime,
+        user_profile.plotDXAcquisitionMeankVpOverTime,
+        user_profile.plotDXAcquisitionMeanmAsOverTime,
+    ]
+    if enable_standard_names:
+        charts_of_interest.append(user_profile.plotDXStandardAcquisitionMeanDAPOverTime)
+        charts_of_interest.append(user_profile.plotDXStandardAcquisitionMeankVpOverTime)
+        charts_of_interest.append(user_profile.plotDXStandardAcquisitionMeanmAsOverTime)
+    if any(charts_of_interest):
+        plot_timeunit_period = user_profile.plotDXAcquisitionMeanDAPOverTimePeriod
 
     #######################################################################
     # Prepare acquisition-level Pandas DataFrame to use for charts
@@ -386,11 +641,49 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
         user_profile.plotDXAcquisitionMeanDAPOverTime,
         user_profile.plotDXAcquisitionDAPvsMass,
     ]
+    if enable_standard_names:
+        charts_of_interest.append(user_profile.plotDXStandardAcquisitionMeanDAP)
+        charts_of_interest.append(user_profile.plotDXStandardAcquisitionFreq)
+        charts_of_interest.append(user_profile.plotDXStandardAcquisitionMeankVp)
+        charts_of_interest.append(user_profile.plotDXStandardAcquisitionMeanmAs)
+        charts_of_interest.append(user_profile.plotDXStandardAcquisitionMeankVpOverTime)
+        charts_of_interest.append(user_profile.plotDXStandardAcquisitionMeanmAsOverTime)
+        charts_of_interest.append(user_profile.plotDXStandardAcquisitionMeanDAPOverTime)
+        charts_of_interest.append(user_profile.plotDXStandardAcquisitionDAPvsMass)
+
     if any(charts_of_interest):
 
-        name_fields = [
-            "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
+        name_fields = []
+        charts_of_interest = [
+            user_profile.plotDXAcquisitionMeanDAP,
+            user_profile.plotDXAcquisitionFreq,
+            user_profile.plotDXAcquisitionMeankVp,
+            user_profile.plotDXAcquisitionMeanmAs,
+            user_profile.plotDXAcquisitionMeankVpOverTime,
+            user_profile.plotDXAcquisitionMeanmAsOverTime,
+            user_profile.plotDXAcquisitionMeanDAPOverTime,
+            user_profile.plotDXAcquisitionDAPvsMass,
         ]
+        if any(charts_of_interest):
+            name_fields.append(
+                "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
+            )
+
+        if enable_standard_names:
+            charts_of_interest = [
+                user_profile.plotDXStandardAcquisitionMeanDAP,
+                user_profile.plotDXStandardAcquisitionFreq,
+                user_profile.plotDXStandardAcquisitionMeankVp,
+                user_profile.plotDXStandardAcquisitionMeanmAs,
+                user_profile.plotDXStandardAcquisitionMeankVpOverTime,
+                user_profile.plotDXStandardAcquisitionMeanmAsOverTime,
+                user_profile.plotDXStandardAcquisitionMeanDAPOverTime,
+                user_profile.plotDXStandardAcquisitionDAPvsMass,
+            ]
+            if any(charts_of_interest):
+                name_fields.append(
+                    "projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name"
+                )
 
         value_fields = []
         value_multipliers = []
@@ -399,28 +692,52 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
             user_profile.plotDXAcquisitionMeanDAPOverTime,
             user_profile.plotDXAcquisitionDAPvsMass,
         ]
+        if enable_standard_names:
+            charts_of_interest.append(user_profile.plotDXStandardAcquisitionMeanDAP)
+            charts_of_interest.append(
+                user_profile.plotDXStandardAcquisitionMeanDAPOverTime
+            )
+            charts_of_interest.append(user_profile.plotDXStandardAcquisitionDAPvsMass)
         if any(charts_of_interest):
             value_fields.append(
                 "projectionxrayradiationdose__irradeventxraydata__dose_area_product"
             )
             value_multipliers.append(1000000)
-        if (
-            user_profile.plotDXAcquisitionMeankVp
-            or user_profile.plotDXAcquisitionMeankVpOverTime
-        ):
+
+        charts_of_interest = [
+            user_profile.plotDXAcquisitionMeankVp,
+            user_profile.plotDXAcquisitionMeankVpOverTime,
+        ]
+        if enable_standard_names:
+            charts_of_interest.append(user_profile.plotDXStandardAcquisitionMeankVp)
+            charts_of_interest.append(
+                user_profile.plotDXStandardAcquisitionMeankVpOverTime
+            )
+        if any(charts_of_interest):
             value_fields.append(
                 "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__kvp__kvp"
             )
             value_multipliers.append(1)
-        if (
-            user_profile.plotDXAcquisitionMeanmAs
-            or user_profile.plotDXAcquisitionMeanmAsOverTime
-        ):
+
+        charts_of_interest = [
+            user_profile.plotDXAcquisitionMeanmAs,
+            user_profile.plotDXAcquisitionMeanmAsOverTime,
+        ]
+        if enable_standard_names:
+            charts_of_interest.append(user_profile.plotDXStandardAcquisitionMeanmAs)
+            charts_of_interest.append(
+                user_profile.plotDXStandardAcquisitionMeanmAsOverTime
+            )
+        if any(charts_of_interest):
             value_fields.append(
                 "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure__exposure"
             )
             value_multipliers.append(0.001)
-        if user_profile.plotDXAcquisitionDAPvsMass:
+
+        charts_of_interest = [user_profile.plotDXAcquisitionDAPvsMass]
+        if enable_standard_names:
+            charts_of_interest.append(user_profile.plotDXStandardAcquisitionDAPvsMass)
+        if any(charts_of_interest):
             value_fields.append("patientstudymoduleattr__patient_weight")
             value_multipliers.append(1)
 
@@ -431,6 +748,16 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
             user_profile.plotDXAcquisitionMeankVpOverTime,
             user_profile.plotDXAcquisitionMeanmAsOverTime,
         ]
+        if enable_standard_names:
+            charts_of_interest.append(
+                user_profile.plotDXStandardAcquisitionMeanDAPOverTime
+            )
+            charts_of_interest.append(
+                user_profile.plotDXStandardAcquisitionMeankVpOverTime
+            )
+            charts_of_interest.append(
+                user_profile.plotDXStandardAcquisitionMeanmAsOverTime
+            )
         if any(charts_of_interest):
             date_fields.append("study_date")
 
@@ -447,6 +774,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
             "times": time_fields,
             "system": system_field,
         }
+
         df = create_dataframe(
             f.qs,
             fields,
@@ -460,358 +788,107 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
 
         if user_profile.plotDXAcquisitionMeanDAP:
 
-            if user_profile.plotBoxplots and "median" not in average_choices:
-                average_choices = average_choices + ["median"]
-
             name_field = (
                 "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
             )
             value_field = (
                 "projectionxrayradiationdose__irradeventxraydata__dose_area_product"
             )
+            value_text = "DAP"
+            units_text = "(cGy.cm<sup>2</sup>)"
+            name_text = "Acquisition protocol"
+            variable_name_start = "acquisition"
+            variable_value_name = "DAP"
+            modality_text = "DX"
+            chart_message = ""
 
-            df_aggregated = create_dataframe_aggregates(
+            new_charts = generate_average_chart_group(
+                average_choices,
+                chart_message,
                 df,
-                [name_field],
+                modality_text,
+                name_field,
+                name_text,
+                return_as_dict,
+                return_structure,
+                units_text,
+                user_profile,
                 value_field,
-                stats_to_use=average_choices + ["count"],
+                value_text,
+                variable_name_start,
+                variable_value_name,
+                user_profile.plotDXInitialSortingChoice,
             )
 
-            if user_profile.plotMean or user_profile.plotMedian:
-
-                parameter_dict = {
-                    "df_name_col": name_field,
-                    "name_axis_title": "Acquisition protocol",
-                    "colourmap": user_profile.plotColourMapChoice,
-                    "facet_col": None,
-                    "facet_col_wrap": user_profile.plotFacetColWrapVal,
-                    "return_as_dict": return_as_dict,
-                    "sorting_choice": [
-                        user_profile.plotInitialSortingDirection,
-                        user_profile.plotDXInitialSortingChoice,
-                    ],
-                }
-                if user_profile.plotMean:
-                    parameter_dict["value_axis_title"] = "Mean DAP (cGy.cm<sup>2</sup>)"
-                    parameter_dict[
-                        "filename"
-                    ] = "OpenREM DX acquisition protocol DAP mean"
-                    parameter_dict["average_choice"] = "mean"
-                    (
-                        return_structure["acquisitionMeanDAPData"],
-                        return_structure["acquisitionMeanDAPDataCSV"],
-                    ) = plotly_barchart(  # pylint: disable=line-too-long
-                        df_aggregated,
-                        parameter_dict,
-                        "acquisitionMeanDAPData.csv",
-                    )
-
-                if user_profile.plotMedian:
-                    parameter_dict[
-                        "value_axis_title"
-                    ] = "Median DAP (cGy.cm<sup>2</sup>)"
-                    parameter_dict[
-                        "filename"
-                    ] = "OpenREM DX acquisition protocol DAP median"
-                    parameter_dict["average_choice"] = "median"
-                    (
-                        return_structure["acquisitionMedianDAPData"],
-                        return_structure["acquisitionMedianDAPDataCSV"],
-                    ) = plotly_barchart(  # pylint: disable=line-too-long
-                        df_aggregated,
-                        parameter_dict,
-                        "acquisitionMedianDAPData.csv",
-                    )
-
-            if user_profile.plotBoxplots:
-                parameter_dict = {
-                    "df_name_col": name_field,
-                    "df_value_col": value_field,
-                    "value_axis_title": "DAP (cGy.cm<sup>2</sup>)",
-                    "name_axis_title": "Acquisition protocol",
-                    "colourmap": user_profile.plotColourMapChoice,
-                    "filename": "OpenREM DX acquisition protocol DAP boxplot",
-                    "facet_col": None,
-                    "sorting_choice": [
-                        user_profile.plotInitialSortingDirection,
-                        user_profile.plotDXInitialSortingChoice,
-                    ],
-                    "facet_col_wrap": user_profile.plotFacetColWrapVal,
-                    "return_as_dict": return_as_dict,
-                }
-
-                return_structure["acquisitionBoxplotDAPData"] = plotly_boxplot(
-                    df,
-                    parameter_dict,
-                )
-
-            if user_profile.plotHistograms:
-                category_names_col = name_field
-                group_by_col = "x_ray_system_name"
-                legend_title = "Acquisition protocol"
-
-                if user_profile.plotGroupingChoice == "series":
-                    category_names_col = "x_ray_system_name"
-                    group_by_col = name_field
-                    legend_title = "System"
-
-                parameter_dict = {
-                    "df_facet_col": group_by_col,
-                    "df_category_col": category_names_col,
-                    "df_value_col": value_field,
-                    "value_axis_title": "DAP (cGy.cm<sup>2</sup>)",
-                    "legend_title": legend_title,
-                    "n_bins": user_profile.plotHistogramBins,
-                    "colourmap": user_profile.plotColourMapChoice,
-                    "filename": "OpenREM DX acquisition protocol DAP histogram",
-                    "facet_col_wrap": user_profile.plotFacetColWrapVal,
-                    "sorting_choice": [
-                        user_profile.plotInitialSortingDirection,
-                        user_profile.plotDXInitialSortingChoice,
-                    ],
-                    "global_max_min": user_profile.plotHistogramGlobalBins,
-                    "return_as_dict": return_as_dict,
-                }
-                return_structure[
-                    "acquisitionHistogramDAPData"
-                ] = plotly_histogram_barchart(
-                    df,
-                    parameter_dict,
-                )
+            return_structure = {**return_structure, **new_charts}
 
         if user_profile.plotDXAcquisitionMeankVp:
-
-            if user_profile.plotBoxplots and "median" not in average_choices:
-                average_choices = average_choices + ["median"]
 
             name_field = (
                 "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
             )
             value_field = "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__kvp__kvp"
+            value_text = "kVp"
+            units_text = ""
+            name_text = "Acquisition protocol"
+            variable_name_start = "acquisition"
+            variable_value_name = "kVp"
+            modality_text = "DX"
+            chart_message = ""
 
-            df_aggregated = create_dataframe_aggregates(
+            new_charts = generate_average_chart_group(
+                average_choices,
+                chart_message,
                 df,
-                [name_field],
+                modality_text,
+                name_field,
+                name_text,
+                return_as_dict,
+                return_structure,
+                units_text,
+                user_profile,
                 value_field,
-                stats_to_use=average_choices + ["count"],
+                value_text,
+                variable_name_start,
+                variable_value_name,
+                user_profile.plotDXInitialSortingChoice,
             )
 
-            if user_profile.plotMean or user_profile.plotMedian:
-
-                parameter_dict = {
-                    "df_name_col": name_field,
-                    "name_axis_title": "Acquisition protocol",
-                    "colourmap": user_profile.plotColourMapChoice,
-                    "facet_col": None,
-                    "facet_col_wrap": user_profile.plotFacetColWrapVal,
-                    "return_as_dict": return_as_dict,
-                    "sorting_choice": [
-                        user_profile.plotInitialSortingDirection,
-                        user_profile.plotDXInitialSortingChoice,
-                    ],
-                }
-                if user_profile.plotMean:
-                    parameter_dict["value_axis_title"] = "Mean kVp"
-                    parameter_dict[
-                        "filename"
-                    ] = "OpenREM DX acquisition protocol kVp mean"
-                    parameter_dict["average_choice"] = "mean"
-                    (
-                        return_structure["acquisitionMeankVpData"],
-                        return_structure["acquisitionMeankVpDataCSV"],
-                    ) = plotly_barchart(  # pylint: disable=line-too-long
-                        df_aggregated,
-                        parameter_dict,
-                        "acquisitionMeankVpData.csv",
-                    )
-
-                if user_profile.plotMedian:
-                    parameter_dict["value_axis_title"] = "Median kVp"
-                    parameter_dict[
-                        "filename"
-                    ] = "OpenREM DX acquisition protocol kVp median"
-                    parameter_dict["average_choice"] = "median"
-                    (
-                        return_structure["acquisitionMediankVpData"],
-                        return_structure["acquisitionMediankVpDataCSV"],
-                    ) = plotly_barchart(  # pylint: disable=line-too-long
-                        df_aggregated,
-                        parameter_dict,
-                        "acquisitionMediankVpData.csv",
-                    )
-
-            if user_profile.plotBoxplots:
-                parameter_dict = {  # pylint: disable=line-too-long
-                    "df_name_col": name_field,
-                    "df_value_col": value_field,  # pylint: disable=line-too-long
-                    "value_axis_title": "kVp",
-                    "name_axis_title": "Acquisition protocol",
-                    "colourmap": user_profile.plotColourMapChoice,
-                    "filename": "OpenREM DX acquisition protocol kVp boxplot",
-                    "facet_col": None,
-                    "sorting_choice": [
-                        user_profile.plotInitialSortingDirection,
-                        user_profile.plotDXInitialSortingChoice,
-                    ],
-                    "facet_col_wrap": user_profile.plotFacetColWrapVal,
-                    "return_as_dict": return_as_dict,
-                }
-
-                return_structure["acquisitionBoxplotkVpData"] = plotly_boxplot(
-                    df,
-                    parameter_dict,
-                )
-
-            if user_profile.plotHistograms:
-                category_names_col = name_field
-                group_by_col = "x_ray_system_name"
-                legend_title = "Acquisition protocol"
-
-                if user_profile.plotGroupingChoice == "series":
-                    category_names_col = "x_ray_system_name"
-                    group_by_col = name_field
-                    legend_title = "System"
-
-                parameter_dict = {  # pylint: disable=line-too-long
-                    "df_facet_col": group_by_col,
-                    "df_category_col": category_names_col,
-                    "df_value_col": value_field,  # pylint: disable=line-too-long
-                    "value_axis_title": "kVp",
-                    "legend_title": legend_title,
-                    "n_bins": user_profile.plotHistogramBins,
-                    "colourmap": user_profile.plotColourMapChoice,
-                    "filename": "OpenREM DX acquisition protocol kVp histogram",
-                    "facet_col_wrap": user_profile.plotFacetColWrapVal,
-                    "sorting_choice": [
-                        user_profile.plotInitialSortingDirection,
-                        user_profile.plotDXInitialSortingChoice,
-                    ],
-                    "global_max_min": user_profile.plotHistogramGlobalBins,
-                    "return_as_dict": return_as_dict,
-                }
-                return_structure[
-                    "acquisitionHistogramkVpData"
-                ] = plotly_histogram_barchart(
-                    df,
-                    parameter_dict,
-                )
+            return_structure = {**return_structure, **new_charts}
 
         if user_profile.plotDXAcquisitionMeanmAs:
-
-            if user_profile.plotBoxplots and "median" not in average_choices:
-                average_choices = average_choices + ["median"]
 
             name_field = (
                 "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
             )
             value_field = "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure__exposure"  # pylint: disable=line-too-long
+            value_text = "mAs"
+            units_text = ""
+            name_text = "Acquisition protocol"
+            variable_name_start = "acquisition"
+            variable_value_name = "mAs"
+            modality_text = "DX"
+            chart_message = ""
 
-            df_aggregated = create_dataframe_aggregates(
+            new_charts = generate_average_chart_group(
+                average_choices,
+                chart_message,
                 df,
-                [name_field],
+                modality_text,
+                name_field,
+                name_text,
+                return_as_dict,
+                return_structure,
+                units_text,
+                user_profile,
                 value_field,
-                stats_to_use=average_choices + ["count"],
+                value_text,
+                variable_name_start,
+                variable_value_name,
+                user_profile.plotDXInitialSortingChoice,
             )
 
-            if user_profile.plotMean or user_profile.plotMedian:
-
-                parameter_dict = {
-                    "df_name_col": name_field,
-                    "name_axis_title": "Acquisition protocol",
-                    "colourmap": user_profile.plotColourMapChoice,
-                    "facet_col": None,
-                    "facet_col_wrap": user_profile.plotFacetColWrapVal,
-                    "return_as_dict": return_as_dict,
-                    "sorting_choice": [
-                        user_profile.plotInitialSortingDirection,
-                        user_profile.plotDXInitialSortingChoice,
-                    ],
-                }
-                if user_profile.plotMean:
-                    parameter_dict["value_axis_title"] = "Mean mAs"
-                    parameter_dict[
-                        "filename"
-                    ] = "OpenREM DX acquisition protocol mAs mean"
-                    parameter_dict["average_choice"] = "mean"
-                    (
-                        return_structure["acquisitionMeanmAsData"],
-                        return_structure["acquisitionMeanmAsDataCSV"],
-                    ) = plotly_barchart(  # pylint: disable=line-too-long
-                        df_aggregated,
-                        parameter_dict,
-                        "acquisitionMeanmAsData.csv",
-                    )
-
-                if user_profile.plotMedian:
-                    parameter_dict["value_axis_title"] = "Median mAs"
-                    parameter_dict[
-                        "filename"
-                    ] = "OpenREM DX acquisition protocol mAs median"
-                    parameter_dict["average_choice"] = "median"
-                    (
-                        return_structure["acquisitionMedianmAsData"],
-                        return_structure["acquisitionMedianmAsDataCSV"],
-                    ) = plotly_barchart(  # pylint: disable=line-too-long
-                        df_aggregated,
-                        parameter_dict,
-                        "acquisitionMedianmAsData.csv",
-                    )
-
-            if user_profile.plotBoxplots:
-                parameter_dict = {  # pylint: disable=line-too-long
-                    "df_name_col": name_field,
-                    "df_value_col": value_field,  # pylint: disable=line-too-long
-                    "value_axis_title": "mAs",
-                    "name_axis_title": "Acquisition protocol",
-                    "colourmap": user_profile.plotColourMapChoice,
-                    "filename": "OpenREM DX acquisition protocol mAs boxplot",
-                    "facet_col": None,
-                    "sorting_choice": [
-                        user_profile.plotInitialSortingDirection,
-                        user_profile.plotDXInitialSortingChoice,
-                    ],
-                    "facet_col_wrap": user_profile.plotFacetColWrapVal,
-                    "return_as_dict": return_as_dict,
-                }
-
-                return_structure["acquisitionBoxplotmAsData"] = plotly_boxplot(
-                    df,
-                    parameter_dict,
-                )
-
-            if user_profile.plotHistograms:
-                category_names_col = name_field
-                group_by_col = "x_ray_system_name"
-                legend_title = "Acquisition protocol"
-
-                if user_profile.plotGroupingChoice == "series":
-                    category_names_col = "x_ray_system_name"
-                    group_by_col = name_field
-                    legend_title = "System"
-
-                parameter_dict = {  # pylint: disable=line-too-long
-                    "df_facet_col": group_by_col,
-                    "df_category_col": category_names_col,
-                    "df_value_col": value_field,  # pylint: disable=line-too-long
-                    "value_axis_title": "mAs",
-                    "legend_title": legend_title,
-                    "n_bins": user_profile.plotHistogramBins,
-                    "colourmap": user_profile.plotColourMapChoice,
-                    "filename": "OpenREM DX acquisition protocol mAs histogram",
-                    "facet_col_wrap": user_profile.plotFacetColWrapVal,
-                    "sorting_choice": [
-                        user_profile.plotInitialSortingDirection,
-                        user_profile.plotDXInitialSortingChoice,
-                    ],
-                    "global_max_min": user_profile.plotHistogramGlobalBins,
-                    "return_as_dict": return_as_dict,
-                }
-                return_structure[
-                    "acquisitionHistogrammAsData"
-                ] = plotly_histogram_barchart(
-                    df,
-                    parameter_dict,
-                )
+            return_structure = {**return_structure, **new_charts}
 
         if user_profile.plotDXAcquisitionFreq:
             parameter_dict = {
@@ -971,6 +1048,305 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                 parameter_dict,
             )
 
+        if enable_standard_names:
+            charts_of_interest = [
+                user_profile.plotDXStandardAcquisitionMeanDAP,
+                user_profile.plotDXStandardAcquisitionFreq,
+                user_profile.plotDXStandardAcquisitionMeankVp,
+                user_profile.plotDXStandardAcquisitionMeanmAs,
+                user_profile.plotDXStandardAcquisitionMeankVpOverTime,
+                user_profile.plotDXStandardAcquisitionMeanmAsOverTime,
+                user_profile.plotDXStandardAcquisitionMeanDAPOverTime,
+                user_profile.plotDXStandardAcquisitionDAPvsMass,
+            ]
+
+            if any(charts_of_interest):
+
+                # Exclude "Blank" and "blank" standard_acqusition_name data
+                df_without_blanks = df[
+                    (
+                        df[
+                            "projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name"
+                        ]
+                        != "blank"
+                    )
+                    & (
+                        df[
+                            "projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name"
+                        ]
+                        != "Blank"
+                    )
+                ].copy()
+                # Remove any unused categories (this will include "Blank" or "blank")
+                df_without_blanks[
+                    "projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name"
+                ] = df_without_blanks[
+                    "projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name"
+                ].cat.remove_unused_categories()
+
+                if user_profile.plotDXStandardAcquisitionMeanDAP:
+                    name_field = "projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name"
+                    value_field = "projectionxrayradiationdose__irradeventxraydata__dose_area_product"
+                    value_text = "DAP"
+                    units_text = "(cGy.cm<sup>2</sup>)"
+                    name_text = "Standard acquisition name"
+                    variable_name_start = "standardAcquisition"
+                    variable_value_name = "DAP"
+                    modality_text = "DX"
+                    chart_message = ""
+
+                    new_charts = generate_average_chart_group(
+                        average_choices,
+                        chart_message,
+                        df_without_blanks,
+                        modality_text,
+                        name_field,
+                        name_text,
+                        return_as_dict,
+                        return_structure,
+                        units_text,
+                        user_profile,
+                        value_field,
+                        value_text,
+                        variable_name_start,
+                        variable_value_name,
+                        user_profile.plotDXInitialSortingChoice,
+                    )
+
+                    return_structure = {**return_structure, **new_charts}
+
+                if user_profile.plotDXStandardAcquisitionMeankVp:
+                    name_field = "projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name"
+                    value_field = "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__kvp__kvp"
+                    value_text = "kVp"
+                    units_text = ""
+                    name_text = "Standard acquisition name"
+                    variable_name_start = "standardAcquisition"
+                    variable_value_name = "kVp"
+                    modality_text = "DX"
+                    chart_message = ""
+
+                    new_charts = generate_average_chart_group(
+                        average_choices,
+                        chart_message,
+                        df_without_blanks,
+                        modality_text,
+                        name_field,
+                        name_text,
+                        return_as_dict,
+                        return_structure,
+                        units_text,
+                        user_profile,
+                        value_field,
+                        value_text,
+                        variable_name_start,
+                        variable_value_name,
+                        user_profile.plotDXInitialSortingChoice,
+                    )
+
+                    return_structure = {**return_structure, **new_charts}
+
+                if user_profile.plotDXStandardAcquisitionMeanmAs:
+                    name_field = "projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name"
+                    value_field = "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure__exposure"  # pylint: disable=line-too-long
+                    value_text = "mAs"
+                    units_text = ""
+                    name_text = "Standard acquisition name"
+                    variable_name_start = "standardAcquisition"
+                    variable_value_name = "mAs"
+                    modality_text = "DX"
+                    chart_message = ""
+
+                    new_charts = generate_average_chart_group(
+                        average_choices,
+                        chart_message,
+                        df_without_blanks,
+                        modality_text,
+                        name_field,
+                        name_text,
+                        return_as_dict,
+                        return_structure,
+                        units_text,
+                        user_profile,
+                        value_field,
+                        value_text,
+                        variable_name_start,
+                        variable_value_name,
+                        user_profile.plotDXInitialSortingChoice,
+                    )
+
+                    return_structure = {**return_structure, **new_charts}
+
+                if user_profile.plotDXStandardAcquisitionFreq:
+                    parameter_dict = {
+                        "df_name_col": "projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name",  # pylint: disable=line-too-long
+                        "sorting_choice": [
+                            user_profile.plotInitialSortingDirection,
+                            user_profile.plotDXInitialSortingChoice,
+                        ],
+                        "legend_title": "Standard acquisition name",
+                        "df_x_axis_col": "x_ray_system_name",
+                        "x_axis_title": "System",
+                        "grouping_choice": user_profile.plotGroupingChoice,
+                        "colourmap": user_profile.plotColourMapChoice,
+                        "filename": "OpenREM DX standard acquisition name frequency",
+                        "groupby_cols": None,
+                        "facet_col": None,
+                        "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                        "return_as_dict": return_as_dict,
+                    }
+                    (
+                        return_structure["standardAcquisitionFrequencyData"],
+                        return_structure["standardAcquisitionFrequencyDataCSV"],
+                    ) = plotly_frequency_barchart(
+                        df_without_blanks,
+                        parameter_dict,
+                        csv_name="standardAcquisitionFrequencyData.csv",
+                    )
+
+                if user_profile.plotDXStandardAcquisitionMeanDAPOverTime:
+                    facet_title = "System"
+
+                    if user_profile.plotGroupingChoice == "series":
+                        facet_title = "Standard acquisition name"
+
+                    parameter_dict = {
+                        "df_name_col": "projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name",  # pylint: disable=line-too-long
+                        "df_value_col": "projectionxrayradiationdose__irradeventxraydata__dose_area_product",
+                        "df_date_col": "study_date",
+                        "name_title": "Standard acquisition name",
+                        "value_title": "DAP (cGy.cm<sup>2</sup>)",
+                        "date_title": "Study date",
+                        "facet_title": facet_title,
+                        "sorting_choice": [
+                            user_profile.plotInitialSortingDirection,
+                            user_profile.plotDXInitialSortingChoice,
+                        ],
+                        "time_period": plot_timeunit_period,
+                        "average_choices": average_choices + ["count"],
+                        "grouping_choice": user_profile.plotGroupingChoice,
+                        "colourmap": user_profile.plotColourMapChoice,
+                        "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                        "filename": "OpenREM DX standard acquisition name DAP over time",
+                        "return_as_dict": return_as_dict,
+                    }
+                    result = construct_over_time_charts(
+                        df_without_blanks,
+                        parameter_dict,
+                    )
+
+                    if user_profile.plotMean:
+                        return_structure["standardAcquisitionMeanDAPOverTime"] = result[
+                            "mean"
+                        ]
+                    if user_profile.plotMedian:
+                        return_structure[
+                            "standardAcquisitionMedianDAPOverTime"
+                        ] = result["median"]
+
+                if user_profile.plotDXStandardAcquisitionMeankVpOverTime:
+                    facet_title = "System"
+
+                    if user_profile.plotGroupingChoice == "series":
+                        facet_title = "Standard acquisition name"
+
+                    parameter_dict = {
+                        "df_name_col": "projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name",  # pylint: disable=line-too-long
+                        "df_value_col": "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__kvp__kvp",  # pylint: disable=line-too-long
+                        "df_date_col": "study_date",
+                        "name_title": "Standard acquisition name",
+                        "value_title": "kVp",
+                        "date_title": "Study date",
+                        "facet_title": facet_title,
+                        "sorting_choice": [
+                            user_profile.plotInitialSortingDirection,
+                            user_profile.plotDXInitialSortingChoice,
+                        ],
+                        "time_period": plot_timeunit_period,
+                        "average_choices": average_choices + ["count"],
+                        "grouping_choice": user_profile.plotGroupingChoice,
+                        "colourmap": user_profile.plotColourMapChoice,
+                        "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                        "filename": "OpenREM DX standard acquisition name kVp over time",
+                        "return_as_dict": return_as_dict,
+                    }
+                    result = construct_over_time_charts(
+                        df_without_blanks,
+                        parameter_dict,
+                    )
+
+                    if user_profile.plotMean:
+                        return_structure["standardAcquisitionMeankVpOverTime"] = result[
+                            "mean"
+                        ]
+                    if user_profile.plotMedian:
+                        return_structure[
+                            "standardAcquisitionMediankVpOverTime"
+                        ] = result["median"]
+
+                if user_profile.plotDXStandardAcquisitionMeanmAsOverTime:
+                    facet_title = "System"
+
+                    if user_profile.plotGroupingChoice == "series":
+                        facet_title = "Standard acquisition name"
+
+                    parameter_dict = {
+                        "df_name_col": "projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name",  # pylint: disable=line-too-long
+                        "df_value_col": "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure__exposure",  # pylint: disable=line-too-long
+                        "df_date_col": "study_date",
+                        "name_title": "Standard acquisition name",
+                        "value_title": "mAs",
+                        "date_title": "Study date",
+                        "facet_title": facet_title,
+                        "sorting_choice": [
+                            user_profile.plotInitialSortingDirection,
+                            user_profile.plotDXInitialSortingChoice,
+                        ],
+                        "time_period": plot_timeunit_period,
+                        "average_choices": average_choices + ["count"],
+                        "grouping_choice": user_profile.plotGroupingChoice,
+                        "colourmap": user_profile.plotColourMapChoice,
+                        "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                        "filename": "OpenREM DX standard acquisition name mAs over time",
+                        "return_as_dict": return_as_dict,
+                    }
+                    result = construct_over_time_charts(
+                        df_without_blanks,
+                        parameter_dict,
+                    )
+
+                    if user_profile.plotMean:
+                        return_structure["standardAcquisitionMeanmAsOverTime"] = result[
+                            "mean"
+                        ]
+                    if user_profile.plotMedian:
+                        return_structure[
+                            "standardAcquisitionMedianmAsOverTime"
+                        ] = result["median"]
+
+                if user_profile.plotDXStandardAcquisitionDAPvsMass:
+                    parameter_dict = {
+                        "df_name_col": "projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name",  # pylint: disable=line-too-long
+                        "df_x_col": "patientstudymoduleattr__patient_weight",
+                        "df_y_col": "projectionxrayradiationdose__irradeventxraydata__dose_area_product",
+                        "sorting_choice": [
+                            user_profile.plotInitialSortingDirection,
+                            user_profile.plotDXInitialSortingChoice,
+                        ],
+                        "grouping_choice": user_profile.plotGroupingChoice,
+                        "legend_title": "Standard acquisition name",
+                        "colourmap": user_profile.plotColourMapChoice,
+                        "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                        "x_axis_title": "Patient mass (kg)",
+                        "y_axis_title": "DAP (mGy.cm<sup>2</sub>)",
+                        "filename": "OpenREM DX standard acquisition name DAP vs patient mass",
+                        "return_as_dict": return_as_dict,
+                    }
+                    return_structure["standardAcquisitionDAPvsMass"] = plotly_scatter(
+                        df_without_blanks,
+                        parameter_dict,
+                    )
+
     #######################################################################
     # Prepare study- and request-level Pandas DataFrame to use for charts
     charts_of_interest = [
@@ -982,6 +1358,12 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
         user_profile.plotDXRequestFreq,
         user_profile.plotDXRequestDAPvsMass,
     ]
+    if enable_standard_names:
+        charts_of_interest.append(user_profile.plotDXStandardStudyMeanDAP)
+        charts_of_interest.append(user_profile.plotDXStandardStudyFreq)
+        charts_of_interest.append(user_profile.plotDXStandardStudyPerDayAndHour)
+        charts_of_interest.append(user_profile.plotDXStandardStudyDAPvsMass)
+
     if any(charts_of_interest):
 
         name_fields = []
@@ -1002,6 +1384,16 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
         if any(charts_of_interest):
             name_fields.append("requested_procedure_code_meaning")
 
+        if enable_standard_names:
+            charts_of_interest = [
+                user_profile.plotDXStandardStudyMeanDAP,
+                user_profile.plotDXStandardStudyFreq,
+                user_profile.plotDXStandardStudyPerDayAndHour,
+                user_profile.plotDXStandardStudyDAPvsMass,
+            ]
+            if any(charts_of_interest):
+                name_fields.append("standard_names__standard_name")
+
         value_fields = []
         value_multipliers = []
         charts_of_interest = [
@@ -1010,16 +1402,32 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
             user_profile.plotDXStudyDAPvsMass,
             user_profile.plotDXRequestDAPvsMass,
         ]
+        if enable_standard_names:
+            charts_of_interest.append(user_profile.plotDXStandardStudyMeanDAP)
+            charts_of_interest.append(user_profile.plotDXStandardStudyDAPvsMass)
+
         if any(charts_of_interest):
             value_fields.append("total_dap")
             value_multipliers.append(1000000)
-        if user_profile.plotDXStudyDAPvsMass or user_profile.plotDXRequestDAPvsMass:
+
+        charts_of_interest = [
+            user_profile.plotDXStudyDAPvsMass,
+            user_profile.plotDXRequestDAPvsMass,
+        ]
+        if enable_standard_names:
+            charts_of_interest.append(user_profile.plotDXStandardStudyDAPvsMass)
+
+        if any(charts_of_interest):
             value_fields.append("patientstudymoduleattr__patient_weight")
             value_multipliers.append(1)
 
         date_fields = []
         time_fields = []
-        if user_profile.plotDXStudyPerDayAndHour:
+        charts_of_interest = [user_profile.plotDXStudyPerDayAndHour]
+        if enable_standard_names:
+            charts_of_interest.append(user_profile.plotDXStandardStudyPerDayAndHour)
+
+        if any(charts_of_interest):
             date_fields.append("study_date")
             time_fields.append("study_time")
 
@@ -1036,8 +1444,15 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
             "times": time_fields,
             "system": system_field,
         }
+
+        # If only standard_names__standard_name is required then exclude all entries where these are None as these are
+        # not required for standard name charts.
+        queryset = f.qs
+        if name_fields == ["standard_names__standard_name"]:
+            queryset = queryset.exclude(standard_names__standard_name__isnull=True)
+
         df = create_dataframe(
-            f.qs,
+            queryset,
             fields,
             data_point_name_lowercase=user_profile.plotCaseInsensitiveCategories,
             data_point_name_remove_whitespace_padding=user_profile.plotRemoveCategoryWhitespacePadding,
@@ -1049,116 +1464,35 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
 
         if user_profile.plotDXStudyMeanDAP:
 
-            if user_profile.plotBoxplots and "median" not in average_choices:
-                average_choices = average_choices + ["median"]
-
             name_field = "study_description"
             value_field = "total_dap"
+            value_text = "DAP"
+            units_text = "(cGy.cm<sup>2</sup>)"
+            name_text = "Study description"
+            variable_name_start = "study"
+            variable_value_name = "DAP"
+            modality_text = "DX"
+            chart_message = ""
 
-            df_aggregated = create_dataframe_aggregates(
+            new_charts = generate_average_chart_group(
+                average_choices,
+                chart_message,
                 df,
-                [name_field],
+                modality_text,
+                name_field,
+                name_text,
+                return_as_dict,
+                return_structure,
+                units_text,
+                user_profile,
                 value_field,
-                stats_to_use=average_choices + ["count"],
+                value_text,
+                variable_name_start,
+                variable_value_name,
+                user_profile.plotDXInitialSortingChoice,
             )
 
-            if user_profile.plotMean or user_profile.plotMedian:
-
-                parameter_dict = {
-                    "df_name_col": name_field,
-                    "name_axis_title": "Study description",
-                    "colourmap": user_profile.plotColourMapChoice,
-                    "facet_col": None,
-                    "facet_col_wrap": user_profile.plotFacetColWrapVal,
-                    "return_as_dict": return_as_dict,
-                    "sorting_choice": [
-                        user_profile.plotInitialSortingDirection,
-                        user_profile.plotDXInitialSortingChoice,
-                    ],
-                }
-                if user_profile.plotMean:
-                    parameter_dict["value_axis_title"] = "Mean DAP (cGy.cm<sup>2</sup>)"
-                    parameter_dict["filename"] = "OpenREM DX study description DAP mean"
-                    parameter_dict["average_choice"] = "mean"
-                    (
-                        return_structure["studyMeanDAPData"],
-                        return_structure["studyMeanDAPDataCSV"],
-                    ) = plotly_barchart(
-                        df_aggregated,
-                        parameter_dict,
-                        "studyMeanDAPData.csv",
-                    )
-
-                if user_profile.plotMedian:
-                    parameter_dict[
-                        "value_axis_title"
-                    ] = "Median DAP (cGy.cm<sup>2</sup>)"
-                    parameter_dict[
-                        "filename"
-                    ] = "OpenREM DX study description DAP median"
-                    parameter_dict["average_choice"] = "median"
-                    (
-                        return_structure["studyMedianDAPData"],
-                        return_structure["studyMedianDAPDataCSV"],
-                    ) = plotly_barchart(
-                        df_aggregated,
-                        parameter_dict,
-                        "studyMedianDAPData.csv",
-                    )
-
-            if user_profile.plotBoxplots:
-                parameter_dict = {
-                    "df_name_col": name_field,
-                    "df_value_col": value_field,
-                    "value_axis_title": "DAP (cGy.cm<sup>2</sup>)",
-                    "name_axis_title": "Study description",
-                    "colourmap": user_profile.plotColourMapChoice,
-                    "filename": "OpenREM DX study description DAP boxplot",
-                    "facet_col": None,
-                    "sorting_choice": [
-                        user_profile.plotInitialSortingDirection,
-                        user_profile.plotDXInitialSortingChoice,
-                    ],
-                    "facet_col_wrap": user_profile.plotFacetColWrapVal,
-                    "return_as_dict": return_as_dict,
-                }
-
-                return_structure["studyBoxplotDAPData"] = plotly_boxplot(
-                    df,
-                    parameter_dict,
-                )
-
-            if user_profile.plotHistograms:
-                category_names_col = name_field
-                group_by_col = "x_ray_system_name"
-                legend_title = "Study description"
-
-                if user_profile.plotGroupingChoice == "series":
-                    category_names_col = "x_ray_system_name"
-                    group_by_col = name_field
-                    legend_title = "System"
-
-                parameter_dict = {
-                    "df_facet_col": group_by_col,
-                    "df_category_col": category_names_col,
-                    "df_value_col": value_field,
-                    "value_axis_title": "DAP (cGy.cm<sup>2</sup>)",
-                    "legend_title": legend_title,
-                    "n_bins": user_profile.plotHistogramBins,
-                    "colourmap": user_profile.plotColourMapChoice,
-                    "filename": "OpenREM DX study description DAP histogram",
-                    "facet_col_wrap": user_profile.plotFacetColWrapVal,
-                    "sorting_choice": [
-                        user_profile.plotInitialSortingDirection,
-                        user_profile.plotDXInitialSortingChoice,
-                    ],
-                    "global_max_min": user_profile.plotHistogramGlobalBins,
-                    "return_as_dict": return_as_dict,
-                }
-                return_structure["studyHistogramDAPData"] = plotly_histogram_barchart(
-                    df,
-                    parameter_dict,
-                )
+            return_structure = {**return_structure, **new_charts}
 
         if user_profile.plotDXStudyFreq:
             parameter_dict = {
@@ -1189,118 +1523,35 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
 
         if user_profile.plotDXRequestMeanDAP:
 
-            if user_profile.plotBoxplots and "median" not in average_choices:
-                average_choices = average_choices + ["median"]
-
             name_field = "requested_procedure_code_meaning"
             value_field = "total_dap"
+            value_text = "DAP"
+            units_text = "(cGy.cm<sup>2</sup>)"
+            name_text = "Requested procedure"
+            variable_name_start = "request"
+            variable_value_name = "DAP"
+            modality_text = "DX"
+            chart_message = ""
 
-            df_aggregated = create_dataframe_aggregates(
+            new_charts = generate_average_chart_group(
+                average_choices,
+                chart_message,
                 df,
-                [name_field],
+                modality_text,
+                name_field,
+                name_text,
+                return_as_dict,
+                return_structure,
+                units_text,
+                user_profile,
                 value_field,
-                stats_to_use=average_choices + ["count"],
+                value_text,
+                variable_name_start,
+                variable_value_name,
+                user_profile.plotDXInitialSortingChoice,
             )
 
-            if user_profile.plotMean or user_profile.plotMedian:
-
-                parameter_dict = {
-                    "df_name_col": name_field,
-                    "name_axis_title": "Requested procedure",
-                    "colourmap": user_profile.plotColourMapChoice,
-                    "facet_col": None,
-                    "facet_col_wrap": user_profile.plotFacetColWrapVal,
-                    "return_as_dict": return_as_dict,
-                    "sorting_choice": [
-                        user_profile.plotInitialSortingDirection,
-                        user_profile.plotDXInitialSortingChoice,
-                    ],
-                }
-                if user_profile.plotMean:
-                    parameter_dict["value_axis_title"] = "Mean DAP (cGy.cm<sup>2</sup>)"
-                    parameter_dict[
-                        "filename"
-                    ] = "OpenREM DX requested procedure DAP mean"
-                    parameter_dict["average_choice"] = "mean"
-                    (
-                        return_structure["requestMeanDAPData"],
-                        return_structure["requestMeanDAPDataCSV"],
-                    ) = plotly_barchart(
-                        df_aggregated,
-                        parameter_dict,
-                        "requestMeanDAPData.csv",
-                    )
-
-                if user_profile.plotMedian:
-                    parameter_dict[
-                        "value_axis_title"
-                    ] = "Median DAP (cGy.cm<sup>2</sup>)"
-                    parameter_dict[
-                        "filename"
-                    ] = "OpenREM DX requested procedure DAP median"
-                    parameter_dict["average_choice"] = "median"
-                    (
-                        return_structure["requestMedianDAPData"],
-                        return_structure["requestMedianDAPDataCSV"],
-                    ) = plotly_barchart(  # pylint: disable=line-too-long
-                        df_aggregated,
-                        parameter_dict,
-                        "requestMedianDAPData.csv",
-                    )
-
-            if user_profile.plotBoxplots:
-                parameter_dict = {
-                    "df_name_col": name_field,
-                    "df_value_col": value_field,
-                    "value_axis_title": "DAP (cGy.cm<sup>2</sup>)",
-                    "name_axis_title": "Requested procedure",
-                    "colourmap": user_profile.plotColourMapChoice,
-                    "filename": "OpenREM DX requested procedure DAP boxplot",
-                    "facet_col": None,
-                    "sorting_choice": [
-                        user_profile.plotInitialSortingDirection,
-                        user_profile.plotDXInitialSortingChoice,
-                    ],
-                    "facet_col_wrap": user_profile.plotFacetColWrapVal,
-                    "return_as_dict": return_as_dict,
-                }
-
-                return_structure["requestBoxplotDAPData"] = plotly_boxplot(
-                    df,
-                    parameter_dict,
-                )
-
-            if user_profile.plotHistograms:
-                category_names_col = name_field
-                group_by_col = "x_ray_system_name"
-                legend_title = "Requested procedure"
-
-                if user_profile.plotGroupingChoice == "series":
-                    category_names_col = "x_ray_system_name"
-                    group_by_col = name_field
-                    legend_title = "System"
-
-                parameter_dict = {
-                    "df_facet_col": group_by_col,
-                    "df_category_col": category_names_col,
-                    "df_value_col": value_field,
-                    "value_axis_title": "DAP (cGy.cm<sup>2</sup>)",
-                    "legend_title": legend_title,
-                    "n_bins": user_profile.plotHistogramBins,
-                    "colourmap": user_profile.plotColourMapChoice,
-                    "filename": "OpenREM DX requested procedure DAP histogram",
-                    "facet_col_wrap": user_profile.plotFacetColWrapVal,
-                    "sorting_choice": [
-                        user_profile.plotInitialSortingDirection,
-                        user_profile.plotDXInitialSortingChoice,
-                    ],
-                    "global_max_min": user_profile.plotHistogramGlobalBins,
-                    "return_as_dict": return_as_dict,
-                }
-                return_structure["requestHistogramDAPData"] = plotly_histogram_barchart(
-                    df,
-                    parameter_dict,
-                )
+            return_structure = {**return_structure, **new_charts}
 
         if user_profile.plotDXRequestFreq:
             parameter_dict = {
@@ -1396,13 +1647,155 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                 parameter_dict,
             )
 
+        if enable_standard_names:
+            charts_of_interest = [
+                user_profile.plotDXStandardStudyMeanDAP,
+                user_profile.plotDXStandardStudyFreq,
+                user_profile.plotDXStandardStudyPerDayAndHour,
+                user_profile.plotDXStandardStudyDAPvsMass,
+            ]
+
+            if any(charts_of_interest):
+
+                # Create a standard name data frame - remove any blank standard names
+                standard_name_df = df[
+                    (df["standard_names__standard_name"] != "blank")
+                    & (df["standard_names__standard_name"] != "Blank")
+                ].copy()
+                # Remove any unused categories (this will include "Blank" or "blank")
+                standard_name_df["standard_names__standard_name"] = standard_name_df[
+                    "standard_names__standard_name"
+                ].cat.remove_unused_categories()
+
+                if user_profile.plotDXStandardStudyMeanDAP:
+
+                    name_field = "standard_names__standard_name"
+                    value_field = "total_dap"
+                    value_text = "DAP"
+                    units_text = "(cGy.cm<sup>2</sup>)"
+                    name_text = "Standard study name"
+                    variable_name_start = "standardStudy"
+                    variable_value_name = "DAP"
+                    modality_text = "DX"
+                    chart_message = ""
+
+                    new_charts = generate_average_chart_group(
+                        average_choices,
+                        chart_message,
+                        standard_name_df,
+                        modality_text,
+                        name_field,
+                        name_text,
+                        return_as_dict,
+                        return_structure,
+                        units_text,
+                        user_profile,
+                        value_field,
+                        value_text,
+                        variable_name_start,
+                        variable_value_name,
+                        user_profile.plotDXInitialSortingChoice,
+                    )
+
+                    return_structure = {**return_structure, **new_charts}
+
+                if user_profile.plotDXStandardStudyFreq:
+                    parameter_dict = {
+                        "df_name_col": "standard_names__standard_name",
+                        "sorting_choice": [
+                            user_profile.plotInitialSortingDirection,
+                            user_profile.plotDXInitialSortingChoice,
+                        ],
+                        "legend_title": "Standard study name",
+                        "df_x_axis_col": "x_ray_system_name",
+                        "x_axis_title": "System",
+                        "grouping_choice": user_profile.plotGroupingChoice,
+                        "colourmap": user_profile.plotColourMapChoice,
+                        "filename": "OpenREM DX standard study name frequency",
+                        "groupby_cols": None,
+                        "facet_col": None,
+                        "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                        "return_as_dict": return_as_dict,
+                    }
+                    (
+                        return_structure["standardStudyFrequencyData"],
+                        return_structure["standardStudyFrequencyDataCSV"],
+                    ) = plotly_frequency_barchart(  # pylint: disable=line-too-long
+                        standard_name_df,
+                        parameter_dict,
+                        csv_name="standardStudyFrequencyData.csv",
+                    )
+
+                if user_profile.plotDXStandardStudyPerDayAndHour:
+                    df_time_series_per_weekday = create_dataframe_weekdays(
+                        standard_name_df,
+                        "standard_names__standard_name",
+                        df_date_col="study_date",
+                    )
+
+                    return_structure[
+                        "standardStudyWorkloadData"
+                    ] = plotly_barchart_weekdays(
+                        df_time_series_per_weekday,
+                        "weekday",
+                        "standard_names__standard_name",
+                        name_axis_title="Weekday",
+                        value_axis_title="Frequency",
+                        colourmap=user_profile.plotColourMapChoice,
+                        filename="OpenREM DX standard study name workload",
+                        facet_col_wrap=user_profile.plotFacetColWrapVal,
+                        sorting_choice=[
+                            user_profile.plotInitialSortingDirection,
+                            user_profile.plotDXInitialSortingChoice,
+                        ],
+                        return_as_dict=return_as_dict,
+                    )
+
+                if user_profile.plotDXStandardStudyDAPvsMass:
+                    parameter_dict = {
+                        "df_name_col": "standard_names__standard_name",
+                        "df_x_col": "patientstudymoduleattr__patient_weight",
+                        "df_y_col": "total_dap",
+                        "sorting_choice": [
+                            user_profile.plotInitialSortingDirection,
+                            user_profile.plotDXInitialSortingChoice,
+                        ],
+                        "grouping_choice": user_profile.plotGroupingChoice,
+                        "legend_title": "Standard study name",
+                        "colourmap": user_profile.plotColourMapChoice,
+                        "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                        "x_axis_title": "Patient mass (kg)",
+                        "y_axis_title": "DAP (mGy.cm<sup>2</sub>)",
+                        "filename": "OpenREM DX standard study name DAP vs patient mass",
+                        "return_as_dict": return_as_dict,
+                    }
+                    return_structure["standardStudyDAPvsMass"] = plotly_scatter(
+                        standard_name_df,
+                        parameter_dict,
+                    )
+
     return return_structure
 
 
 def dx_chart_form_processing(request, user_profile):
     # pylint: disable=too-many-statements
+
+    # Obtain the system-level enable_standard_names setting
+    try:
+        StandardNameSettings.objects.get()
+    except ObjectDoesNotExist:
+        StandardNameSettings.objects.create()
+    enable_standard_names = StandardNameSettings.objects.values_list(
+        "enable_standard_names", flat=True
+    )[0]
+
     # Obtain the chart options from the request
-    chart_options_form = DXChartOptionsForm(request.GET)
+    chart_options_form = None
+    if enable_standard_names:
+        chart_options_form = DXChartOptionsFormIncStandard(request.GET)
+    else:
+        chart_options_form = DXChartOptionsForm(request.GET)
+
     # check whether the form data is valid
     if chart_options_form.is_valid():
         # Use the form data if the user clicked on the submit button
@@ -1434,5 +1827,10 @@ def dx_chart_form_processing(request, user_profile):
 
             form_data = {**form_data, **dx_form_data}
 
-            chart_options_form = DXChartOptionsForm(form_data)
+            chart_options_form = None
+            if enable_standard_names:
+                chart_options_form = DXChartOptionsFormIncStandard(form_data)
+            else:
+                chart_options_form = DXChartOptionsForm(form_data)
+
     return chart_options_form

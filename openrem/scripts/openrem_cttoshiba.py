@@ -15,17 +15,14 @@
 
 """
 
-import sys
-from glob import glob
-from openrem.remapp.extractors.ct_toshiba import ct_toshiba
+if __name__ == "__main__":
+    from openrem.remapp.extractors.ct_toshiba import ct_toshiba
+    import openrem.remapp.tools.default_import as default_import
 
-if len(sys.argv) < 2:
-    sys.exit(
-        "Error: supply at least one argument - the folder containing the DICOM objects"
+    default_import.default_import(
+        ct_toshiba,
+        "import_ct_toshiba",
+        "the folder containing the DICOM objects",
+        0,
+        {"import_ct_toshiba": 1},
     )
-
-for arg in sys.argv[1:]:
-    for folder_name in glob(arg):
-        ct_toshiba(folder_name)
-
-sys.exit()

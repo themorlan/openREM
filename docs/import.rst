@@ -4,7 +4,7 @@ Importing data to OpenREM
 From local DICOM files
 ======================
 
-If you have RDSRs, DX or MG images or Philips CT Dose Info images, you can import them directly into OpenREM:
+If you have RDSRs or RRDSRs, DX, MG, PET or NM images or Philips CT Dose Info images, you can import them directly into OpenREM:
 
 ..  toctree::
     :maxdepth: 2

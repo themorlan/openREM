@@ -21,6 +21,10 @@ You can use wildcards to process a number of files at once, ie::
 
     import_multirdsr
 
+Radiopharmaceutical Radiation Dose Structured Reports
+-----------------------------------------------------
+
+You can use the same import script as for Radiation Dose Structured Reports.
 
 For mammography DICOM images
 ----------------------------
@@ -43,6 +47,14 @@ For radiographic DICOM images
 
     openrem_dx.py filename.dcm
 
+For PET/NM DICOM images
+----------------------------
+.. sourcecode:: bash
+
+    openrem_nm.py filename.dcm
+
+Note that more complete information can be loaded from the RRDSRs if available. For PET images the PET series
+information can be added to the RRDSR data.
 
 For CT dose summary files from Philips CT scanners
 --------------------------------------------------

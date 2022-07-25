@@ -62,6 +62,7 @@ class ExportMammoCSV(TestCase):
             "Study Comments",
             "No. events",
             "View",
+            "View Modifier",
             "Laterality",
             "Acquisition",
             "Thickness",
@@ -101,6 +102,7 @@ class ExportMammoCSV(TestCase):
             "",
             "1",
             "cranio-caudal",
+            "",
             "Left",
             "ROUTINE",
             "53.00000000",
@@ -162,7 +164,7 @@ class ExportMammoCSVNHSBSP(TestCase):
         import pandas as pd
 
         filter_set = {
-            u"o": "-projectionxrayradiationdose__accumxraydose__accummammographyxraydose__accumulated_"
+            "o": "-projectionxrayradiationdose__accumxraydose__accummammographyxraydose__accumulated_"
             "average_glandular_dose"
         }
 

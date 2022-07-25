@@ -4,15 +4,18 @@ Database administration
 
 **Document not ready for translation**
 
-***************
+********************
+Docker installations
+********************
+
 Database backup
-***************
+===============
 
 * Open a shell (command prompt) in the Docker folder
 
 .. code-block:: console
 
-    $ docker-compose exec db pg_dump -U openrem_user -d openrem_prod -F c -f /db_backup/openremdump.bak
+    $ docker-compose exec db pg_dump -U openremuser -d openrem_prod -F c -f /db_backup/openremdump.bak
 
 * To automate a regular backup (**recommended**) adapt the following command in a bash script:
 
@@ -20,21 +23,20 @@ Database backup
 
     #!/bin/bash
     TODAY=$(date "+%Y-%m-%d")
-    docker-compose -f /path/to/docker-compose.yml exec db pg_dump -U openrem_user -d openrem_prod -F c -f "/db_backup/openremdump-"$TODAY".bak"
+    docker-compose -f /path/to/docker-compose.yml exec db pg_dump -U openremuser -d openrem_prod -F c -f "/db_backup/openremdump-"$TODAY".bak"
 
 * or powershell script:
 
 .. code-block:: powershell
 
     $dateString = "{0:yyyy-MM-dd}" -f (get-date)
-    docker-compose -f C:\Path\To\docker-compose.yml exec db pg_dump -U openrem_user -d openrem_prod -F c -f /db_backup/openremdump-$dateString.bak
+    docker-compose -f C:\Path\To\docker-compose.yml exec db pg_dump -U openremuser -d openrem_prod -F c -f /db_backup/openremdump-$dateString.bak
 
 You will need to ensure the backups are either regularly deleted/moved, or overwritten so that the backups don't fill
 the disk.
 
-****************
 Database restore
-****************
+================
 
 To restore a database backup to a new Docker container, install using the :doc:`installation` instructions and bring
 the containers up, but don't run the database commands. These instructions can also be used to create a duplicate
@@ -47,7 +49,7 @@ server on a different system for testing or other purposes.
 
 .. code-block:: console
 
-    $ docker-compose exec db pg_restore --no-privileges --no-owner -U openrem_user -d openrem_prod /db_backup/openremdump.bak
+    $ docker-compose exec db pg_restore --no-privileges --no-owner -U openremuser -d openrem_prod /db_backup/openremdump.bak
 
 You may get an error about the public schema, this is normal.
 
@@ -75,20 +77,19 @@ You may get an error about the public schema, this is normal.
 
 The OpenREM server should now be ready to use again.
 
-********
 Advanced
-********
+========
 
 These methods should not be required in normal use; only do this if you know what you are doing!
 
 psql
-====
+^^^^
 
 Start the PostgreSQL console:
 
 .. code-block:: console
 
-    $ docker-compose exec db psql -U openrem_user openrem_prod
+    $ docker-compose exec db psql -U openremuser openrem_prod
 
 .. sourcecode:: psql
 
@@ -102,7 +103,7 @@ Start the PostgreSQL console:
     \q
 
 pgAdmin or other PostgreSQL connections
-=======================================
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 To access the database directly by pgAdmin or other software, the ports must be exposed.
 
@@ -123,9 +124,9 @@ To access the database directly by pgAdmin or other software, the ports must be 
     $ docker-compose down
     $ docker-compose up -d
 
-********************************
-Linux-only non-Docker PostgreSQL
-********************************
+*******************
+Linux installations
+*******************
 
 .. _backup-psql-db:
 
@@ -177,12 +178,9 @@ Database restore
 
 .. _database-windows:
 
-*****************************
-Legacy - databases on Windows
-*****************************
+*********************
+Windows installations
+*********************
 
-Windows is only a supported platform for OpenREM v1 and later when using Docker. Therefore there
-are no instructions for maintenance of databases on that platform, except in the upgrade guide in
-the release notes: :ref:`release1-0upgrade`.
+TODO
 
-For upgrades between older versions, please refer to the docs that accompany those versions.

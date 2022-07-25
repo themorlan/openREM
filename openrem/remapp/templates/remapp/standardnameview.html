@@ -1,0 +1,104 @@
+{% extends "remapp/base.html" %}
+
+{% block headextras %}
+  <script src="{{ STATIC_URL }}js/sorttable.js"></script>
+{% endblock %}
+
+{% block confnav %}
+  <li class="dropdown active">{% endblock %}
+
+{% block navhelp %}
+  <li>
+    <a href="https://docs.openrem.org/en/{{ admin.docsversion }}/" target="_blank"
+       data-toggle="tooltip" title="OpenREM documentation - opens in a new tab">
+      OpenREM documentation
+    </a>
+  </li>
+{% endblock %}
+
+{% block toprow %}
+  <a id="#top"></a>
+  <div class="row">
+    <div class="col-md-6">
+      <h3>Standard name mapping</h3>
+      <p>
+        Jump to <a href="#ct">CT</a> | <a href="#fluoro">Fluoroscopy</a> | <a href="#mammo">Mammography</a> |
+        <a href="#dx">Radiography</a>
+      </p>
+
+      <p>The tables below show the configured standard name mappings for each modality. A standard name can be
+         associated with a study description, requested procedure, procedure or acquisition protocol name.</p>
+      <p>Each study description, requested procedure, procedure and acquisition protocol name can only appear once
+         in each modality table.</p>
+      <p>The tables can be sorted by clicking on the column headings.</p>
+    </div>
+  </div>
+
+{% endblock %}
+
+{% block mainblock %}
+
+{% for modality in modalities %}
+  <script>
+      $(document).ready(
+          function get_display_name_list(json) {
+              $.ajax(
+                  {
+                      url: "{% url 'standard_names_populate' %}",
+                      data: {
+                          modality: '{{ modality }}',
+                          csrfmiddlewaretoken: '{{ csrf_token }}'
+                      },
+                      type: "POST",
+                      success: function (data) {
+                          $('#{{ modality }}-names').html(data);
+                          var display_name_table_{{ modality }} = document.getElementById("standard_name_table_{{ modality }}");
+                          sorttable.makeSortable(display_name_table_{{ modality }});
+
+                          {% if admin.admingroup %}
+                          $("#standard_name_table_{{ modality }} .clickable-row").click(function () {
+                              var row_name = $(this).attr('row_name');
+                              $('input[name=' + row_name + ']').prop("checked", !$('input[name=' + row_name + ']').prop("checked"));
+                          });
+                          {% endif %}
+                      }
+                  }
+              )
+          }
+      );
+  </script>
+{% endfor %}
+
+<a id="ct" class="vert-offset">
+  <h3>CT</h3>
+</a>
+<span id="CT-names">Querying the database for standard names, please wait</span>
+{% if admin.admingroup %}
+    <a class="btn btn-default" href="{% url 'add_name_ct' %}" role="button">Add new CT entry</a>
+{% endif %}
+
+<a id="fluoro" class="vert-offset">
+  <h3>Fluoroscopy</h3>
+</a>
+<span id="RF-names">Querying the database for standard names, please wait</span>
+{% if admin.admingroup %}
+    <a class="btn btn-default" href="{% url 'add_name_rf' %}" role="button">Add new fluoroscopy entry</a>
+{% endif %}
+
+<a id="mammo" class="vert-offset">
+  <h3>Mammography</h3>
+</a>
+<span id="MG-names">Querying the database for standard names, please wait</span>
+{% if admin.admingroup %}
+    <a class="btn btn-default" href="{% url 'add_name_mg' %}" role="button">Add new mammography entry</a>
+{% endif %}
+
+<a id="dx" class="vert-offset">
+  <h3>Radiography</h3>
+</a>
+<span id="DX-names">Querying the database for standard names, please wait</span>
+{% if admin.admingroup %}
+    <a class="btn btn-default" href="{% url 'add_name_dx' %}" role="button">Add new radiography entry</a>
+{% endif %}
+
+{% endblock %}

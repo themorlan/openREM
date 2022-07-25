@@ -74,7 +74,7 @@ class DXFilterTests(TestCase):
         """
         ds = Dataset()
         ds.FilterType = "FLAT"
-        ds.FilterMaterial = "lead"
+        ds.FilterMaterial = "LEAD"
         ds.FilterThicknessMinimum = "1.0"
         ds.FilterThicknessMaximum = "1.0"
 

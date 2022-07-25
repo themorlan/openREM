@@ -1,0 +1,80 @@
+{% extends "remapp/base.html" %}
+
+{% block headextras %}
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}admin/css/base.css" />
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}admin/css/forms.css" />
+    <!--[if lte IE 7]><link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}admin/css/ie.css" /><![endif]-->
+{% endblock %}
+
+{% block navhelp %}
+        <li>
+            <a href="https://docs.openrem.org/en/{{ admin.docsversion }}/"
+               target="_blank" data-toggle="tooltip"
+               title="OpenREM documentation - opens in a new tab">
+                OpenREM documentation
+            </a>
+        </li>
+{% endblock %}
+
+{% block confnav %}<li class="dropdown active">{% endblock %}
+
+{% block mainblock %}		
+
+      <div class="row col-md-offset-2">
+        <h1>Create or modify a standard name for {{ form.modality.value }} systems</h1>
+      </div>
+
+    <div class="row">
+        <div class="col-md-8 col-md-offset-2 ">
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    Enter the standard name and select the required options.
+                </div>
+
+                {% if admin.admingroup %}
+                <div class="panel-body">
+                    <p>Any study description, requested procedure, procedure or acquisition protocol name already
+                       present in another standard name mapping are excluded from the options on this form.</p>
+
+
+                    <div id="frame">
+                        <form action="" method="post" id="standard_name_form">
+                            <div id="sk_body">
+                                <fieldset>
+                                    <form>
+                                        {% csrf_token %}
+                                        <table>
+                                            {{ form.media }}
+                                            {{ form.as_table }}
+                                            <script type="text/javascript" src="{% url 'jsi18n' %}"></script>
+                                        </table>
+
+                                        <input class="btn btn-primary" name="submit" type="submit" id="submit-button" />
+                                        <input type="button" class="btn btn-danger" value="Cancel" id="cancel-button"
+                                               onclick="window.location = '{% url 'standard_names_view' %}';"/>
+                                    </form>
+                                </fieldset>
+                            </div>
+                        </form>
+                    </div>
+
+                {% else %}
+                <div class="row col-md-offset-2">
+                    <p>Only users in the Admin group can create or modify standard names.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function(e) {
+            $("#standard_name_form").submit(function() {
+                $("#submit-button").val("Updating the database - this may take some time").attr("disabled", true);
+                $("#cancel-button").attr("disabled", true);
+                return;
+            })
+        });
+    </script>
+
+{% endblock %}

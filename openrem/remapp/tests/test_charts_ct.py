@@ -5,7 +5,12 @@ import os
 from django.contrib.auth.models import User, Group
 from django.test import TestCase, RequestFactory
 from remapp.extractors import rdsr
-from remapp.models import GeneralStudyModuleAttr, PatientIDSettings
+from remapp.models import (
+    GeneralStudyModuleAttr,
+    PatientIDSettings,
+    StandardNameSettings,
+)
+from django.core.exceptions import ObjectDoesNotExist
 from remapp.interface.mod_filters import CTSummaryListFilter
 from remapp.tests.test_charts_common import (
     check_series_and_category_names,
@@ -36,6 +41,14 @@ class ChartsCT(TestCase):
         pid.id_hashed = False
         pid.dob_stored = True
         pid.save()
+
+        try:
+            StandardNameSettings.objects.get()
+        except ObjectDoesNotExist:
+            StandardNameSettings.objects.create()
+        standard_name_settings = StandardNameSettings.objects.get()
+        standard_name_settings.enable_standard_names = True
+        standard_name_settings.save()
 
         ct1 = os.path.join("test_files", "CT-ESR-GE_Optima.dcm")
         ct2 = os.path.join("test_files", "CT-ESR-GE_VCT.dcm")
@@ -90,6 +103,12 @@ class ChartsCT(TestCase):
         self.user.userprofile.plotCTAcquisitionDLPvsMass = True
         self.user.userprofile.plotCTAcquisitionCTDIOverTime = True
         self.user.userprofile.plotCTAcquisitionDLPOverTime = True
+        self.user.userprofile.plotCTStandardAcquisitionMeanDLP = True
+        self.user.userprofile.plotCTStandardAcquisitionMeanCTDI = True
+        self.user.userprofile.plotCTStandardAcquisitionDLPOverTime = True
+        self.user.userprofile.plotCTStandardAcquisitionCTDIOverTime = True
+        self.user.userprofile.plotCTStandardAcquisitionDLPvsMass = True
+        self.user.userprofile.plotCTStandardAcquisitionCTDIvsMass = True
         self.user.userprofile.plotCTStudyMeanDLP = True
         self.user.userprofile.plotCTStudyMeanCTDI = True
         self.user.userprofile.plotCTStudyFreq = True
@@ -100,6 +119,11 @@ class ChartsCT(TestCase):
         self.user.userprofile.plotCTRequestFreq = True
         self.user.userprofile.plotCTRequestNumEvents = True
         self.user.userprofile.plotCTRequestDLPOverTime = True
+        self.user.userprofile.plotCTStandardStudyMeanDLP = True
+        self.user.userprofile.plotCTStandardStudyNumEvents = True
+        self.user.userprofile.plotCTStandardStudyFreq = True
+        self.user.userprofile.plotCTStandardStudyPerDayAndHour = True
+        self.user.userprofile.plotCTStandardStudyMeanDLPOverTime = True
         self.user.userprofile.save()
 
         required_charts_list = generate_required_ct_charts_list(self.user.userprofile)
@@ -125,10 +149,36 @@ class ChartsCT(TestCase):
             "acquisitionMedianCTDIOverTime",
             "acquisitionMeanDLPOverTime",
             "acquisitionMedianDLPOverTime",
+            "standardAcquisitionMeanDLP",
+            "standardAcquisitionMedianDLP",
+            "standardAcquisitionBoxplotDLP",
+            "standardAcquisitionHistogramDLP",
+            "standardAcquisitionMeanCTDI",
+            "standardAcquisitionMedianCTDI",
+            "standardAcquisitionBoxplotCTDI",
+            "standardAcquisitionHistogramCTDI",
+            "standardAcquisitionMeanDLPOverTime",
+            "standardAcquisitionMedianDLPOverTime",
+            "standardAcquisitionMeanCTDIOverTime",
+            "standardAcquisitionMedianCTDIOverTime",
+            "standardAcquisitionScatterCTDIvsMass",
+            "standardAcquisitionScatterDLPvsMass",
             "studyMeanDLP",
             "studyMedianDLP",
             "studyBoxplotDLP",
             "studyHistogramDLP",
+            "standardStudyMeanDLP",
+            "standardStudyMedianDLP",
+            "standardStudyBoxplotDLP",
+            "standardStudyHistogramDLP",
+            "standardStudyMeanNumEvents",
+            "standardStudyMedianNumEvents",
+            "standardStudyBoxplotNumEvents",
+            "standardStudyHistogramNumEvents",
+            "standardStudyFrequency",
+            "standardStudyWorkload",
+            "standardStudyMeanDLPOverTime",
+            "standardStudyMedianDLPOverTime",
             "studyMeanCTDI",
             "studyMedianCTDI",
             "studyBoxplotCTDI",

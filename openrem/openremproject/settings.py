@@ -20,6 +20,8 @@ DATABASES = {
     }
 }
 
+DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
+
 SECRET_KEY = os.environ.get("SECRET_KEY", default="shouldn'tbethisone")
 
 DEBUG = int(os.environ.get("DEBUG", default=0))
@@ -37,21 +39,6 @@ STATIC_ROOT = os.environ.get(
 JS_REVERSE_OUTPUT_PATH = os.path.join(STATIC_ROOT, "js", "django_reverse")
 VIRTUAL_DIRECTORY = os.environ.get("VIRTUAL_DIRECTORY", default="")
 FIXTURES_DIRS = os.path.join(BASE_DIR, "/remapp/fixtures")
-
-# Celery settings
-CELERY_BROKER_URL = os.environ.get(
-    "BROKER_URL", default="amqp://guest:guest@localhost:5672//"
-)
-BROKER_MGMT_URL = os.environ.get("BROKER_MGMT_URL", default="http://localhost:15672/")
-
-CELERY_ACCEPT_CONTENT = ["json"]
-CELERY_TASKS_SERIALIZER = "json"
-CELERY_RESULT_SERIALIZER = "json"
-CELERY_TASK_DEFAULT_QUEUE = "default"
-CELERY_WORKER_PREFETCH_MULTIPLIER = 1
-
-FLOWER_PORT = int(os.environ.get("FLOWER_PORT", default=5555))
-FLOWER_URL = os.environ.get("FLOWER_URL", default="http://localhost")
 
 ROOT_PROJECT = os.path.join(os.path.split(__file__)[0], "..")
 
@@ -80,10 +67,6 @@ USE_TZ = os.environ.get("USE_TZ", default=False)
 
 XLSX_DATE = os.environ.get("XLSX_DATE", default="dd/mm/yyyy")
 XLSX_TIME = os.environ.get("XLSX_TIME", default="hh:mm:ss")
-
-# Additional locations of static files
-STATICFILES_DIRS = (os.path.join(ROOT_PROJECT, "remapp", "static"),)
-
 
 # URL name of the login page (as defined in urls.py)
 LOGIN_URL = "login"

@@ -73,6 +73,64 @@ $(document).ready(function() {
                 $("#acquisitionMedianAGDOverTimeChartDiv").html(json.acquisitionMedianAGDOverTime);
             }
 
+            // Acquisition frequency chart data
+            if(typeof json.standardAcquisitionFrequencyData !== "undefined") {
+                $("#standardAcquisitionFrequencyChartDiv").html(json.standardAcquisitionFrequencyData);
+                $("#standardAcquisitionFrequencyChartParentDiv").append(json.standardAcquisitionFrequencyDataCSV);
+            }
+
+            // AGD per acquisition chart data
+            if(typeof json.standardAcquisitionMeanAGDData !== "undefined") {
+                $("#standardAcquisitionMeanAGDChartDiv").html(json.standardAcquisitionMeanAGDData);
+                $("#standardAcquisitionMeanAGDChartParentDiv").append(json.standardAcquisitionMeanAGDDataCSV);
+            }
+            if(typeof json.standardAcquisitionMedianAGDData !== "undefined") {
+                $("#standardAcquisitionMedianAGDChartDiv").html(json.standardAcquisitionMedianAGDData);
+                $("#standardAcquisitionMedianAGDChartParentDiv").append(json.standardAcquisitionMedianAGDDataCSV);
+            }
+            if(typeof json.standardAcquisitionBoxplotAGDData !=="undefined") {
+                $("#standardAcquisitionBoxplotAGDChartDiv").html(json.standardAcquisitionBoxplotAGDData);
+            }
+            if(typeof json.standardAcquisitionHistogramAGDData !=="undefined") {
+                $("#standardAcquisitionHistogramAGDChartDiv").html(json.standardAcquisitionHistogramAGDData);
+            }
+
+            // AGD per acquisition grouped into compressed breast thickness bands
+            if(typeof json.standardMeanAGDvsThickness !== "undefined") {
+                $("#standardAcquisitionMeanAGDvsThickChartDiv").html(json.standardMeanAGDvsThickness);
+            }
+            if(typeof json.standardMedianAGDvsThickness !== "undefined") {
+                $("#standardAcquisitionMedianAGDvsThickChartDiv").html(json.standardMedianAGDvsThickness);
+            }
+
+            // AGD vs compressed thickness scatter plot
+            if(typeof json.standardAGDvsThickness !== "undefined") {
+                $("#standardAcquisitionScatterAGDvsThickChartDiv").html(json.standardAGDvsThickness);
+            }
+
+            // kVp vs compressed thickness scatter plot
+            if(typeof json.standardkVpvsThickness !== "undefined") {
+                $("#standardAcquisitionScatterkVpvsThickChartDiv").html(json.standardkVpvsThickness);
+            }
+
+            // mAs vs compressed thickness scatter plot
+            if(typeof json.standardmAsvsThickness !== "undefined") {
+                $("#standardAcquisitionScattermAsvsThickChartDiv").html(json.standardmAsvsThickness);
+            }
+
+            // AGD over time chart data
+            if(typeof json.standardAcquisitionMeanAGDOverTime !== "undefined") {
+                $("#standardAcquisitionMeanAGDOverTimeChartDiv").html(json.standardAcquisitionMeanAGDOverTime);
+            }
+            if(typeof json.standardAcquisitionMedianAGDOverTime !== "undefined") {
+                $("#standardAcquisitionMedianAGDOverTimeChartDiv").html(json.standardAcquisitionMedianAGDOverTime);
+            }
+
+            // Standard study name workload chart data
+            if(typeof json.standardStudyWorkloadData !== "undefined") {
+                $("#standardStudyWorkloadChartDiv").html(json.standardStudyWorkloadData);
+            }
+
             $(".ajax-progress").hide();
         },
         error: function( xhr, status, errorThrown ) {

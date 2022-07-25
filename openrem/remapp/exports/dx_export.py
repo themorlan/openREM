@@ -29,9 +29,11 @@
 """
 import datetime
 import logging
+from openrem.remapp.tools.background import get_or_generate_task_uuid
 
-from celery import shared_task
 from django.core.exceptions import ObjectDoesNotExist
+
+from remapp.models import StandardNameSettings
 
 from .export_common import (
     text_and_date_formats,
@@ -149,10 +151,26 @@ def _series_headers(max_events):
     :param max_events: number of series
     :return: headers as a list of strings
     """
+
+    # Obtain the system-level enable_standard_names setting
+    try:
+        StandardNameSettings.objects.get()
+    except ObjectDoesNotExist:
+        StandardNameSettings.objects.create()
+    enable_standard_names = StandardNameSettings.objects.values_list(
+        "enable_standard_names", flat=True
+    )[0]
+
     series_headers = []
     for series_number in range(int(max_events)):
+        series_headers += ["E" + str(series_number + 1) + " Protocol"]
+
+        if enable_standard_names:
+            series_headers += [
+                "E" + str(series_number + 1) + " Standard acquisition name"
+            ]
+
         series_headers += [
-            "E" + str(series_number + 1) + " Protocol",
             "E" + str(series_number + 1) + " Anatomy",
             "E" + str(series_number + 1) + " Image view",
             "E" + str(series_number + 1) + " Exposure control mode",
@@ -183,6 +201,16 @@ def _dx_get_series_data(s):
     :param s: series
     :return: series data
     """
+
+    # Obtain the system-level enable_standard_names setting
+    try:
+        StandardNameSettings.objects.get()
+    except ObjectDoesNotExist:
+        StandardNameSettings.objects.create()
+    enable_standard_names = StandardNameSettings.objects.values_list(
+        "enable_standard_names", flat=True
+    )[0]
+
     source_data = _get_source_data(s)
     detector_data = _get_detector_data(s)
 
@@ -196,7 +224,21 @@ def _dx_get_series_data(s):
     except AttributeError:
         anatomical_structure = ""
 
-    series_data = [s.acquisition_protocol, anatomical_structure]
+    series_data = [s.acquisition_protocol]
+
+    if enable_standard_names:
+        try:
+            standard_protocol = s.standard_protocols.first().standard_name
+        except AttributeError:
+            standard_protocol = ""
+
+        if standard_protocol:
+            series_data += [standard_protocol]
+        else:
+            series_data += [""]
+
+    series_data += [anatomical_structure]
+
     try:
         series_data += [s.image_view.code_meaning]
     except AttributeError:
@@ -224,7 +266,6 @@ def _dx_get_series_data(s):
     return series_data
 
 
-@shared_task
 def exportDX2excel(filterdict, pid=False, name=None, patid=None, user=None):
     """Export filtered DX database data to a single-sheet CSV file.
 
@@ -239,8 +280,9 @@ def exportDX2excel(filterdict, pid=False, name=None, patid=None, user=None):
     from ..interface.mod_filters import dx_acq_filter
 
     datestamp = datetime.datetime.now()
+    task_id = get_or_generate_task_uuid()
     tsk = create_export_task(
-        celery_uuid=exportDX2excel.request.id,
+        task_id=task_id,
         modality="DX",
         export_type="CSV export",
         date_stamp=datestamp,
@@ -334,7 +376,6 @@ def exportDX2excel(filterdict, pid=False, name=None, patid=None, user=None):
     tsk.save()
 
 
-@shared_task
 def dxxlsx(filterdict, pid=False, name=None, patid=None, user=None):
     """Export filtered DX and CR database data to multi-sheet Microsoft XSLX files.
 
@@ -348,9 +389,19 @@ def dxxlsx(filterdict, pid=False, name=None, patid=None, user=None):
 
     from ..interface.mod_filters import dx_acq_filter
 
+    # Obtain the system-level enable_standard_names setting
+    try:
+        StandardNameSettings.objects.get()
+    except ObjectDoesNotExist:
+        StandardNameSettings.objects.create()
+    enable_standard_names = StandardNameSettings.objects.values_list(
+        "enable_standard_names", flat=True
+    )[0]
+
     datestamp = datetime.datetime.now()
+    task_id = get_or_generate_task_uuid()
     tsk = create_export_task(
-        celery_uuid=dxxlsx.request.id,
+        task_id=task_id,
         modality="DX",
         export_type="XLSX export",
         date_stamp=datestamp,
@@ -380,8 +431,13 @@ def dxxlsx(filterdict, pid=False, name=None, patid=None, user=None):
     # Some prep
     commonheaders = common_headers(pid=pid, name=name, patid=patid)
     commonheaders += ["DAP total (cGy.cm^2)"]
-    protocolheaders = commonheaders + [
-        "Protocol",
+
+    protocolheaders = commonheaders + ["Protocol"]
+
+    if enable_standard_names:
+        protocolheaders += ["Standard acquisition name"]
+
+    protocolheaders = protocolheaders + [
         "Anatomy",
         "Image view",
         "Exposure control mode",
@@ -463,8 +519,10 @@ def dxxlsx(filterdict, pid=False, name=None, patid=None, user=None):
             ):
                 # Get series data
                 series_data = _dx_get_series_data(s)
+
                 # Add series to all data
                 all_exam_data += series_data
+
                 # Add series data to series tab
                 protocol = s.acquisition_protocol
                 if not protocol:
@@ -475,7 +533,22 @@ def dxxlsx(filterdict, pid=False, name=None, patid=None, user=None):
                     sheet_list[tabtext]["count"], 0, common_exam_data + series_data
                 )
 
+                if enable_standard_names:
+                    try:
+                        protocol = s.standard_protocols.first().standard_name
+                        if protocol:
+                            tabtext = sheet_name("[standard] " + protocol)
+                            sheet_list[tabtext]["count"] += 1
+                            sheet_list[tabtext]["sheet"].write_row(
+                                sheet_list[tabtext]["count"],
+                                0,
+                                common_exam_data + series_data,
+                            )
+                    except AttributeError:
+                        pass
+
             wsalldata.write_row(row + 1, 0, all_exam_data)
+
         except ObjectDoesNotExist:
             error_message = (
                 "DoesNotExist error whilst exporting study {0} of {1},  study UID {2}, accession number"
@@ -498,7 +571,6 @@ def dxxlsx(filterdict, pid=False, name=None, patid=None, user=None):
     write_export(tsk, xlsxfilename, tmpxlsx, datestamp)
 
 
-@shared_task
 def dx_phe_2019(filterdict, user=None, projection=True, bespoke=False):
     """Export filtered DX database data in the format for the 2019 Public Health England DX dose survey
 
@@ -513,8 +585,9 @@ def dx_phe_2019(filterdict, user=None, projection=True, bespoke=False):
     from ..interface.mod_filters import dx_acq_filter
 
     datestamp = datetime.datetime.now()
+    task_id = get_or_generate_task_uuid()
     tsk = create_export_task(
-        celery_uuid=dx_phe_2019.request.id,
+        task_id=task_id,
         modality="DX",
         export_type="PHE DX 2019 export",
         date_stamp=datestamp,

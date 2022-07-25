@@ -11,7 +11,7 @@
         * Fluoro: Siemens Artis Zee RDSR
 """
 
-import sys
 from openrem.remapp.extractors.ptsizecsv2db import csv2db
 
-sys.exit(csv2db())
+if __name__ == "__main__":
+    csv2db()

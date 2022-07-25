@@ -40,11 +40,17 @@ from django.shortcuts import redirect, render, get_object_or_404
 from django.conf import settings
 from django.urls import reverse, reverse_lazy
 from django.views.decorators.csrf import csrf_exempt
+from openrem.remapp.tools.background import (
+    run_in_background,
+    run_in_background_with_limits,
+    terminate_background,
+)
 
-from remapp.models import SizeUpload
+from remapp.models import BackgroundTask, SizeUpload
 from .rdsr import rdsr
 from .dx import dx
 from .mam import mam
+from .nm_image import nm_image
 from .ct_philips import ct_philips
 from .ct_toshiba import ct_toshiba
 from .. import __docs_version__, __version__
@@ -55,7 +61,8 @@ logger = logging.getLogger(__name__)
 
 @csrf_exempt
 def import_from_docker(request):
-    """View to consume the local path of an object ot import and pass to import scripts. To be used by Orthanc Docker
+    """
+    View to consume the local path of an object ot import and pass to import scripts. To be used by Orthanc Docker
     container.
 
     :param request: Request object containing local path and script name in POST data
@@ -64,25 +71,59 @@ def import_from_docker(request):
     data = request.POST
     dicom_path = data.get("dicom_path")
     import_type = data.get("import_type")
-    print(
-        f"In import_from_docker, dicom_path is {dicom_path}, import type is {import_type}"
-    )
 
+    # This violates the rules for running background processes at the moment (may block),
+    # but at least it ensures correctness
     if dicom_path:
         if import_type == "rdsr":
-            rdsr(dicom_path)
+            run_in_background_with_limits(
+                rdsr, "import_rdsr", 0, {"import_rdsr": 1}, dicom_path
+            )
             return_type = "RDSR"
         elif import_type == "dx":
-            dx(dicom_path)
+            run_in_background_with_limits(
+                dx,
+                "import_dx",
+                0,
+                {"import_dx": 1},
+                dicom_path,
+            )
             return_type = "DX"
+        elif import_type == "nm":
+            run_in_background_with_limits(
+                nm_image,
+                "import_nm",
+                0,
+                {"import_nm": 1},
+                dicom_path,
+            )
+            return_type = "NM image"
         elif import_type == "mam":
-            mam(dicom_path)
+            run_in_background_with_limits(
+                mam,
+                "import_mam",
+                0,
+                {"import_mam": 1},
+                dicom_path,
+            )
             return_type = "Mammography"
         elif import_type == "ct_philips":
-            ct_philips(dicom_path)
+            run_in_background_with_limits(
+                ct_philips,
+                "import_ct_philips",
+                0,
+                {"import_ct_philips": 1},
+                dicom_path,
+            )
             return_type = "CT Philips"
         elif import_type == "ct_toshiba":
-            ct_toshiba(dicom_path)
+            run_in_background_with_limits(
+                ct_toshiba,
+                "import_ct_toshiba",
+                0,
+                {"import_ct_toshiba": 1},
+                dicom_path,
+            )
             return HttpResponse(f"{dicom_path} passed to CT Toshiba import")
         else:
             return HttpResponse("Import script name not recognised")
@@ -92,7 +133,8 @@ def import_from_docker(request):
 
 @login_required
 def size_upload(request):
-    """Form for upload of csv file containing patient size information. POST request passes database entry ID to
+    """
+    Form for upload of csv file containing patient size information. POST request passes database entry ID to
     size_process
 
     :param request: If POST, contains the file upload information
@@ -131,7 +173,8 @@ def size_upload(request):
 
 @login_required
 def size_process(request, *args, **kwargs):
-    """Form for csv column header patient size imports through the web interface. POST request launches import task
+    """
+    Form for csv column header patient size imports through the web interface. POST request launches import task
 
     :param request: If POST, contains the field header information
     :param pk: From URL, identifies database patient size import record
@@ -169,7 +212,11 @@ def size_process(request, *args, **kwargs):
                 csvrecord.overwrite = True
             csvrecord.save()
 
-            websizeimport.delay(csv_pk=kwargs["pk"])
+            run_in_background(
+                websizeimport,
+                "import_size",
+                csv_pk=kwargs["pk"],
+            )
 
             return HttpResponseRedirect(reverse_lazy("size_imports"))
 
@@ -237,7 +284,8 @@ def size_process(request, *args, **kwargs):
 
 
 def size_imports(request, *args, **kwargs):
-    """Lists patient size imports in the web interface
+    """
+    Lists patient size imports in the web interface
 
     :param request:
     """
@@ -272,7 +320,8 @@ def size_imports(request, *args, **kwargs):
 @csrf_exempt
 @login_required
 def size_delete(request):
-    """Task to delete records of patient size imports through the web interface
+    """
+    Task to delete records of patient size imports through the web interface
 
     :param request: Contains the task ID
     :type request: POST
@@ -307,18 +356,19 @@ def size_delete(request):
 
 @login_required
 def size_abort(request, pk):
-    """View to abort current patient size imports
+    """
+    View to abort current patient size imports
 
     :param pk: Size upload task primary key
     """
-    from openremproject.celeryapp import app as celery_app
-
     size_import = get_object_or_404(SizeUpload, pk=pk)
+    task = get_object_or_404(BackgroundTask, uuid=size_import.task_id)
 
     if request.user.groups.filter(
         name="importsizegroup"
     ) or request.users.groups.filter(name="admingroup"):
-        celery_app.control.revoke(size_import.task_id, terminate=True)
+
+        terminate_background(task)
         size_import.logfile.delete()
         size_import.sizefile.delete()
         size_import.delete()
@@ -338,7 +388,8 @@ def size_abort(request, pk):
 
 @login_required
 def size_download(request, task_id):
-    """View to handle downloads of files from the server
+    """
+    View to handle downloads of files from the server
 
     For downloading the patient size import logfiles.
 

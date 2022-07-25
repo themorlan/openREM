@@ -2,6 +2,8 @@
 Upgrade to OpenREM 0.10.0 from before 0.9.1
 ###########################################
 
+*doc not ready for translation*
+
 *******************
 Upgrade preparation
 *******************
@@ -230,7 +232,7 @@ Celery management interface, Flower
 
 To make use of the Celery task management, Flower needs to be running. To do so, follow the instructions in
 :ref:`start_flower`. For 'one-page Ubuntu' installs, add the Flower related config and create, register and start the
-systemd service files as described in :ref:`one_page_linux_celery`. If you need to change the default Flower port of
+systemd service files as described in :doc:`celery-linux`. If you need to change the default Flower port of
 5555 then make sure you do so in ``openremproject\local_settings.py`` to add/modify the line ``FLOWER_PORT = 5555`` as
 well as when you start Flower.
 
@@ -245,7 +247,7 @@ If you are a Windows user you may also wish to review :doc:`celery-windows` as t
 been updated.
 
 
-Ubuntu installs that followed :doc:`quick_start_linux`
+Ubuntu installs that followed :doc:`install_linux`
 ======================================================
 
 Systemd service files have been renamed in these docs to use *openrem-function* rather than *function-openrem*. To

@@ -1,0 +1,84 @@
+{% extends "remapp/base.html" %}
+
+{% block headextras %}
+  <script src="{{ STATIC_URL }}js/sorttable.js"></script>
+  <script src="{{ STATIC_URL }}js/django_reverse/reverse.js"></script>
+  <script src="{{ STATIC_URL }}js/dicom.js"></script>
+  <script>
+        $(document).ready(function() {
+            json = {"queryID": "{{query.query_id}}"};
+            queryProgress(json);
+        });
+  </script>
+{% endblock %}
+
+{% block mainblock %} 
+
+<div class="row">
+    <div class="col-md-8">
+        <h4>
+            <p>
+                This table shows all the studies that the remote PACS/DICOM node sent and where
+                considered for downloading (moving). Click on any study to see the series that were found for this study.
+            </p><p>
+                Note that studies that are present on the remote 
+                will not be shown here if their modality type was not selected for downloading. Similarly,
+                they will not be shown if they were filtered because their date does not match,
+                since those things are filtered already on the remote node. To see all studies sent by the
+                remote hence enable all modalities and set no date at all.
+            </p><p>
+                <a href="{% url 'get_query_summary' %}">
+                    Back to the query overview.
+                </a>
+            </p>
+        </h4>
+        <table class="table table-bordered table-hover row-clickable table-sortable"
+               aria-describedby="Table of studies sent in response to DICOM query">
+            <tr>
+                <th>Study UID</th>
+                <th>Study description</th>
+                <th>Modality</th>
+                <th>Downloaded?</th>
+            </tr>
+            {% for qstudy in querystudies %} 
+                <tr>
+                    <td>
+                        <a href="{% url 'get_query_series' qstudy.pk %}">
+                            {{qstudy.study_instance_uid}}
+                        </a>
+                    </td>
+                    <td>
+                        <a href="{% url 'get_query_series' qstudy.pk %}">
+                            {{qstudy.study_description}}
+                        </a>
+                    </td>
+                    <td>
+                        <a href="{% url 'get_query_series' qstudy.pk %}">
+                            {{qstudy.modality}}
+                        </a>
+                    </td>
+                    <td>
+                        <a href="{% url 'get_query_series' qstudy.pk %}">
+                            {{qstudy.deleted_reason}}
+                        </a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    <div class="col-md-3 ">
+        <div class="row">
+            <div id="qr-status"></div>
+            <div id="move-button"></div>
+            </div>
+            <div class="row">
+            <div id="move-status"></div>
+            </div>
+            <div class="row">
+            <div id="subops"></div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

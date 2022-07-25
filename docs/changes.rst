@@ -3,10 +3,20 @@ OpenREM version history
 =======================
 
 
-1.0.0b1 (2021-xx-xx)
+1.0.0b1 (2022-xx-xx)
 --------------------
+* :issue:`941`  Interface: the filtering submit button now updates chart options for fluoroscopy and mammography
+* :issue:`940`  Installation: upgraded Django to 3.2, packages to latest versions
+* :issue:`937`  Interface: correcting bottom row of exports table
+* :issue:`936`  Tasks: added make_skin_map to background tasks on RF RDSR import
+* :issue:`934`  DICOM Networking: QR queries are now logged and can be analysed through the web interface
+* :issue:`931`  Exports: export RF DAP as float instead of text
+* :issue:`928`  Documentation: added restriction in postgres version for earlier OpenREM releases
+* :issue:`925`  Docker: docs and config file for enabling bind mounts with SELinux
 * :issue:`922`  Database: optimise indexes and duplicate queries
-* :issue:`917`  Interface: added horizintal lines between chart option groups and shaded chart option CheckboxSelectMultiple items
+* :issue:`919`  Interface: fixed bug preventing home page listing if study had no date
+* :issue:`917`  Interface: added horizontal lines between chart option groups and shaded chart option CheckboxSelectMultiple items
+* :issue:`915`  Interface and exports: expose mammo view modifier in interface and exports
 * :issue:`913`  SkinDose: made 2d skin dose map overlay visible by default
 * :issue:`911`  Charts: fixed issue with chart data sorting and added label wrap option
 * :issue:`910`  SkinDose: fixed rendering of 2d skin dose map with head
@@ -24,6 +34,7 @@ OpenREM version history
 * :issue:`886`  Code quality: addressed some SonarCloud issues
 * :issue:`882`  SkinDose: added percentage of exposures that interact with phantom
 * :issue:`881`  Charts: add option to remove multiple and trailing whitespace in category names
+* :issue:`880`  Orthanc: added XA and RF to allowed modalities to enable physics QA images to be kept
 * :issue:`879`  Charts: fixed sorting of fluoroscopy charts when split by physician
 * :issue:`877`  Charts: added acquisition type restrictions to acquisition-level CT charts
 * :issue:`872`  Charts: added ability to split fluoroscopy over-time and histogram charts by physician
@@ -36,6 +47,7 @@ OpenREM version history
 * :issue:`865`  Imports: enabled workaround to import Spectrum Dynamics RDSR
 * :issue:`864`  Tasks: updated Celery settings for Celery 6.
 * :issue:`863`  Interface: removed height and weight from CT study delete
+* :issue:`862`  Interface: allow mapping of request, study and acquisition names to standard versions
 * :issue:`861`  Interface: added ability to filter mammography on view code, compressed breast thickness and exposure control mode
 * :issue:`860`  DICOM Networking: removed built-in DICOM Store SCP functionality
 * :issue:`858`  DICOM Networking: query-retrieve logging, filtering and error handling improved
@@ -62,6 +74,7 @@ OpenREM version history
 * :issue:`827`  SkinDose: made SkinDose results available in OpenREM and made alert triggering possible
 * :issue:`826`  Code quality: split views to make more manageable and testable
 * :issue:`824`  DICOM Networking: enabled declaration and testing of Orthanc Store SCP in Docker
+* :issue:`822`  Code quality: removed remaining future references
 * :issue:`821`  Code quality: fixed literal comparisons Docker was complaining about
 * :issue:`820`  Documentation: converted changes to use sphinx-issues
 * :issue:`819`  Removed colons from commands in documentation as they don't format correctly in PDF
@@ -84,7 +97,7 @@ OpenREM version history
 * :issue:`791`  Exports: prevented error when trying to export DX data that has no filter information
 * :issue:`790`  Python 3: remove basestring type
 * :issue:`789`  Python 3: Median function aggregation code simplified; works with Python 3.7
-* :issue:`788`  Python 3: Docker only installs for Windows fixes Celery 3/Python 3.7 incompatibility
+* :issue:`788`  Tasks: Celery and RabbitMQ dropped, background task processing now managed within Python/OpenREM
 * :issue:`787`  Interface: fixed login error
 * :issue:`777`  Updated OpenREM to use pydicom 1.3
 * :issue:`772`  DICOM Networking: check for station name at series level or study, not both
@@ -99,6 +112,7 @@ OpenREM version history
 * :issue:`433`  Import: Siemens Arcadis Varic dose reports are now imported
 * :issue:`404`  Ported OpenREM to Python 3
 * :issue:`233`  Charts: added charts of average CTDI and DLP over time
+* :issue:`94`   Nuclear medicine: added nuclear medicine SPECT and PET functionality including RRSDR imports
 
 0.10.0 (2019-11-08)
 -------------------

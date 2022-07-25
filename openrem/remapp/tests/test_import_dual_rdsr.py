@@ -39,7 +39,7 @@ class ImportDualRDSRs(TestCase):
         dx_study = GeneralStudyModuleAttr.objects.order_by("id")[0]
         unique_equip = UniqueEquipmentNames.objects.order_by("id")[0]
 
-        self.assertEqual(dx_study.modality_type, u"DX")
+        self.assertEqual(dx_study.modality_type, "DX")
 
         unique_equip.user_defined_modality = "dual"
         unique_equip.save()
@@ -53,16 +53,16 @@ class ImportDualRDSRs(TestCase):
         # Make sure second study has fallen into same equipment entry
         self.assertEqual(UniqueEquipmentNames.objects.count(), 1)
         # Should have the correct modality type
-        self.assertEqual(rf_study.modality_type, u"RF")
-        self.assertEqual(dx_study.modality_type, u"DX")
+        self.assertEqual(rf_study.modality_type, "RF")
+        self.assertEqual(dx_study.modality_type, "DX")
 
         reset_dual(unique_equip.pk)
 
         # After reset, all existing studies are correct.
         dx_study = GeneralStudyModuleAttr.objects.order_by("id")[0]
         rf_study = GeneralStudyModuleAttr.objects.order_by("id")[1]
-        self.assertEqual(rf_study.modality_type, u"RF")
-        self.assertEqual(dx_study.modality_type, u"DX")
+        self.assertEqual(rf_study.modality_type, "RF")
+        self.assertEqual(dx_study.modality_type, "DX")
 
     def test_dual_imports_before_dual_setting(self):
         """Test for following scenario:
@@ -92,8 +92,8 @@ class ImportDualRDSRs(TestCase):
         self.assertEqual(UniqueEquipmentNames.objects.count(), 1)
         unique_equip = UniqueEquipmentNames.objects.order_by("id")[0]
 
-        self.assertEqual(rf_study.modality_type, u"RF")
-        self.assertEqual(dx_study.modality_type, u"DX")
+        self.assertEqual(rf_study.modality_type, "RF")
+        self.assertEqual(dx_study.modality_type, "DX")
 
         unique_equip.user_defined_modality = "dual"
         unique_equip.save()
@@ -106,5 +106,5 @@ class ImportDualRDSRs(TestCase):
         # After reset, all existing studies are correct.
         dx_study = GeneralStudyModuleAttr.objects.order_by("id")[0]
         rf_study = GeneralStudyModuleAttr.objects.order_by("id")[1]
-        self.assertEqual(rf_study.modality_type, u"RF")
-        self.assertEqual(dx_study.modality_type, u"DX")
+        self.assertEqual(rf_study.modality_type, "RF")
+        self.assertEqual(dx_study.modality_type, "DX")

@@ -29,7 +29,6 @@
 
 """
 
-from celery import shared_task
 from django.core.exceptions import ObjectDoesNotExist
 import logging
 from remapp.models import GeneralStudyModuleAttr, SummaryFields
@@ -37,7 +36,6 @@ from remapp.models import GeneralStudyModuleAttr, SummaryFields
 logger = logging.getLogger(__name__)
 
 
-@shared_task
 def populate_summary_study_level(modality, study_pk):
     """Enables the summary level data to be sent as a task at study level
 
@@ -93,7 +91,6 @@ def populate_summary_study_level(modality, study_pk):
         )
 
 
-@shared_task
 def populate_summary_ct():
     """Populate the CT summary fields in GeneralStudyModuleAttr table for existing studies
 
@@ -113,12 +110,11 @@ def populate_summary_ct():
     task.save()
     logger.debug("Starting migration of CT to summary fields")
     for study in to_process_ct:
-        populate_summary_study_level.delay("CT", study.pk)
+        populate_summary_study_level("CT", study.pk)
         task.current_study += 1
         task.save()
 
 
-@shared_task
 def populate_summary_mg():
     """Populate the MG summary fields in GeneralStudyModuleAttr table for existing studies
 
@@ -146,7 +142,6 @@ def populate_summary_mg():
         task.save()
 
 
-@shared_task
 def populate_summary_dx():
     """Populate the DX summary fields in GeneralStudyModuleAttr table for existing studies
 
@@ -174,7 +169,6 @@ def populate_summary_dx():
         task.save()
 
 
-@shared_task
 def populate_summary_rf():
     """Populate the RF summary fields in GeneralStudyModuleAttr table for existing studies
 

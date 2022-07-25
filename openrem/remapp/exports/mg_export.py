@@ -30,9 +30,11 @@
 
 import datetime
 import logging
+from openrem.remapp.tools.background import get_or_generate_task_uuid
 
-from celery import shared_task
 from django.core.exceptions import ObjectDoesNotExist
+
+from remapp.models import StandardNameSettings
 
 from .export_common import (
     common_headers,
@@ -59,12 +61,31 @@ def _series_headers(max_events):
     :param max_events: number of series
     :return: headers as a list of strings
     """
+
+    # Obtain the system-level enable_standard_names setting
+    try:
+        StandardNameSettings.objects.get()
+    except ObjectDoesNotExist:
+        StandardNameSettings.objects.create()
+    enable_standard_names = StandardNameSettings.objects.values_list(
+        "enable_standard_names", flat=True
+    )[0]
+
     series_headers = []
     for series_number in range(max_events):
         series_headers += [
             "E" + str(series_number + 1) + " View",
+            "E" + str(series_number + 1) + " View Modifier",
             "E" + str(series_number + 1) + " Laterality",
             "E" + str(series_number + 1) + " Acquisition",
+        ]
+
+        if enable_standard_names:
+            series_headers += [
+                "E" + str(series_number + 1) + " Standard acquisition name"
+            ]
+
+        series_headers += [
             "E" + str(series_number + 1) + " Thickness",
             "E" + str(series_number + 1) + " Radiological thickness",
             "E" + str(series_number + 1) + " Force",
@@ -93,6 +114,16 @@ def _mg_get_series_data(event):
     :param event: event level object
     :return: series data as list of strings
     """
+
+    # Obtain the system-level enable_standard_names setting
+    try:
+        StandardNameSettings.objects.get()
+    except ObjectDoesNotExist:
+        StandardNameSettings.objects.create()
+    enable_standard_names = StandardNameSettings.objects.values_list(
+        "enable_standard_names", flat=True
+    )[0]
+
     try:
         mechanical_data = event.irradeventxraymechanicaldata_set.get()
         compression_thickness = mechanical_data.compression_thickness
@@ -151,6 +182,14 @@ def _mg_get_series_data(event):
         view = event.image_view.code_meaning
     else:
         view = None
+    view_modifiers = event.imageviewmodifier_set.order_by("pk")
+    modifier = ""
+    if view_modifiers:
+        for view_modifier in view_modifiers:
+            try:
+                modifier += f"{view_modifier.image_view_modifier.code_meaning} "
+            except AttributeError:
+                pass
     if event.laterality:
         laterality = event.laterality.code_meaning
     else:
@@ -158,8 +197,23 @@ def _mg_get_series_data(event):
 
     series_data = [
         view,
+        modifier,
         laterality,
         event.acquisition_protocol,
+    ]
+
+    if enable_standard_names:
+        try:
+            standard_protocol = event.standard_protocols.first().standard_name
+        except AttributeError:
+            standard_protocol = ""
+
+        if standard_protocol:
+            series_data += [standard_protocol]
+        else:
+            series_data += [""]
+
+    series_data += [
         compression_thickness,
         radiological_thickness,
         compression_force,
@@ -182,9 +236,9 @@ def _mg_get_series_data(event):
     return series_data
 
 
-@shared_task
 def exportMG2excel(filterdict, pid=False, name=None, patid=None, user=None, xlsx=False):
-    """Export filtered mammography database data to a single-sheet CSV file or a multi sheet xlsx file.
+    """
+    Export filtered mammography database data to a single-sheet CSV file or a multi sheet xlsx file.
 
     :param filterdict: Queryset of studies to export
     :param pid: does the user have patient identifiable data permission
@@ -196,15 +250,30 @@ def exportMG2excel(filterdict, pid=False, name=None, patid=None, user=None, xlsx
     """
 
     from remapp.models import GeneralStudyModuleAttr
-    from ..interface.mod_filters import MGSummaryListFilter, MGFilterPlusPid
+    from ..interface.mod_filters import (
+        MGSummaryListFilter,
+        MGFilterPlusPid,
+        MGFilterPlusStdNames,
+        MGFilterPlusPidPlusStdNames,
+    )
+
+    # Obtain the system-level enable_standard_names setting
+    try:
+        StandardNameSettings.objects.get()
+    except ObjectDoesNotExist:
+        StandardNameSettings.objects.create()
+    enable_standard_names = StandardNameSettings.objects.values_list(
+        "enable_standard_names", flat=True
+    )[0]
 
     datestamp = datetime.datetime.now()
     if xlsx:
         export_type = "XLSX export"
     else:
         export_type = "CSV export"
+    task_id = get_or_generate_task_uuid()
     tsk = create_export_task(
-        celery_uuid=exportMG2excel.request.id,
+        task_id=task_id,
         modality="MG",
         export_type=export_type,
         date_stamp=datestamp,
@@ -234,15 +303,36 @@ def exportMG2excel(filterdict, pid=False, name=None, patid=None, user=None, xlsx
 
     # Get the data!
     if pid:
-        df_filtered_qs = MGFilterPlusPid(
-            filterdict,
-            queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact="MG"),
-        )
+        if enable_standard_names:
+            df_filtered_qs = MGFilterPlusPidPlusStdNames(
+                filterdict,
+                queryset=GeneralStudyModuleAttr.objects.filter(
+                    modality_type__exact="MG"
+                ).distinct(),
+            )
+        else:
+            df_filtered_qs = MGFilterPlusPid(
+                filterdict,
+                queryset=GeneralStudyModuleAttr.objects.filter(
+                    modality_type__exact="MG"
+                ).distinct(),
+            )
     else:
-        df_filtered_qs = MGSummaryListFilter(
-            filterdict,
-            queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact="MG"),
-        )
+        if enable_standard_names:
+            df_filtered_qs = MGFilterPlusStdNames(
+                filterdict,
+                queryset=GeneralStudyModuleAttr.objects.filter(
+                    modality_type__exact="MG"
+                ).distinct(),
+            )
+        else:
+            df_filtered_qs = MGSummaryListFilter(
+                filterdict,
+                queryset=GeneralStudyModuleAttr.objects.filter(
+                    modality_type__exact="MG"
+                ).distinct(),
+            )
+
     studies = df_filtered_qs.qs
 
     tsk.progress = "Required study filter complete."
@@ -264,8 +354,15 @@ def exportMG2excel(filterdict, pid=False, name=None, patid=None, user=None, xlsx
     all_data_headings = list(headings)
     headings += [
         "View",
+        "View Modifier",
         "Laterality",
         "Acquisition",
+    ]
+
+    if enable_standard_names:
+        headings += ["Standard acquisition name"]
+
+    headings += [
         "Thickness",
         "Radiological thickness",
         "Force",
@@ -331,6 +428,7 @@ def exportMG2excel(filterdict, pid=False, name=None, patid=None, user=None, xlsx
                     writer.writerow([str(data_string) for data_string in series_data])
                 else:
                     all_exam_data += series_data  # For all data
+
                     protocol = series.acquisition_protocol
                     if not protocol:
                         protocol = "Unknown"
@@ -349,6 +447,29 @@ def exportMG2excel(filterdict, pid=False, name=None, patid=None, user=None, xlsx
                             )
                         )
                         exit()
+
+                    if enable_standard_names:
+                        try:
+                            protocol = series.standard_protocols.first().standard_name
+                            if protocol:
+                                tabtext = sheet_name("[standard] " + protocol)
+                                sheet_list[tabtext]["count"] += 1
+                                try:
+                                    sheet_list[tabtext]["sheet"].write_row(
+                                        sheet_list[tabtext]["count"],
+                                        0,
+                                        common_exam_data + series_data,
+                                    )
+                                except TypeError:
+                                    logger.error(
+                                        "Common is |{0}| series is |{1}|".format(
+                                            common_exam_data, series_data
+                                        )
+                                    )
+                                    exit()
+                        except AttributeError:
+                            pass
+
             if xlsx:
                 wsalldata.write_row(study_index + 1, 0, all_exam_data)
         except ObjectDoesNotExist:
