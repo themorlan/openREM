@@ -31,8 +31,6 @@
 ..  moduleauthor:: Ed McDonagh
 
 """
-from __future__ import absolute_import
-
 import os
 import json
 import logging
