@@ -5,18 +5,29 @@ Native Linux install
 
 This install is based on Ubuntu 22.04 using:
 
-* Python 3.8 running in a virtualenv
+* Python 3.10 running in a virtualenv
 * Database: PostgreSQL
 * DICOM Store SCP: Orthanc running on port 104
 * Webserver: NGINX with Gunicorn
 * All OpenREM files in ``/var/dose/`` with group owner of ``openrem``
 * Collects any Physics (QA) images and zips them
 
-The instructions should work for Ubuntu 20.04 too, references to bionic will be focal instead.
+The instructions should work for Ubuntu 20.04 too, references to jammy will be focal instead.
+
+There are various commands and paths that reference the Python version 3.10 in these instructions. If you are using
+Python 3.8 or Python 3.9 then these will need to be modified accordingly.
+
+If you are upgrading an existing installation on a new Linux server, go to the :doc:`upgrade_linux_new_server` docs
+first.
+
+If you are installing OpenREM on a Linux server with limited internet access, go to the :doc:`install_offline` docs.
 
 Initial prep
 ^^^^^^^^^^^^
 
+
+Install apt packages
+--------------------
 **Apt sources**
 
 We will need the ``universe`` repository enabled. Check first:
@@ -27,23 +38,38 @@ We will need the ``universe`` repository enabled. Check first:
 
 Look for::
 
-    deb http://archive.ubuntu.com/ubuntu/ bionic universe
-    deb http://archive.ubuntu.com/ubuntu/ bionic-updates universe
+    deb http://archive.ubuntu.com/ubuntu/ jammy universe
+    deb http://archive.ubuntu.com/ubuntu/ jammy-updates universe
 
 If these two lines are not there, add them in (``sudo nano /etc/apt/sources.list``).
+
+.. code-block:: console
+
+    $ sudo -- sh -c 'apt update && apt upgrade'
+
+.. code-block:: console
+
+    $ sudo apt install acl python3.10 python3.10-dev python3.10-distutils python3.10-venv python3-pip \
+    postgresql nginx orthanc dcmtk default-jre zip gettext
+
+Folders and permissions
+-----------------------
 
 **Groups**
 
 Now create new group ``openrem`` and add your user to it (``$USER`` will automatically substitute for the user you are
-running as) :
+running as):
 
 .. code-block:: console
 
     $ sudo groupadd openrem
+    $ sudo adduser $USER openrem
+
+Add orthanc and www-data users to openrem group:
 
 .. code-block:: console
 
-    $ sudo adduser $USER openrem
+    $ sudo -- sh -c 'adduser orthanc openrem && adduser www-data openrem'
 
 .. note::
 
@@ -51,41 +77,44 @@ running as) :
 
 **Folders**
 
-Create the folders we need, and set the permissions. In due course, the ``orthanc`` user and the ``www-data`` user will
-be added to the ``openrem`` group, and the 'sticky' group setting below will enable both users to write to the logs etc:
+Create the folders we need, and set the permissions. The 'sticky' group setting below will enable both
+``orthanc`` user and ``www-data`` user to write to the logs etc:
 
 .. code-block:: console
 
-    $ sudo mkdir /var/dose
+    $ sudo -- sh -c 'mkdir /var/dose && chmod 775 /var/dose'
+
+.. code-block:: console
+
     $ sudo chown $USER:openrem /var/dose
-    $ sudo chmod 775 /var/dose
 
 .. code-block:: console
 
     $ cd /var/dose
-    $ mkdir log
-    $ mkdir media
-    $ mkdir -p orthanc/dicom
-    $ mkdir -p orthanc/physics
-    $ mkdir pixelmed
-    $ mkdir static
-    $ mkdir veopenrem3
+
+.. code-block:: console
+
+    $ mkdir {log,media,pixelmed,static,veopenrem3}
+
+.. code-block:: console
+
+    $ mkdir -p orthanc/dicom && mkdir -p orthanc/physics
 
 .. code-block:: console
 
     $ sudo chown -R $USER:openrem /var/dose/*
-    $ sudo chmod -R g+s /var/dose/*
-    $ sudo setfacl -R -dm u::rwx,g::rwx,o::r /var/dose/
-
-
-Install apt packages and direct downloads
------------------------------------------
 
 .. code-block:: console
 
-    $ sudo apt update && sudo apt upgrade
-    $ sudo apt install python3.8 python3.8-dev python3.8-distutils python3.8-venv \
-    install postgresql nginx orthanc dcmtk default-jre zip
+    $ sudo chmod -R g+s /var/dose/*
+
+.. code-block:: console
+
+    $ sudo setfacl -R -dm u::rwx,g::rwx,o::r /var/dose/
+
+
+Pixelmed download
+-----------------
 
 .. code-block:: console
 
@@ -99,7 +128,7 @@ Create a virtualenv (Python local environment) in the folder we created:
 
 .. code-block:: console
 
-    $ python3.8 -m venv /var/dose/veopenrem3
+    $ python3.10 -m venv /var/dose/veopenrem3
 
 .. _activatevirtualenv:
 
@@ -115,6 +144,11 @@ Activate the virtualenv (note the ``.`` -- you can also use the word ``source``)
 Install Python packages
 -----------------------
 
+.. note::
+
+    If you are installing this server offline, return to the Offline installation docs for
+    :ref:`Offline-python-packages`
+
 .. code-block:: console
 
     $ pip install --upgrade pip
@@ -122,17 +156,6 @@ Install Python packages
 .. code-block:: console
 
     $ pip install openrem
-
-Add orthanc and www-data users to openrem group
------------------------------------------------
-
-.. code-block:: console
-
-    $ sudo adduser orthanc openrem
-
-.. code-block:: console
-
-    $ sudo adduser www-data openrem
 
 .. _Linux-DB:
 
@@ -153,16 +176,22 @@ when configuring OpenREM:
 
     $ sudo -u postgres createdb -T template1 -O openremuser -E 'UTF8' openremdb
 
-If you are migrating from another server, you could at this point create a template0 database to restore into. See
-:ref:`restore-psql-linux` for details.
+.. note::
+
+    If you are upgrading to a new Linux server, use ``template0`` instead:
+
+    .. code-block:: console
+
+            $ sudo -u postgres createdb -T template0 -O openremuser -E 'UTF8' openremdb
 
 Update the PostgreSQL client authentication configuration. Add the following line anywhere near the bottom of the file,
 for example in the gap before ``# DO NOT DISABLE`` or anywhere in the table that follows. The number of spaces between
-each word is not important (one or more).
+each word is not important (one or more). If you are not using PostgreSQL 14 then substitute the version number in the
+file path.
 
 .. code-block:: console
 
-    $ sudo nano /etc/postgresql/10/main/pg_hba.conf
+    $ sudo nano /etc/postgresql/14/main/pg_hba.conf
 
 .. code-block:: none
 
@@ -179,12 +208,21 @@ Reload postgres:
 Configure OpenREM
 -----------------
 
+.. note::
+
+    If you are upgrading to a new Linux server, you can either use the ``local_settings.py`` file you copied across and
+    update it as follows, or use a new version as described for a new install below.
+
+    * Remove the first line ``LOCAL_SETTINGS = True``
+    * Change second line to ``from .settings import *``
+    * Compare file to `local_settings.py.example` to see if there are other sections that should be updated
+
 First navigate to the Python openrem folder and copy the example local_settings and wsgi files to remove the
 ``.example`` suffixes:
 
 .. code-block:: console
 
-    $ cd /var/dose/veopenrem3/lib/python3.8/site-packages/openrem/
+    $ cd /var/dose/veopenrem3/lib/python3.10/site-packages/openrem/
     $ cp openremproject/local_settings.py{.example,}
     $ cp openremproject/wsgi.py{.example,}
 
@@ -195,13 +233,14 @@ Edit the new local_settings file
     $ nano openremproject/local_settings.py
 
 .. code-block:: python
+    :emphasize-lines: 3,6,12,14,25-27,30,36,50-56
 
     DATABASES = {
         'default': {
-            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'ENGINE': 'django.db.backends.postgresql',
             'NAME': 'openremdb',
             'USER': 'openremuser',
-            'PASSWORD': 'mysecretpassword',     # This needs changing, hopefully!
+            'PASSWORD': 'mysecretpassword',     # This is the password you set earlier
             'HOST': '',
             'PORT': '',
         }
@@ -225,11 +264,11 @@ Edit the new local_settings file
         '10.123.213.22',
     ]
 
-    LOG_ROOT = "/var/dose/log"
-    LOG_FILENAME = os.path.join(LOG_ROOT, "openrem.log")
-    QR_FILENAME = os.path.join(LOG_ROOT, "openrem_qr.log")
-    STORE_FILENAME = os.path.join(LOG_ROOT, "openrem_store.log")
-    EXTRACTOR_FILENAME = os.path.join(LOG_ROOT, "openrem_extractor.log")
+    LOG_ROOT = '/var/dose/log'
+    LOG_FILENAME = os.path.join(LOG_ROOT, 'openrem.log')
+    QR_FILENAME = os.path.join(LOG_ROOT, 'openrem_qr.log')
+    STORE_FILENAME = os.path.join(LOG_ROOT, 'openrem_store.log')
+    EXTRACTOR_FILENAME = os.path.join(LOG_ROOT, 'openrem_extractor.log')
 
     # Removed comment hashes to enable log file rotation:
     LOGGING['handlers']['file']['class'] = 'logging.handlers.RotatingFileHandler'
@@ -258,36 +297,46 @@ the virtualenv is active — prompt will look like
 
 .. code-block:: console
 
-    (veopenrem3)username@hostname:/var/dose/veopenrem3/lib/python3.8/site-packages/openrem/$
+    (veopenrem3)username@hostname:/var/dose/veopenrem3/lib/python3.10/site-packages/openrem/$
 
-Otherwise see :ref:`activatevirtualenv` and navigate back to that folder:
+Otherwise see :ref:`activatevirtualenv` and navigate back to that folder.
+
+.. note::
+
+    If you are upgrading to a new Linux server, use these additional commands before continuing with those below:
+
+    .. code-block:: console
+
+        $ mv remapp/migrations/0001_initial.py{.1-0-upgrade,}
+
+    Import the database - update the path to the database backup file you copied from the old server:
+
+    .. code-block:: console
+
+        $ pg_restore -U openremuser -d openremdb /path/to/pre-1-0-upgrade-dump.bak
+
+
+    Migrate the database:
+
+    .. code-block:: console
+
+        $ python manage.py migrate --fake-initial
+
+    .. code-block:: console
+
+        $ python manage.py migrate remapp --fake
+
 
 .. code-block:: console
 
     $ python manage.py makemigrations remapp
-
-.. code-block:: console
-
     $ python manage.py migrate
-
-.. code-block:: console
-
     $ python manage.py loaddata openskin_safelist.json
-
-.. code-block:: console
-
+    $ python manage.py collectstatic --no-input --clear
+    $ python manage.py compilemessages
     $ python manage.py createsuperuser
 
-.. code-block:: console
-
-    $ mv remapp/migrations/0002_0_7_fresh_install_add_median.py{.inactive,}
-    $ python manage.py migrate
-
-Generate translation binary files
-
-.. code-block:: console
-
-    $ python django-admin compilemessages
+.. _Install Linux webserver:
 
 Webserver
 ^^^^^^^^^
@@ -328,13 +377,6 @@ Remove the default config and make ours active:
 
     $ sudo ln -s /etc/nginx/sites-available/openrem-server /etc/nginx/sites-enabled/openrem-server
 
-Add the static files to the static folder for NGINX to serve. Again, you need to ensure the virtualenv is active in your
-console and you are in the ``site-packages/openrem/`` folder:
-
-.. code-block:: console
-
-    $ python manage.py collectstatic
-
 Create the Gunicorn systemd service file:
 
 .. code-block:: console
@@ -349,7 +391,7 @@ Create the Gunicorn systemd service file:
     [Service]
     Restart=on-failure
     User=www-data
-    WorkingDirectory=/var/dose/veopenrem3/lib/python3.8/site-packages/openrem
+    WorkingDirectory=/var/dose/veopenrem3/lib/python3.10/site-packages/openrem
 
     ExecStart=/var/dose/veopenrem3/bin/gunicorn \
         --bind unix:/tmp/openrem-server.socket \
@@ -374,8 +416,7 @@ Start the Gunicorn service, and restart the NGINX service:
 
 .. code-block:: console
 
-    $ sudo systemctl start openrem-gunicorn.service
-    $ sudo systemctl restart nginx.service
+    $ sudo -- sh -c 'systemctl start openrem-gunicorn.service && systemctl restart nginx.service'
 
 Test the webserver
 ------------------
@@ -451,6 +492,7 @@ Add the Lua script to the Orthanc config:
     $ sudo nano /etc/orthanc/orthanc.json
 
 .. code-block:: json-object
+    :emphasize-lines: 4
 
     // List of paths to the custom Lua scripts that are to be loaded
     // into this instance of Orthanc
@@ -472,6 +514,17 @@ all the objects as soon as they are processed, you won't see much!):
 To see the Orthanc web interface, go to http://openremserver:8042/ -- of course change the server name to that of your
 server!
 
+Set the AE Title and port:
+
+.. code-block:: json-object
+    :emphasize-lines: 2,5
+
+    // The DICOM Application Entity Title
+    "DicomAet" : "OPENREM",
+
+    // The DICOM port
+    "DicomPort" : 104,
+
 Allow Orthanc to use DICOM port
 -------------------------------
 
@@ -482,19 +535,6 @@ to give the Orthanc binary special permission to do so:
 
     $ sudo setcap CAP_NET_BIND_SERVICE=+eip /usr/sbin/Orthanc
 
-Then edit the Orthanc configuration again:
-
-.. code-block:: console
-
-    $ sudo nano /etc/orthanc/orthanc.json
-
-.. code-block:: json-object
-
-    // The DICOM Application Entity Title
-    "DicomAet" : "OPENREM",
-
-    // The DICOM port
-    "DicomPort" : 104,
 
 Finish off
 ----------
@@ -538,3 +578,8 @@ Now add a 'sym-link' to the new users home directory (again, replace the user na
 
 The new user should now be able to get to the physics folder by clicking on the ``physicsimages`` link when they log in,
 and should be able to browse, copy and delete the zip files and folders.
+
+Asciinema demo of this install
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Link to `asciinema <https://asciinema.org/a/8CqCcLMlUG5DlWj7NhrQV8b8L>`_ demo of this install
