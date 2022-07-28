@@ -147,6 +147,8 @@ class CalcExpMap:
                     self.table_width,
                     self.table_trans,
                     self.table_thick + self.matt_thick,
+                    angle_x,
+                    angle_y
                 ),
                 dap,
             )
@@ -164,6 +166,8 @@ class CalcExpMap:
                     self.table_width,
                     self.table_trans,
                     self.table_thick + self.matt_thick,
+                    angle_x,
+                    angle_y
                 ),
                 dap,
             )

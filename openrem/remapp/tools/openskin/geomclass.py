@@ -57,8 +57,6 @@ class Segment3:
         target: the end point
         vector: the vector from start to end
         length: the magnitude of the segment
-        xangle: the angle between the segment and the x-axis
-        yangle: the angle between the segment and the y-axis
     """
 
     def __init__(self, point_3a, point_3b):
@@ -66,13 +64,6 @@ class Segment3:
         self.target = point_3b
         self.vector = point_3b - point_3a
         self.length = np.linalg.norm(self.vector)
-
-        if self.vector[0] < 0.0:
-            self.xangle = np.arctan2(self.vector[0], self.vector[1]) + np.pi/2.0
-        else:
-            self.xangle = np.arctan2(self.vector[1], self.vector[2])
-
-        self.yangle = np.arctan2(self.vector[2], self.vector[0]) - np.pi/2.0
 
 
 class PhantomFlat:
@@ -92,7 +83,7 @@ class PhantomFlat:
         height: the height of the phantom in cells
         phantom_map: an array containing a list of points which represent each cell in the phantom surface to be
         evaluated
-        normal_map: an array containing line segments (Segment_3) indicating the outward facing surface of the cell
+        normal_map: an array containing line segments (Segment3) indicating the outward facing surface of the cell
     """
 
     def __init__(self, phantom_type, origin, width, height, scale):
@@ -149,7 +140,7 @@ class Phantom3:
         phantom_curved_dist: the distance around one curved side of the phantom (same for left and right sides)
         phantom_map: an array containing a list of points which represent each cell in the phantom surface to be
         evaluated
-        normal_map: an array containing line segments (Segment_3) indicating the outward facing surface of the cell
+        normal_map: an array containing line segments (Segment3) indicating the outward facing surface of the cell
         phantom_type: set to "3d"
     """
 

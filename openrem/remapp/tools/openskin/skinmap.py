@@ -36,11 +36,13 @@ def skin_map(
     table_width,
     transmission,
     table_mattress_thickness,
+    angle_x,
+    angle_y
 ):
     """This function calculates a skin dose map.
 
     Args:
-        x_ray: the x-ray beam as a Segment_3
+        x_ray: the x-ray beam as a Segment3
         phantom: the phantom object representing the surface to map on
         area: the area of the beam at the reference point in square cm
         ref_ak: the air kerma at the reference point
@@ -73,14 +75,36 @@ def skin_map(
         np.array([table_width / 2, 0, 0]),
     )
 
-    iterator = np.nditer(
-        skin_dose_map, op_flags=["readwrite"], flags=["multi_index", "refs_ok"]
-    )
+    (triangle1, triangle2) = collimate(x_ray, area, d_ref, angle_x, angle_y)
 
-    (triangle1, triangle2) = collimate(x_ray, area, d_ref)
-
+    # Count how many 1 cm^2 cells the field hits - this is the total skin area that is exposed
+    # and will include any curved areas of the phantom and also account for change in the field
+    # area at the skin due to non-zero secondary beam angles.
+    # NOTE: this will only work correctly once the bug affecting field size when there is a
+    # non-zero secondary angle has been fixed.
+    area_count = 0
+    iterator = np.nditer(skin_dose_map, op_flags=["readwrite"], flags=["multi_index", "refs_ok"])
     while not iterator.finished:
+        lookup_row = iterator.multi_index[0]
+        lookup_col = iterator.multi_index[1]
+        my_x = phantom.phantom_map[lookup_row, lookup_col][0]
+        my_y = phantom.phantom_map[lookup_row, lookup_col][1]
+        my_z = phantom.phantom_map[lookup_row, lookup_col][2]
+        my_ray = Segment3(focus, np.array([my_x, my_y, my_z]))
+        reverse_normal = phantom.normal_map[lookup_row, lookup_col]
 
+        if check_orthogonal(reverse_normal, my_ray):
+            # Check to see if the beam hits the patient
+            hit1 = intersect(my_ray, triangle1)
+            hit2 = intersect(my_ray, triangle2)
+            if hit1 == "hit" or hit2 == "hit":
+                area_count = area_count + 1
+        iterator.iternext()
+    equiv_field_size_on_skin = math.sqrt(area_count)
+
+    iterator = np.nditer(skin_dose_map, op_flags=["readwrite"], flags=["multi_index", "refs_ok"]
+    )
+    while not iterator.finished:
         lookup_row = iterator.multi_index[0]
         lookup_col = iterator.multi_index[1]
         my_x = phantom.phantom_map[lookup_row, lookup_col][0]
@@ -124,7 +148,7 @@ def skin_map(
                     * get_bsf(
                         tube_voltage,
                         cu_thickness,
-                        math.sqrt(mylength_squared / ref_length_squared),
+                        equiv_field_size_on_skin,
                     )
                 ).quantize(Decimal("0.000000001"), rounding=ROUND_HALF_UP)
         iterator.iternext()
@@ -147,6 +171,8 @@ def rotational(
     table_width,
     transmission,
     table_mattress_thickness,
+    angle_x,
+    angle_y
 ):
     """This function computes the dose from a rotational exposure.
 
@@ -165,6 +191,8 @@ def rotational(
         table_width: the width of the table in cm
         transmission: the table and/or mattress transmission as a decimal (0 to 1.0)
         table_mattress_thickness: the table and/or mattress thickess in cm
+        angle_x: primary angle
+        angle_y: secondary angle
 
     Returns:
         A skin dose map.
@@ -195,6 +223,8 @@ def rotational(
         table_width,
         transmission,
         table_mattress_thickness,
+        angle_x,
+        angle_y
     )
     for i in range(1, frames - 1):
         xray = rotate_ray_y(xray, rotation_angle)
@@ -210,6 +240,8 @@ def rotational(
             table_width,
             transmission,
             table_mattress_thickness,
+            angle_x,
+            angle_y
         )
     return my_dose
 

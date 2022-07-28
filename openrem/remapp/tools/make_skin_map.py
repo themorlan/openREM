@@ -178,7 +178,7 @@ def make_skin_map(study_pk=None):
             pat_mass=pat_mass,
             pat_height=pat_height,
             table_thick=0.5,
-            table_width=40.0,
+            table_width=45.0,
             table_length=150.0,
             matt_thick=4.0,
         )
