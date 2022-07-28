@@ -144,11 +144,6 @@ def skin_map(
                 # Calculate the dose at the skin point by correcting for distance and BSF
                 mylength_squared = pow(my_ray.length, 2)
 
-                # Uncomment the three lines below to see data for field size at skin and distances for debug purposes
-                #field_side_length_at_ref_dist = math.sqrt(area)
-                #field_size_normal_to_source_iso_direction_at_skin_dist = field_side_length_at_ref_dist * (my_ray.length / d_ref)  # pylint: disable=line-too-long
-                #print("d_ref: {0}; source to cell: {1:.2f}; field size @ cell normal to SI: {2:.2f}; field size on skin: {3:.2f}".format(d_ref, my_ray.length, field_size_normal_to_source_iso_direction_at_skin_dist, equiv_field_size_on_skin))  # pylint: disable=line-too-long
-
                 iterator[0] = Decimal(
                     ref_length_squared
                     / mylength_squared
