@@ -88,7 +88,7 @@ def intersect(a_ray, a_triangle):
     return output
 
 
-def collimate(a_ray, area, d_ref, lr_angle, cc_angle):
+def collimate(a_ray, area, d_ref, lr_angle, cc_angle):  # pylint: disable=too-many-locals
     """This function produces a pair of triangles representing a square field
     of a collimated x-ray beam. These are then used for intersection checks to
     see if the phantom cell sees radiation.
@@ -144,7 +144,7 @@ def collimate(a_ray, area, d_ref, lr_angle, cc_angle):
     return triangle_1, triangle_2
 
 
-def rotation_matrix(axis, theta):
+def rotation_matrix(axis, theta):  # pylint: disable=too-many-locals
     """
     Return the rotation matrix for a rotation theta radians about an arbitrary axis.
 
