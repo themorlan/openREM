@@ -9,6 +9,7 @@ OpenREM version history
 * :issue:`940`  Installation: upgraded Django to 3.2, packages to latest versions
 * :issue:`937`  Interface: correcting bottom row of exports table
 * :issue:`936`  Tasks: added make_skin_map to background tasks on RF RDSR import
+* :issue:`935`  SkinDose: fixed bug which applied 5x5 cm backscatter factor regardless of field size at skin
 * :issue:`934`  DICOM Networking: QR queries are now logged and can be analysed through the web interface
 * :issue:`931`  Exports: export RF DAP as float instead of text
 * :issue:`928`  Documentation: added restriction in postgres version for earlier OpenREM releases
