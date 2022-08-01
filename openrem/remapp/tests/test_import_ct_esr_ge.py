@@ -3016,7 +3016,7 @@ class ImportNonDoseSR(TestCase):
 
         from testfixtures import LogCapture
 
-        with LogCapture() as l:
+        with LogCapture("remapp.extractors") as l:
             rdsr.rdsr(esr_path)
             studies = GeneralStudyModuleAttr.objects.all()
 

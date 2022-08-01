@@ -46,7 +46,7 @@ progressively less logging.
 
         LOG_LEVEL=
         LOG_LEVEL_QRSCU=
-        LOG_LEVEL_TOSHIBA=
+        LOG_LEVEL_EXTRACTOR=
 
 
 Variables to be changed for your environment
