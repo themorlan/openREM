@@ -60,7 +60,7 @@ def skin_map(
     ref_length_squared = math.pow(d_ref, 2)
 
     skin_dose_map = np.zeros(
-        (phantom.width, phantom.height + phantom.phantom_head_height),
+        (int(phantom.width), int(phantom.height + phantom.phantom_head_height)),
         dtype=np.dtype(Decimal),
     )
     focus = x_ray.source
