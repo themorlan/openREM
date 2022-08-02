@@ -17,6 +17,7 @@
 
 import numpy as np
 import math
+from decimal import Decimal, ROUND_HALF_UP
 
 
 class Triangle3:
@@ -182,32 +183,32 @@ class Phantom3:
             )
 
         part_circumference = math.pi * radius
-        round_circumference = round(part_circumference, 0)
+        round_circumference = self.round_properly(part_circumference)
         flat_width = ref_width / ref_radius * radius
-        round_flat = round(flat_width, 0)
+        round_flat = self.round_properly(flat_width)
         flat_spacing = flat_width / round_flat
-        head_height = round(24 * height / ref_height)
+        head_height = self.round_properly(24 * height / ref_height)
         head_circumference = 58
         radius_head = head_circumference / (2 * math.pi)
 
         # The three properties were added by DJP to describe
         # the dimensions of the 3D phantom.
-        self.phantom_width = int(round(flat_width + 2 * radius, 0))
-        self.phantom_height = int(round(torso, 0))
-        self.phantom_depth = round(radius * 2, 0)
+        self.phantom_width = int(self.round_properly(flat_width + 2 * radius))
+        self.phantom_height = int(self.round_properly(torso))
+        self.phantom_depth = self.round_properly(radius * 2)
         self.phantom_flat_dist = round_flat
         self.phantom_curved_dist = round_circumference
         self.phantom_head_radius = radius_head
         self.phantom_head_height = head_height
 
         self.width = int(2 * round_circumference + 2 * round_flat)
-        self.height = int(round(torso, 0))
+        self.height = int(self.round_properly(torso))
         self.phantom_type = "3d"
         self.phantom_map = np.empty(
-            (self.width, self.height + self.phantom_head_height), dtype=object
+            (self.width, int(self.height + self.phantom_head_height)), dtype=object
         )
         self.normal_map = np.empty(
-            (self.width, self.height + self.phantom_head_height), dtype=object
+            (self.width, int(self.height + self.phantom_head_height)), dtype=object
         )
         transition1 = (round_flat / 2.0) + 0.5  # Centre line flat to start of curve.
         transition2 = (
@@ -236,42 +237,46 @@ class Phantom3:
                 my_x = (
                     row_index * flat_spacing
                     - (round_flat / 2.0)
-                    + round(round_flat / 2.0, 0)
+                    + self.round_properly(round_flat / 2.0)
                 )
                 my_y = col_index * pat_pos_y
                 normal = Segment3(
                     np.array([my_x, my_y, my_z + pat_pos_z]),
                     np.array([my_x, my_y, my_z]),
                 )
+                if col_index == 40:
+                    print("row_index < transition1,{0},{1},{2}".format(row_index, my_x, my_z))
             elif (
                 transition1 <= row_index < transition2
                 and col_index > self.phantom_head_height - origin[1]
             ):
                 my_y = col_index * pat_pos_y
                 my_x = (
-                    flat_spacing * round(transition1, 0)
+                    flat_spacing * self.round_properly(transition1)
                     - 1
                     + radius
-                    * math.sin(angle_step * (row_index - round(transition1, 0) + 1))
+                    * math.sin(angle_step * (row_index - self.round_properly(transition1) + 1))
                     - (round_flat / 2.0)
-                    + round(round_flat / 2.0, 0)
+                    + self.round_properly(round_flat / 2.0)
                 )
                 my_z = (
                     2.0 * radius
                     + z_offset
                     + radius
-                    * math.cos(angle_step * (row_index - round(transition1, 0) + 1))
+                    * math.cos(angle_step * (row_index - self.round_properly(transition1) + 1))
                     - radius
                 ) * pat_pos_z
                 normal_x = my_x + math.sin(
-                    angle_step * (row_index - round(transition1, 0) + 1)
+                    angle_step * (row_index - self.round_properly(transition1) + 1)
                 )
                 normal_z = my_z + pat_pos_z * math.cos(
-                    angle_step * (row_index - round(transition1, 0) + 1)
+                    angle_step * (row_index - self.round_properly(transition1) + 1)
                 )
                 normal = Segment3(
                     np.array([normal_x, my_y, normal_z]), np.array([my_x, my_y, my_z])
                 )
+                if col_index == 40:
+                    print("transition1 <= row_index < transition2,{0},{1},{2}".format(row_index, my_x, my_z))
             elif (
                 transition2 <= row_index < transition3
                 and col_index > self.phantom_head_height - origin[1]
@@ -280,7 +285,7 @@ class Phantom3:
                 my_x = (
                     flat_width
                     - (row_index - round_circumference) * flat_spacing
-                    + ((round_flat / 2.0) - round(round_flat / 2.0, 0))
+                    + ((round_flat / 2.0) - self.round_properly(round_flat / 2.0))
                     * (row_index - round_circumference)
                     / abs(row_index - round_circumference)
                 )
@@ -289,33 +294,42 @@ class Phantom3:
                     np.array([my_x, my_y, my_z - pat_pos_z]),
                     np.array([my_x, my_y, my_z]),
                 )
+                if col_index == 40:
+                    print("transition2 <= row_index < transition3,{0},{1},{2}".format(row_index, my_x, my_z))
             elif (
                 transition3 <= row_index < transition4
                 and col_index > self.phantom_head_height - origin[1]
             ):
                 my_y = col_index * pat_pos_y
                 my_x = (
-                    -flat_spacing * round(round_flat / 2, 0)
+                    -flat_spacing * self.round_properly(round_flat / 2)
                     - radius
-                    * math.sin(angle_step * (row_index - round(transition3, 0) + 1))
+                    * math.sin(angle_step * (row_index - self.round_properly(transition3) + 1))
                     - (round_flat / 2.0)
-                    + round(round_flat / 2.0, 0)
+                    + self.round_properly(round_flat / 2.0)
                 )
                 my_z = (
                     z_offset
                     - radius
-                    * math.cos(angle_step * (row_index - round(transition3, 0) + 1))
+                    * math.cos(angle_step * (row_index - self.round_properly(transition3) + 1))
                     + radius
                 ) * pat_pos_z
                 normal_x = my_x - math.sin(
-                    angle_step * (row_index - round(transition3, 0) + 1)
+                    angle_step * (row_index - self.round_properly(transition3) + 1)
                 )
                 normal_z = my_z - pat_pos_z * math.cos(
-                    angle_step * (row_index - round(transition3, 0) + 1)
+                    angle_step * (row_index - self.round_properly(transition3) + 1)
                 )
                 normal = Segment3(
                     np.array([normal_x, my_y, normal_z]), np.array([my_x, my_y, my_z])
                 )
+                if col_index == 40:
+                    print("transition3 <= row_index < transition4,{0},{1},{2}".format(row_index, my_x, my_z))
+                    print(radius)
+                    print(angle_step)
+                    print(row_index)
+                    print(self.round_properly(transition3))
+                    print("{0:.16f}".format(transition3))
             elif (
                 row_index >= transition4
                 and col_index > self.phantom_head_height - origin[1]
@@ -324,13 +338,15 @@ class Phantom3:
                 my_x = (
                     (row_index - self.width) * flat_spacing
                     - (round_flat / 2.0)
-                    + round(round_flat / 2.0, 0)
+                    + self.round_properly(round_flat / 2.0)
                 )
                 my_y = col_index * pat_pos_y
                 normal = Segment3(
                     np.array([my_x, my_y, my_z + pat_pos_z]),
                     np.array([my_x, my_y, my_z]),
                 )
+                if col_index == 40:
+                    print("row_index > transition4,{0},{1},{2}".format(row_index, my_x, my_z))
                 # phantom head map
             elif (
                 row_index < head_circumference
@@ -340,7 +356,7 @@ class Phantom3:
                 my_x = (
                     radius_head * math.cos(angle_step_head * row_index)
                     - (round_flat / 2.0)
-                    + round(round_flat / 2.0, 0)
+                    + self.round_properly(round_flat / 2.0)
                 )
                 my_z = (
                     z_offset + radius_head * (math.sin(angle_step_head * row_index) + 1)
@@ -368,7 +384,7 @@ class Phantom3:
         # self.normal_map = np.flipud(self.normal_map)
         self.phantom_map = np.fliplr(self.phantom_map)
         self.normal_map = np.fliplr(self.normal_map)
-
+        exit()
         if prone:
             self.normal_map = np.roll(
                 self.normal_map,
@@ -383,6 +399,20 @@ class Phantom3:
             self.phantom_map = np.flipud(self.phantom_map)
             self.normal_map = np.flipud(self.normal_map)
 
+    def round_properly(self, value):
+        """This method returns a rounded version of a value which is rounded using the method we're all
+        taught at school: 1.5 is rounded to 2.0; 2.5 is rounded to 3.0 etc. Python 3.x and Numpy's round
+        methods both use the "Banker's method", which rounds to the nearest even number: 1.5 is rounded
+        to 2.0; 2.5 is rounded to 2.0 etc. The openSkin code requires a round function that adheres to
+        the school rounding convention - hence this method.
+
+        Args:
+            value: the float value to be rounded
+
+        Returns: value rounded to the nearest integer, as a float data type
+
+        """
+        return float(Decimal(value).quantize(0, ROUND_HALF_UP))
 
 class SkinDose:
     """This class holds dose maps for a defined phantom. It is intended
