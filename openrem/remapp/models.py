@@ -165,7 +165,7 @@ class HighDoseMetricAlertSettings(SingletonModel):
     send_high_dose_metric_alert_emails_ref = models.BooleanField(
         default=False,
         verbose_name="Send notification e-mails when alert levels for total DAP or total dose at reference point are"
-                     " exceeded?",
+        " exceeded?",
     )
     send_high_dose_metric_alert_emails_skin = models.BooleanField(
         default=False,
