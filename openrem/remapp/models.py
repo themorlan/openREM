@@ -1843,13 +1843,18 @@ class IrradEventXRayMechanicalData(models.Model):  # TID 10003c
     compression_thickness = models.DecimalField(
         max_digits=16, decimal_places=8, blank=True, null=True
     )
-    # not in DICOM standard - compression force in N
     compression_force = models.DecimalField(
         max_digits=16, decimal_places=8, blank=True, null=True
-    )
+    )  # Force in N - introduced in 2019b
+    compression_pressure = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )  # Pressure in kPa - introduced in 2019b
+    compression_contact_area = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )  # in mm2 - introduced in 2019b
     magnification_factor = models.DecimalField(
         max_digits=16, decimal_places=8, blank=True, null=True
-    )
+    )  # Not in DICOM standard
 
     class Meta:
         indexes = [

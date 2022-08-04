@@ -19,6 +19,7 @@ OpenREM version history
 * :issue:`919`  Interface: fixed bug preventing home page listing if study had no date
 * :issue:`917`  Interface: added horizontal lines between chart option groups and shaded chart option CheckboxSelectMultiple items
 * :issue:`915`  Interface and exports: expose mammo view modifier in interface and exports
+* :issue:`914`  Imports: added compression force, pressure, contact area for mammo RDSR
 * :issue:`913`  SkinDose: made 2d skin dose map overlay visible by default
 * :issue:`911`  Charts: fixed issue with chart data sorting and added label wrap option
 * :issue:`910`  SkinDose: fixed rendering of 2d skin dose map with head

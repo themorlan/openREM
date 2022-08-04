@@ -375,6 +375,27 @@ def _irradiationeventxraymechanicaldata(dataset, event):  # TID 10003c
                 )
             except IndexError:
                 pass
+        elif cont.ConceptNameCodeSequence[0].CodeValue == "111647":  # Compression Force
+            try:
+                mech.compression_force = test_numeric_value(
+                    cont.MeasuredValueSequence[0].NumericValue
+                )
+            except IndexError:
+                pass
+        elif cont.ConceptNameCodeSequence[0].CodeValue == "111648":  # Compression Pressure
+            try:
+                mech.compression_pressure = test_numeric_value(
+                    cont.MeasuredValueSequence[0].NumericValue
+                )
+            except IndexError:
+                pass
+        elif cont.ConceptNameCodeSequence[0].CodeValue == "111649":  # Compression Contact Area
+            try:
+                mech.compression_contact_area = test_numeric_value(
+                    cont.MeasuredValueSequence[0].NumericValue
+                )
+            except IndexError:
+                pass
     _doserelateddistancemeasurements(dataset, mech)
     mech.save()
 
