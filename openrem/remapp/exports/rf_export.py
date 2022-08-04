@@ -97,7 +97,7 @@ def _add_plane_summary_data(exam):
     :return: list of summary data at plane level
     """
     exam_data = []
-    for plane in exam.projectionxrayradiationdose_set.get().accumxraydose_set.all():
+    for plane in exam.projectionxrayradiationdose_set.get().accumxraydose_set.all().order_by("acquisition_plane__code_value"):
         accum = _get_accumulated_data(plane)
         exam_data += [
             accum['dose_area_product_total'],
