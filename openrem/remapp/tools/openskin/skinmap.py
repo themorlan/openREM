@@ -193,7 +193,7 @@ def skin_map(
 
                     # Only attribute a quarter of the refAKcor to the cell because we are going to check four rays.
                     # This will account, to some extent, for partial irradiation of a cell.
-                    ref_ak_corAKcor = ref_ak_cor / 4.0
+                    ref_ak_cor = ref_ak_cor / 4.0
 
                     # Calculate the dose at the skin point by correcting for distance and BSF
                     mylength_squared = pow(my_ray.length, 2)
