@@ -101,55 +101,113 @@ def skin_map(
     equiv_field_size_on_skin = math.sqrt(area_count)
     ###########################################################################################
 
-    iterator = np.nditer(skin_dose_map, op_flags=["readwrite"], flags=["multi_index", "refs_ok"])
+    # Reset the existing iterator so we can iterate through the map to calculate the dose to each cell
+    iterator.reset()
+
+    index0_length = iterator.shape[0]
+    index1_length = iterator.shape[1]
+
     while not iterator.finished:
+
+        # DJP note: myRay describes a single path from the source to the corner of the cell, defined by myX, myY, myZ.
+        # When a cell is only partially irradiated by the x-ray field myRay may not intersect with the field because
+        # myRay is positioned in one corner of the cell. For this to be more robust a check is now made for four rays -
+        # one at each corner of the cell. This will ensure that cells that are only partially irradiated are
+        # always registered as being hit. Thanks to my colleague Hannah Thurlbeck for this idea.
+
+        my_rays = []
+        my_reverse_normals = []
+
+        # Ray to first cell corner
         lookup_row = iterator.multi_index[0]
         lookup_col = iterator.multi_index[1]
         my_x = phantom.phantom_map[lookup_row, lookup_col][0]
         my_y = phantom.phantom_map[lookup_row, lookup_col][1]
         my_z = phantom.phantom_map[lookup_row, lookup_col][2]
-
         my_ray = Segment3(focus, np.array([my_x, my_y, my_z]))
         reverse_normal = phantom.normal_map[lookup_row, lookup_col]
+        my_rays.append(my_ray)
+        my_reverse_normals.append(reverse_normal)
 
-        if check_orthogonal(reverse_normal, my_ray):
-            # Check to see if the beam hits the patient
-            hit1 = intersect(my_ray, triangle1)
-            hit2 = intersect(my_ray, triangle2)
-            if hit1 == "hit" or hit2 == "hit":
+        # Ray to second cell corner
+        if lookup_row < index0_length - 1:
+            next_row = lookup_row + 1
+        else:
+            next_row = 0
+        my_x = phantom.phantom_map[next_row, lookup_col][0]
+        my_y = phantom.phantom_map[next_row, lookup_col][1]
+        my_z = phantom.phantom_map[next_row, lookup_col][2]
+        my_ray = Segment3(focus, np.array([my_x, my_y, my_z]))
+        reverse_normal = phantom.normal_map[next_row, lookup_col]
+        my_rays.append(my_ray)
+        my_reverse_normals.append(reverse_normal)
 
-                # Check to see if the beam passes through the table
-                table_normal = Segment3(np.array([0, 0, 0]), np.array([0, 0, 1]))
-                hit_table1 = intersect(my_ray, table1)
-                hit_table2 = intersect(my_ray, table2)
-                # If the beam passes the table and does so on the way in to the patient, correct the AK
-                if hit_table1 == "hit" or hit_table2 == "hit":
-                    if check_orthogonal(table_normal, my_ray):
-                        sin_alpha = x_ray.vector[2] / x_ray.length
-                        path_length = table_mattress_thickness / sin_alpha
-                        mu_table = np.log(transmission) / (-table_mattress_thickness)
-                        table_cor = np.exp(-mu_table * path_length)
-                        ref_ak_cor = ref_ak * table_cor
-                    # If the beam is more than 90 degrees (ie above the table) leave the AK alone
+        # Ray to third cell corner
+        if lookup_col > 0:
+            prev_col = lookup_col - 1
+        else:
+            prev_col = 0
+        my_x = phantom.phantom_map[next_row, prev_col][0]
+        my_y = phantom.phantom_map[next_row, prev_col][1]
+        my_z = phantom.phantom_map[next_row, prev_col][2]
+        my_ray = Segment3(focus, np.array([my_x, my_y, my_z]))
+        reverse_normal = phantom.normal_map[next_row, prev_col]
+        my_rays.append(my_ray)
+        my_reverse_normals.append(reverse_normal)
+
+        # Ray to fourth cell corner
+        my_x = phantom.phantom_map[lookup_row, prev_col][0]
+        my_y = phantom.phantom_map[lookup_row, prev_col][1]
+        my_z = phantom.phantom_map[lookup_row, prev_col][2]
+        my_ray = Segment3(focus, np.array([my_x, my_y, my_z]))
+        reverse_normal = phantom.normal_map[lookup_row, prev_col]
+        my_rays.append(my_ray)
+        my_reverse_normals.append(reverse_normal)
+
+        for my_ray in my_rays:
+
+            if check_orthogonal(reverse_normal, my_ray):
+                # Check to see if the beam hits the patient
+                hit1 = intersect(my_ray, triangle1)
+                hit2 = intersect(my_ray, triangle2)
+                if hit1 == "hit" or hit2 == "hit":
+
+                    # Check to see if the beam passes through the table
+                    table_normal = Segment3(np.array([0, 0, 0]), np.array([0, 0, 1]))
+                    hit_table1 = intersect(my_ray, table1)
+                    hit_table2 = intersect(my_ray, table2)
+                    # If the beam passes the table and does so on the way in to the patient, correct the AK
+                    if hit_table1 == "hit" or hit_table2 == "hit":
+                        if check_orthogonal(table_normal, my_ray):
+                            sin_alpha = x_ray.vector[2] / x_ray.length
+                            path_length = table_mattress_thickness / sin_alpha
+                            mu_table = np.log(transmission) / (-table_mattress_thickness)
+                            table_cor = np.exp(-mu_table * path_length)
+                            ref_ak_cor = ref_ak * table_cor
+                        # If the beam is more than 90 degrees (ie above the table) leave the AK alone
+                        else:
+                            ref_ak_cor = ref_ak
+                    # If the beam doesn't pass through the table, leave the AK alone
                     else:
                         ref_ak_cor = ref_ak
-                # If the beam doesn't pass through the table, leave the AK alone
-                else:
-                    ref_ak_cor = ref_ak
 
-                # Calculate the dose at the skin point by correcting for distance and BSF
-                mylength_squared = pow(my_ray.length, 2)
+                    # Only attribute a quarter of the refAKcor to the cell because we are going to check four rays.
+                    # This will account, to some extent, for partial irradiation of a cell.
+                    ref_ak_corAKcor = ref_ak_cor / 4.0
 
-                iterator[0] = Decimal(
-                    ref_length_squared
-                    / mylength_squared
-                    * ref_ak_cor
-                    * get_bsf(
-                        tube_voltage,
-                        cu_thickness,
-                        equiv_field_size_on_skin,
-                    )
-                ).quantize(Decimal("0.000000001"), rounding=ROUND_HALF_UP)
+                    # Calculate the dose at the skin point by correcting for distance and BSF
+                    mylength_squared = pow(my_ray.length, 2)
+
+                    iterator[0] = iterator[0] + Decimal(
+                        ref_length_squared
+                        / mylength_squared
+                        * ref_ak_cor
+                        * get_bsf(
+                            tube_voltage,
+                            cu_thickness,
+                            equiv_field_size_on_skin,
+                        )
+                    ).quantize(Decimal("0.000000001"), rounding=ROUND_HALF_UP)
         iterator.iternext()
 
     return skin_dose_map

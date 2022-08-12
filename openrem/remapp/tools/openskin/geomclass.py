@@ -186,16 +186,20 @@ class Phantom3:
         round_circumference = round_properly(part_circumference)
         flat_width = ref_width / ref_radius * radius
         round_flat = round_properly(flat_width)
-        flat_spacing = flat_width / round_flat
         head_height = round_properly(24 * height / ref_height)
         head_circumference = 58
         radius_head = head_circumference / (2 * math.pi)
 
+        # Recalculate radius because we want to use roundCircumference as the distance around the rounded sides.
+        # Note that roundCircumference is really half the circumference.
+        # C = 2 x pi x r; r = C / (2 x pi);
+        radius = round_circumference / math.pi
+
         # The three properties were added by DJP to describe
         # the dimensions of the 3D phantom.
-        self.phantom_width = int(round_properly(flat_width + 2 * radius))
+        self.phantom_width = round_flat + 2 * radius
         self.phantom_height = int(round_properly(torso))
-        self.phantom_depth = round_properly(radius * 2)
+        self.phantom_depth = radius * 2
         self.phantom_flat_dist = round_flat
         self.phantom_curved_dist = round_circumference
         self.phantom_head_radius = radius_head
@@ -221,25 +225,27 @@ class Phantom3:
         iterator = np.nditer(
             self.phantom_map, op_flags=["readwrite"], flags=["multi_index", "refs_ok"]
         )
+
+        angle_step = math.pi / round_circumference
+        angle_step_head = 2 * math.pi / head_circumference
+        z_offset = -origin[2]
+
         while not iterator.finished:
             # Start top, centre line.
             row_index = iterator.multi_index[0] - origin[0]
             col_index = iterator.multi_index[1] - origin[1]
-            angle_step = math.pi / round_circumference
-            angle_step_head = 2 * math.pi / head_circumference
-            z_offset = -origin[2]
 
             if (
                 row_index < transition1
                 and col_index > self.phantom_head_height - origin[1]
             ):
                 my_z = (2.0 * radius + z_offset) * pat_pos_z
-                my_x = (
-                    row_index * flat_spacing
-                    - (round_flat / 2.0)
-                    + round_properly(round_flat / 2.0)
-                )
+                my_x = row_index
                 my_y = col_index * pat_pos_y
+
+                if is_odd(round_flat):
+                    my_x = my_x + 0.5
+
                 normal = Segment3(
                     np.array([my_x, my_y, my_z + pat_pos_z]),
                     np.array([my_x, my_y, my_z]),
@@ -250,12 +256,10 @@ class Phantom3:
             ):
                 my_y = col_index * pat_pos_y
                 my_x = (
-                    flat_spacing * round_properly(transition1)
+                    round_properly(transition1)
                     - 1
                     + radius
                     * math.sin(angle_step * (row_index - round_properly(transition1) + 1))
-                    - (round_flat / 2.0)
-                    + round_properly(round_flat / 2.0)
                 )
                 my_z = (
                     2.0 * radius
@@ -264,6 +268,10 @@ class Phantom3:
                     * math.cos(angle_step * (row_index - round_properly(transition1) + 1))
                     - radius
                 ) * pat_pos_z
+
+                if is_odd(round_flat):
+                    my_x = my_x + 0.5
+
                 normal_x = my_x + math.sin(
                     angle_step * (row_index - round_properly(transition1) + 1)
                 )
@@ -279,13 +287,17 @@ class Phantom3:
             ):
                 my_z = z_offset * pat_pos_z
                 my_x = (
-                    flat_width
-                    - (row_index - round_circumference) * flat_spacing
-                    + ((round_flat / 2.0) - round_properly(round_flat / 2.0))
-                    * (row_index - round_circumference)
-                    / abs(row_index - round_circumference)
+                        round_flat / 2.0
+                        - (row_index - round_circumference)
+                        + round_flat / 2.0
+                        * (row_index - round_circumference)
+                        / abs(row_index - round_circumference)
                 )
                 my_y = col_index * pat_pos_y
+
+                if is_odd(round_flat):
+                    my_x = my_x + 0.5
+
                 normal = Segment3(
                     np.array([my_x, my_y, my_z - pat_pos_z]),
                     np.array([my_x, my_y, my_z]),
@@ -296,11 +308,9 @@ class Phantom3:
             ):
                 my_y = col_index * pat_pos_y
                 my_x = (
-                    -flat_spacing * round_properly(round_flat / 2)
+                    - round_properly(round_flat / 2)
                     - radius
                     * math.sin(angle_step * (row_index - round_properly(transition3) + 1))
-                    - (round_flat / 2.0)
-                    + round_properly(round_flat / 2.0)
                 )
                 my_z = (
                     z_offset
@@ -308,6 +318,10 @@ class Phantom3:
                     * math.cos(angle_step * (row_index - round_properly(transition3) + 1))
                     + radius
                 ) * pat_pos_z
+
+                if is_odd(round_flat):
+                    my_x = my_x + 0.5
+
                 normal_x = my_x - math.sin(
                     angle_step * (row_index - round_properly(transition3) + 1)
                 )
@@ -322,12 +336,12 @@ class Phantom3:
                 and col_index > self.phantom_head_height - origin[1]
             ):
                 my_z = (2.0 * radius + z_offset) * pat_pos_z
-                my_x = (
-                    (row_index - self.width) * flat_spacing
-                    - (round_flat / 2.0)
-                    + round_properly(round_flat / 2.0)
-                )
+                my_x = row_index - self.width
                 my_y = col_index * pat_pos_y
+
+                if is_odd(round_flat):
+                    my_x = my_x + 0.5
+
                 normal = Segment3(
                     np.array([my_x, my_y, my_z + pat_pos_z]),
                     np.array([my_x, my_y, my_z]),
@@ -449,3 +463,8 @@ def round_properly(value):
 
     """
     return float(Decimal(value).quantize(0, ROUND_HALF_UP))
+
+
+def is_odd(num):
+
+   return num % 2
