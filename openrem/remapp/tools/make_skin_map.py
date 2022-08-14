@@ -54,7 +54,7 @@ from ..version import __skin_map_version__
 logger = logging.getLogger("remapp.tools.make_skin_map")
 
 
-def make_skin_map(study_pk=None):
+def make_skin_map(study_pk=None, return_structure_for_testing=False):
 
     if study_pk:
         study = GeneralStudyModuleAttr.objects.get(pk=study_pk)
@@ -76,14 +76,16 @@ def make_skin_map(study_pk=None):
             ):
                 entry = None
         if entry is None:
-            save_openskin_structure(
-                study,
-                {
-                    "skin_map": [0, 0],
-                    "skin_map_version": __skin_map_version__,
-                },
-            )
-            return
+            return_structure = {
+                "skin_map": [0, 0],
+                "skin_map_version": __skin_map_version__,
+            }
+
+            if return_structure_for_testing:
+                return return_structure
+            else:
+                save_openskin_structure(study, return_structure)
+                return
 
         pat_mass_source = "assumed"
         try:
@@ -370,5 +372,8 @@ def make_skin_map(study_pk=None):
             "skin_map_version": __skin_map_version__,
         }
 
-        # Save the return_structure as a pickle in a skin_maps sub-folder of the MEDIA_ROOT folder
-        save_openskin_structure(study, return_structure)
+        if return_structure_for_testing:
+            return return_structure
+        else:
+            # Save the return_structure as a pickle in a skin_maps sub-folder of the MEDIA_ROOT folder
+            save_openskin_structure(study, return_structure)
