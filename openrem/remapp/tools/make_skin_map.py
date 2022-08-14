@@ -85,7 +85,7 @@ def make_skin_map(study_pk=None, return_structure_for_testing=False):
                 return return_structure
             else:
                 save_openskin_structure(study, return_structure)
-                return
+                return 0
 
         pat_mass_source = "assumed"
         try:
