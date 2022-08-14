@@ -85,7 +85,7 @@ def make_skin_map(study_pk=None, return_structure_for_testing=False):
                 return return_structure
             else:
                 save_openskin_structure(study, return_structure)
-                return 0
+                return None
 
         pat_mass_source = "assumed"
         try:
@@ -377,3 +377,4 @@ def make_skin_map(study_pk=None, return_structure_for_testing=False):
         else:
             # Save the return_structure as a pickle in a skin_maps sub-folder of the MEDIA_ROOT folder
             save_openskin_structure(study, return_structure)
+            return None
