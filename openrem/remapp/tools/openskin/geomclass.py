@@ -466,5 +466,4 @@ def round_properly(value):
 
 
 def is_odd(num):
-
-   return num % 2
+    return num % 2

@@ -105,7 +105,6 @@ def skin_map(
     iterator.reset()
 
     index0_length = iterator.shape[0]
-    index1_length = iterator.shape[1]
 
     while not iterator.finished:
 
