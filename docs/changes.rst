@@ -5,6 +5,7 @@ OpenREM version history
 
 1.0.0b1 (2022-xx-xx)
 --------------------
+* :issue:`947`  Tests: enforce ordering within fluoro exposure sets and specify row by time in test
 * :issue:`945`  Exports: order by plane when populating fluoro data
 * :issue:`941`  Interface: the filtering submit button now updates chart options for fluoroscopy and mammography
 * :issue:`940`  Installation: upgraded Django to 3.2, packages to latest versions
