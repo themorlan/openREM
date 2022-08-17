@@ -5,6 +5,7 @@ OpenREM version history
 
 1.0.0b1 (2022-xx-xx)
 --------------------
+* :issue:`947`  Tests: enforce ordering within fluoro exposure sets and specify row by time in test
 * :issue:`945`  Exports: order by plane when populating fluoro data
 * :issue:`941`  Interface: the filtering submit button now updates chart options for fluoroscopy and mammography
 * :issue:`940`  Installation: upgraded Django to 3.2, packages to latest versions
@@ -33,6 +34,7 @@ OpenREM version history
 * :issue:`897`  Docker: fixed permissions for PixelMed - now using root throughout
 * :issue:`896`  Imports: enabling import of DX with text string in PatientSize field
 * :issue:`893`  Charts: fixed issue with over-time charts with many sub-plots failing to plot correctly
+* :issue:`892`  Documentation: Removing references to native DICOM store and log
 * :issue:`888`  SkinDose: added option to support skin dose calculations for listed systems only
 * :issue:`886`  Code quality: addressed some SonarCloud issues
 * :issue:`882`  SkinDose: added percentage of exposures that interact with phantom
