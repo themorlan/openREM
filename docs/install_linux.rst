@@ -215,15 +215,15 @@ Configure OpenREM
 
     * Remove the first line ``LOCAL_SETTINGS = True``
     * Change second line to ``from .settings import *``
-    * Compare file to `local_settings.py.example` to see if there are other sections that should be updated
+    * Compare file to `local_settings.py.linux` to see if there are other sections that should be updated
 
 First navigate to the Python openrem folder and copy the example local_settings and wsgi files to remove the
-``.example`` suffixes:
+``.linux`` and ``.example`` suffixes:
 
 .. code-block:: console
 
     $ cd /var/dose/veopenrem3/lib/python3.10/site-packages/openrem/
-    $ cp openremproject/local_settings.py{.example,}
+    $ cp openremproject/local_settings.py{.linux,}
     $ cp openremproject/wsgi.py{.example,}
 
 Edit the new local_settings file
@@ -233,7 +233,7 @@ Edit the new local_settings file
     $ nano openremproject/local_settings.py
 
 .. code-block:: python
-    :emphasize-lines: 3,6,12,14,25-27,30,36,50-56
+    :emphasize-lines: 3,6,12,14,16-17,26-28,31,47,50,52
 
     DATABASES = {
         'default': {
@@ -251,6 +251,7 @@ Edit the new local_settings file
     STATIC_ROOT = '/var/dose/static/'
 
     # Change secret key
+    SECRET_KEY = 'hmj#)-$smzqk*=wuz9^a46rex30^$_j$rghp+1#y&amp;i+pys5b@$'
 
     # DEBUG mode: leave the hash in place for now, but remove it and the space (so DEBUG
     # is at the start of the line) as soon as something doesn't work. Put it back
@@ -340,11 +341,11 @@ Webserver
 Configure NGINX and Gunicorn
 ----------------------------
 
-Create the OpenREM site config file
+Copy in the OpenREM site config file
 
 .. code-block:: console
 
-    $ sudo nano /etc/nginx/sites-available/openrem-server
+    $ sudo cp sample-config/openrem-server /etc/nginx/sites-available/openrem-server
 
 .. code-block:: nginx
 
@@ -373,11 +374,11 @@ Remove the default config and make ours active:
 
     $ sudo ln -s /etc/nginx/sites-available/openrem-server /etc/nginx/sites-enabled/openrem-server
 
-Create the Gunicorn systemd service file:
+Copy the Gunicorn systemd service file into place:
 
 .. code-block:: console
 
-    $ sudo nano /etc/systemd/system/openrem-gunicorn.service
+    $ sudo cp sample-config/openrem-gunicorn.service /etc/systemd/system/openrem-gunicorn.service
 
 .. code-block:: bash
 
@@ -433,14 +434,11 @@ You can check that NGINX and Gunicorn are running with the following two command
 DICOM Store SCP
 ^^^^^^^^^^^^^^^
 
-Open the following link in a new tab and copy the content (select all then Ctrl-c): |openrem_orthanc_conf_link|
-
-Create the lua file to control how we process the incoming DICOM objects and paste the content in (Shift-Ctrl-v if
-working directly in the Ubuntu terminal, something else if you are using PuTTY etc):
+Copy the lua file to the Orthanc folder. This will control how we process the incoming DICOM objects.
 
 .. code-block:: console
 
-    $ nano /var/dose/orthanc/openrem_orthanc_config.lua
+    $ cp /var/dose/veopenrem3/lib/python3.10/site-packages/openrem/sample-config/openrem_orthanc_config.lua /var/dose/orthanc/
 
 Then edit the top section as follows -- keeping Physics test images has been configured, set to false to change this.
 There are other settings too that you might like to change in the second section (not displayed here):
