@@ -50,7 +50,7 @@ definitions:
     - step: &test
         name: run django tests
         script:
-          - mv openrem/openremproject/local_settings.py{.example,}
+          - mv openrem/openremproject/local_settings.py{.linux,}
           - sed -i "s/INFO/DEBUG/g" openrem/openremproject/local_settings.py
           - >-
             sed -i "/'ENGINE':/c\        'ENGINE': 'django.db.backends.postgresql_psycopg2'," openrem/openremproject/local_settings.py
@@ -85,7 +85,7 @@ definitions:
         image: python:3.8
         name: run django tests against Python 3.8
         script:
-          - mv openrem/openremproject/local_settings.py{.example,}
+          - mv openrem/openremproject/local_settings.py{.linux,}
           - sed -i "s/INFO/DEBUG/g" openrem/openremproject/local_settings.py
           - >-
             sed -i "/'ENGINE':/c\        'ENGINE': 'django.db.backends.postgresql_psycopg2'," openrem/openremproject/local_settings.py
@@ -120,7 +120,7 @@ definitions:
         image: python:3.9
         name: run django tests against Python 3.9
         script:
-          - mv openrem/openremproject/local_settings.py{.example,}
+          - mv openrem/openremproject/local_settings.py{.linux,}
           - sed -i "s/INFO/DEBUG/g" openrem/openremproject/local_settings.py
           - >-
             sed -i "/'ENGINE':/c\        'ENGINE': 'django.db.backends.postgresql_psycopg2'," openrem/openremproject/local_settings.py
