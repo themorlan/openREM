@@ -53,7 +53,7 @@ definitions:
           - mv openrem/openremproject/local_settings.py{.linux,}
           - sed -i "s/INFO/DEBUG/g" openrem/openremproject/local_settings.py
           - >-
-            sed -i "/'ENGINE':/c\        'ENGINE': 'django.db.backends.postgresql_psycopg2'," openrem/openremproject/local_settings.py
+            sed -i "/'ENGINE':/c\        'ENGINE': 'django.db.backends.postgresql'," openrem/openremproject/local_settings.py
           - >-
             sed -i "/'NAME':/c\        'NAME': 'openremdb'," openrem/openremproject/local_settings.py
           - >-
@@ -64,6 +64,8 @@ definitions:
             sed -i "/'HOST':/c\        'HOST': '127.0.0.1'," openrem/openremproject/local_settings.py
           - >-
             sed -i "/'PORT':/c\        'PORT': '5432'," openrem/openremproject/local_settings.py
+          - >-
+            sed -i "/MEDIA_ROOT/c\MEDIA_ROOT = ''" openrem/openremproject/local_settings.py
           - mv openrem/openremproject/wsgi.py{.example,}
           - pip install -e .
           - pip install coverage
@@ -125,7 +127,7 @@ definitions:
           - mv openrem/openremproject/local_settings.py{.linux,}
           - sed -i "s/INFO/DEBUG/g" openrem/openremproject/local_settings.py
           - >-
-            sed -i "/'ENGINE':/c\        'ENGINE': 'django.db.backends.postgresql_psycopg2'," openrem/openremproject/local_settings.py
+            sed -i "/'ENGINE':/c\        'ENGINE': 'django.db.backends.postgresql'," openrem/openremproject/local_settings.py
           - >-
             sed -i "/'NAME':/c\        'NAME': 'openremdb'," openrem/openremproject/local_settings.py
           - >-
@@ -136,6 +138,8 @@ definitions:
             sed -i "/'HOST':/c\        'HOST': '127.0.0.1'," openrem/openremproject/local_settings.py
           - >-
             sed -i "/'PORT':/c\        'PORT': '5432'," openrem/openremproject/local_settings.py
+          - >-
+            sed -i "/MEDIA_ROOT/c\MEDIA_ROOT = ''" openrem/openremproject/local_settings.py
           - mv openrem/openremproject/wsgi.py{.example,}
           - pip install -e .
           - pip install coverage
