@@ -29,7 +29,8 @@ MEDIA_ROOT = ''
 # Don't put anything in this directory yourself; store your static files
 # in apps' 'static/' subdirectories and in STATICFILES_DIRS.
 # Example: '/home/media/media.lawrence.com/static/'
-STATIC_ROOT = '/var/dose/static/'
+# STATIC_ROOT = '/var/dose/static/'
+STATIC_ROOT = ''
 JS_REVERSE_OUTPUT_PATH = os.path.join(STATIC_ROOT, 'js', 'django_reverse')
 
 # You should generate a new secret key. Make this unique, and don't
