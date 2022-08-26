@@ -226,14 +226,15 @@ First navigate to the Python openrem folder and copy the example local_settings 
     $ cp openremproject/local_settings.py{.linux,}
     $ cp openremproject/wsgi.py{.example,}
 
-Check that the ``local_settings.py`` file looks like this:
+Edit ``local_settings.py`` as needed - make sure you change the ``SECRET_KEY`` (to anything, just change
+it) and the ``ALLOWED_HOSTS`` list:
 
 .. code-block:: console
 
     $ nano openremproject/local_settings.py
 
 .. code-block:: python
-    :emphasize-lines: 3,6,12,14,16-17,26-28,31,47,50,52
+    :emphasize-lines: 16-17,26-28
 
     DATABASES = {
         'default': {
