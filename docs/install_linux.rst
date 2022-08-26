@@ -215,7 +215,7 @@ Configure OpenREM
 
     * Remove the first line ``LOCAL_SETTINGS = True``
     * Change second line to ``from .settings import *``
-    * Compare file to `local_settings.py.linux` to see if there are other sections that should be updated
+    * Compare file to ``local_settings.py.linux`` to see if there are other sections that should be updated
 
 First navigate to the Python openrem folder and copy the example local_settings and wsgi files to remove the
 ``.linux`` and ``.example`` suffixes:
@@ -226,7 +226,7 @@ First navigate to the Python openrem folder and copy the example local_settings 
     $ cp openremproject/local_settings.py{.linux,}
     $ cp openremproject/wsgi.py{.example,}
 
-Edit the new local_settings file
+Check that the ``local_settings.py`` file looks like this:
 
 .. code-block:: console
 
@@ -440,44 +440,32 @@ Copy the lua file to the Orthanc folder. This will control how we process the in
 
     $ cp /var/dose/veopenrem3/lib/python3.10/site-packages/openrem/sample-config/openrem_orthanc_config.lua /var/dose/orthanc/
 
-Then edit the top section as follows -- keeping Physics test images has been configured, set to false to change this.
-There are other settings too that you might like to change in the second section (not displayed here):
+Choose whether you want to keep 'physics' images that are sent to the OpenREM server, for QA for example.
+Edit the lists of manufacturers, model names, station names, software versions and serial numbers you want
+Orthanc to ignore:
+
+.. code-block:: console
+
+    $ nano /var/dose/orthanc/openrem_orthanc_config.lua
 
 .. code-block:: lua
-
-    -------------------------------------------------------------------------------------
-    -- OpenREM python environment and other settings
-
-    -- Set this to the path and name of the python executable used by OpenREM
-    local python_executable = '/var/dose/veopenrem3/bin/python'
-
-    -- Set this to the path of the python scripts folder used by OpenREM
-    local python_scripts_path = '/var/dose/veopenrem3/bin/'
-
-    -- Set this to the path where you want Orthanc to temporarily store DICOM files
-    local temp_path = '/var/dose/orthanc/dicom/'
-
-    -- Set this to 'mkdir' on Windows, or 'mkdir -p' on Linux
-    local mkdir_cmd = 'mkdir -p'
-
-    -- Set this to '\\'' on Windows, or '/' on Linux
-    local dir_sep = '/'
+    :emphasize-lines: 3,7,11-15
 
     -- Set this to true if you want Orthanc to keep physics test studies, and have it
     -- put them in the physics_to_keep_folder. Set it to false to disable this feature
     local use_physics_filtering = true
 
-    -- Set this to the path where you want to keep physics-related DICOM images
-    local physics_to_keep_folder = '/var/dose/orthanc/physics/'
+    -- A list to check against patient name and ID to see if the images should be kept.
+    -- Orthanc will put anything that matches this in the physics_to_keep_folder.
+    local physics_to_keep = {'physics'}
 
-    -- Set this to the path and name of your zip utility, and include any switches that
-    -- are needed to create an archive (used with physics-related images)
-    local zip_executable = '/usr/bin/zip -r'
-
-    -- Set this to the path and name of your remove folder command, including switches
-    -- for it to be quiet (used with physics-related images)
-    local rmdir_cmd = 'rm -r'
-    -------------------------------------------------------------------------------------
+    -- Lists of things to ignore. Orthanc will ignore anything matching the content of
+    -- these lists: they will not be imported into OpenREM.
+    local manufacturers_to_ignore = {'Faxitron X-Ray LLC', 'Gendex-KaVo'}
+    local model_names_to_ignore = {'CR 85', 'CR 75', 'CR 35', 'CR 25', 'ADC_5146', 'CR975'}
+    local station_names_to_ignore = {'CR85 Main', 'CR75 Main'}
+    local software_versions_to_ignore = {'VixWin Platinum v3.3'}
+    local device_serial_numbers_to_ignore = {'SCB1312016'}
 
 Add the Lua script to the Orthanc config:
 

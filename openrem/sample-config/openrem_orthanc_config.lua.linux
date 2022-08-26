@@ -47,7 +47,7 @@ local physics_to_keep = {'physics'}
 
 -- Lists of things to ignore. Orthanc will ignore anything matching the content of
 -- these lists: they will not be imported into OpenREM.
-local manufacturers_to_ignore = {'Agfa', 'Agfa-Gevaert', 'Agfa-Gevaert AG', 'Faxitron X-Ray LLC', 'Gendex-KaVo'}
+local manufacturers_to_ignore = {'Faxitron X-Ray LLC', 'Gendex-KaVo'}
 local model_names_to_ignore = {'CR 85', 'CR 75', 'CR 35', 'CR 25', 'ADC_5146', 'CR975'}
 local station_names_to_ignore = {'CR85 Main', 'CR75 Main'}
 local software_versions_to_ignore = {'VixWin Platinum v3.3'}
