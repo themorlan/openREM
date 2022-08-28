@@ -166,7 +166,7 @@ Setup PostgreSQL database
 -------------------------
 
 Create a postgres user, and create the database. You will be asked to enter a new password (twice). This will be needed
-when configuring OpenREM:
+when configuring the ``local_settings.py`` file later:
 
 .. code-block:: console
 
@@ -178,7 +178,7 @@ when configuring OpenREM:
 
 .. note::
 
-    If you are upgrading to a new Linux server, use ``template0`` instead:
+    If this is an upgrade to a new Linux server and not a new install, use ``template0`` instead:
 
     .. code-block:: console
 
@@ -217,7 +217,7 @@ Configure OpenREM
     * Change second line to ``from .settings import *``
     * Compare file to ``local_settings.py.linux`` to see if there are other sections that should be updated
 
-First navigate to the Python openrem folder and copy the example local_settings and wsgi files to remove the
+Navigate to the Python openrem folder and copy the example ``local_settings.py`` and ``wsgi.py`` files to remove the
 ``.linux`` and ``.example`` suffixes:
 
 .. code-block:: console
@@ -226,15 +226,15 @@ First navigate to the Python openrem folder and copy the example local_settings 
     $ cp openremproject/local_settings.py{.linux,}
     $ cp openremproject/wsgi.py{.example,}
 
-Edit ``local_settings.py`` as needed - make sure you change the ``SECRET_KEY`` (to anything, just change
-it) and the ``ALLOWED_HOSTS`` list:
+Edit ``local_settings.py`` as needed - make sure you change the ``PASSWORD``, the ``SECRET_KEY`` (to anything, just
+change it) and the ``ALLOWED_HOSTS`` list:
 
 .. code-block:: console
 
     $ nano openremproject/local_settings.py
 
 .. code-block:: python
-    :emphasize-lines: 16-17,26-28
+    :emphasize-lines: 6, 16-17,25-28
 
     DATABASES = {
         'default': {
@@ -346,6 +346,7 @@ Copy in the OpenREM site config file
 
 .. code-block:: console
 
+    $ cd /var/dose/veopenrem3/lib/python3.10/site-packages/openrem/
     $ sudo cp sample-config/openrem-server /etc/nginx/sites-available/openrem-server
 
 .. code-block:: nginx
@@ -379,6 +380,7 @@ Copy the Gunicorn systemd service file into place:
 
 .. code-block:: console
 
+    $ cd /var/dose/veopenrem3/lib/python3.10/site-packages/openrem/
     $ sudo cp sample-config/openrem-gunicorn.service /etc/systemd/system/openrem-gunicorn.service
 
 .. code-block:: bash
@@ -431,7 +433,6 @@ You can check that NGINX and Gunicorn are running with the following two command
 
     $ sudo systemctl status nginx.service
 
-
 DICOM Store SCP
 ^^^^^^^^^^^^^^^
 
@@ -439,7 +440,8 @@ Copy the lua file to the Orthanc folder. This will control how we process the in
 
 .. code-block:: console
 
-    $ cp /var/dose/veopenrem3/lib/python3.10/site-packages/openrem/sample-config/openrem_orthanc_config.lua /var/dose/orthanc/
+    $ cd /var/dose/veopenrem3/lib/python3.10/site-packages/openrem/
+    $ cp sample-config/openrem_orthanc_config.lua /var/dose/orthanc/
 
 Choose whether you want to keep 'physics' images that are sent to the OpenREM server, for QA for example.
 Edit the lists of manufacturers, model names, station names, software versions and serial numbers you want
@@ -483,19 +485,21 @@ Add the Lua script to the Orthanc config:
     "/var/dose/orthanc/openrem_orthanc_config.lua"
     ],
 
-Optionally, you may also like to enable the HTTP server interface for Orthanc (although if the Lua script is removing
-all the objects as soon as they are processed, you won't see much!):
+.. note::
 
-.. code-block:: json-object
+    Optionally, you may also like to enable the HTTP server interface for Orthanc (although if the Lua script is removing
+    all the objects as soon as they are processed, you won't see much!):
 
-    // Whether remote hosts can connect to the HTTP server
-    "RemoteAccessAllowed" : true,
+    .. code-block:: json-object
 
-    // Whether or not the password protection is enabled
-    "AuthenticationEnabled" : false,
+        // Whether remote hosts can connect to the HTTP server
+        "RemoteAccessAllowed" : true,
 
-To see the Orthanc web interface, go to http://openremserver:8042/ -- of course change the server name to that of your
-server!
+        // Whether or not the password protection is enabled
+        "AuthenticationEnabled" : false,
+
+    To see the Orthanc web interface, go to http://openremserver:8042/ -- of course change the server name to that of your
+    server!
 
 Set the AE Title and port:
 
