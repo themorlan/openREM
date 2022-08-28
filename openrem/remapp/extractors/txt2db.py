@@ -30,7 +30,7 @@
 import argparse
 import csv
 import datetime
-from dateutil.parser import *
+from dateutil.parser import parse
 from decimal import Decimal
 import logging
 import os
@@ -49,6 +49,22 @@ from openrem.remapp.tools.background import (
     record_task_error_exit,
 )
 from openrem.remapp.extractors.rdsr import _rdsr2db as rdsr2db
+from ..tools.hash_id import hash_id
+
+from remapp.models import (  # pylint: disable=wrong-import-order, wrong-import-position
+    CtAccumulatedDoseData,
+    CtIrradiationEventData,
+    CtRadiationDose,
+    CtXRaySourceParameters,
+    DicomDeleteSettings,
+    GeneralEquipmentModuleAttr,
+    GeneralStudyModuleAttr,
+    PatientIDSettings,
+    PatientStudyModuleAttr,
+    PatientModuleAttr,
+    ScanningLength,
+    UniqueEquipmentNames,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -68,7 +84,7 @@ from remapp.models import (
 
 def dcmformatdate(datestr:str) -> str:
     # Convert an arbitrary date string into the DT 'yyyymmdd' DICOM format.
-    thedate = parse(datestr)
+    thedate = parse(datestr, dayfirst=True)  # dayfirst would have to be an option somewhere
     return thedate.strftime('%Y%m%d')
 
 
@@ -681,6 +697,42 @@ def txt2dcm(header, csvline):
     return ds
 
 
+def _general_equipment_module_attributes(header, csvline, study):
+    equip = GeneralEquipmentModuleAttr.objects.create(general_study_module_attributes=study)
+    equip.manufacturer = csvline[header.make]
+    equip.institution_name = csvline[header.institution_name]
+    equip.manufacturer_model_name = csvline[header.model]
+    equip.save()
+
+
+def _patient_module_attributes(header, csvline, study):
+    pat = PatientModuleAttr.objects.create(general_study_module_attributes=study)
+    patient_id_settings = PatientIDSettings.objects.get()
+    if patient_id_settings.name_stored:
+        name = csvline[header.patient_name]
+        if name and patient_id_settings.name_hashed:
+            name = hash_id(name)
+            pat.name_hashed = True
+        pat.patient_name = name
+    if patient_id_settings.id_stored:
+        patid = csvline[header.patient_id]
+        if patid and patient_id_settings.id_hashed:
+            patid = hash_id(patid)
+            pat.id_hashed = True
+        pat.patient_id = patid
+    pat.save()
+
+
+def extract_to_db(header, csvline):
+    study = GeneralStudyModuleAttr.objects.create()
+    study.study_date = dcmformatdate(csvline[header.study_date])
+    study.study_time = dcmformattime(csvline[header.exposure_time])
+    study.modality_type = "CT"  # for now
+    study.save()
+    _general_equipment_module_attributes(header, csvline, study)
+    _patient_module_attributes(header, csvline, study)
+
+
 def _create_parser():
     parser = argparse.ArgumentParser(
         description="Import patient and study data from a text file into an OpenREM database. "
@@ -784,7 +836,8 @@ def txt2db():
         for line in dataset:
             # skip column header line
             if not all(header in fieldnames for header in list(line.values())):
-                rdsr2db(txt2dcm(args, line))
+                # rdsr2db(txt2dcm(args, line))
+                extract_to_db(args, line)
     size_upload.processtime = (datetime.datetime.now() - date_stamp).total_seconds()
     size_upload.status = "COMPLETE"
     size_upload.save()
