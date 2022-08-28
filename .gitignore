@@ -1,0 +1,32 @@
+*.pyc
+
+openrem/remapp/migrations/0*
+.idea
+.venv
+settings.json
+launch.json
+openrem/openremproject/local_settings.py
+openrem/openremproject/wsgi.py
+
+#  Testing related bits
+.tox
+OpenREM.egg-info/
+.coverage
+coverage.xml
+.scannerwork/
+flake8*
+
+# docker related
+*.whl
+scratch
+logs/*
+imports/*
+!logs/.gitkeep
+!imports/.gitkeep
+
+# Translations related
+*.mo
+docs/_build/html/*
+docs/_build/gettext/.doctrees/*
+docs/_static/*
+#openrem/locale/en/*
