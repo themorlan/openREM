@@ -64,25 +64,21 @@ VIRTUAL_DIRECTORY = ''
 LOG_ROOT = MEDIA_ROOT
 LOG_FILENAME = os.path.join(LOG_ROOT, 'openrem.log')
 QR_FILENAME = os.path.join(LOG_ROOT, 'openrem_qr.log')
-STORE_FILENAME = os.path.join(LOG_ROOT, 'openrem_store.log')
 EXTRACTOR_FILENAME = os.path.join(LOG_ROOT, 'openrem_extractor.log')
 
 LOGGING['handlers']['file']['filename'] = LOG_FILENAME          # General logs
 LOGGING['handlers']['qr_file']['filename'] = QR_FILENAME        # Query Retrieve SCU logs
-LOGGING['handlers']['store_file']['filename'] = STORE_FILENAME  # Store SCP logs
 LOGGING['handlers']['extractor_file']['filename'] = EXTRACTOR_FILENAME  # Extractor logs
 
 # Set log message format. Options are 'verbose' or 'simple'. Recommend leaving as 'verbose'.
 LOGGING['handlers']['file']['formatter'] = 'verbose'        # General logs
 LOGGING['handlers']['qr_file']['formatter'] = 'verbose'     # Query Retrieve SCU logs
-LOGGING['handlers']['store_file']['formatter'] = 'verbose'  # Store SCP logs
 LOGGING['handlers']['extractor_file']['formatter'] = 'verbose'  # Extractor logs
 
 # Set the log level. Options are 'DEBUG', 'INFO', 'WARNING', 'ERROR', and 'CRITICAL', with progressively less logging.
 LOGGING['loggers']['remapp']['level'] = 'INFO'                    # General logs
 LOGGING['loggers']['remapp.netdicom.qrscu']['level'] = 'INFO'     # Query Retrieve SCU logs
-LOGGING['loggers']['remapp.netdicom.storescp']['level'] = 'INFO'  # Store SCP logs
-LOGGING['loggers']['remapp.extractors.ct_toshiba']['level'] = 'INFO'  # Toshiba RDSR creation extractor logs
+LOGGING['loggers']['remapp.extractors']['level'] = 'INFO'  # Extractor logs
 
 # Linux only for now: configure 'rotating' logs so they don't get too big. Remove the '# ' to uncomment. 'LOGGING'
 # should be at the start of the line.
@@ -92,9 +88,6 @@ LOGGING['loggers']['remapp.extractors.ct_toshiba']['level'] = 'INFO'  # Toshiba 
 # LOGGING['handlers']['qr_file']['class'] = 'logging.handlers.RotatingFileHandler'
 # LOGGING['handlers']['qr_file']['maxBytes'] = 10 * 1024 * 1024  # 10*1024*1024 = 10 MB
 # LOGGING['handlers']['qr_file']['backupCount'] = 5  # number of log files to keep before deleting the oldest one
-# LOGGING['handlers']['store_file']['class'] = 'logging.handlers.RotatingFileHandler'
-# LOGGING['handlers']['store_file']['maxBytes'] = 10 * 1024 * 1024  # 10*1024*1024 = 10 MB
-# LOGGING['handlers']['store_file']['backupCount'] = 5  # number of log files to keep before deleting the oldest one
 # LOGGING['handlers']['extractor_file']['class'] = 'logging.handlers.RotatingFileHandler'
 # LOGGING['handlers']['extractor_file']['maxBytes'] = 10 * 1024 * 1024  # 10*1024*1024 = 10 MB
 # LOGGING['handlers']['extractor_file']['backupCount'] = 5  # number of log files to keep before deleting the oldest one

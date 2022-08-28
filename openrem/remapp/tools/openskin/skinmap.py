@@ -73,12 +73,38 @@ def skin_map(
         np.array([table_width / 2, 0, 0]),
     )
 
+    (triangle1, triangle2) = collimate(x_ray, area, d_ref)
+
+    # Count how many 1 cm^2 cells the field hits - this is the total skin area that is exposed
+    # and will include any curved areas of the phantom and also account for change in the field
+    # area at the skin due to non-zero secondary beam angles.
+
+    # NOTE: this will only work correctly once the bug affecting field size when there is a
+    # non-zero secondary angle has been fixed.
+    area_count = 0
+    iterator = np.nditer(skin_dose_map, op_flags=["readwrite"], flags=["multi_index", "refs_ok"])
+    while not iterator.finished:
+        lookup_row = iterator.multi_index[0]
+        lookup_col = iterator.multi_index[1]
+        my_x = phantom.phantom_map[lookup_row, lookup_col][0]
+        my_y = phantom.phantom_map[lookup_row, lookup_col][1]
+        my_z = phantom.phantom_map[lookup_row, lookup_col][2]
+        my_ray = Segment3(focus, np.array([my_x, my_y, my_z]))
+        reverse_normal = phantom.normal_map[lookup_row, lookup_col]
+        if check_orthogonal(reverse_normal, my_ray):
+            # Check to see if the beam hits the patient
+            hit1 = intersect(my_ray, triangle1)
+            hit2 = intersect(my_ray, triangle2)
+            if hit1 == "hit" or hit2 == "hit":
+                area_count = area_count + 1
+        iterator.iternext()
+    equiv_field_size_on_skin = math.sqrt(area_count)
+
     iterator = np.nditer(
         skin_dose_map, op_flags=["readwrite"], flags=["multi_index", "refs_ok"]
     )
 
-    (triangle1, triangle2) = collimate(x_ray, area, d_ref)
-
+    # Now we know the field area at the skin surface, calculate the skin dose for each cell
     while not iterator.finished:
 
         lookup_row = iterator.multi_index[0]
@@ -117,6 +143,7 @@ def skin_map(
 
                 # Calculate the dose at the skin point by correcting for distance and BSF
                 mylength_squared = pow(my_ray.length, 2)
+
                 iterator[0] = Decimal(
                     ref_length_squared
                     / mylength_squared
@@ -124,7 +151,7 @@ def skin_map(
                     * get_bsf(
                         tube_voltage,
                         cu_thickness,
-                        math.sqrt(mylength_squared / ref_length_squared),
+                        equiv_field_size_on_skin,
                     )
                 ).quantize(Decimal("0.000000001"), rounding=ROUND_HALF_UP)
         iterator.iternext()

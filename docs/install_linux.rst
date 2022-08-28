@@ -267,7 +267,6 @@ Edit the new local_settings file
     LOG_ROOT = '/var/dose/log'
     LOG_FILENAME = os.path.join(LOG_ROOT, 'openrem.log')
     QR_FILENAME = os.path.join(LOG_ROOT, 'openrem_qr.log')
-    STORE_FILENAME = os.path.join(LOG_ROOT, 'openrem_store.log')
     EXTRACTOR_FILENAME = os.path.join(LOG_ROOT, 'openrem_extractor.log')
 
     # Removed comment hashes to enable log file rotation:
@@ -277,9 +276,6 @@ Edit the new local_settings file
     LOGGING['handlers']['qr_file']['class'] = 'logging.handlers.RotatingFileHandler'
     LOGGING['handlers']['qr_file']['maxBytes'] = 10 * 1024 * 1024  # 10*1024*1024 = 10 MB
     LOGGING['handlers']['qr_file']['backupCount'] = 5  # number of log files to keep before deleting the oldest one
-    LOGGING['handlers']['store_file']['class'] = 'logging.handlers.RotatingFileHandler'
-    LOGGING['handlers']['store_file']['maxBytes'] = 10 * 1024 * 1024  # 10*1024*1024 = 10 MB
-    LOGGING['handlers']['store_file']['backupCount'] = 5  # number of log files to keep before deleting the oldest one
     LOGGING['handlers']['extractor_file']['class'] = 'logging.handlers.RotatingFileHandler'
     LOGGING['handlers']['extractor_file']['maxBytes'] = 10 * 1024 * 1024  # 10*1024*1024 = 10 MB
     LOGGING['handlers']['extractor_file']['backupCount'] = 5  # number of log files to keep before deleting the oldest one

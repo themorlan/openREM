@@ -32,12 +32,13 @@
 
 import logging
 
+from django.conf import settings
+from django.utils.translation import gettext as _
 from pynetdicom import AE, VerificationPresentationContexts
 
 from remapp.models import DicomRemoteQR, DicomStoreSCP
 
-logger = logging.getLogger(__name__)
-qr_logger = logging.getLogger("remapp.netdicom.qrscu")
+logger = logging.getLogger("remapp.netdicom.qrscu")
 
 
 def echoscu(scp_pk=None, store_scp=False, qr_scp=False):
@@ -51,6 +52,13 @@ def echoscu(scp_pk=None, store_scp=False, qr_scp=False):
 
     if store_scp and scp_pk:
         scp = DicomStoreSCP.objects.get(pk=scp_pk)
+        if not scp.peer:
+            if settings.DOCKER_INSTALL:
+                msg = _("Store Docker container name is missing")
+            else:
+                msg = _("Store hostname is missing (normally localhost)")
+            logger.error(f"{scp.name} (Database ID {scp_pk}): {msg}")
+            return f"{msg} - modify to add"
         remote_host = scp.peer
         our_aet = "OPENREMECHO"
     elif qr_scp and scp_pk:
