@@ -49,7 +49,18 @@ from openrem.remapp.tools.background import (
     record_task_error_exit,
 )
 from openrem.remapp.extractors.rdsr import _rdsr2db as rdsr2db
+from ..tools.get_values import get_or_create_cid
 from ..tools.hash_id import hash_id
+
+logger = logging.getLogger(__name__)
+
+
+basepath = os.path.dirname(__file__)
+projectpath = os.path.abspath(os.path.join(basepath, "..", ".."))
+if projectpath not in sys.path:
+    sys.path.insert(1, projectpath)
+os.environ["DJANGO_SETTINGS_MODULE"] = "openremproject.settings"
+django.setup()
 
 from remapp.models import (  # pylint: disable=wrong-import-order, wrong-import-position
     CtAccumulatedDoseData,
@@ -63,23 +74,9 @@ from remapp.models import (  # pylint: disable=wrong-import-order, wrong-import-
     PatientStudyModuleAttr,
     PatientModuleAttr,
     ScanningLength,
+    SizeUpload,
     UniqueEquipmentNames,
 )
-
-logger = logging.getLogger(__name__)
-
-
-basepath = os.path.dirname(__file__)
-projectpath = os.path.abspath(os.path.join(basepath, "..", ".."))
-if projectpath not in sys.path:
-    sys.path.insert(1, projectpath)
-os.environ["DJANGO_SETTINGS_MODULE"] = "openremproject.settings"
-django.setup()
-
-from remapp.models import (
-    GeneralStudyModuleAttr,
-    SizeUpload,
-)  # pylint: disable=wrong-import-position
 
 
 def dcmformatdate(datestr:str) -> str:
@@ -723,14 +720,31 @@ def _patient_module_attributes(header, csvline, study):
     pat.save()
 
 
+def _ctaccumulateddosedata(header, csvline, ct_dose):
+    ct_acc = CtAccumulatedDoseData.objects.create(ct_radiation_dose=ct_dose)
+    ct_acc.ct_dose_length_product_total = Decimal(csvline[header.reading])
+    ct_acc.save()
+
+
+def _ct_radiation_dose(header, csvline, study):
+    ct_dose = CtRadiationDose.objects.create(general_study_module_attributes=study)
+    ct_dose.procedure_reported = get_or_create_cid("P5-08000", "Computed Tomography X-Ray")
+    ct_dose.has_intent = get_or_create_cid("R-408C3", "Diagnostic Intent")
+    ct_dose.scope_of_accumulation = get_or_create_cid("113014", "Study")
+    ct_dose.save()
+    _ctaccumulateddosedata(header, csvline, ct_dose)
+
+
 def extract_to_db(header, csvline):
     study = GeneralStudyModuleAttr.objects.create()
     study.study_date = dcmformatdate(csvline[header.study_date])
     study.study_time = dcmformattime(csvline[header.exposure_time])
+    study.study_description =csvline[header.procedure]
     study.modality_type = "CT"  # for now
     study.save()
     _general_equipment_module_attributes(header, csvline, study)
     _patient_module_attributes(header, csvline, study)
+    _ct_radiation_dose(header, csvline, study)
 
 
 def _create_parser():
