@@ -349,22 +349,26 @@ Copy in the OpenREM site config file
     $ cd /var/dose/veopenrem3/lib/python3.10/site-packages/openrem/
     $ sudo cp sample-config/openrem-server /etc/nginx/sites-available/openrem-server
 
-.. code-block:: nginx
+.. note::
 
-    server {
-        listen 80;
-        server_name openrem-server;
+    Content of NGINX config file:
 
-        location /static {
-            alias /var/dose/static;
+    .. code-block:: nginx
+
+        server {
+            listen 80;
+            server_name openrem-server;
+
+            location /static {
+                alias /var/dose/static;
+            }
+
+            location / {
+                proxy_pass http://unix:/tmp/openrem-server.socket;
+                proxy_set_header Host $host;
+                proxy_read_timeout 300s;
+            }
         }
-
-        location / {
-            proxy_pass http://unix:/tmp/openrem-server.socket;
-            proxy_set_header Host $host;
-            proxy_read_timeout 300s;
-        }
-    }
 
 Remove the default config and make ours active:
 
@@ -383,22 +387,26 @@ Copy the Gunicorn systemd service file into place:
     $ cd /var/dose/veopenrem3/lib/python3.10/site-packages/openrem/
     $ sudo cp sample-config/openrem-gunicorn.service /etc/systemd/system/openrem-gunicorn.service
 
-.. code-block:: bash
+.. note::
 
-    [Unit]
-    Description=Gunicorn server for OpenREM
+    Content of systemd file:
 
-    [Service]
-    Restart=on-failure
-    User=www-data
-    WorkingDirectory=/var/dose/veopenrem3/lib/python3.10/site-packages/openrem
+    .. code-block:: bash
 
-    ExecStart=/var/dose/veopenrem3/bin/gunicorn \
-        --bind unix:/tmp/openrem-server.socket \
-        openremproject.wsgi:application --timeout 300
+        [Unit]
+        Description=Gunicorn server for OpenREM
 
-    [Install]
-    WantedBy=multi-user.target
+        [Service]
+        Restart=on-failure
+        User=www-data
+        WorkingDirectory=/var/dose/veopenrem3/lib/python3.10/site-packages/openrem
+
+        ExecStart=/var/dose/veopenrem3/bin/gunicorn \
+            --bind unix:/tmp/openrem-server.socket \
+            openremproject.wsgi:application --timeout 300
+
+        [Install]
+        WantedBy=multi-user.target
 
 Load the new systemd configurations:
 
@@ -441,7 +449,7 @@ Copy the Lua file to the Orthanc folder. This will control how we process the in
 .. code-block:: console
 
     $ cd /var/dose/veopenrem3/lib/python3.10/site-packages/openrem/
-    $ cp sample-config/openrem_orthanc_config.lua /var/dose/orthanc/
+    $ cp sample-config/openrem_orthanc_config.lua.linux /var/dose/orthanc/openrem_orthanc_config.lua
 
 Edit the Orthanc Lua configuration options:
 
@@ -496,11 +504,13 @@ systems in a comma separated list within curly brackets, as per the example belo
             {'GE Medical Systems', 'Discovery STE'},
     }
 
-Add the Lua script to the Orthanc config:
+Edit the Orthanc configuration:
 
 .. code-block:: console
 
     $ sudo nano /etc/orthanc/orthanc.json
+
+Add the Lua script to the Orthanc config:
 
 .. code-block:: json-object
     :emphasize-lines: 4
@@ -510,6 +520,17 @@ Add the Lua script to the Orthanc config:
     "LuaScripts" : [
     "/var/dose/orthanc/openrem_orthanc_config.lua"
     ],
+
+Set the AE Title and port:
+
+.. code-block:: json-object
+    :emphasize-lines: 2,5
+
+    // The DICOM Application Entity Title
+    "DicomAet" : "OPENREM",
+
+    // The DICOM port
+    "DicomPort" : 104,
 
 .. note::
 
@@ -526,17 +547,6 @@ Add the Lua script to the Orthanc config:
 
     To see the Orthanc web interface, go to http://openremserver:8042/ -- of course change the server name to that of your
     server!
-
-Set the AE Title and port:
-
-.. code-block:: json-object
-    :emphasize-lines: 2,5
-
-    // The DICOM Application Entity Title
-    "DicomAet" : "OPENREM",
-
-    // The DICOM port
-    "DicomPort" : 104,
 
 Allow Orthanc to use DICOM port
 -------------------------------
