@@ -14,8 +14,8 @@ If you are upgrading OpenREM on a Linux server with limited internet access, go 
 
 Preparation
 ===========
-
-Back up the database:
+Back up the database - you will need the password for ``openremuser`` that will be in your
+``local_settings.py`` file:
 
 .. code-block:: console
 
@@ -30,8 +30,8 @@ reversed if they weren't changed with the 0.9.1 upgrade):
     $ sudo systemctl stop openrem-flower
     $ sudo systemctl stop openrem-gunicorn
     $ sudo systemctl stop rabbitmq-server
-    $ sudo systmectl stop nginx
-    $ sudo systmectl stop orthanc
+    $ sudo systemctl stop nginx
+    $ sudo systemctl stop orthanc
 
 Update apt and install any updates:
 
@@ -39,16 +39,51 @@ Update apt and install any updates:
 
     $ sudo -- sh -c 'apt update && apt upgrade'
 
-Install Python 3.10 and create a new virtualenv:
+Install Python 3.10 and other packages:
 
 .. code-block:: console
 
     $ sudo apt install acl python3.10 python3.10-dev python3.10-distutils python3.10-venv python3-pip \
     postgresql nginx orthanc dcmtk default-jre zip gettext
 
+Create a new Python virtual environment:
+
 .. code-block:: console
 
     $ python3.10 -m venv /var/dose/veopenrem3
+
+.. note::
+
+    If you get a 'Permission denied' error when creating the venv, you might not have the right permissions on the
+    ``/var/dose/`` folder. This might work (remember these instructions assume the 'One page complete Ubuntu install'
+    instructions from previous versions have been followed):
+
+    .. code-block:: console
+
+        $ sudo chmod 775 /var/dose
+        $ sudo chown $USER:openrem /var/dose
+        $ sudo chmod -R g+s /var/dose/*
+        $ sudo setfacl -R -dm u::rwx,g::rwx,o::r /var/dose/
+
+    Then try again:
+
+    .. code-block:: console
+
+        $ python3.10 -m venv /var/dose/veopenrem3
+
+Set the permissions for the new folder:
+
+.. code-block:: console
+
+    $ sudo chmod 775 /var/dose/veopenrem3
+    $ sudo chown $USER:openrem /var/dose/veopenrem3
+    $ sudo chmod -R g+s /var/dose/veopenrem3
+    $ sudo setfacl -R -dm u::rwx,g::rwx,o::r /var/dose/veopenrem3
+
+Activate the virtualenv:
+
+.. code-block:: console
+
     $ . /var/dose/veopenrem3/bin/activate
 
 Install the new version of OpenREM
@@ -58,6 +93,14 @@ Install the new version of OpenREM
 
     If you are upgrading this server offline, return to the Offline installation docs for
     :ref:`Offline-python-packages`
+
+Ensure the new virtualenv is active — prompt will look like
+
+.. code-block:: console
+
+    (veopenrem3)username@hostname:~$
+
+Upgrade Pip and install OpenREM
 
 .. code-block:: console
 
@@ -71,6 +114,8 @@ Install the new version of OpenREM
 
 Update the local_settings.py file
 =================================
+
+**Change this - use the new local_settings.py.linux and copy settings across**
 
 Copy the old ``local_settings.py`` file to the new venv:
 
