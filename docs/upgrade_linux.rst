@@ -15,7 +15,13 @@ If you are upgrading OpenREM on a Linux server with limited internet access, go 
 Preparation
 ===========
 Back up the database - you will need the password for ``openremuser`` that will be in your
-``local_settings.py`` file:
+``local_settings.py`` file. You'll need this file again later so open it in a different window:
+
+.. code-block:: console
+
+    $ less /var/dose/veopenrem/lib/python2.7/site-packages/openrem/openremproject/local_settings.py
+
+Backup the database, in the main window:
 
 .. code-block:: console
 
@@ -112,21 +118,82 @@ Upgrade Pip and install OpenREM
 
 .. _upgrade-linux-local-settings:
 
-Update the local_settings.py file
-=================================
+Configure the local_settings.py file
+====================================
 
-**Change this - use the new local_settings.py.linux and copy settings across**
-
-Copy the old ``local_settings.py`` file to the new venv:
+Navigate to the Python openrem folder and copy the example ``local_settings.py`` and ``wsgi.py`` files to remove the
+``.linux`` and ``.example`` suffixes:
 
 .. code-block:: console
 
     $ cd /var/dose/veopenrem3/lib/python3.10/site-packages/openrem/
-    $ cp /var/dose/veopenrem/lib/python2.7/site-packages/openrem/openremproject/local_settings.py openremproject/local_settings.py
+    $ cp openremproject/local_settings.py{.linux,}
+    $ cp openremproject/wsgi.py{.example,}
 
-* Remove the first line ``LOCAL_SETTINGS = True``
-* Change second line to ``from .settings import *``
-* Compare file to ``local_settings.py.linux`` to see if there are other sections that should be updated
+Review the old ``local_settings.py`` file that was opened earlier - see the first part of the Preparation section. Edit
+the new ``local_settings.py`` as needed - make sure you update the database ``NAME``, ``USER`` and ``PASSWORD``, the
+``ALLOWED_HOSTS`` list and check all the other settings:
+
+.. code-block:: console
+
+    $ nano openremproject/local_settings.py
+
+.. code-block:: python
+    :emphasize-lines: 4-6, 25-28
+
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'openremdb',
+            'USER': 'openremuser',
+            'PASSWORD': 'mysecretpassword',     # This is the password you set earlier
+            'HOST': '',
+            'PORT': '',
+        }
+    }
+
+    MEDIA_ROOT = '/var/dose/media/'
+
+    STATIC_ROOT = '/var/dose/static/'
+
+    # Change secret key
+    SECRET_KEY = 'hmj#)-$smzqk*=wuz9^a46rex30^$_j$rghp+1#y&amp;i+pys5b@$'
+
+    # DEBUG mode: leave the hash in place for now, but remove it and the space (so DEBUG
+    # is at the start of the line) as soon as something doesn't work. Put it back
+    # when you get it working again.
+    # DEBUG = True
+
+    ALLOWED_HOSTS = [
+        # Add the names and IP address of your host, for example:
+        'openrem-server',
+        'openrem-server.ad.abc.nhs.uk',
+        '10.123.213.22',
+    ]
+
+    LOG_ROOT = '/var/dose/log'
+    LOG_FILENAME = os.path.join(LOG_ROOT, 'openrem.log')
+    QR_FILENAME = os.path.join(LOG_ROOT, 'openrem_qr.log')
+    EXTRACTOR_FILENAME = os.path.join(LOG_ROOT, 'openrem_extractor.log')
+
+    # Removed comment hashes to enable log file rotation:
+    LOGGING['handlers']['file']['class'] = 'logging.handlers.RotatingFileHandler'
+    LOGGING['handlers']['file']['maxBytes'] = 10 * 1024 * 1024  # 10*1024*1024 = 10 MB
+    LOGGING['handlers']['file']['backupCount'] = 5  # number of log files to keep before deleting the oldest one
+    LOGGING['handlers']['qr_file']['class'] = 'logging.handlers.RotatingFileHandler'
+    LOGGING['handlers']['qr_file']['maxBytes'] = 10 * 1024 * 1024  # 10*1024*1024 = 10 MB
+    LOGGING['handlers']['qr_file']['backupCount'] = 5  # number of log files to keep before deleting the oldest one
+    LOGGING['handlers']['extractor_file']['class'] = 'logging.handlers.RotatingFileHandler'
+    LOGGING['handlers']['extractor_file']['maxBytes'] = 10 * 1024 * 1024  # 10*1024*1024 = 10 MB
+    LOGGING['handlers']['extractor_file']['backupCount'] = 5  # number of log files to keep before deleting the oldest one
+
+    DCMTK_PATH = '/usr/bin'
+    DCMCONV = os.path.join(DCMTK_PATH, 'dcmconv')
+    DCMMKDIR = os.path.join(DCMTK_PATH, 'dcmmkdir')
+    JAVA_EXE = '/usr/bin/java'
+    JAVA_OPTIONS = '-Xms256m -Xmx512m -Xss1m -cp'
+    PIXELMED_JAR = '/var/dose/pixelmed/pixelmed.jar'
+    PIXELMED_JAR_OPTIONS = '-Djava.awt.headless=true com.pixelmed.doseocr.OCR -'
 
 Migrate the database
 ====================
