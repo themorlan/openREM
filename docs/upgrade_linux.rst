@@ -263,12 +263,17 @@ Migrate the database:
     $ python manage.py loaddata openskin_safelist.json
 
 
-Update static files
-===================
+Update static files and translations
+====================================
 
 .. code-block:: console
 
     $ python manage.py collectstatic --clear
+
+.. admonition:: Warning about deleting all files
+
+    You will get a warning about all files in the static files location being deleted. As long as the folder is correct,
+    type ``yes`` to continue.
 
 ..  admonition:: Virtual directory users
 
