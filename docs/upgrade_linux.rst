@@ -4,16 +4,19 @@ Upgrading a native Linux install
 
 These instructions assume a configuration similar to the 'One page complete Ubuntu install' provided with release
 0.8.1 and later. If you are running an older distribution, consider upgrading the operating system or migrating
-the service to a new host. This release will run on Python 3.8 or 3.9, but Python 3.10 is recommended.
+the service to a new host. The test system for these upgrade instructions was upgraded from 18.04 to 20.04 and then
+22.04 before the OpenREM upgrade was started.
 
 If upgrading to a new host, follow the :doc:`upgrade_linux_new_server` docs instead.
 
-If a different release of Python is being used, substitute 3.10 for that version where necessary below.
+This release will run on Python 3.8 or 3.9, but Python 3.10 is recommended. If a different release of Python is being
+used, substitute 3.10 for that version where necessary below.
 
 If you are upgrading OpenREM on a Linux server with limited internet access, go to the :doc:`install_offline` docs.
 
 Preparation
 ===========
+
 Back up the database - you will need the password for ``openremuser`` that will be in your
 ``local_settings.py`` file. You'll need this file again later so open it in a different window:
 
@@ -368,7 +371,7 @@ Start and check Orthanc:
         $ sudo less /var/log/orthanc/Orthanc.log
 
     If there is an error: ``Bad file format: The configuration section "RegisteredUsers" is defined in
-    2 different configuration files", this might be due to changes in the installed version of Orthanc.
+    2 different configuration files`` this might be due to changes in the installed version of Orthanc.
 
     Edit the main Orthanc configuration file to remove the setting, as it is now in a ``credentials.json``
     configuration file.
