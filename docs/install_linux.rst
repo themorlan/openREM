@@ -235,7 +235,7 @@ necessary:
     $ nano openremproject/local_settings.py
 
 .. code-block:: python
-    :emphasize-lines: 6, 16-17,25-28,55-62
+    :emphasize-lines: 6, 16-17,25-28,56-63
 
     DATABASES = {
         'default': {

@@ -139,7 +139,7 @@ the new ``local_settings.py`` as needed - make sure you update the database ``NA
     $ nano openremproject/local_settings.py
 
 .. code-block:: python
-    :emphasize-lines: 4-6, 25-28, 55-62
+    :emphasize-lines: 4-6, 25-28, 56-63
 
     DATABASES = {
         'default': {
