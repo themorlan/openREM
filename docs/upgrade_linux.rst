@@ -311,7 +311,7 @@ Edit the Gunicorn systemd file ``WorkingDirectory`` and ``ExecStart``:
 .. code-block:: none
     :emphasize-lines: 1,3
 
-    WorkingDirectory=/var/dose/veopenrem3/lib/python3.8/site-packages/openrem
+    WorkingDirectory=/var/dose/veopenrem3/lib/python3.10/site-packages/openrem
 
     ExecStart=/var/dose/veopenrem3/bin/gunicorn \
         --bind unix:/tmp/openrem-server.socket \
@@ -337,6 +337,6 @@ Reload systemd and restart the services
 .. code-block:: console
 
     $ sudo systemctl daemon-reload
-    $ sudo systemctl restart openrem-gunicorn.service
-    $ sudo systemctl restart nginx.service
+    $ sudo systemctl start openrem-gunicorn.service
+    $ sudo systemctl start nginx.service
     $ sudo systemctl start orthanc.service
