@@ -58,7 +58,7 @@ Create a new Python virtual environment:
 
     $ python3.10 -m venv /var/dose/veopenrem3
 
-.. note::
+.. tip:: Permission errors
 
     If you get a 'Permission denied' error when creating the venv, you might not have the right permissions on the
     ``/var/dose/`` folder. This might work (remember these instructions assume the 'One page complete Ubuntu install'
@@ -95,7 +95,7 @@ Activate the virtualenv:
 Install the new version of OpenREM
 ==================================
 
-.. note::
+.. note:: Offline upgrades
 
     If you are upgrading this server offline, return to the Offline installation docs for
     :ref:`Offline-python-packages`
@@ -249,6 +249,10 @@ Migrate the database:
 .. code-block:: console
 
     $ python manage.py makemigrations remapp
+
+.. tip:: Rename questions
+
+    There will be some questions about fields being renamed - answer ``N`` to all of them.
 
 .. code-block:: console
 
