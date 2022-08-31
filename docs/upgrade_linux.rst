@@ -139,7 +139,7 @@ the new ``local_settings.py`` as needed - make sure you update the database ``NA
     $ nano openremproject/local_settings.py
 
 .. code-block:: python
-    :emphasize-lines: 4-6, 25-28, 56-63
+    :emphasize-lines: 4-6, 25-28, 51,56,59,70-77
 
     DATABASES = {
         'default': {
@@ -186,6 +186,20 @@ the new ``local_settings.py`` as needed - make sure you update the database ``NA
     LOGGING['handlers']['extractor_file']['class'] = 'logging.handlers.RotatingFileHandler'
     LOGGING['handlers']['extractor_file']['maxBytes'] = 10 * 1024 * 1024  # 10*1024*1024 = 10 MB
     LOGGING['handlers']['extractor_file']['backupCount'] = 5  # number of log files to keep before deleting the oldest one
+
+    # Regionalisation settings
+    #   Date format for exporting data to Excel xlsx files.
+    #   Default in OpenREM is dd/mm/yyyy. Override it by uncommenting and customising below; a full list of codes is
+    #   available at https://msdn.microsoft.com/en-us/library/ee634398.aspx.
+    # XLSX_DATE = 'mm/dd/yyyy'
+    #   Local time zone for this installation. Choices can be found here:
+    #   http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
+    #   although not all choices may be available on all operating systems.
+    #   In a Windows environment this must be set to your system time zone.
+    TIME_ZONE = 'Europe/London'
+    #   Language code for this installation. All choices can be found here:
+    #   http://www.i18nguy.com/unicode/language-identifiers.html
+    LANGUAGE_CODE = 'en-us'
 
     DCMTK_PATH = '/usr/bin'
     DCMCONV = os.path.join(DCMTK_PATH, 'dcmconv')
