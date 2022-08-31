@@ -337,6 +337,58 @@ Reload systemd and restart the services
 .. code-block:: console
 
     $ sudo systemctl daemon-reload
+
+Start and check Gunicorn:
+
+.. code-block:: console
+
     $ sudo systemctl start openrem-gunicorn.service
+    $ sudo systemctl status openrem-gunicorn.service
+
+Start and check NGINX:
+
+.. code-block:: console
+
     $ sudo systemctl start nginx.service
+    $ sudo systemctl status nginx.service
+
+Start and check Orthanc:
+
+.. code-block:: console
+
     $ sudo systemctl start orthanc.service
+    $ sudo systemctl status orthanc.service
+
+.. admonition:: Registered Users error
+
+    If Orthanc fails to start, check the Orthanc log file:
+
+    .. code-block:: console
+
+        $ sudo less /var/log/orthanc/Orthanc.log
+
+    If there is an error: ``Bad file format: The configuration section "RegisteredUsers" is defined in
+    2 different configuration files", this might be due to changes in the installed version of Orthanc.
+
+    Edit the main Orthanc configuration file to remove the setting, as it is now in a ``credentials.json``
+    configuration file.
+
+    .. code-block:: console
+
+        $ sudo nano /etc/orthanc/orthanc.json
+
+    Remove the ``RegisteredUsers`` setting and try again:
+
+    .. code-block:: console
+
+        $ sudo systemctl start orthanc.service
+        $ sudo systemctl status orthanc.service
+
+    If there is still an issue, check the log again. If the problem this time is due to the ``TCP port of the DICOM
+    server``, you might need to give it permission again:
+
+    .. code-block:: console
+
+        $ sudo setcap CAP_NET_BIND_SERVICE=+eip /usr/sbin/Orthanc
+
+    And restart Orthanc once more.
