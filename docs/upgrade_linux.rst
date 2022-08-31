@@ -392,3 +392,18 @@ Start and check Orthanc:
         $ sudo setcap CAP_NET_BIND_SERVICE=+eip /usr/sbin/Orthanc
 
     And restart Orthanc once more.
+
+Test the webserver
+==================
+
+You should now be able to browse to the web interface of your upgraded OpenREM system and have a look around.
+
+Update the DICOM Store settings
+===============================
+
+Log in to the web interface, and navigate to ``Config``, DICOM networking.
+
+The remote nodes should be correct from the old system, but the DICOM Store SCP settings will need
+updating. Modify the store, and add the hostname ``localhost``.
+
+After you have clicked ``Submit``, the status page should show the server is alive.
