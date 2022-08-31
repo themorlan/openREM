@@ -230,13 +230,10 @@ In a shell/command window, move into the ``openrem`` folder:
 
 Prepare the migrations folder:
 
-* Delete everything except ``__init__.py`` and ``0001_initial.py.1-0-upgrade`` in ``remapp/migrations``
 * Rename ``0001_initial.py.1-0-upgrade`` to ``0001_initial.py``
 
 .. code-block:: console
 
-    $ rm -r remapp/migrations/0*.py
-    $ rm -r remapp/migrations/0*.pyc  # may result in 'cannot remove' if there are none
     $ mv remapp/migrations/0001_initial.py{.1-0-upgrade,}
 
 Migrate the database:
