@@ -227,14 +227,15 @@ Navigate to the Python openrem folder and copy the example ``local_settings.py``
     $ cp openremproject/wsgi.py{.example,}
 
 Edit ``local_settings.py`` as needed - make sure you change the ``PASSWORD``, the ``SECRET_KEY`` (to anything, just
-change it) and the ``ALLOWED_HOSTS`` list:
+change it), the ``ALLOWED_HOSTS`` list and the ``EMAIL`` configuration. You can modify the email settings later if
+necessary:
 
 .. code-block:: console
 
     $ nano openremproject/local_settings.py
 
 .. code-block:: python
-    :emphasize-lines: 6, 16-17,25-28
+    :emphasize-lines: 6, 16-17,25-28,55-62
 
     DATABASES = {
         'default': {
@@ -289,6 +290,16 @@ change it) and the ``ALLOWED_HOSTS`` list:
     JAVA_OPTIONS = '-Xms256m -Xmx512m -Xss1m -cp'
     PIXELMED_JAR = '/var/dose/pixelmed/pixelmed.jar'
     PIXELMED_JAR_OPTIONS = '-Djava.awt.headless=true com.pixelmed.doseocr.OCR -'
+
+    # E-mail server settings - see https://docs.djangoproject.com/en/2.2/topics/email/
+    EMAIL_HOST = 'localhost'
+    EMAIL_PORT = 25
+    EMAIL_HOST_USER = ''
+    EMAIL_HOST_PASSWORD = ''
+    EMAIL_USE_TLS = 0         # Use 0 for False, 1 for True
+    EMAIL_USE_SSL = 0         # Use 0 for False, 1 for True
+    EMAIL_DOSE_ALERT_SENDER = 'your.alert@email.address'
+    EMAIL_OPENREM_URL = 'http://your.openrem.server'
 
 Now create the database. Make sure you are still in the openrem python folder and
 the virtualenv is active — prompt will look like

@@ -132,14 +132,14 @@ Navigate to the Python openrem folder and copy the example ``local_settings.py``
 
 Review the old ``local_settings.py`` file that was opened earlier - see the first part of the Preparation section. Edit
 the new ``local_settings.py`` as needed - make sure you update the database ``NAME``, ``USER`` and ``PASSWORD``, the
-``ALLOWED_HOSTS`` list and check all the other settings:
+``ALLOWED_HOSTS`` list and the ``EMAIL`` configuration and check all the other settings:
 
 .. code-block:: console
 
     $ nano openremproject/local_settings.py
 
 .. code-block:: python
-    :emphasize-lines: 4-6, 25-28
+    :emphasize-lines: 4-6, 25-28, 55-62
 
     DATABASES = {
         'default': {
@@ -194,6 +194,16 @@ the new ``local_settings.py`` as needed - make sure you update the database ``NA
     JAVA_OPTIONS = '-Xms256m -Xmx512m -Xss1m -cp'
     PIXELMED_JAR = '/var/dose/pixelmed/pixelmed.jar'
     PIXELMED_JAR_OPTIONS = '-Djava.awt.headless=true com.pixelmed.doseocr.OCR -'
+
+    # E-mail server settings - see https://docs.djangoproject.com/en/2.2/topics/email/
+    EMAIL_HOST = 'localhost'
+    EMAIL_PORT = 25
+    EMAIL_HOST_USER = ''
+    EMAIL_HOST_PASSWORD = ''
+    EMAIL_USE_TLS = 0         # Use 0 for False, 1 for True
+    EMAIL_USE_SSL = 0         # Use 0 for False, 1 for True
+    EMAIL_DOSE_ALERT_SENDER = 'your.alert@email.address'
+    EMAIL_OPENREM_URL = 'http://your.openrem.server'
 
 Migrate the database
 ====================
