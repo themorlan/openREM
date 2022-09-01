@@ -398,9 +398,10 @@ You should now be able to browse to the web interface of your upgraded OpenREM s
 Update the DICOM Store settings
 ===============================
 
-Log in to the web interface, and navigate to ``Config``, DICOM networking.
+Log in to the web interface, and navigate to ``Config``, ``DICOM networking``.
 
 The remote nodes should be correct from the old system, but the DICOM Store SCP settings will need
 updating. Modify the store, and add the hostname ``localhost``.
 
-After you have clicked ``Submit``, the status page should show the server is alive.
+After you have clicked ``Submit``, the status page should show the server is alive. If it isn't, go and check the
+status of Orthanc again (we may have checked it too quickly before).
