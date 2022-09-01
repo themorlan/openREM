@@ -55,39 +55,33 @@ Install Python 3.10 and other packages:
     $ sudo apt install acl python3.10 python3.10-dev python3.10-distutils python3.10-venv python3-pip \
     postgresql nginx orthanc dcmtk default-jre zip gettext
 
+Reset the permissions for the ``/var/dose`` folder:
+
+.. code-block:: console
+
+    $ sudo chmod -R 775 /var/dose
+    $ sudo chown -R $USER:openrem /var/dose
+    $ sudo chmod -R g+s /var/dose/*
+
+Now find the ``uid`` of your user and the ``gid`` of the ``openrem`` group:
+
+.. code-block:: console
+
+    $ id
+    $ getent group openrem
+
+Take note of the ``uid`` number and the ``gid`` in the third field of the group information and use it in the next
+command, replacing ``1001`` (user ``uid``) and ``1002`` (``openrem`` group ``gid``) as appropriate:
+
+.. code-block:: console
+
+    $ sudo setfacl -PRdm u:1001:rwx,g:1002:rwx,o::r /var/dose/
+
 Create a new Python virtual environment:
 
 .. code-block:: console
 
     $ python3.10 -m venv /var/dose/veopenrem3
-
-.. admonition:: Permission errors
-
-    If you get a 'Permission denied' error when creating the venv, you might not have the right permissions on the
-    ``/var/dose/`` folder. This might work (remember these instructions assume the 'One page complete Ubuntu install'
-    instructions from previous versions have been followed):
-
-    .. code-block:: console
-
-        $ sudo chmod 775 /var/dose
-        $ sudo chown $USER:openrem /var/dose
-        $ sudo chmod -R g+s /var/dose/*
-        $ sudo setfacl -R -dm u::rwx,g::rwx,o::r /var/dose/
-
-    Then try again:
-
-    .. code-block:: console
-
-        $ python3.10 -m venv /var/dose/veopenrem3
-
-Set the permissions for the new folder:
-
-.. code-block:: console
-
-    $ sudo chmod 775 /var/dose/veopenrem3
-    $ sudo chown $USER:openrem /var/dose/veopenrem3
-    $ sudo chmod -R g+s /var/dose/veopenrem3
-    $ sudo setfacl -R -dm u::rwx,g::rwx,o::r /var/dose/veopenrem3
 
 Activate the virtualenv:
 
