@@ -5,9 +5,10 @@ Upgrading a native Linux install
 These instructions assume a configuration similar to the 'One page complete Ubuntu install' provided with release
 0.8.1 and later. If you are running an older distribution, consider upgrading the operating system or migrating
 the service to a new host. The test system for these upgrade instructions was upgraded from 18.04 to 20.04 and then
-22.04 before the OpenREM upgrade was started.
+22.04 before the OpenREM upgrade was started. If you are using a different distribution or have set up your system
+differently, it might be better to start afresh following or adapting the :doc:`upgrade_linux_new_server` docs instead.
 
-If upgrading to a new host, follow the :doc:`upgrade_linux_new_server` docs instead.
+If upgrading to a new host, follow the :doc:`upgrade_linux_new_server` docs.
 
 This release will run on Python 3.8 or 3.9, but Python 3.10 is recommended. If a different release of Python is being
 used, substitute 3.10 for that version where necessary below.
@@ -76,6 +77,13 @@ command, replacing ``1001`` (user ``uid``) and ``1002`` (``openrem`` group ``gid
 .. code-block:: console
 
     $ sudo setfacl -PRdm u:1001:rwx,g:1002:rwx,o::r /var/dose/
+
+.. admonition:: What are we doing with the permissions?
+
+    These settings enable the web server user ``www-data``, the DICOM server user ``orthanc`` and the OpenREM server
+    users (you and your colleagues) to all read, write and execute the OpenREM files. The ``setfacl`` command
+    relies on Access Control Lists being available on your system - they are usually enabled on ext4 and can be
+    enabled on others. See :ref:`add_linx_user` for adding colleagues access to the Linux folders.
 
 Create a new Python virtual environment:
 

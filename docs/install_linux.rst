@@ -593,6 +593,8 @@ Restart Orthanc:
 
     $ sudo systemctl restart orthanc.service
 
+.. _add_linux_user:
+
 New users, and quick access to physics folder
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
