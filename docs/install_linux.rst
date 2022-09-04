@@ -234,7 +234,7 @@ Navigate to the Python openrem folder and copy the example ``local_settings.py``
 
 Edit ``local_settings.py`` as needed - make sure you change the ``PASSWORD``, the ``SECRET_KEY`` (to anything, just
 change it), the ``ALLOWED_HOSTS`` list, regionalisation settings and the ``EMAIL`` configuration. You can modify the
-email settings later if necessary:
+email settings later if necessary.
 
 .. admonition:: Upgrading to a new server
 
