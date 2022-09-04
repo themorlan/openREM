@@ -22,6 +22,9 @@ first.
 
 If you are installing OpenREM on a Linux server with limited internet access, go to the :doc:`install_offline` docs.
 
+If you are installing on a different Linux OS you can adapt these instructions or consider using a
+:doc:`install_docker` instead.
+
 Initial prep
 ^^^^^^^^^^^^
 
@@ -41,7 +44,8 @@ Look for::
     deb http://archive.ubuntu.com/ubuntu/ jammy universe
     deb http://archive.ubuntu.com/ubuntu/ jammy-updates universe
 
-If these two lines are not there, add them in (``sudo nano /etc/apt/sources.list``).
+If these two lines are not there or are commented out (line starts with a ``#``), add them in or remove the ``#``
+(``sudo nano /etc/apt/sources.list``).
 
 .. code-block:: console
 
@@ -77,8 +81,9 @@ Add orthanc and www-data users to openrem group:
 
 **Folders**
 
-Create the folders we need, and set the permissions. The 'sticky' group setting below will enable both
-``orthanc`` user and ``www-data`` user to write to the logs etc:
+Create the folders we need, and set the permissions. The 'sticky' group setting and the access control list
+setting (``setfacl``) below will enable both ``orthanc`` user and ``www-data`` user as well as you and your colleagues
+to write to the logs and access the 'Physics' images etc:
 
 .. code-block:: console
 
@@ -108,9 +113,19 @@ Create the folders we need, and set the permissions. The 'sticky' group setting 
 
     $ sudo chmod -R g+s /var/dose/*
 
+Find the ``uid`` of your user and the ``gid`` of the ``openrem`` group:
+
 .. code-block:: console
 
-    $ sudo setfacl -R -dm u::rwx,g::rwx,o::r /var/dose/
+    $ id
+    $ getent group openrem
+
+Take note of the ``uid`` number and the ``gid`` in the third field of the group information and use it in the next
+command, replacing ``1001`` (user ``uid``) and ``1002`` (``openrem`` group ``gid``) as appropriate:
+
+.. code-block:: console
+
+    $ sudo setfacl -PRdm u:1001:rwx,g:1002:rwx,o::r /var/dose/
 
 
 Pixelmed download
@@ -176,7 +191,7 @@ when configuring the ``local_settings.py`` file later:
 
     $ sudo -u postgres createdb -T template1 -O openremuser -E 'UTF8' openremdb
 
-.. note::
+.. admonition:: For upgrades use a different template
 
     If this is an upgrade to a new Linux server and not a new install, use ``template0`` instead:
 
@@ -208,15 +223,6 @@ Reload postgres:
 Configure OpenREM
 -----------------
 
-.. note::
-
-    If you are upgrading to a new Linux server, you can either use the ``local_settings.py`` file you copied across and
-    update it as follows, or use a new version as described for a new install below.
-
-    * Remove the first line ``LOCAL_SETTINGS = True``
-    * Change second line to ``from .settings import *``
-    * Compare file to ``local_settings.py.linux`` to see if there are other sections that should be updated
-
 Navigate to the Python openrem folder and copy the example ``local_settings.py`` and ``wsgi.py`` files to remove the
 ``.linux`` and ``.example`` suffixes:
 
@@ -230,12 +236,18 @@ Edit ``local_settings.py`` as needed - make sure you change the ``PASSWORD``, th
 change it), the ``ALLOWED_HOSTS`` list, regionalisation settings and the ``EMAIL`` configuration. You can modify the
 email settings later if necessary:
 
+.. admonition:: Upgrading to a new server
+
+    If you are upgrading to a new Linux server, review the ``local_settings.py`` file from the old server to copy over
+    the ``NAME``, ``USER`` and ``PASSWORD``, ``ALLOWED_HOSTS`` list and the ``EMAIL`` configuration, and check all the
+    other settings. Change the ``SECRET_KEY`` from the default, but it doesn't have to match the one on the old server.
+
 .. code-block:: console
 
     $ nano openremproject/local_settings.py
 
 .. code-block:: python
-    :emphasize-lines: 6, 16-17,25-28,51,56,59,70-77
+    :emphasize-lines: 4-6, 16-17,25-28,51,56,59,70-77
 
     DATABASES = {
         'default': {

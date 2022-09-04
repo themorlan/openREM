@@ -137,14 +137,15 @@ Navigate to the Python openrem folder and copy the example ``local_settings.py``
 
 Review the old ``local_settings.py`` file that was opened earlier - see the first part of the Preparation section. Edit
 the new ``local_settings.py`` as needed - make sure you update the database ``NAME``, ``USER`` and ``PASSWORD``, the
-``ALLOWED_HOSTS`` list and the ``EMAIL`` configuration and check all the other settings:
+``ALLOWED_HOSTS`` list and the ``EMAIL`` configuration and check all the other settings. Change the ``SECRET_KEY`` from
+the default:
 
 .. code-block:: console
 
     $ nano openremproject/local_settings.py
 
 .. code-block:: python
-    :emphasize-lines: 4-6, 25-28, 51,56,59,70-77
+    :emphasize-lines: 4-6, 16-17, 25-28, 51,56,59,70-77
 
     DATABASES = {
         'default': {
