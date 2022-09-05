@@ -109,6 +109,8 @@ OpenREM version history
 * :issue:`764`  Imports: extractor functions log to extractor log instead of default
 * :issue:`744`  Added overwrite mode to size import
 * :issue:`678`  Enabled import of PX modality panoramic exam data - they appear in the Radiographic section
+* :issue:`664`  Documentation: added sample config files to installation
+* :issue:`657`  Documentation: split local_settings.py example into Windows and Linux versions
 * :issue:`530`  Updated OpenREM to use pynetdicom 1.4
 * :issue:`513`  Internationalization: first translation strings added to documentation
 * :issue:`512`  Internationalization: first translation strings added to interface
@@ -239,7 +241,7 @@ OpenREM version history
 * :issue:`659`  Interface: made the summary tables on the home page sortable by clicking on headers
 * :issue:`656`  Install: pegged django-debug-toolbar to 1.9.1 until Django is upgraded
 * :issue:`654`  Documentation: supplemented the Orthanc Lua file config option docs
-* :issue:`653`  Docs: clarified notes to get link to Orthanc lua file correct on release
+* :issue:`653`  Docs: clarified notes to get link to Orthanc Lua file correct on release
 * :issue:`652`  Documentation: added docs showing Celery daemonisation in Linux
 * :issue:`651`  Documentation: added one-page full setup Ubuntu 18.04 install instructions
 * :issue:`650`  Documentation: modified quick install virtualenv docs

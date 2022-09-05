@@ -1,0 +1,14 @@
+[Unit]
+Description=Gunicorn server for OpenREM
+
+[Service]
+Restart=on-failure
+User=www-data
+WorkingDirectory=/var/dose/veopenrem3/lib/python3.10/site-packages/openrem
+
+ExecStart=/var/dose/veopenrem3/bin/gunicorn \
+    --bind unix:/tmp/openrem-server.socket \
+    openremproject.wsgi:application --timeout 300
+
+[Install]
+WantedBy=multi-user.target

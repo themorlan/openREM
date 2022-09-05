@@ -22,6 +22,9 @@ first.
 
 If you are installing OpenREM on a Linux server with limited internet access, go to the :doc:`install_offline` docs.
 
+If you are installing on a different Linux OS you can adapt these instructions or consider using a
+:doc:`install_docker` instead.
+
 Initial prep
 ^^^^^^^^^^^^
 
@@ -41,7 +44,8 @@ Look for::
     deb http://archive.ubuntu.com/ubuntu/ jammy universe
     deb http://archive.ubuntu.com/ubuntu/ jammy-updates universe
 
-If these two lines are not there, add them in (``sudo nano /etc/apt/sources.list``).
+If these two lines are not there or are commented out (line starts with a ``#``), add them in or remove the ``#``
+(``sudo nano /etc/apt/sources.list``).
 
 .. code-block:: console
 
@@ -77,8 +81,9 @@ Add orthanc and www-data users to openrem group:
 
 **Folders**
 
-Create the folders we need, and set the permissions. The 'sticky' group setting below will enable both
-``orthanc`` user and ``www-data`` user to write to the logs etc:
+Create the folders we need, and set the permissions. The 'sticky' group setting and the access control list
+setting (``setfacl``) below will enable both ``orthanc`` user and ``www-data`` user as well as you and your colleagues
+to write to the logs and access the 'Physics' images etc:
 
 .. code-block:: console
 
@@ -108,9 +113,19 @@ Create the folders we need, and set the permissions. The 'sticky' group setting 
 
     $ sudo chmod -R g+s /var/dose/*
 
+Find the ``uid`` of your user and the ``gid`` of the ``openrem`` group:
+
 .. code-block:: console
 
-    $ sudo setfacl -R -dm u::rwx,g::rwx,o::r /var/dose/
+    $ id
+    $ getent group openrem
+
+Take note of the ``uid`` number and the ``gid`` in the third field of the group information and use it in the next
+command, replacing ``1001`` (user ``uid``) and ``1002`` (``openrem`` group ``gid``) as appropriate:
+
+.. code-block:: console
+
+    $ sudo setfacl -PRdm u:1001:rwx,g:1002:rwx,o::r /var/dose/
 
 
 Pixelmed download
@@ -166,7 +181,7 @@ Setup PostgreSQL database
 -------------------------
 
 Create a postgres user, and create the database. You will be asked to enter a new password (twice). This will be needed
-when configuring OpenREM:
+when configuring the ``local_settings.py`` file later:
 
 .. code-block:: console
 
@@ -176,9 +191,9 @@ when configuring OpenREM:
 
     $ sudo -u postgres createdb -T template1 -O openremuser -E 'UTF8' openremdb
 
-.. note::
+.. admonition:: For upgrades use a different template
 
-    If you are upgrading to a new Linux server, use ``template0`` instead:
+    If this is an upgrade to a new Linux server and not a new install, use ``template0`` instead:
 
     .. code-block:: console
 
@@ -208,32 +223,31 @@ Reload postgres:
 Configure OpenREM
 -----------------
 
-.. note::
-
-    If you are upgrading to a new Linux server, you can either use the ``local_settings.py`` file you copied across and
-    update it as follows, or use a new version as described for a new install below.
-
-    * Remove the first line ``LOCAL_SETTINGS = True``
-    * Change second line to ``from .settings import *``
-    * Compare file to `local_settings.py.example` to see if there are other sections that should be updated
-
-First navigate to the Python openrem folder and copy the example local_settings and wsgi files to remove the
-``.example`` suffixes:
+Navigate to the Python openrem folder and copy the example ``local_settings.py`` and ``wsgi.py`` files to remove the
+``.linux`` and ``.example`` suffixes:
 
 .. code-block:: console
 
     $ cd /var/dose/veopenrem3/lib/python3.10/site-packages/openrem/
-    $ cp openremproject/local_settings.py{.example,}
+    $ cp openremproject/local_settings.py{.linux,}
     $ cp openremproject/wsgi.py{.example,}
 
-Edit the new local_settings file
+Edit ``local_settings.py`` as needed - make sure you change the ``PASSWORD``, the ``SECRET_KEY`` (to anything, just
+change it), the ``ALLOWED_HOSTS`` list, regionalisation settings and the ``EMAIL`` configuration. You can modify the
+email settings later if necessary.
+
+.. admonition:: Upgrading to a new server
+
+    If you are upgrading to a new Linux server, review the ``local_settings.py`` file from the old server to copy over
+    the ``NAME``, ``USER`` and ``PASSWORD``, ``ALLOWED_HOSTS`` list and the ``EMAIL`` configuration, and check all the
+    other settings. Change the ``SECRET_KEY`` from the default, but it doesn't have to match the one on the old server.
 
 .. code-block:: console
 
     $ nano openremproject/local_settings.py
 
 .. code-block:: python
-    :emphasize-lines: 3,6,12,14,25-27,30,36,50-56
+    :emphasize-lines: 4-6, 16-17,25-28,51,56,59,70-77
 
     DATABASES = {
         'default': {
@@ -251,6 +265,7 @@ Edit the new local_settings file
     STATIC_ROOT = '/var/dose/static/'
 
     # Change secret key
+    SECRET_KEY = 'hmj#)-$smzqk*=wuz9^a46rex30^$_j$rghp+1#y&amp;i+pys5b@$'
 
     # DEBUG mode: leave the hash in place for now, but remove it and the space (so DEBUG
     # is at the start of the line) as soon as something doesn't work. Put it back
@@ -280,6 +295,20 @@ Edit the new local_settings file
     LOGGING['handlers']['extractor_file']['maxBytes'] = 10 * 1024 * 1024  # 10*1024*1024 = 10 MB
     LOGGING['handlers']['extractor_file']['backupCount'] = 5  # number of log files to keep before deleting the oldest one
 
+    # Regionalisation settings
+    #   Date format for exporting data to Excel xlsx files.
+    #   Default in OpenREM is dd/mm/yyyy. Override it by uncommenting and customising below; a full list of codes is
+    #   available at https://msdn.microsoft.com/en-us/library/ee634398.aspx.
+    # XLSX_DATE = 'mm/dd/yyyy'
+    #   Local time zone for this installation. Choices can be found here:
+    #   http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
+    #   although not all choices may be available on all operating systems.
+    #   In a Windows environment this must be set to your system time zone.
+    TIME_ZONE = 'Europe/London'
+    #   Language code for this installation. All choices can be found here:
+    #   http://www.i18nguy.com/unicode/language-identifiers.html
+    LANGUAGE_CODE = 'en-us'
+
     DCMTK_PATH = '/usr/bin'
     DCMCONV = os.path.join(DCMTK_PATH, 'dcmconv')
     DCMMKDIR = os.path.join(DCMTK_PATH, 'dcmmkdir')
@@ -287,6 +316,16 @@ Edit the new local_settings file
     JAVA_OPTIONS = '-Xms256m -Xmx512m -Xss1m -cp'
     PIXELMED_JAR = '/var/dose/pixelmed/pixelmed.jar'
     PIXELMED_JAR_OPTIONS = '-Djava.awt.headless=true com.pixelmed.doseocr.OCR -'
+
+    # E-mail server settings - see https://docs.djangoproject.com/en/2.2/topics/email/
+    EMAIL_HOST = 'localhost'
+    EMAIL_PORT = 25
+    EMAIL_HOST_USER = ''
+    EMAIL_HOST_PASSWORD = ''
+    EMAIL_USE_TLS = 0         # Use 0 for False, 1 for True
+    EMAIL_USE_SSL = 0         # Use 0 for False, 1 for True
+    EMAIL_DOSE_ALERT_SENDER = 'your.alert@email.address'
+    EMAIL_OPENREM_URL = 'http://your.openrem.server'
 
 Now create the database. Make sure you are still in the openrem python folder and
 the virtualenv is active — prompt will look like
@@ -340,28 +379,33 @@ Webserver
 Configure NGINX and Gunicorn
 ----------------------------
 
-Create the OpenREM site config file
+Copy in the OpenREM site config file
 
 .. code-block:: console
 
-    $ sudo nano /etc/nginx/sites-available/openrem-server
+    $ cd /var/dose/veopenrem3/lib/python3.10/site-packages/openrem/
+    $ sudo cp sample-config/openrem-server /etc/nginx/sites-available/openrem-server
 
-.. code-block:: nginx
+.. note::
 
-    server {
-        listen 80;
-        server_name openrem-server;
+    Content of NGINX config file:
 
-        location /static {
-            alias /var/dose/static;
+    .. code-block:: nginx
+
+        server {
+            listen 80;
+            server_name openrem-server;
+
+            location /static {
+                alias /var/dose/static;
+            }
+
+            location / {
+                proxy_pass http://unix:/tmp/openrem-server.socket;
+                proxy_set_header Host $host;
+                proxy_read_timeout 300s;
+            }
         }
-
-        location / {
-            proxy_pass http://unix:/tmp/openrem-server.socket;
-            proxy_set_header Host $host;
-            proxy_read_timeout 300s;
-        }
-    }
 
 Remove the default config and make ours active:
 
@@ -373,28 +417,33 @@ Remove the default config and make ours active:
 
     $ sudo ln -s /etc/nginx/sites-available/openrem-server /etc/nginx/sites-enabled/openrem-server
 
-Create the Gunicorn systemd service file:
+Copy the Gunicorn systemd service file into place:
 
 .. code-block:: console
 
-    $ sudo nano /etc/systemd/system/openrem-gunicorn.service
+    $ cd /var/dose/veopenrem3/lib/python3.10/site-packages/openrem/
+    $ sudo cp sample-config/openrem-gunicorn.service /etc/systemd/system/openrem-gunicorn.service
 
-.. code-block:: bash
+.. note::
 
-    [Unit]
-    Description=Gunicorn server for OpenREM
+    Content of systemd file:
 
-    [Service]
-    Restart=on-failure
-    User=www-data
-    WorkingDirectory=/var/dose/veopenrem3/lib/python3.10/site-packages/openrem
+    .. code-block:: bash
 
-    ExecStart=/var/dose/veopenrem3/bin/gunicorn \
-        --bind unix:/tmp/openrem-server.socket \
-        openremproject.wsgi:application --timeout 300
+        [Unit]
+        Description=Gunicorn server for OpenREM
 
-    [Install]
-    WantedBy=multi-user.target
+        [Service]
+        Restart=on-failure
+        User=www-data
+        WorkingDirectory=/var/dose/veopenrem3/lib/python3.10/site-packages/openrem
+
+        ExecStart=/var/dose/veopenrem3/bin/gunicorn \
+            --bind unix:/tmp/openrem-server.socket \
+            openremproject.wsgi:application --timeout 300
+
+        [Install]
+        WantedBy=multi-user.target
 
 Load the new systemd configurations:
 
@@ -429,63 +478,76 @@ You can check that NGINX and Gunicorn are running with the following two command
 
     $ sudo systemctl status nginx.service
 
-
 DICOM Store SCP
 ^^^^^^^^^^^^^^^
 
-Open the following link in a new tab and copy the content (select all then Ctrl-c): |openrem_orthanc_conf_link|
+Copy the Lua file to the Orthanc folder. This will control how we process the incoming DICOM objects.
 
-Create the lua file to control how we process the incoming DICOM objects and paste the content in (Shift-Ctrl-v if
-working directly in the Ubuntu terminal, something else if you are using PuTTY etc):
+.. code-block:: console
+
+    $ cd /var/dose/veopenrem3/lib/python3.10/site-packages/openrem/
+    $ cp sample-config/openrem_orthanc_config.lua.linux /var/dose/orthanc/openrem_orthanc_config.lua
+
+Edit the Orthanc Lua configuration options:
 
 .. code-block:: console
 
     $ nano /var/dose/orthanc/openrem_orthanc_config.lua
 
-Then edit the top section as follows -- keeping Physics test images has been configured, set to false to change this.
-There are other settings too that you might like to change in the second section (not displayed here):
+Set ``use_physics_filtering`` to true if you want Orthanc to keep physics test studies, and have it put them in the
+``/var/dose/orthanc/physics/`` folder. Set it to ``false`` to disable this feature. Add names or IDs to
+``physics_to_keep`` as a comma separated list.
 
 .. code-block:: lua
-
-    -------------------------------------------------------------------------------------
-    -- OpenREM python environment and other settings
-
-    -- Set this to the path and name of the python executable used by OpenREM
-    local python_executable = '/var/dose/veopenrem3/bin/python'
-
-    -- Set this to the path of the python scripts folder used by OpenREM
-    local python_scripts_path = '/var/dose/veopenrem3/bin/'
-
-    -- Set this to the path where you want Orthanc to temporarily store DICOM files
-    local temp_path = '/var/dose/orthanc/dicom/'
-
-    -- Set this to 'mkdir' on Windows, or 'mkdir -p' on Linux
-    local mkdir_cmd = 'mkdir -p'
-
-    -- Set this to '\\'' on Windows, or '/' on Linux
-    local dir_sep = '/'
+    :emphasize-lines: 3,7
 
     -- Set this to true if you want Orthanc to keep physics test studies, and have it
     -- put them in the physics_to_keep_folder. Set it to false to disable this feature
     local use_physics_filtering = true
 
-    -- Set this to the path where you want to keep physics-related DICOM images
-    local physics_to_keep_folder = '/var/dose/orthanc/physics/'
+    -- A list to check against patient name and ID to see if the images should be kept.
+    -- Orthanc will put anything that matches this in the physics_to_keep_folder.
+    local physics_to_keep = {'physics'}
 
-    -- Set this to the path and name of your zip utility, and include any switches that
-    -- are needed to create an archive (used with physics-related images)
-    local zip_executable = '/usr/bin/zip -r'
+Lists of things to ignore. Orthanc will ignore anything matching the content of these comma separated lists; they will
+not be imported into OpenREM.
 
-    -- Set this to the path and name of your remove folder command, including switches
-    -- for it to be quiet (used with physics-related images)
-    local rmdir_cmd = 'rm -r'
-    -------------------------------------------------------------------------------------
+.. code-block:: lua
+    :emphasize-lines: 3-7
 
-Add the Lua script to the Orthanc config:
+    -- Lists of things to ignore. Orthanc will ignore anything matching the content of
+    -- these lists: they will not be imported into OpenREM.
+    local manufacturers_to_ignore = {'Faxitron X-Ray LLC', 'Gendex-KaVo'}
+    local model_names_to_ignore = {'CR 85', 'CR 75', 'CR 35', 'CR 25', 'ADC_5146', 'CR975'}
+    local station_names_to_ignore = {'CR85 Main', 'CR75 Main'}
+    local software_versions_to_ignore = {'VixWin Platinum v3.3'}
+    local device_serial_numbers_to_ignore = {'SCB1312016'}
+
+Enable or disable additional functionality to extract dose information from older Toshiba and GE scanners, and specify
+which CT scanners should use this method. Each system should be listed as ``{'Manufacturer', 'Model name'}``, with
+systems in a comma separated list within curly brackets, as per the example below:
+
+.. code-block:: lua
+    :emphasize-lines: 3,7-10
+
+    -- Set this to true if you want to use the OpenREM Toshiba CT extractor. Set it to
+    -- false to disable this feature.
+    local use_toshiba_ct_extractor = true
+
+    -- A list of CT make and model pairs that are known to have worked with the Toshiba CT extractor.
+    -- You can add to this list, but you will need to verify that the dose data created matches what you expect.
+    local toshiba_extractor_systems = {
+            {'Toshiba', 'Aquilion'},
+            {'GE Medical Systems', 'Discovery STE'},
+    }
+
+Edit the Orthanc configuration:
 
 .. code-block:: console
 
     $ sudo nano /etc/orthanc/orthanc.json
+
+Add the Lua script to the Orthanc config:
 
 .. code-block:: json-object
     :emphasize-lines: 4
@@ -495,20 +557,6 @@ Add the Lua script to the Orthanc config:
     "LuaScripts" : [
     "/var/dose/orthanc/openrem_orthanc_config.lua"
     ],
-
-Optionally, you may also like to enable the HTTP server interface for Orthanc (although if the Lua script is removing
-all the objects as soon as they are processed, you won't see much!):
-
-.. code-block:: json-object
-
-    // Whether remote hosts can connect to the HTTP server
-    "RemoteAccessAllowed" : true,
-
-    // Whether or not the password protection is enabled
-    "AuthenticationEnabled" : false,
-
-To see the Orthanc web interface, go to http://openremserver:8042/ -- of course change the server name to that of your
-server!
 
 Set the AE Title and port:
 
@@ -520,6 +568,22 @@ Set the AE Title and port:
 
     // The DICOM port
     "DicomPort" : 104,
+
+.. note::
+
+    Optionally, you may also like to enable the HTTP server interface for Orthanc (although if the Lua script is removing
+    all the objects as soon as they are processed, you won't see much!):
+
+    .. code-block:: json-object
+
+        // Whether remote hosts can connect to the HTTP server
+        "RemoteAccessAllowed" : true,
+
+        // Whether or not the password protection is enabled
+        "AuthenticationEnabled" : false,
+
+    To see the Orthanc web interface, go to http://openremserver:8042/ -- of course change the server name to that of your
+    server!
 
 Allow Orthanc to use DICOM port
 -------------------------------
@@ -540,6 +604,8 @@ Restart Orthanc:
 .. code-block:: console
 
     $ sudo systemctl restart orthanc.service
+
+.. _add_linux_user:
 
 New users, and quick access to physics folder
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
