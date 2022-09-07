@@ -95,11 +95,34 @@ and start the ``Retrieve`` in the  :ref:`qrquerysummary`.
 Query-retrieve using the command line interface
 ***********************************************
 
+**Docker**
+
 In a command window/shell, navigate to the folder containing ``docker-compose.yml`` etc.
 
 .. sourcecode:: console
 
     $ docker-compose exec openrem openrem_qr.py -h
+
+**Linux**
+
+Activate the virtualenv - assuming default Ubuntu install:
+
+.. code-block:: console
+
+    $ . /var/dose/veopenrem3/bin/activate
+    $ openrem_qr.py -h
+
+**Windows**
+
+Activate the virtualenv - docs to be written:
+
+.. code-block:: console
+
+    > C:\OpenREM\veopenrem\Scripts\activate.bat
+    > C:\OpenREM\veopenrem\Scripts\openrem_qr.py -h
+
+.. sourcecode:: console
+
     usage: openrem_qr.py [-h] [-ct] [-mg] [-fl] [-dx]
                          [-f yyyy-mm-dd] [-t yyyy-mm-dd] [-sd yyyy-mm-dd]
                          [-tf hhmm] [-tt hhmm]
