@@ -97,7 +97,7 @@ Query-retrieve using the command line interface
 
 .. admonition:: Running the command in different environments
 
-    **Docker** In a command window/shell, navigate to the folder containing ``docker-compose.yml`` etc. Then preceed
+    **Docker** In a command window/shell, navigate to the folder containing ``docker-compose.yml`` etc. Then precede
     the command with ``docker-compose exec openrem``:
 
     .. sourcecode:: console
@@ -238,9 +238,8 @@ database ID 1:
 
 .. sourcecode:: bash
 
+    $ # Using Docker on Linux
     $ docker-compose exec openrem openrem_qr.py 2 1 -ct -sd 2018-03-19 -tf 1200 -tt 1500
-
-
 
 *********************
 Query filtering logic
