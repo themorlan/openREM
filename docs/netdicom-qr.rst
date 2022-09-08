@@ -95,31 +95,28 @@ and start the ``Retrieve`` in the  :ref:`qrquerysummary`.
 Query-retrieve using the command line interface
 ***********************************************
 
-**Docker**
+.. admonition:: Running the command in different environments
 
-In a command window/shell, navigate to the folder containing ``docker-compose.yml`` etc.
+    **Docker** In a command window/shell, navigate to the folder containing ``docker-compose.yml`` etc. Then preceed
+    the command with ``docker-compose exec openrem``:
 
-.. sourcecode:: console
+    .. sourcecode:: console
 
-    $ docker-compose exec openrem openrem_qr.py -h
+        $ docker-compose exec openrem openrem_qr.py -h
 
-**Linux**
+    **Linux** Activate the virtualenv - assuming default Ubuntu install:
 
-Activate the virtualenv - assuming default Ubuntu install:
+    .. code-block:: console
 
-.. code-block:: console
+        $ . /var/dose/veopenrem3/bin/activate
+        $ openrem_qr.py -h
 
-    $ . /var/dose/veopenrem3/bin/activate
-    $ openrem_qr.py -h
+    **Windows** Activate the virtualenv - **docs to be written** - and command might need the full path?:
 
-**Windows**
+    .. code-block:: console
 
-Activate the virtualenv - docs to be written:
-
-.. code-block:: console
-
-    > C:\OpenREM\veopenrem\Scripts\activate.bat
-    > C:\OpenREM\veopenrem\Scripts\openrem_qr.py -h
+        > C:\OpenREM\veopenrem3\Scripts\activate.bat
+        > C:\OpenREM\veopenrem3\Scripts\openrem_qr.py -h
 
 .. sourcecode:: console
 
@@ -168,11 +165,8 @@ Activate the virtualenv - docs to be written:
       -dup                  Advanced: Retrieve duplicates (objects that have been processed before)
       -emptysr              Advanced: Get SR series that return nothing at image level query
 
-If you are not using docker, you will need to activate your virtual environment and use the same command from
-``openrem_qr.py`` onward.
-
 As an example, if you wanted to query the PACS for DX images on the 5th and 6th April 2010 with any study descriptions
-including ``imported`` excluded, first you need to know the database IDs of the remote node and the local node you want
+containing ``imported`` excluded, first you need to know the database IDs of the remote node and the local node you want
 the images sent to. To find these, go to the :doc:`netdicom-nodes` page where the database ID is listed among the other
 details for each node.
 
@@ -182,7 +176,8 @@ Assuming the PACS database ID is 2, and the store node ID is 1, the command woul
 
     $ docker-compose exec openrem openrem_qr.py 2 1 -dx -f 2010-04-05 -t 2010-04-06 -e "imported"
 
-If you want to do this regularly to catch new studies, you might like to use a script something like this on linux:
+If you want to do this regularly to catch new studies, you might like to use a script something like this on Linux -
+make sure you comment out or delete one of the options, and amend as necessary!
 
 .. sourcecode:: bash
 
@@ -190,8 +185,10 @@ If you want to do this regularly to catch new studies, you might like to use a s
 
     ONEHOURAGO=$(date -d "1 hour ago" "+%Y-%m-%d")
 
+    # Docker on Linux
     /usr/local/bin/docker-compose -f /path/to/docker-compose.yml exec -T openrem openrem_qr.py 2 1 -dx -f $ONEHOURAGO -t $ONEHOURAGO  -e "Imported"
-
+    # Linux
+    /var/dose/veopenrem3/bin/python /var/dose/veopenrem3/bin/openrem_qr.py 2 1 -dx -f $ONEHOURAGO -t $ONEHOURAGO  -e "Imported"
 
 This script could be run once an hour using a cron job. By asking for the date an hour ago, you shouldn't miss exams
 taking place in the last hour of the day. As the script won't run from the folder containing ``docker-compose.yml``
@@ -211,7 +208,10 @@ example PowerShell script is shown below:
 
     # Run the openrem_qr.py script with yesterday's date as the to and from date
 
+    # Docker on Windows
     docker-compose -f C:\Path\To\docker-compose.yml exec -T openrem openrem_qr.py 2 1 -ct -f $dateString -t $dateString
+    # Windows
+    C:\OpenREM\veopenrem3\Scripts\python.exe C:\OpenREM\veopenrem3\Scripts\openrem_qr.py 2 1 -dx -f $ONEHOURAGO -t $ONEHOURAGO  -e "Imported"
 
 The above PowerShell script could be run on a regular basis by adding a task to the Windows ``Task Scheduler`` that
 executes the ``powershell`` program with an argument of ``-file C:\path\to\script.ps1``.
