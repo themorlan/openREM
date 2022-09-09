@@ -120,8 +120,12 @@ Query-retrieve using the command line interface
 
 .. sourcecode:: console
 
-    usage: openrem_qr.py [-h] [-ct] [-mg] [-fl] [-dx] [-nm] [-f yyyy-mm-dd] [-t yyyy-mm-dd] [-sd yyyy-mm-dd] [-tf hhmm] [-tt hhmm] [-e string] [-i string] [-sne string] [-sni string]
-                         [--stationname_study_level] [-toshiba] [-sr] [-dup] [-emptysr]
+    usage: openrem_qr.py [-h] [-ct] [-mg] [-fl] [-dx] [-nm]
+                         [-f yyyy-mm-dd] [-t yyyy-mm-dd] [-sd yyyy-mm-dd]
+                         [-tf hhmm] [-tt hhmm]
+                         [-e string] [-i string]
+                         [-sne string] [-sni string] [--stationname_study_level]
+                         [-toshiba] [-sr] [-dup] [-emptysr]
                          qr_id store_id
 
     Query remote server and retrieve to OpenREM
