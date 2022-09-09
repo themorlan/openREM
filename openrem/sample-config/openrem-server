@@ -1,0 +1,14 @@
+server {
+    listen 80;
+    server_name openrem-server;
+
+    location /static {
+        alias /var/dose/static;
+    }
+
+    location / {
+        proxy_pass http://unix:/tmp/openrem-server.socket;
+        proxy_set_header Host $host;
+        proxy_read_timeout 300s;
+    }
+}

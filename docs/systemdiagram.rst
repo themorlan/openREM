@@ -89,10 +89,9 @@ Alternatively, a built-in web server is included that will suffice for testing p
 
 2: DICOM Store node
 ^^^^^^^^^^^^^^^^^^^
-Any DICOM Store can be used, as long as it can be used to call the OpenREM import script. A built-in store is
-available, but not recommended for production use. See :doc:`netdicom-nodes` for more details. Orthanc or
-Conquest are the recommended DICOM Store services to use; see :ref:`installdicomstore` for installation notes
-and the :ref:`configure_third_party_DICOM` section for configuration help.
+Any DICOM Store can be used, as long as it can be used to call the OpenREM import script. See :doc:`netdicom-nodes` for
+more details. Orthanc or Conquest are the recommended DICOM Store services to use; see :ref:`installdicomstore` for
+installation notes and the :ref:`configure_third_party_DICOM` section for configuration help.
 
 3: Database
 ^^^^^^^^^^^

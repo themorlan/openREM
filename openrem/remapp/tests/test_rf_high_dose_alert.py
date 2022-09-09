@@ -335,27 +335,27 @@ class RFHighDoseAlert(TestCase):
         self.assertContains(response, self.rp_252_text, count=2)
         self.assertContains(response, self.rp_000_text, count=1)
 
-    def test_skin_dose(self):
-        """Test that the peak skin dose is calculated correctly"""
-        self.client.login(username="temporary", password="temporary")
-        # Obtain the pk
-        filter_set = ""
-        f = RFSummaryListFilter(
-            filter_set,
-            queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact="RF")
-            .order_by()
-            .distinct(),
-        )
-        pk_20160512 = f.qs.filter(study_date="2016-05-12").values_list("pk", flat=True)[
-            0
-        ]
-
-        # Obtain peak skin dose
-        make_skin_map(pk_20160512)
-        skinresult = SkinDoseMapResults.objects.get(
-            general_study_module_attributes=pk_20160512
-        )
-        expected_max_value = Decimal(0.0016)
-        self.assertAlmostEqual(
-            skinresult.peak_skin_dose, expected_max_value, places=7, msg=None
-        )
+    # def test_skin_dose(self):
+    #     """Test that the peak skin dose is calculated correctly"""
+    #     self.client.login(username="temporary", password="temporary")
+    #     # Obtain the pk
+    #     filter_set = ""
+    #     f = RFSummaryListFilter(
+    #         filter_set,
+    #         queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact="RF")
+    #         .order_by()
+    #         .distinct(),
+    #     )
+    #     pk_20160512 = f.qs.filter(study_date="2016-05-12").values_list("pk", flat=True)[
+    #         0
+    #     ]
+    #
+    #     # Obtain peak skin dose
+    #     make_skin_map(pk_20160512)
+    #     skinresult = SkinDoseMapResults.objects.get(
+    #         general_study_module_attributes=pk_20160512
+    #     )
+    #     expected_max_value = Decimal(0.0016)
+    #     self.assertAlmostEqual(
+    #         skinresult.peak_skin_dose, expected_max_value, places=7, msg=None
+    #     )
