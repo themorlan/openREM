@@ -97,21 +97,21 @@ Query-retrieve using the command line interface
 
 .. admonition:: Running the command in different environments
 
-    **Docker** In a command window/shell, navigate to the folder containing ``docker-compose.yml`` etc. Then precede
+    **Docker:** In a command window/shell, navigate to the folder containing ``docker-compose.yml`` etc. Then precede
     the command with ``docker-compose exec openrem``:
 
     .. sourcecode:: console
 
         $ docker-compose exec openrem openrem_qr.py -h
 
-    **Linux** Activate the virtualenv - assuming default Ubuntu install:
+    **Linux:** Activate the virtualenv - assuming default Ubuntu install:
 
     .. code-block:: console
 
         $ . /var/dose/veopenrem3/bin/activate
         $ openrem_qr.py -h
 
-    **Windows** Activate the virtualenv - **docs to be written** - and command might need the full path?:
+    **Windows:** Activate the virtualenv - **docs to be written** - and command might need the full path?:
 
     .. code-block:: console
 
@@ -120,12 +120,8 @@ Query-retrieve using the command line interface
 
 .. sourcecode:: console
 
-    usage: openrem_qr.py [-h] [-ct] [-mg] [-fl] [-dx]
-                         [-f yyyy-mm-dd] [-t yyyy-mm-dd] [-sd yyyy-mm-dd]
-                         [-tf hhmm] [-tt hhmm]
-                         [-e string] [-i string]
-                         [-sne string] [-sni string] [--stationname_study_level]
-                         [-toshiba] [-sr] [-dup] [-emptysr]
+    usage: openrem_qr.py [-h] [-ct] [-mg] [-fl] [-dx] [-nm] [-f yyyy-mm-dd] [-t yyyy-mm-dd] [-sd yyyy-mm-dd] [-tf hhmm] [-tt hhmm] [-e string] [-i string] [-sne string] [-sni string]
+                         [--stationname_study_level] [-toshiba] [-sr] [-dup] [-emptysr]
                          qr_id store_id
 
     Query remote server and retrieve to OpenREM
@@ -134,12 +130,13 @@ Query-retrieve using the command line interface
       qr_id                 Database ID of the remote QR node
       store_id              Database ID of the local store node
 
-    optional arguments:
+    options:
       -h, --help            show this help message and exit
       -ct                   Query for CT studies. Cannot be used with -sr
       -mg                   Query for mammography studies. Cannot be used with -sr
       -fl                   Query for fluoroscopy studies. Cannot be used with -sr
       -dx                   Query for planar X-ray studies (includes panoramic X-ray studies). Cannot be used with -sr
+      -nm                   Query for nuclear medicine studies. Cannot be used with -sr
       -f yyyy-mm-dd, --dfrom yyyy-mm-dd
                             Date from, format yyyy-mm-dd. Cannot be used with --single_date
       -t yyyy-mm-dd, --duntil yyyy-mm-dd

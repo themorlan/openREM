@@ -42,6 +42,7 @@ OpenREM version history
 * :issue:`880`  Orthanc: added XA and RF to allowed modalities to enable physics QA images to be kept
 * :issue:`879`  Charts: fixed sorting of fluoroscopy charts when split by physician
 * :issue:`877`  Charts: added acquisition type restrictions to acquisition-level CT charts
+* :issue:`874`  Documentation: updating DICOM query-retrieve documentation
 * :issue:`872`  Charts: added ability to split fluoroscopy over-time and histogram charts by physician
 * :issue:`871`  Charts: corrected RF chart x-axis labels
 * :issue:`870`  Charts: reduced memory footprint of Pandas DataFrame creation
