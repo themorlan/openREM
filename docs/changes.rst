@@ -16,6 +16,7 @@ OpenREM version history
 * :issue:`931`  Exports: export RF DAP as float instead of text
 * :issue:`928`  Documentation: added restriction in postgres version for earlier OpenREM releases
 * :issue:`925`  Docker: docs and config file for enabling bind mounts with SELinux
+* :issue:`923`  Docker: docs and config for virtual directory install
 * :issue:`922`  Database: optimise indexes and duplicate queries
 * :issue:`919`  Interface: fixed bug preventing home page listing if study had no date
 * :issue:`917`  Interface: added horizontal lines between chart option groups and shaded chart option CheckboxSelectMultiple items
