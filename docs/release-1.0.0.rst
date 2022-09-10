@@ -75,8 +75,6 @@ is in:
 * Windows: ``C:\Python27\Lib\site-packages\openrem\openremproject\local_settings.py``
 * Windows virtualenv: ``virtualenvfolder\Lib\site-packages\openrem\openremproject\local_settings.py``
 
-.. _release1-0upgrade:
-
 Export the database
 ===================
 

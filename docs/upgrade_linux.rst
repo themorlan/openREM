@@ -15,6 +15,15 @@ used, substitute 3.10 for that version where necessary below.
 
 If you are upgrading OpenREM on a Linux server with limited internet access, go to the :doc:`install_offline` docs.
 
+* **Upgrades from 0.9.1 or earlier should review** :doc:`upgrade_previous_0.10.0`. -- needs changing
+
+..  toctree::
+    :maxdepth: 1
+
+    upgrade_previous_0.10.0
+
+.. _post_upgrade0100_linux:
+
 Preparation
 ===========
 
