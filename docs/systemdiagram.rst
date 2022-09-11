@@ -79,19 +79,20 @@ Alternatives
 
 1: Web servers
 ^^^^^^^^^^^^^^
-The recommended web server for Windows is Microsoft IIS - see :doc:`iis_on_windows` for details. This
+The recommended web server for Windows is Microsoft IIS - see *to be written* docs for details. This
 has replaced the recommendation to use Apache due to difficulties in obtaining the
 required binary files, as described in the :ref:`webservers` section of the installation document.
 
-The recommended web server for Linux is Gunicorn with NGINX - see :doc:`nginx_on_linux` for details.
+The recommended web server for Linux is Gunicorn with NGINX - see :ref:`Install Linux webserver` for details.
 
 Alternatively, a built-in web server is included that will suffice for testing purposes and getting started.
 
 2: DICOM Store node
 ^^^^^^^^^^^^^^^^^^^
 Any DICOM Store can be used, as long as it can be used to call the OpenREM import script. See :doc:`netdicom-nodes` for
-more details. Orthanc or Conquest are the recommended DICOM Store services to use; see :ref:`installdicomstore` for
-installation notes and the :ref:`configure_third_party_DICOM` section for configuration help.
+more details. Orthanc is the recommended DICOM Store services to use; it is installed by default in Docker, see
+:ref:`dicom_store_scp_linux` for Linux installation, *to be written* for Windows installation, and the
+:ref:`configure_third_party_DICOM` section for configuration help.
 
 3: Database
 ^^^^^^^^^^^
