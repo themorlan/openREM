@@ -478,6 +478,8 @@ You can check that NGINX and Gunicorn are running with the following two command
 
     $ sudo systemctl status nginx.service
 
+.. _dicom_store_scp_linux:
+
 DICOM Store SCP
 ^^^^^^^^^^^^^^^
 

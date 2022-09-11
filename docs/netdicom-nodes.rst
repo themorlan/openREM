@@ -30,8 +30,6 @@ To configure a DICOM Store SCP, on the ``Config`` menu select ``DICOM networking
 Third-party DICOM store node for scripted import to OpenREM
 ===========================================================
 
-See :doc:`conquestUbuntu` and :doc:`conquestAsWindowsService` for more information about using Conquest with OpenREM
-
 *******************************
 Status of DICOM Store SCP nodes
 *******************************
