@@ -281,4 +281,4 @@ Post upgrade migration
 ======================
 
 * Now return to the 0.10.0 release docs for Docker installs - :ref:`post_upgrade0100_docker`, for Linux installs -
-:ref:`post_upgrade0100_linux` or for Windows installs - *to be created*
+  :ref:`post_upgrade0100_linux` or for Windows installs - *to be created*
