@@ -30,18 +30,16 @@ these situations, you will need to run a DICOM Store service on your OpenREM ser
 
 ..  _configure_third_party_DICOM:
 
-Third-party DICOM Stores
-------------------------
+DICOM Store
+-----------
 
-The Orthanc DICOM server is recommended; Conquest or another store can be used instead:
+The Orthanc DICOM server is recommended; another store can be used instead but documentation is not provided. Docker
+installs have the Orthanc server build-in. For non-Docker installs, instructions are included in the main installation
+documentation:
 
-..  toctree::
-    :maxdepth: 2
+* Linux: :ref:`dicom_store_scp_linux`
+* Windows: *to be written*
 
-    netdicom-orthanc-config
-    netdicom-store
-
-You ony need one of these - if you already have one installed it is probably easiest to stick to it.
 
 Query-retrieve from a PACS or similar
 =====================================
