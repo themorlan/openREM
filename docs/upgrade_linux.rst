@@ -92,7 +92,7 @@ command, replacing ``1001`` (user ``uid``) and ``1002`` (``openrem`` group ``gid
     These settings enable the web server user ``www-data``, the DICOM server user ``orthanc`` and the OpenREM server
     users (you and your colleagues) to all read, write and execute the OpenREM files. The ``setfacl`` command
     relies on Access Control Lists being available on your system - they are usually enabled on ext4 and can be
-    enabled on others. See :ref:`add_linx_user` for adding colleagues access to the Linux folders.
+    enabled on others. See :ref:`add_linux_user` for adding colleagues access to the Linux folders.
 
 Create a new Python virtual environment:
 
