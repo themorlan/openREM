@@ -45,3 +45,6 @@ Get the database and translations ready:
     $ docker-compose exec openrem python manage.py createsuperuser
 
 Open a web browser and go to http://localhost/
+
+If you want to run the OpenREM in a virtual directory (like http://server/dms/) there is further configuration to be
+done - go to :doc:`virtual_directory`.

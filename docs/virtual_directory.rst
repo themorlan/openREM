@@ -27,8 +27,9 @@ Configure virtual directory settings in .env.prod
 
 Django needs to know the virtual directory name and which URLs the static and media files are served from.
 
-Edit ``.env.prod``, uncomment the following lines (remove the ``#``) and set them as appropriate. For example, to serve
-the website from a subfolder/virtual directory named ``dms``:
+Edit ``.env.prod``, uncomment the following lines (remove the ``#``) and set them as appropriate. The
+``VIRTUAL_DIRECTORY`` setting must have a trailing ``/``. For example, to serve the website from a subfolder/virtual
+directory named ``dms``:
 
 .. code-block:: none
 
@@ -99,7 +100,7 @@ of the file just add them in:
 
 .. code-block:: console
 
-    $ cd /var/dose/veopenrem3/lib/python3.8/site-packages/openrem/
+    $ cd /var/dose/veopenrem3/lib/python3.10/site-packages/openrem/
     $ nano openremproject/local_settings.py
 
 .. code-block:: python
