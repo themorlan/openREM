@@ -18,7 +18,7 @@ If not you will need to adapt the instructions as necessary.
 
     upgrade_previous_0.10.0
 
-.. _post_upgrade0100:
+.. _post_upgrade0100_docker:
 
 ******************************************
 Upgrade process from a PostgresQL database
@@ -63,8 +63,6 @@ is in:
 * Linux virtualenv: ``vitualenvfolder/lib/python2.7/site-packages/openrem/openremproject/local_settings.py``
 * Windows: ``C:\Python27\Lib\site-packages\openrem\openremproject\local_settings.py``
 * Windows virtualenv: ``virtualenvfolder\Lib\site-packages\openrem\openremproject\local_settings.py``
-
-.. _release1-0upgrade:
 
 Export the database
 ===================
