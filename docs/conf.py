@@ -102,7 +102,7 @@ exclude_patterns = ["_build"]
 # -- Options for sphinx-copybutton ----------------------------------------
 
 copybutton_prompt_text = (
-    r">>> |\.\.\. |\$ |In \[\d*\]: | {2,5}\.\.\.: | {5,8}: | [A-Z]\:([^>]*) | PS [A-Z]:\\[^>]*> "
+    r">>> |\.\.\. |\$ |In \[\d*\]: | {2,5}\.\.\.: | {5,8}: |[A-Z]\:([^>]*)|PS [A-Z]:\\[^>]*> "
 )
 copybutton_prompt_is_regexp = True
 copybutton_line_continuation_character = "\\"
