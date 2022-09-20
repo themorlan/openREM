@@ -28,7 +28,25 @@ Initial prep
 Creating folders
 ^^^^^^^^^^^^^^^^
 
-.. admonition:: Why C:, D: and E: drives?
+.. figure:: img/FolderLayout.png
+   :figwidth: 20%
+   :align: right
+   :alt: Windows install folder layout
+   :target: _images/FolderLayout.png
+
+   Figure 1: Windows install folder layout
+
+Create the following folders. The instructions here are for a ``CMD`` window but they can be created in Windows Explorer
+instead:
+
+.. code-block:: console
+
+    C:\Users\openrem>D:
+    D:\>mkdir database
+    D:\>E:
+    E:\>mkdir log media pixelmed static venv orthanc\dicom orthanc\physics
+
+.. admonition:: Why D: and E: drives?
 
     These folders are created on drive E: to keep the data away from the operating system drive so that it is easier
     for building/recreating the server and knowing what needs to be backed up.
@@ -43,15 +61,6 @@ Creating folders
     You can also use different drive letters if that works better for your installation. In both cases paths will need
     to be modified in the instructions to suite.
 
-Create the following folders. The instructions here are for a ``CMD`` window but they can be created in Windows Explorer
-instead:
-
-.. code-block:: console
-
-    C:\WINDOWS\system32>cd D:
-    D:\>mkdir database
-    D:\>cd E:
-    E:\>mkdir log media pixelmed static venv orthanc\dicom orthanc\physics
 
 
 Installing packages
