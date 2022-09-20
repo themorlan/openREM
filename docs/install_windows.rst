@@ -40,15 +40,18 @@ Creating folders
     this case, it would be advisable to create a folder C:\OpenREM\ and create all the folders specified below into that
     folder.
 
+    You can also use different drive letters if that works better for your installation. In both cases paths will need
+    to be modified in the instructions to suite.
+
 Create the following folders. The instructions here are for a ``CMD`` window but they can be created in Windows Explorer
 instead:
 
 .. code-block:: console
 
-    C:\WINDOWS\system32>cd D:
-    D:\>mkdir database
-    D:\>cd E:
-    E:\>mkdir log media pixelmed static venv orthanc\dicom orthanc\physics
+    C:\WINDOWS\system32> cd D:
+    D:\> mkdir database
+    D:\> cd E:
+    E:\> mkdir log media pixelmed static venv orthanc\dicom orthanc\physics
 
 
 Installing packages
