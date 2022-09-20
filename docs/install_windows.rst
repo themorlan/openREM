@@ -48,10 +48,10 @@ instead:
 
 .. code-block:: console
 
-    C:\WINDOWS\system32> cd D:
-    D:\> mkdir database
-    D:\> cd E:
-    E:\> mkdir log media pixelmed static venv orthanc\dicom orthanc\physics
+    C:\WINDOWS\system32>cd D:
+    D:\>mkdir database
+    D:\>cd E:
+    E:\>mkdir log media pixelmed static venv orthanc\dicom orthanc\physics
 
 
 Installing packages
