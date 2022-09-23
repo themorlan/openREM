@@ -44,7 +44,7 @@ instead:
     C:\Users\openrem>D:
     D:\>mkdir database
     D:\>E:
-    E:\>mkdir log media pixelmed static venv orthanc\dicom orthanc\physics orthanc\storage
+    E:\>mkdir log media pixelmed dcmtk static venv orthanc\dicom orthanc\physics orthanc\storage
 
 .. admonition:: Why D: and E: drives?
 
@@ -140,8 +140,42 @@ Open the downloaded file to start the installation:
 Pixelmed and Java
 -----------------
 
+Download DoseUtility from http://www.dclunie.com/pixelmed/software/winexe/DoseUtilityWithOwnJRE.zip (from the page
+http://www.dclunie.com/pixelmed/software/webstart/DoseUtilityUsage.html
+
+* Open the downloaded the zip file and open a new file browser at ``E:\pixelmed``
+* Drag the contents of the zip file to the ``pixelmed`` folder
+
+dcmtk
+-----
+
+Download the 64 bit executable binary zip file from https://dcmtk.org/dcmtk.php.en
+
+* Open the downloaded zip file and open a new file browser at ``E:\dcmtk``
+* Drag the contents of the dcmtk-3.x.x-win64-dynamic folder in the zip file to the ``dcmtk`` folder
+* You should end up with ``E:\dcmtk\bin\`` etc
+
 IIS
 ---
+
+* Open the Control Panel
+* Search for ``windows features``
+* Select ``Turn Windows features on or off``
+* Start the wizard ``Next >``
+* Role-based or feature-based installation ``Next >``
+* Leave the current server highlighted ``Next >``
+* Check the ``Web Server (IIS)`` box
+* In the pop-up dialogue for adding IIS Management Console, click ``Add Features``
+* ``Next >``
+* Features, ``Next >``
+* Web Server Role (IIS) ``Next >``
+* Expand the ``Application Development`` section
+* Check the ``CGI`` box, ``Next >``
+* ``Install``
+* ``Close``
+
+You can check the server is running by browsing to http://localhost/ on the server. You should see the
+default IIS Welcome page.
 
 Installing Python packages
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -149,10 +183,22 @@ Installing Python packages
 Create the virtualenv
 ---------------------
 
+Open a ``CMD`` window:
+
+.. code-block:: console
+
+    C:\Users\openrem>e:
+    E:\>py -m venv venv
+
 Install OpenREM
 ---------------
 
-* Also install wfastcgi
+.. code-block:: console
+
+    E:\>venv\Scripts\activate
+    (venv) E:\>pip install --upgrade pip
+    (venv) E:\>pip install openrem
+    (venv) E:\>pip install wfastcgi
 
 OpenREM configuration and database creation
 ===========================================
