@@ -10,6 +10,7 @@ This install is based on Windows Server 2022 using:
 * Database: PostgreSQL
 * DICOM Store SCP: Orthanc running on port 104
 * Webserver: Microsoft IIS
+* Notepad++ for editing files
 * Database files stored on D:
 * OpenREM files stored on E:
 * With Physics (QA) images being collected and zipped for retrieval
@@ -143,7 +144,7 @@ Pixelmed and Java
 Download DoseUtility from http://www.dclunie.com/pixelmed/software/winexe/DoseUtilityWithOwnJRE.zip (from the page
 http://www.dclunie.com/pixelmed/software/webstart/DoseUtilityUsage.html
 
-* Open the downloaded the zip file and open a new file browser at ``E:\pixelmed``
+* Open the downloaded zip file and open a new file browser at ``E:\pixelmed``
 * Drag the contents of the zip file to the ``pixelmed`` folder
 
 dcmtk
@@ -177,6 +178,21 @@ IIS
 You can check the server is running by browsing to http://localhost/ on the server. You should see the
 default IIS Welcome page.
 
+Notepad++
+---------
+
+Download the latest version of Notepad++ from https://notepad-plus-plus.org/downloads/
+
+Open the downloaded file to start the installation:
+
+* Select a language ``OK``
+* Welcome ``Next >``
+* License Agreement ``I Agree``
+* Install Location ``Next >``
+* Choose Components ``Next >``
+* ``Install``
+* ``Finish`` (you can untick the ``Run Notepad++`` option, we don't need it yet)
+
 Installing Python packages
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -206,9 +222,37 @@ OpenREM configuration and database creation
 PostgreSQL database creation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+* Start  pgAdmin 4 - you will need the password you set when installing PostgreSQL
+* Click on ``Servers (1)`` to expand, enter the password again
+* Right click ``Login/Group Roles``, ``Create``, ``Login/Group Role...``
+* Name: ``openremuser``
+* Definition, Password: add a password for the openremuser
+* Privileges: activate ``Can login?`` and ``Create database?``
+* ``Save``
+
+* Right click ``Databases``, ``Create``, ``Database...``
+* Database: ``openremdb``
+* Owner: ``openremuser``
+* ``Save``
 
 OpenREM configuration
 ^^^^^^^^^^^^^^^^^^^^^
+
+Open the ``E:\venv\Lib\site-packages\openrem\openremproject`` folder and rename the example ``local_settings.py`` and
+``wsgi.py`` files to remove the ``.windows`` and ``.example`` suffixes. Removing the file name extension will produce a
+warning to check if you are sure - ``Yes``:
+
+.. figure:: img/openremproject_folder.png
+   :figwidth: 60%
+   :align: center
+   :alt: openremproject folder
+   :target: _images/openremproject_folder.png
+
+   Figure 2: openremproject folder
+
+Edit ``local_settings.py`` as needed (right click ``Edit with Notepad++``) Make sure you change the ``PASSWORD``, the
+``SECRET_KEY`` (to anything, just change it), the ``ALLOWED_HOSTS`` list, regionalisation settings and the ``EMAIL``
+configuration. You can modify the email settings later if necessary.
 
 
 Populate OpenREM database and collate static files
