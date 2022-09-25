@@ -235,8 +235,8 @@ PostgreSQL database creation
 * Owner: ``openremuser``
 * ``Save``
 
-OpenREM configuration
-^^^^^^^^^^^^^^^^^^^^^
+Configure OpenREM
+^^^^^^^^^^^^^^^^^
 
 Open the ``E:\venv\Lib\site-packages\openrem\openremproject`` folder and rename the example ``local_settings.py`` and
 ``wsgi.py`` files to remove the ``.windows`` and ``.example`` suffixes. Removing the file name extension will produce a
@@ -254,9 +254,170 @@ Edit ``local_settings.py`` as needed (right click ``Edit with Notepad++``) Make 
 ``SECRET_KEY`` (to anything, just change it), the ``ALLOWED_HOSTS`` list, regionalisation settings and the ``EMAIL``
 configuration. You can modify the email settings later if necessary.
 
+.. admonition:: Upgrading to a new server
+
+    If you are upgrading to a new Linux server, review the ``local_settings.py`` file from the old server to copy over
+    the ``NAME``, ``USER`` and ``PASSWORD``, ``ALLOWED_HOSTS`` list and the ``EMAIL`` configuration, and check all the
+    other settings. Change the ``SECRET_KEY`` from the default, but it doesn't have to match the one on the old server.
+
+.. code-block:: python
+    :emphasize-lines: 4-6, 16-17,25-28,51,56,59,70-77
+
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',  # Add 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
+            'NAME': 'openremdb',                     # Or path to database file if using sqlite3.
+            'USER': 'openremuser',                   # Not used with sqlite3.
+            'PASSWORD': '',                          # Not used with sqlite3.
+            'HOST': '',                              # Set to empty string for localhost. Not used with sqlite3.
+            'PORT': '',                              # Set to empty string for default. Not used with sqlite3.
+        }
+    }
+
+
+    # Absolute filesystem path to the directory that will hold xlsx and csv
+    # exports patient size import files
+    # Linux example: '/var/openrem/media/'
+    # Windows example: 'C:/Users/myusername/Documents/OpenREM/media/'
+    MEDIA_ROOT = 'E:/media/'
+
+    # Absolute path to the directory static files should be collected to.
+    # Don't put anything in this directory yourself; store your static files
+    # in apps' 'static/' subdirectories and in STATICFILES_DIRS.
+    # Example: '/home/media/media.lawrence.com/static/'
+    STATIC_ROOT = 'E:/static/'
+    JS_REVERSE_OUTPUT_PATH = os.path.join(STATIC_ROOT, 'js', 'django_reverse')
+
+    # You should generate a new secret key. Make this unique, and don't
+    # share it with anybody. See the docs.
+    SECRET_KEY = 'hmj#)-$smzqk*=wuz9^a46rex30^$_j$rghp+1#y&amp;i+pys5b@$'
+
+    # Debug mode is now set to False by default. If you need to troubleshoot, can turn it back on here:
+    # DEBUG = True
+
+    # Set the domain name that people will use to access your OpenREM server.
+    # This is required if the DEBUG mode is set to False (default)
+    # Example: '.doseserver.' or '10.23.123.123'. A dot before a name allows subdomains, a dot after allows for FQDN eg
+    # doseserver.ad.trust.nhs.uk. Alternatively, use '*' to remove this security feature if you handle it in other ways.
+    ALLOWED_HOSTS = [
+        '*',
+    ]
+
+    # If running OpenREM in a virtual directory specify the virtual directory here.
+    # Eg. if OpenREM is in a virtual directory dms (http://server/dms/), specify 'dms/' below.
+    # LOGIN_URL (always) should be overridden to include the VIRTUAL_DIRECTORY
+    VIRTUAL_DIRECTORY = ''
+
+    # Logging configuration
+    # Set the log file location. The example places the log file in the media directory. Change as required - on linux
+    # systems you might put these in a subdirectory of /var/log/. If you want all the logs in one file, set the filename
+    # to be the same for each one.
+    LOG_ROOT = 'E:/log/'
+    LOG_FILENAME = os.path.join(LOG_ROOT, 'openrem.log')
+    QR_FILENAME = os.path.join(LOG_ROOT, 'openrem_qr.log')
+    EXTRACTOR_FILENAME = os.path.join(LOG_ROOT, 'openrem_extractor.log')
+
+    LOGGING['handlers']['file']['filename'] = LOG_FILENAME          # General logs
+    LOGGING['handlers']['qr_file']['filename'] = QR_FILENAME        # Query Retrieve SCU logs
+    LOGGING['handlers']['extractor_file']['filename'] = EXTRACTOR_FILENAME  # Extractor logs
+
+    # Set log message format. Options are 'verbose' or 'simple'. Recommend leaving as 'verbose'.
+    LOGGING['handlers']['file']['formatter'] = 'verbose'        # General logs
+    LOGGING['handlers']['qr_file']['formatter'] = 'verbose'     # Query Retrieve SCU logs
+    LOGGING['handlers']['extractor_file']['formatter'] = 'verbose'  # Extractor logs
+
+    # Set the log level. Options are 'DEBUG', 'INFO', 'WARNING', 'ERROR', and 'CRITICAL', with progressively less logging.
+    LOGGING['loggers']['remapp']['level'] = 'INFO'                    # General logs
+    LOGGING['loggers']['remapp.netdicom.qrscu']['level'] = 'INFO'     # Query Retrieve SCU logs
+    LOGGING['loggers']['remapp.extractors']['level'] = 'INFO'  # Extractor logs
+
+    # Linux only for now: configure 'rotating' logs so they don't get too big. Remove the '# ' to uncomment. 'LOGGING'
+    # should be at the start of the line.
+    # LOGGING['handlers']['file']['class'] = 'logging.handlers.RotatingFileHandler'
+    # LOGGING['handlers']['file']['maxBytes'] = 10 * 1024 * 1024  # 10*1024*1024 = 10 MB
+    # LOGGING['handlers']['file']['backupCount'] = 5  # number of log files to keep before deleting the oldest one
+    # LOGGING['handlers']['qr_file']['class'] = 'logging.handlers.RotatingFileHandler'
+    # LOGGING['handlers']['qr_file']['maxBytes'] = 10 * 1024 * 1024  # 10*1024*1024 = 10 MB
+    # LOGGING['handlers']['qr_file']['backupCount'] = 5  # number of log files to keep before deleting the oldest one
+    # LOGGING['handlers']['extractor_file']['class'] = 'logging.handlers.RotatingFileHandler'
+    # LOGGING['handlers']['extractor_file']['maxBytes'] = 10 * 1024 * 1024  # 10*1024*1024 = 10 MB
+    # LOGGING['handlers']['extractor_file']['backupCount'] = 5  # number of log files to keep before deleting the oldest one
+
+    # Regionalisation settings
+    #   Date format for exporting data to Excel xlsx files.
+    #   Default in OpenREM is dd/mm/yyyy. Override it by uncommenting and customising below; a full list of codes is
+    #   available at https://msdn.microsoft.com/en-us/library/ee634398.aspx.
+    # XLSX_DATE = 'mm/dd/yyyy'
+    #   Local time zone for this installation. Choices can be found here:
+    #   http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
+    #   although not all choices may be available on all operating systems.
+    #   In a Windows environment this must be set to your system time zone.
+    TIME_ZONE = 'Europe/London'
+    #   Language code for this installation. All choices can be found here:
+    #   http://www.i18nguy.com/unicode/language-identifiers.html
+    LANGUAGE_CODE = 'en-us'
+
+    # Locations of various tools for DICOM RDSR creation from CT images
+    DCMTK_PATH = 'E:/dcmtk/bin'
+    DCMCONV = os.path.join(DCMTK_PATH, 'dcmconv.exe')
+    DCMMKDIR = os.path.join(DCMTK_PATH, 'dcmmkdir.exe')
+    JAVA_EXE = 'E:/pixelmed/windows/jre/bin/java.exe'
+    JAVA_OPTIONS = '-Xms256m -Xmx512m -Xss1m -cp'
+    PIXELMED_JAR = 'E:/pixelmed/pixelmed.jar'
+    PIXELMED_JAR_OPTIONS = '-Djava.awt.headless=true com.pixelmed.doseocr.OCR -'
+
+    # E-mail server settings - see https://docs.djangoproject.com/en/2.2/topics/email/
+    EMAIL_HOST = 'localhost'
+    EMAIL_PORT = 25
+    EMAIL_HOST_USER = ''
+    EMAIL_HOST_PASSWORD = ''
+    EMAIL_USE_TLS = 0         # Use 0 for False, 1 for True
+    EMAIL_USE_SSL = 0         # Use 0 for False, 1 for True
+    EMAIL_DOSE_ALERT_SENDER = 'your.alert@email.address'
+    EMAIL_OPENREM_URL = 'http://your.openrem.server'
+
 
 Populate OpenREM database and collate static files
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+In a ``CMD`` window, move to the openrem Python folder and activate the virtualenv:
+
+.. code-block:: console
+
+    C:\Users\openrem>e:
+    E:\>cd venv\Lib\site-packages\openrem
+    E:\venv\Lib\site-packages\openrem>e:\venv\Scripts\activate
+    (venv) E:\venv\Lib\site-packages\openrem>
+
+.. note::
+
+    If you are upgrading to a new Linux server, do these additional steps before continuing with those below:
+
+    * Rename ``E:\venv\Lib\site-packages\openrem\remapp\migrations\0001_initial.py.1-0-upgrade`` to ``0001_initial.py``
+
+    Import the database - update the path to the database backup file you copied from the old server:
+
+    * *Instruction to follow*
+
+    Migrate the database:
+
+    .. code-block:: console
+
+        (venv) E:\venv\Lib\site-packages\openrem>python manage.py migrate --fake-initial
+
+    .. code-block:: console
+
+        (venv) E:\venv\Lib\site-packages\openrem>python manage.py migrate remapp --fake
+
+
+.. code-block:: console
+
+    (venv) E:\venv\Lib\site-packages\openrem>python manage.py makemigrations remapp
+    (venv) E:\venv\Lib\site-packages\openrem>python manage.py migrate
+    (venv) E:\venv\Lib\site-packages\openrem>python manage.py loaddata openskin_safelist.json
+    (venv) E:\venv\Lib\site-packages\openrem>python manage.py collectstatic --no-input --clear
+    (venv) E:\venv\Lib\site-packages\openrem>python manage.py compilemessages
+    (venv) E:\venv\Lib\site-packages\openrem>python manage.py createsuperuser
 
 Webserver
 =========
