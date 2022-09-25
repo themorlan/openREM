@@ -280,8 +280,7 @@ in the settings file or elsewhere in the docs.
     STATIC_ROOT = 'E:/static/'
     JS_REVERSE_OUTPUT_PATH = os.path.join(STATIC_ROOT, 'js', 'django_reverse')
 
-    # You should generate a new secret key. Make this unique, and don't
-    # share it with anybody. See the docs.
+    # Change secret key
     SECRET_KEY = 'hmj#)-$smzqk*=wuz9^a46rex30^$_j$rghp+1#y&amp;i+pys5b@$'
 
     # DEBUG mode: leave the hash in place for now, but remove it and the space (so DEBUG
@@ -315,7 +314,6 @@ in the settings file or elsewhere in the docs.
     #   http://www.i18nguy.com/unicode/language-identifiers.html
     LANGUAGE_CODE = 'en-us'
 
-    # Locations of various tools for DICOM RDSR creation from CT images
     DCMTK_PATH = 'E:/dcmtk/bin'
     DCMCONV = os.path.join(DCMTK_PATH, 'dcmconv.exe')
     DCMMKDIR = os.path.join(DCMTK_PATH, 'dcmmkdir.exe')
