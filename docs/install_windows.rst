@@ -371,6 +371,25 @@ In a ``CMD`` window, move to the openrem Python folder and activate the virtuale
 .. code-block:: console
 
     (venv) E:\venv\Lib\site-packages\openrem>python manage.py makemigrations remapp
+
+.. warning::
+
+    Make sure you didn't get a ``RuntimeWarning`` when running the last command - scroll back up to the command and
+    check you *don't* see the following:
+
+    .. code-block:: console
+
+        (venv) E:\venv\Lib\site-packages\openrem>python manage.py makemigrations remapp
+        E:\venv\lib\site-packages\django\core\management\commands\makemigrations.py:105: RuntimeWarning:
+
+        Got an error checking a consistent migration history performed for database connection 'default': unable to
+        open database file
+
+    If you do, check the database name and password settings in the ``local_settings.py`` file. You will need to delete
+    the file ``E:\venv\Lib\site-packages\openrem\remapp\migrations\0001_initial.py`` before trying again.
+
+.. code-block:: console
+
     (venv) E:\venv\Lib\site-packages\openrem>python manage.py migrate
     (venv) E:\venv\Lib\site-packages\openrem>python manage.py loaddata openskin_safelist.json
     (venv) E:\venv\Lib\site-packages\openrem>python manage.py collectstatic --no-input --clear
