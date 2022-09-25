@@ -252,7 +252,8 @@ warning to check if you are sure - ``Yes``:
 
 Edit ``local_settings.py`` as needed (right click ``Edit with Notepad++``) Make sure you change the ``PASSWORD``, the
 ``SECRET_KEY`` (to anything, just change it), the ``ALLOWED_HOSTS`` list, regionalisation settings and the ``EMAIL``
-configuration. You can modify the email settings later if necessary.
+configuration. You can modify the email settings later if necessary. Some settings are not shown here but are documented
+in the settings file or elsewhere in the docs.
 
 .. admonition:: Upgrading to a new server
 
@@ -261,7 +262,7 @@ configuration. You can modify the email settings later if necessary.
     other settings. Change the ``SECRET_KEY`` from the default, but it doesn't have to match the one on the old server.
 
 .. code-block:: python
-    :emphasize-lines: 4-6, 16-17,25-28,51,56,59,70-77
+    :emphasize-lines: 4-6, 17-18,26-29,41,46,49,60-67
 
     DATABASES = {
         'default': {
@@ -274,17 +275,8 @@ configuration. You can modify the email settings later if necessary.
         }
     }
 
-
-    # Absolute filesystem path to the directory that will hold xlsx and csv
-    # exports patient size import files
-    # Linux example: '/var/openrem/media/'
-    # Windows example: 'C:/Users/myusername/Documents/OpenREM/media/'
     MEDIA_ROOT = 'E:/media/'
 
-    # Absolute path to the directory static files should be collected to.
-    # Don't put anything in this directory yourself; store your static files
-    # in apps' 'static/' subdirectories and in STATICFILES_DIRS.
-    # Example: '/home/media/media.lawrence.com/static/'
     STATIC_ROOT = 'E:/static/'
     JS_REVERSE_OUTPUT_PATH = os.path.join(STATIC_ROOT, 'js', 'django_reverse')
 
@@ -292,56 +284,22 @@ configuration. You can modify the email settings later if necessary.
     # share it with anybody. See the docs.
     SECRET_KEY = 'hmj#)-$smzqk*=wuz9^a46rex30^$_j$rghp+1#y&amp;i+pys5b@$'
 
-    # Debug mode is now set to False by default. If you need to troubleshoot, can turn it back on here:
+    # DEBUG mode: leave the hash in place for now, but remove it and the space (so DEBUG
+    # is at the start of the line) as soon as something doesn't work. Put it back
+    # when you get it working again.
     # DEBUG = True
 
-    # Set the domain name that people will use to access your OpenREM server.
-    # This is required if the DEBUG mode is set to False (default)
-    # Example: '.doseserver.' or '10.23.123.123'. A dot before a name allows subdomains, a dot after allows for FQDN eg
-    # doseserver.ad.trust.nhs.uk. Alternatively, use '*' to remove this security feature if you handle it in other ways.
     ALLOWED_HOSTS = [
-        '*',
+        # Add the names and IP address of your host, for example:
+        'openrem-server',
+        'openrem-server.ad.abc.nhs.uk',
+        '10.123.213.22',
     ]
 
-    # If running OpenREM in a virtual directory specify the virtual directory here.
-    # Eg. if OpenREM is in a virtual directory dms (http://server/dms/), specify 'dms/' below.
-    # LOGIN_URL (always) should be overridden to include the VIRTUAL_DIRECTORY
-    VIRTUAL_DIRECTORY = ''
-
-    # Logging configuration
-    # Set the log file location. The example places the log file in the media directory. Change as required - on linux
-    # systems you might put these in a subdirectory of /var/log/. If you want all the logs in one file, set the filename
-    # to be the same for each one.
     LOG_ROOT = 'E:/log/'
     LOG_FILENAME = os.path.join(LOG_ROOT, 'openrem.log')
     QR_FILENAME = os.path.join(LOG_ROOT, 'openrem_qr.log')
     EXTRACTOR_FILENAME = os.path.join(LOG_ROOT, 'openrem_extractor.log')
-
-    LOGGING['handlers']['file']['filename'] = LOG_FILENAME          # General logs
-    LOGGING['handlers']['qr_file']['filename'] = QR_FILENAME        # Query Retrieve SCU logs
-    LOGGING['handlers']['extractor_file']['filename'] = EXTRACTOR_FILENAME  # Extractor logs
-
-    # Set log message format. Options are 'verbose' or 'simple'. Recommend leaving as 'verbose'.
-    LOGGING['handlers']['file']['formatter'] = 'verbose'        # General logs
-    LOGGING['handlers']['qr_file']['formatter'] = 'verbose'     # Query Retrieve SCU logs
-    LOGGING['handlers']['extractor_file']['formatter'] = 'verbose'  # Extractor logs
-
-    # Set the log level. Options are 'DEBUG', 'INFO', 'WARNING', 'ERROR', and 'CRITICAL', with progressively less logging.
-    LOGGING['loggers']['remapp']['level'] = 'INFO'                    # General logs
-    LOGGING['loggers']['remapp.netdicom.qrscu']['level'] = 'INFO'     # Query Retrieve SCU logs
-    LOGGING['loggers']['remapp.extractors']['level'] = 'INFO'  # Extractor logs
-
-    # Linux only for now: configure 'rotating' logs so they don't get too big. Remove the '# ' to uncomment. 'LOGGING'
-    # should be at the start of the line.
-    # LOGGING['handlers']['file']['class'] = 'logging.handlers.RotatingFileHandler'
-    # LOGGING['handlers']['file']['maxBytes'] = 10 * 1024 * 1024  # 10*1024*1024 = 10 MB
-    # LOGGING['handlers']['file']['backupCount'] = 5  # number of log files to keep before deleting the oldest one
-    # LOGGING['handlers']['qr_file']['class'] = 'logging.handlers.RotatingFileHandler'
-    # LOGGING['handlers']['qr_file']['maxBytes'] = 10 * 1024 * 1024  # 10*1024*1024 = 10 MB
-    # LOGGING['handlers']['qr_file']['backupCount'] = 5  # number of log files to keep before deleting the oldest one
-    # LOGGING['handlers']['extractor_file']['class'] = 'logging.handlers.RotatingFileHandler'
-    # LOGGING['handlers']['extractor_file']['maxBytes'] = 10 * 1024 * 1024  # 10*1024*1024 = 10 MB
-    # LOGGING['handlers']['extractor_file']['backupCount'] = 5  # number of log files to keep before deleting the oldest one
 
     # Regionalisation settings
     #   Date format for exporting data to Excel xlsx files.
