@@ -62,7 +62,16 @@ instead:
     You can also use different drive letters if that works better for your installation. In both cases paths will need
     to be modified in the instructions to suite.
 
+Set permissions
+---------------
 
+* Right click on the ``E:\log`` folder and click ``Properties``
+* In the ``Security`` tab click ``Edit...`` and ``Add...``
+* Enter the object name ``IIS_IUSRS`` and click ``OK``
+* Tick ``Modify`` to enable read and write permissions
+* Click ``OK`` twice to close the dialogues
+
+* Repeat for the ``E:\media`` folder
 
 Installing packages
 ^^^^^^^^^^^^^^^^^^^
@@ -400,10 +409,10 @@ Webserver
 Configure IIS
 ^^^^^^^^^^^^^
 
-* Open ``Internet Information Services (IIS) Manager from the Start menu or the Administrative Tools.
-* Click on the name of your server in the ``Connections`` column on the left
+* Open ``Internet Information Services (IIS) Manager`` from the Start menu or the Administrative Tools.
+* Click on the name of your server in the ``Connections`` pane on the left
 * Double click on ``FastCGI Settings``
-* In the ``Actions`` column on the right, click ``Add Application``
+* In the ``Actions`` pane on the right, click ``Add Application``
 * In the ``Full Path:`` box type or browse to ``E:\venv\Scripts\python.exe``
 * In the ``Arguments`` box type the path to wfastcgi.py: ``E:\venv\Lib\site-packages\wfastcgi.py``
 * Under FastCGI properties, click on ``(Collection)`` next to ``Environment Variables`` and click on the grey ``…`` box
@@ -443,10 +452,33 @@ Configure IIS
 Create a new website
 ^^^^^^^^^^^^^^^^^^^^
 
+* In the ``Connections`` pane expand the tree under server name
+* Expand the Sites folder, right click on ``Default Website`` and click ``Remove``
+* Click ``Yes``
+* Right click on ``Sites`` and click ``Add Website…``
+* Enter Site name as ``OpenREM``
+* Under Content Directory Physical path enter or browse to ``E:\venv\Lib\site-packages\openrem``
+* Click ``OK``
 
 
 Configure the new website
 ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* Click on the ``OpenREM`` site under ``Connections`` in the left pane
+* Double click on ``Handler Mappings``
+* In the right pane, under ``Actions`` click ``Add Module Mapping…``
+* In the ``Request Path`` box enter an asterix (``*``)
+* In the Module box select ``FastCgiModule`` (*not the CgiModule*)
+* In the ``Executable`` box enter ``E:\venv\Scripts\python.exe|E:\venv\Lib\site-packages\wfastcgi.py``
+* In ``Name`` type ``OpenREM CGI handler`` (value of name is not important)
+* Click ``Request Restrictions`` and untick the ``Invoke handler only if request is mapped to:`` checkbox
+* Click ``OK`` twice to close the Request Restrictions dialog and the Add Module Mapping dialogue
+* When prompted ``Do you want to create a FastCGI application for this executable?`` click ``No``
+
+.. admonition:: Quick test!
+
+    You can now browse on the server to http://localhost/ and you should see an "ugly" version of the website. It will
+    look better after we have configured the static files, next!
 
 Configure IIS to server the static files
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
