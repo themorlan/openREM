@@ -400,8 +400,50 @@ Webserver
 Configure IIS
 ^^^^^^^^^^^^^
 
+* Open ``Internet Information Services (IIS) Manager from the Start menu or the Administrative Tools.
+* Click on the name of your server in the ``Connections`` column on the left
+* Double click on ``FastCGI Settings``
+* In the ``Actions`` column on the right, click ``Add Application``
+* In the ``Full Path:`` box type or browse to ``E:\venv\Scripts\python.exe``
+* In the ``Arguments`` box type the path to wfastcgi.py: ``E:\venv\Lib\site-packages\wfastcgi.py``
+* Under FastCGI properties, click on ``(Collection)`` next to ``Environment Variables`` and click on the grey ``…`` box
+* In the EnvironmentVariables Collection Editor click ``Add``
+* Change the value of ``Name`` to ``DJANGO_SETTINGS_MODULE`` (must be upper-case)
+* Set the ``Value`` to ``openremproject.settings``
+* Click ``Add`` again and add the variable name ``PYTHONPATH`` with the value ``E:\venv\Lib\site-packages\openrem``
+* Click ``Add`` again and add the variable name ``WSGI_HANDLER`` with the value ``django.core.wsgi.get_wsgi_application()``
+* Click ``OK``
+
+.. figure:: img/CollectionEditor.png
+   :figwidth: 60%
+   :align: center
+   :alt: Environment Variables Collection
+   :target: _images/CollectionEditor.png
+
+   Figure 3: Environment Variables Collection Editor
+
+* Under FastCGI Properties -> Process Model click on the ``Activity Timeout`` value and change it to ``300``
+
+.. admonition:: Activity Timeout on slow running systems
+
+    If you encounter issues with long-running requests failing on slow running systems, you might try increasing the
+    value of the ``Activity Timeout`` further.
+
+.. figure:: img/FastCGIApplication.png
+   :figwidth: 60%
+   :align: center
+   :alt: Add FastCGI Application settings
+   :target: _images/FastCGIApplication.png
+
+   Figure 4: Add FastCGI Application settings
+
+* Click ``OK`` to close the dialogue box
+
+
 Create a new website
 ^^^^^^^^^^^^^^^^^^^^
+
+
 
 Configure the new website
 ^^^^^^^^^^^^^^^^^^^^^^^^^
