@@ -490,7 +490,7 @@ Copy the Lua file to the Orthanc folder. This will control how we process the in
 .. code-block:: console
 
     $ cd /var/dose/veopenrem3/lib/python3.10/site-packages/openrem/
-    $ cp sample-config/openrem_orthanc_config.lua.linux /var/dose/orthanc/openrem_orthanc_config.lua
+    $ cp sample-config/openrem_orthanc_config_linux.lua /var/dose/orthanc/
 
 Edit the Orthanc Lua configuration options:
 
@@ -559,7 +559,7 @@ Add the Lua script to the Orthanc config:
     // List of paths to the custom Lua scripts that are to be loaded
     // into this instance of Orthanc
     "LuaScripts" : [
-    "/var/dose/orthanc/openrem_orthanc_config.lua"
+    "/var/dose/orthanc/openrem_orthanc_config_linux.lua"
     ],
 
 Set the AE Title and port:

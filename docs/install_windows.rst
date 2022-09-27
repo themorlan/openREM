@@ -517,9 +517,8 @@ Copy the Lua file to the Orthanc folder. This will control how we process the in
 
 Copy the file from
 
-* ``E:\venv\Lib\site-packages\openrem\sample-config\openrem_orthanc_config.lua.windows`` to
-* ``E:\orthanc\openrem_orthanc_config.lua`` (remove the ``.windows`` suffix) and click ``Yes`` when asked if you are
-  sure you want to change the filename extension.
+* ``E:\venv\Lib\site-packages\openrem\sample-config\openrem_orthanc_config_windows.lua`` to
+* ``E:\orthanc\``
 
 Edit the Orthanc Lua configuration options - right click ``Edit with Notepad++``
 
@@ -581,7 +580,7 @@ Add the Lua script to the Orthanc config:
     // List of paths to the custom Lua scripts that are to be loaded
     // into this instance of Orthanc
     "LuaScripts" : [
-   "E:\\orthanc\\openrem_orthanc_config.lua"
+   "E:\\orthanc\\openrem_orthanc_config_windows.lua"
     ],
 
 Set the AE Title and port:
