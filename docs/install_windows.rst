@@ -165,6 +165,14 @@ Download the 64 bit executable binary zip file from https://dcmtk.org/dcmtk.php.
 * Drag the contents of the dcmtk-3.x.x-win64-dynamic folder in the zip file to the ``dcmtk`` folder
 * You should end up with ``E:\dcmtk\bin\`` etc
 
+7Zip
+----
+
+Download the 64-bit x64 exe file from https://www.7-zip.org/
+
+* Accept the default install location ``Install``
+* ``Close``
+
 IIS
 ---
 
@@ -504,6 +512,106 @@ be able to see the new OpenREM web service.
 DICOM Store SCP
 ===============
 
+Copy the Lua file to the Orthanc folder. This will control how we process the incoming DICOM objects.
+
+Copy the file from
+
+* ``E:\venv\Lib\site-packages\openrem\sample-config\openrem_orthanc_config.lua.windows`` to
+* ``E:\orthanc\openrem_orthanc_config.lua`` (remove the ``.windows`` suffix) and click ``Yes`` when asked if you are
+  sure you want to change the filename extension.
+
+Edit the Orthanc Lua configuration options - right click ``Edit with Notepad++``
+
+Set ``use_physics_filtering`` to true if you want Orthanc to keep physics test studies, and have it put them in the
+``/var/dose/orthanc/physics/`` folder. Set it to ``false`` to disable this feature. Add names or IDs to
+``physics_to_keep`` as a comma separated list.
+
+.. code-block:: lua
+    :emphasize-lines: 3,7
+
+    -- Set this to true if you want Orthanc to keep physics test studies, and have it
+    -- put them in the physics_to_keep_folder. Set it to false to disable this feature
+    local use_physics_filtering = true
+
+    -- A list to check against patient name and ID to see if the images should be kept.
+    -- Orthanc will put anything that matches this in the physics_to_keep_folder.
+    local physics_to_keep = {'physics'}
+
+Lists of things to ignore. Orthanc will ignore anything matching the content of these comma separated lists; they will
+not be imported into OpenREM.
+
+.. code-block:: lua
+    :emphasize-lines: 3-7
+
+    -- Lists of things to ignore. Orthanc will ignore anything matching the content of
+    -- these lists: they will not be imported into OpenREM.
+    local manufacturers_to_ignore = {'Faxitron X-Ray LLC', 'Gendex-KaVo'}
+    local model_names_to_ignore = {'CR 85', 'CR 75', 'CR 35', 'CR 25', 'ADC_5146', 'CR975'}
+    local station_names_to_ignore = {'CR85 Main', 'CR75 Main'}
+    local software_versions_to_ignore = {'VixWin Platinum v3.3'}
+    local device_serial_numbers_to_ignore = {'SCB1312016'}
+
+Enable or disable additional functionality to extract dose information from older Toshiba and GE scanners, and specify
+which CT scanners should use this method. Each system should be listed as ``{'Manufacturer', 'Model name'}``, with
+systems in a comma separated list within curly brackets, as per the example below:
+
+.. code-block:: lua
+    :emphasize-lines: 3,7-10
+
+    -- Set this to true if you want to use the OpenREM Toshiba CT extractor. Set it to
+    -- false to disable this feature.
+    local use_toshiba_ct_extractor = true
+
+    -- A list of CT make and model pairs that are known to have worked with the Toshiba CT extractor.
+    -- You can add to this list, but you will need to verify that the dose data created matches what you expect.
+    local toshiba_extractor_systems = {
+            {'Toshiba', 'Aquilion'},
+            {'GE Medical Systems', 'Discovery STE'},
+    }
+
+Edit the Orthanc configuration:
+
+.. code-block:: console
+
+    $ sudo nano /etc/orthanc/orthanc.json
+
+Add the Lua script to the Orthanc config:
+
+.. code-block:: json-object
+    :emphasize-lines: 4
+
+    // List of paths to the custom Lua scripts that are to be loaded
+    // into this instance of Orthanc
+    "LuaScripts" : [
+    "/var/dose/orthanc/openrem_orthanc_config.lua"
+    ],
+
+Set the AE Title and port:
+
+.. code-block:: json-object
+    :emphasize-lines: 2,5
+
+    // The DICOM Application Entity Title
+    "DicomAet" : "OPENREM",
+
+    // The DICOM port
+    "DicomPort" : 104,
+
+.. note::
+
+    Optionally, you may also like to enable the HTTP server interface for Orthanc (although if the Lua script is removing
+    all the objects as soon as they are processed, you won't see much!):
+
+    .. code-block:: json-object
+
+        // Whether remote hosts can connect to the HTTP server
+        "RemoteAccessAllowed" : true,
+
+        // Whether or not the password protection is enabled
+        "AuthenticationEnabled" : false,
+
+    To see the Orthanc web interface, go to http://openremserver:8042/ -- of course change the server name to that of your
+    server!
 
 
 
