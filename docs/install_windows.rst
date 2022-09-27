@@ -483,8 +483,23 @@ Configure the new website
 Configure IIS to server the static files
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+* Right click on the ``OpenREM`` site under ``Connections`` in the left pane
+* Click ``Add Virtual Directory``
+* Enter ``static`` as the Alias
+* Enter or browse to ``E:\static`` as the Physical path
+* Click ``OK``
+
+* Double click on ``Handler Mappings`` in the middle pane
+* Click on ``View Ordered List...`` in the right pane
+* Select ``StaticFile``
+* Click ``Move Up`` in the ``Action`` pane on the right until ``StaticFile`` is at the top
+* There will be a warning about the list order being changed - click ``Yes`` to continue
+
 Test the webserver
 ------------------
+
+Browse to http://localhost/ on the server, or browse to the servername in a browser on another machine, and you should
+be able to see the new OpenREM web service.
 
 DICOM Store SCP
 ===============
