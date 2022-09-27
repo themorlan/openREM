@@ -25,7 +25,7 @@ local physics_to_keep_folder = 'E:\\orthanc\\physics\\'
 
 -- Set this to the path and name of your zip utility, and include any switches that
 -- are needed to create an archive and include all files in a supplied folder (used with physics-related images)
-local zip_executable = 'C:\\Program Files\\7-Zip\\7z.exe a -r'
+local zip_executable = 'E:\\7-Zip\\7z.exe a -r'
 
 -- Set this to the path and name of your remove folder command, including switches
 -- for it to be quiet (used with physics-related images)

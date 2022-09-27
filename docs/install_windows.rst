@@ -45,7 +45,7 @@ instead:
     C:\Users\openrem>D:
     D:\>mkdir database
     D:\>E:
-    E:\>mkdir log media pixelmed dcmtk static venv orthanc\dicom orthanc\physics orthanc\storage
+    E:\>mkdir log media pixelmed dcmtk 7-zip static venv orthanc\dicom orthanc\physics orthanc\storage
 
 .. admonition:: Why D: and E: drives?
 
@@ -170,7 +170,8 @@ Download the 64 bit executable binary zip file from https://dcmtk.org/dcmtk.php.
 
 Download the 64-bit x64 exe file from https://www.7-zip.org/
 
-* Accept the default install location ``Install``
+* Type, or click on the ``...`` to browse to ``E:\7-zip\``
+* ``Install``
 * ``Close``
 
 IIS
@@ -523,7 +524,7 @@ Copy the file from
 Edit the Orthanc Lua configuration options - right click ``Edit with Notepad++``
 
 Set ``use_physics_filtering`` to true if you want Orthanc to keep physics test studies, and have it put them in the
-``/var/dose/orthanc/physics/`` folder. Set it to ``false`` to disable this feature. Add names or IDs to
+``E:\orthanc\dicom\`` folder. Set it to ``false`` to disable this feature. Add names or IDs to
 ``physics_to_keep`` as a comma separated list.
 
 .. code-block:: lua
@@ -569,11 +570,8 @@ systems in a comma separated list within curly brackets, as per the example belo
             {'GE Medical Systems', 'Discovery STE'},
     }
 
-Edit the Orthanc configuration:
-
-.. code-block:: console
-
-    $ sudo nano /etc/orthanc/orthanc.json
+Edit the Orthanc configuration. Navigate to ``C:\Program Files\Orthanc Server\Configuration`` and right click on
+``orthanc.json`` and click ``Edit with Notepad++``:
 
 Add the Lua script to the Orthanc config:
 
@@ -583,7 +581,7 @@ Add the Lua script to the Orthanc config:
     // List of paths to the custom Lua scripts that are to be loaded
     // into this instance of Orthanc
     "LuaScripts" : [
-    "/var/dose/orthanc/openrem_orthanc_config.lua"
+   "E:\\orthanc\\openrem_orthanc_config.lua"
     ],
 
 Set the AE Title and port:
@@ -613,11 +611,29 @@ Set the AE Title and port:
     To see the Orthanc web interface, go to http://openremserver:8042/ -- of course change the server name to that of your
     server!
 
+Allow DICOM traffic through the firewall
+----------------------------------------
 
+* Type ``windows firewall`` in the Start menu to open ``Windows Defender Firewall``
+* Click ``Advanced settings`` in the left hand pane to open ``Windows Defender Firewall with Advanced Security``
+* Click ``Inbound Rules`` in the left hand pane
+* Click ``New Rule...`` in the right hand pane
+* Click ``Port`` and ``Next >``
+* Leave as ``TCP`` and specify port ``104`` and click ``Next >``
+* ``Allow the connection``, ``Next >``
+* Leave the boxes ticked for ``When does this rule apply`` if that is appropriate, ``Next >``
+* Name ``Orthanc DICOM port``
+* ``Finish``
 
+You can check if the port is running and allowed through the firewall using the ``Network`` tab of Resource Monitor.
 
+Finish off
+----------
 
+Restart Orthanc:
 
-
-
+* Launch ``Services`` from the start menu
+* Find ``Orthanc`` on the list and click ``Restart``
+* Orthanc logs can be reviewed at ``C:\Program Files\Orthanc Server\Logs`` - the current log file will have the latest
+  date and time in the filename
 
