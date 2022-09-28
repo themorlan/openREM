@@ -619,7 +619,7 @@ Set the AE Title and port:
 Save any changes.
 
 Allow DICOM traffic through the firewall
-----------------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 * Type ``windows firewall`` in the Start menu to open ``Windows Defender Firewall``
 * Click ``Advanced settings`` in the left hand pane to open ``Windows Defender Firewall with Advanced Security``
@@ -633,7 +633,7 @@ Allow DICOM traffic through the firewall
 * ``Finish``
 
 Finish off
-----------
+^^^^^^^^^^
 
 Restart Orthanc:
 
