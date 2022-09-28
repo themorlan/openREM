@@ -29,6 +29,21 @@ Initial prep
 Creating folders
 ^^^^^^^^^^^^^^^^
 
+.. admonition:: Why D: and E: drives?
+
+    These folders are created on drive E: to keep the data away from the operating system drive so that it is easier
+    for building/recreating the server and knowing what needs to be backed up.
+
+    For the same reason, we will install PostgreSQL so that the database data is store on drive D: - this makes it possible
+    to provide a different configuration of disk for the database drive, with different backup policies.
+
+    However, it is also possible to store all the data on the C: drive if that works better for your installation. In
+    this case, it would be advisable to create a folder C:\\OpenREM\\ and create all the folders specified below into that
+    folder.
+
+    You can also use different drive letters if that works better for your installation. In both cases paths will need
+    to be modified in the instructions to suite.
+
 .. figure:: img/FolderLayout.png
    :figwidth: 20%
    :align: right
@@ -47,28 +62,13 @@ instead:
     D:\>E:
     E:\>mkdir log media pixelmed dcmtk 7-zip static venv orthanc\dicom orthanc\physics orthanc\storage
 
-.. admonition:: Why D: and E: drives?
-
-    These folders are created on drive E: to keep the data away from the operating system drive so that it is easier
-    for building/recreating the server and knowing what needs to be backed up.
-
-    For the same reason, we will install PostgreSQL so that the database data is store on drive D: - this makes it possible
-    to provide a different configuration of disk for the database drive, with different backup policies.
-
-    However, it is also possible to store all the data on the C: drive if that works better for your installation. In
-    this case, it would be advisable to create a folder C:\OpenREM\ and create all the folders specified below into that
-    folder.
-
-    You can also use different drive letters if that works better for your installation. In both cases paths will need
-    to be modified in the instructions to suite.
-
 Set permissions
 ---------------
 
 * Right click on the ``E:\log`` folder and click ``Properties``
 * In the ``Security`` tab click ``Edit...`` and ``Add...``
 * Enter the object name ``IIS_IUSRS`` and click ``OK``
-* Tick ``Modify`` to enable read and write permissions
+* Tick the ``Modify`` ``Allow`` to enable read and write permissions
 * Click ``OK`` twice to close the dialogues
 
 * Repeat for the ``E:\media`` folder
@@ -150,8 +150,9 @@ Open the downloaded file to start the installation:
 Pixelmed and Java
 -----------------
 
-Download DoseUtility from http://www.dclunie.com/pixelmed/software/winexe/DoseUtilityWithOwnJRE.zip (from the page
-http://www.dclunie.com/pixelmed/software/webstart/DoseUtilityUsage.html
+Download DoseUtility from from the page
+http://www.dclunie.com/pixelmed/software/webstart/DoseUtilityUsage.html - find ``How to install it (locally)`` near the
+bottom of the page and click the ``Windows executable that does not require Java to be installed`` link.
 
 * Open the downloaded zip file and open a new file browser at ``E:\pixelmed``
 * Drag the contents of the zip file to the ``pixelmed`` folder
@@ -159,7 +160,8 @@ http://www.dclunie.com/pixelmed/software/webstart/DoseUtilityUsage.html
 dcmtk
 -----
 
-Download the 64 bit executable binary zip file from https://dcmtk.org/dcmtk.php.en
+Download from https://dcmtk.org/dcmtk.php.en - look for the ``DCMTK executable binaries`` section, and download the
+64 bit DLL build for Windows.
 
 * Open the downloaded zip file and open a new file browser at ``E:\dcmtk``
 * Drag the contents of the dcmtk-3.x.x-win64-dynamic folder in the zip file to the ``dcmtk`` folder
@@ -194,7 +196,7 @@ IIS
 * ``Close``
 
 You can check the server is running by browsing to http://localhost/ on the server. You should see the
-default IIS Welcome page.
+default IIS Welcome page. It might not work immediately, check again in a few minutes.
 
 Notepad++
 ---------
@@ -241,7 +243,7 @@ PostgreSQL database creation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 * Start  pgAdmin 4 - you will need the password you set when installing PostgreSQL
-* Click on ``Servers (1)`` to expand, enter the password again
+* Click on ``Servers`` to expand, enter the password again
 * Right click ``Login/Group Roles``, ``Create``, ``Login/Group Role...``
 * Name: ``openremuser``
 * Definition, Password: add a password for the openremuser
@@ -520,7 +522,7 @@ Copy the file from
 * ``E:\venv\Lib\site-packages\openrem\sample-config\openrem_orthanc_config_windows.lua`` to
 * ``E:\orthanc\``
 
-Edit the Orthanc Lua configuration options - right click ``Edit with Notepad++``
+Edit the Orthanc Lua configuration options - right click on the file you just copied ``Edit with Notepad++``
 
 Set ``use_physics_filtering`` to true if you want Orthanc to keep physics test studies, and have it put them in the
 ``E:\orthanc\dicom\`` folder. Set it to ``false`` to disable this feature. Add names or IDs to
@@ -569,6 +571,8 @@ systems in a comma separated list within curly brackets, as per the example belo
             {'GE Medical Systems', 'Discovery STE'},
     }
 
+Save any changes.
+
 Edit the Orthanc configuration. Navigate to ``C:\Program Files\Orthanc Server\Configuration`` and right click on
 ``orthanc.json`` and click ``Edit with Notepad++``:
 
@@ -612,6 +616,8 @@ Set the AE Title and port:
     To see the Orthanc web interface, go to http://openremserver:8042/ -- of course change the server name to that of your
     server!
 
+Save any changes.
+
 Allow DICOM traffic through the firewall
 ----------------------------------------
 
@@ -626,8 +632,6 @@ Allow DICOM traffic through the firewall
 * Name ``Orthanc DICOM port``
 * ``Finish``
 
-You can check if the port is running and allowed through the firewall using the ``Network`` tab of Resource Monitor.
-
 Finish off
 ----------
 
@@ -636,5 +640,6 @@ Restart Orthanc:
 * Launch ``Services`` from the start menu
 * Find ``Orthanc`` on the list and click ``Restart``
 * Orthanc logs can be reviewed at ``C:\Program Files\Orthanc Server\Logs`` - the current log file will have the latest
-  date and time in the filename
+  date and time in the filename - right click ``Edit with Notepad++``
 
+You can check if the port is running and allowed through the firewall using the ``Network`` tab of Resource Monitor.
