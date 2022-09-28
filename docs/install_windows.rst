@@ -9,7 +9,7 @@ This install is based on Windows Server 2022 using:
 * Python 3.10 running in a virtualenv
 * Database: PostgreSQL
 * DICOM Store SCP: Orthanc running on port 104
-* Webserver: Microsoft IIS
+* Webserver: Microsoft IIS running on port 80
 * Notepad++ for editing files
 * Database files stored on D:
 * OpenREM files stored on E:
@@ -22,6 +22,12 @@ If you are upgrading an existing installation to a new Windows server, go to the
 first.
 
 If you are upgrading an existing Windows Server installation in-place, go to :doc:`upgrade_windows` instead.
+
+These instructions assume the following disk layout - there is more information about the reasoning in the box below:
+
+* ``C:`` OS disk
+* ``D:`` Database disk
+* ``E:`` Data disk
 
 Initial prep
 ============
@@ -41,8 +47,8 @@ Creating folders
     this case, it would be advisable to create a folder C:\\OpenREM\\ and create all the folders specified below into that
     folder.
 
-    You can also use different drive letters if that works better for your installation. In both cases paths will need
-    to be modified in the instructions to suite.
+    You can also use different drive letters if that works better for your installation. *In both cases paths will need
+    to be modified in the instructions to suite*.
 
 .. figure:: img/FolderLayout.png
    :figwidth: 20%
