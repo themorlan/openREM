@@ -37,18 +37,18 @@ Creating folders
 
 .. admonition:: Why D: and E: drives?
 
-    These folders are created on drive E: to keep the data away from the operating system drive so that it is easier
+    OpenREM data are stored on drive E: to keep the data away from the operating system drive so that it is easier
     for building/recreating the server and knowing what needs to be backed up.
 
-    For the same reason, we will install PostgreSQL so that the database data is store on drive D: - this makes it possible
+    For the same reason, we will install PostgreSQL so that the database data are store on drive D: - this makes it possible
     to provide a different configuration of disk for the database drive, with different backup policies.
 
     However, it is also possible to store all the data on the C: drive if that works better for your installation. In
     this case, it would be advisable to create a folder C:\\OpenREM\\ and create all the folders specified below into that
     folder.
 
-    You can also use different drive letters if that works better for your installation. *In both cases paths will need
-    to be modified in the instructions to suite*.
+    You can also use different drive letters if that works better for your installation. **In both cases paths will need
+    to be modified in the instructions to suite**.
 
 .. figure:: img/FolderLayout.png
    :figwidth: 20%
