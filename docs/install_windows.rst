@@ -580,7 +580,7 @@ Add the Lua script to the Orthanc config:
     // List of paths to the custom Lua scripts that are to be loaded
     // into this instance of Orthanc
     "LuaScripts" : [
-   "E:\\orthanc\\openrem_orthanc_config_windows.lua"
+    "E:\\orthanc\\openrem_orthanc_config_windows.lua"
     ],
 
 Set the AE Title and port:
@@ -606,6 +606,8 @@ Set the AE Title and port:
 
         // Whether or not the password protection is enabled
         "AuthenticationEnabled" : false,
+
+    You will also need to open the firewall for port 8042.
 
     To see the Orthanc web interface, go to http://openremserver:8042/ -- of course change the server name to that of your
     server!
