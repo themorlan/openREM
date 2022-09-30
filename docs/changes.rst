@@ -108,6 +108,7 @@ OpenREM version history
 * :issue:`789`  Python 3: Median function aggregation code simplified; works with Python 3.7
 * :issue:`788`  Tasks: Celery and RabbitMQ dropped, background task processing now managed within Python/OpenREM
 * :issue:`787`  Interface: fixed login error
+* :issue:`786`  Installation: increased Windows IIS timeouts in docs
 * :issue:`777`  Updated OpenREM to use pydicom 1.3
 * :issue:`772`  DICOM Networking: check for station name at series level or study, not both
 * :issue:`764`  Imports: extractor functions log to extractor log instead of default
