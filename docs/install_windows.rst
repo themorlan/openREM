@@ -144,6 +144,13 @@ gettext
 Download the 64 bit static version of gettext 0.21 from https://mlocati.github.io/articles/gettext-iconv-windows.html.
 Use the ``.exe`` version (software install icon, not the zip icon)
 
+.. figure:: img/DownloadGetTextHighlighted.png
+   :align: center
+   :alt: gettext download page
+   :target: _images/DownloadGetTextHighlighted.png
+
+   Figure 2: gettext download page
+
 Open the downloaded file to start the installation:
 
 * Accept the agreement ``Next >``
@@ -153,12 +160,19 @@ Open the downloaded file to start the installation:
 * ``Finish``
 
 
-Pixelmed and Java
------------------
+Pixelmed
+--------
 
 Download DoseUtility from from the page
 http://www.dclunie.com/pixelmed/software/webstart/DoseUtilityUsage.html - find ``How to install it (locally)`` near the
 bottom of the page and click the ``Windows executable that does not require Java to be installed`` link.
+
+.. figure:: img/DownloadPixelmedHighlighted.png
+   :align: center
+   :alt: Pixelmed download page
+   :target: _images/DownloadPixelmedHighlighted.png
+
+   Figure 3: Pixelmed download page
 
 * Open the downloaded zip file and open a new file browser at ``E:\pixelmed``
 * Drag the contents of the zip file to the ``pixelmed`` folder
@@ -168,6 +182,13 @@ dcmtk
 
 Download from https://dcmtk.org/dcmtk.php.en - look for the ``DCMTK executable binaries`` section, and download the
 64 bit DLL build for Windows.
+
+.. figure:: img/DownloadDCMTKHighlighted.png
+   :align: center
+   :alt: DCMTK download page
+   :target: _images/DownloadDCMTKHighlighted.png
+
+   Figure 4: DCMTK download page
 
 * Open the downloaded zip file and open a new file browser at ``E:\dcmtk``
 * Drag the contents of the dcmtk-3.x.x-win64-dynamic folder in the zip file to the ``dcmtk`` folder
@@ -274,7 +295,7 @@ warning to check if you are sure - ``Yes``:
    :alt: openremproject folder
    :target: _images/openremproject_folder.png
 
-   Figure 2: openremproject folder
+   Figure 5: openremproject folder
 
 Edit ``local_settings.py`` as needed (right click ``Edit with Notepad++``) Make sure you change the ``PASSWORD``, the
 ``SECRET_KEY`` (to anything, just change it), the ``ALLOWED_HOSTS`` list, regionalisation settings and the ``EMAIL``
@@ -446,7 +467,7 @@ Configure IIS
    :alt: Environment Variables Collection
    :target: _images/CollectionEditor.png
 
-   Figure 3: Environment Variables Collection Editor
+   Figure 6: Environment Variables Collection Editor
 
 * Under FastCGI Properties -> Process Model click on the ``Activity Timeout`` value and change it to ``300``
 
@@ -461,7 +482,7 @@ Configure IIS
    :alt: Add FastCGI Application settings
    :target: _images/FastCGIApplication.png
 
-   Figure 4: Add FastCGI Application settings
+   Figure 7: Add FastCGI Application settings
 
 * Click ``OK`` to close the dialogue box
 
