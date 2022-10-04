@@ -338,7 +338,7 @@ the virtualenv is active — prompt will look like
 
 Otherwise see :ref:`activatevirtualenv` and navigate back to that folder.
 
-.. note::
+.. admonition:: Upgrading to a new server
 
     If you are upgrading to a new Linux server, use these additional commands before continuing with those below:
 

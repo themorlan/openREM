@@ -269,13 +269,20 @@ OpenREM configuration and database creation
 PostgreSQL database creation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-* Start  pgAdmin 4 - you will need the password you set when installing PostgreSQL
+Start  pgAdmin 4 - you will need the password you set when installing PostgreSQL
+
+Create user
+-----------
+
 * Click on ``Servers`` to expand, enter the password again
 * Right click ``Login/Group Roles``, ``Create``, ``Login/Group Role...``
 * Name: ``openremuser``
 * Definition, Password: add a password for the openremuser
 * Privileges: activate ``Can login?`` and ``Create database?``
 * ``Save``
+
+Create database
+---------------
 
 * Right click ``Databases``, ``Create``, ``Database...``
 * Database: ``openremdb``
@@ -392,15 +399,17 @@ In a ``CMD`` window, move to the openrem Python folder and activate the virtuale
     E:\venv\Lib\site-packages\openrem>e:\venv\Scripts\activate
     (venv) E:\venv\Lib\site-packages\openrem>
 
-.. note::
+.. admonition:: Upgrading to a new server
 
-    If you are upgrading to a new Linux server, do these additional steps before continuing with those below:
+    If you are upgrading to a new Windows server, do these additional steps before continuing with those below:
 
     * Rename ``E:\venv\Lib\site-packages\openrem\remapp\migrations\0001_initial.py.1-0-upgrade`` to ``0001_initial.py``
 
     Import the database - update the path to the database backup file you copied from the old server:
 
-    * *Instruction to follow*
+    .. code-block::
+
+        C:\Users\openrem>"c:\Program Files\PostgreSQL\14\bin\pg_restore.exe" -U openremuser -d openremdb -W windump.bak
 
     Migrate the database:
 
