@@ -312,8 +312,9 @@ in the settings file or elsewhere in the docs.
 .. admonition:: Upgrading to a new server
 
     If you are upgrading to a new Linux server, review the ``local_settings.py`` file from the old server to copy over
-    the ``NAME``, ``USER`` and ``PASSWORD``, ``ALLOWED_HOSTS`` list and the ``EMAIL`` configuration, and check all the
-    other settings. Change the ``SECRET_KEY`` from the default, but it doesn't have to match the one on the old server.
+    the ``ALLOWED_HOSTS`` list and the ``EMAIL`` configuration, and check all the other settings. Change the
+    ``SECRET_KEY`` from the default, but it doesn't have to match the one on the old server. The database ``NAME``,
+    ``USER`` and ``PASSWORD`` will be the ones you created on the new server.
 
 .. code-block:: python
     :emphasize-lines: 4-6, 17-18,26-29,41,46,49,60-67
@@ -409,7 +410,7 @@ In a ``CMD`` window, move to the openrem Python folder and activate the virtuale
 
     .. code-block::
 
-        C:\Users\openrem>"c:\Program Files\PostgreSQL\14\bin\pg_restore.exe" -U openremuser -d openremdb -W windump.bak
+        C:\Users\openrem>"c:\Program Files\PostgreSQL\14\bin\pg_restore.exe" --no-privileges --no-owner -U openremuser -d openremdb -W windump.bak
 
     Migrate the database:
 
