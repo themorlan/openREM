@@ -249,8 +249,8 @@ Installing Python packages
 
 .. admonition:: Installing on a server with no internet access
 
-    If you are installing on a server with no internet access, return to :doc:`install_offline` at this stage to install
-    the Python packages.
+    If you are installing on a server with no internet access, return to :ref:`Offline-python-packages` in the offline
+    installation docs at this stage to install the Python packages.
 
 Create the virtualenv
 ---------------------

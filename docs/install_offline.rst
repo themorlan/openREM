@@ -61,7 +61,8 @@ On the server without internet access
 =====================================
 
 Follow the :doc:`install_windows`, :doc:`upgrade_windows_new_server`, or :doc:`upgrade_windows` instructions, installing
-the binary packages that were copied across. Return to this page at the **Installing Python packages** section.
+the binary packages that were copied across as well as IIS. Return to this page at the **Installing Python packages**
+section.
 
 .. _Offline-python-packages:
 
