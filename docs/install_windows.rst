@@ -23,6 +23,8 @@ first.
 
 If you are upgrading an existing Windows Server installation in-place, go to :doc:`upgrade_windows` instead.
 
+If you are installing on a server with no internet access, go to :doc:`install_offline` to download the packages.
+
 These instructions assume the following disk layout - there is more information about the reasoning in the box below:
 
 * ``C:`` OS disk
@@ -78,6 +80,8 @@ Set permissions
 * Click ``OK`` twice to close the dialogues
 
 * Repeat for the ``E:\media`` folder
+
+.. _windows_install_packages:
 
 Installing packages
 ^^^^^^^^^^^^^^^^^^^
@@ -203,6 +207,21 @@ Download the 64-bit x64 exe file from https://www.7-zip.org/
 * ``Install``
 * ``Close``
 
+Notepad++
+---------
+
+Download the latest version of Notepad++ from https://notepad-plus-plus.org/downloads/
+
+Open the downloaded file to start the installation:
+
+* Select a language ``OK``
+* Welcome ``Next >``
+* License Agreement ``I Agree``
+* Install Location ``Next >``
+* Choose Components ``Next >``
+* ``Install``
+* ``Finish`` (you can untick the ``Run Notepad++`` option, we don't need it yet)
+
 IIS
 ---
 
@@ -225,23 +244,13 @@ IIS
 You can check the server is running by browsing to http://localhost/ on the server. You should see the
 default IIS Welcome page. It might not work immediately, check again in a few minutes.
 
-Notepad++
----------
-
-Download the latest version of Notepad++ from https://notepad-plus-plus.org/downloads/
-
-Open the downloaded file to start the installation:
-
-* Select a language ``OK``
-* Welcome ``Next >``
-* License Agreement ``I Agree``
-* Install Location ``Next >``
-* Choose Components ``Next >``
-* ``Install``
-* ``Finish`` (you can untick the ``Run Notepad++`` option, we don't need it yet)
-
 Installing Python packages
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. admonition:: Installing on a server with no internet access
+
+    If you are installing on a server with no internet access, return to :doc:`install_offline` at this stage to install
+    the Python packages.
 
 Create the virtualenv
 ---------------------
@@ -262,6 +271,8 @@ Install OpenREM
     (venv) E:\>pip install --upgrade pip
     (venv) E:\>pip install openrem
     (venv) E:\>pip install wfastcgi
+
+.. _windows_config_db_creation:
 
 OpenREM configuration and database creation
 ===========================================
