@@ -247,13 +247,8 @@ default IIS Welcome page. It might not work immediately, check again in a few mi
 Installing Python packages
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. admonition:: Installing on a server with no internet access
-
-    If you are installing on a server with no internet access, return to :ref:`Offline-python-packages` in the offline
-    installation docs at this stage to install the Python packages.
-
-Create the virtualenv
----------------------
+Create and activate the virtualenv
+----------------------------------
 
 Open a ``CMD`` window:
 
@@ -261,18 +256,34 @@ Open a ``CMD`` window:
 
     C:\Users\openrem>e:
     E:\>py -m venv venv
+    E:\>venv\Scripts\activate
+    (venv) E:\>
 
 Install OpenREM
 ---------------
+.. admonition:: Installing on a server with no internet access
+
+    Make sure the virtualenv is activated (command line will have the name of the virtualenv as a prefix:
+    ``(venv) E:\``), then navigate to where the ``openremfiles`` directory is that you copied from the computer *with*
+    internet access, eg if it is in your desktop folder:
+
+    .. code-block:: console
+
+    (venv) E:\>c:
+    (venv) C:\>cd Users\openrem\Desktop
+
+    Now upgrade ``pip`` and install OpenREM and its dependencies:
+
+    .. code-block:: console
+
+    (venv) C:\Users\openrem\Desktop>pip install --no-index --find-links=openremfiles --upgrade pip
+    (venv) C:\Users\openrem\Desktop>pip install --no-index --find-links=openremfiles openrem
 
 .. code-block:: console
 
-    E:\>venv\Scripts\activate
     (venv) E:\>pip install --upgrade pip
     (venv) E:\>pip install openrem
     (venv) E:\>pip install wfastcgi
-
-.. _windows_config_db_creation:
 
 OpenREM configuration and database creation
 ===========================================

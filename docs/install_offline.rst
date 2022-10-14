@@ -61,36 +61,5 @@ On the server without internet access
 =====================================
 
 Follow the :doc:`install_windows`, :doc:`upgrade_windows_new_server`, or :doc:`upgrade_windows` instructions, installing
-the binary packages that were copied across as well as IIS. Return to this page at the **Installing Python packages**
-section.
-
-.. _Offline-python-packages:
-
-Installation of Python packages
--------------------------------
-
-.. admonition:: Old instructions, to be replaced
-
-    In a console, navigate to the directory that your ``openremfiles`` directory is in. If the name if the directory is
-    different to ``openremfiles``, then change the name in the commands below as appropriate. Ensure the virtualenv has been
-    activated.
-
-    Ensure ``pip`` is up to date:
-
-    .. code-block:: console
-
-        $ pip3 install --no-index --find-links=openremfiles pip -U
-
-    Install OpenREM and its dependencies:
-
-    .. code-block:: console
-
-        $ pip3 install --no-index --find-links=openremfiles openrem
-
-Resuming the installation
--------------------------
-
-Now return to
-
-* :ref:`windows_config_db_creation` for installing on Windows servers
-* ``placeholder`` for upgrading on Windows servers
+the binary packages that were copied across as well as IIS. The **Install OpenREM** section has instructions on how to
+install OpenREM python packages from the folder you have copied across.
