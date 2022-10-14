@@ -269,15 +269,15 @@ Install OpenREM
 
     .. code-block:: console
 
-    (venv) E:\>c:
-    (venv) C:\>cd Users\openrem\Desktop
+        (venv) E:\>c:
+        (venv) C:\>cd Users\openrem\Desktop
 
     Now upgrade ``pip`` and install OpenREM and its dependencies:
 
     .. code-block:: console
 
-    (venv) C:\Users\openrem\Desktop>pip install --no-index --find-links=openremfiles --upgrade pip
-    (venv) C:\Users\openrem\Desktop>pip install --no-index --find-links=openremfiles openrem
+        (venv) C:\Users\openrem\Desktop>pip install --no-index --find-links=openremfiles --upgrade pip
+        (venv) C:\Users\openrem\Desktop>pip install --no-index --find-links=openremfiles openrem
 
 .. code-block:: console
 
