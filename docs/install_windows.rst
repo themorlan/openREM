@@ -181,7 +181,7 @@ bottom of the page and click the ``Windows executable that does not require Java
 * Open the downloaded zip file and open a new file browser at ``E:\pixelmed``
 * Drag the contents of the zip file to the ``pixelmed`` folder
 
-dcmtk
+DCMTK
 -----
 
 Download from https://dcmtk.org/dcmtk.php.en - look for the ``DCMTK executable binaries`` section, and download the
@@ -566,7 +566,7 @@ Configure IIS to server the static files
 * There will be a warning about the list order being changed - click ``Yes`` to continue
 
 Test the webserver
-------------------
+^^^^^^^^^^^^^^^^^^
 
 Browse to http://localhost/ on the server, or browse to the servername in a browser on another machine, and you should
 be able to see the new OpenREM web service.
