@@ -82,7 +82,7 @@ Set permissions
     ``Locations...`` and choose the name of the server instead of the domain name.
 
     .. figure:: img/PermissionsDomain.png
-       :align: right
+       :align: center
        :alt: Set account location
        :target: _images/PermissionsDomain.png
 
