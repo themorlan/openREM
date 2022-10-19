@@ -3,6 +3,7 @@ Upgrade to OpenREM 0.10.0 from before 0.9.1
 ###########################################
 
 *doc not ready for translation*
+**needs review**
 
 *******************
 Upgrade preparation
@@ -279,4 +280,5 @@ easier (e.g. ``sudo systemctl status openrem-[tab][tab]`` will list them!)
 Post upgrade migration
 ======================
 
-* Now return to the 0.10.0 release docs for :ref:`post_upgrade0100`
+* Now return to the 0.10.0 release docs for Docker installs - :ref:`post_upgrade0100_docker`, for Linux installs -
+  :ref:`post_upgrade0100_linux` or for Windows installs - *to be created*

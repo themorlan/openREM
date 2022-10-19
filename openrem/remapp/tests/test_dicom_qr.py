@@ -184,14 +184,14 @@ class QRPhilipsCT(TestCase):
 
         rst1 = DicomQRRspStudy.objects.create(dicom_query=query)
         rst1.query_id = query.query_id
-        rst1.study_instance_uid = generate_uid(prefix='1.3.6.1.4.1.45593.999.')
+        rst1.study_instance_uid = generate_uid(prefix="1.3.6.1.4.1.45593.999.")
         rst1.study_description = "test response 1"
         rst1.station_name = ""
         rst1.save()
 
         rst1s1 = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=rst1)
         rst1s1.query_id = query.query_id
-        rst1s1.series_instance_uid = generate_uid(prefix='1.3.6.1.4.1.45593.999.')
+        rst1s1.series_instance_uid = generate_uid(prefix="1.3.6.1.4.1.45593.999.")
         rst1s1.modality = "CT"
         rst1s1.series_number = 1
         rst1s1.series_description = "scan projection radiograph"
@@ -200,7 +200,7 @@ class QRPhilipsCT(TestCase):
 
         rst1s2 = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=rst1)
         rst1s2.query_id = query.query_id
-        rst1s2.series_instance_uid = generate_uid(prefix='1.3.6.1.4.1.45593.999.')
+        rst1s2.series_instance_uid = generate_uid(prefix="1.3.6.1.4.1.45593.999.")
         rst1s2.modality = "CT"
         rst1s2.series_number = 3
         rst1s2.series_description = "thorax and abdomen"
@@ -209,7 +209,7 @@ class QRPhilipsCT(TestCase):
 
         rst1s3 = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=rst1)
         rst1s3.query_id = query.query_id
-        rst1s3.series_instance_uid = generate_uid(prefix='1.3.6.1.4.1.45593.999.')
+        rst1s3.series_instance_uid = generate_uid(prefix="1.3.6.1.4.1.45593.999.")
         rst1s3.modality = "SC"
         rst1s3.series_number = 2394
         rst1s3.series_description = "dose info"
@@ -423,7 +423,7 @@ class QRPhilipsCT(TestCase):
         # Add in a fourth series with modality SR
         rst1s4 = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=rst1)
         rst1s4.query_id = query.query_id
-        rst1s4.series_instance_uid = generate_uid(prefix='1.3.6.1.4.1.45593.999.')
+        rst1s4.series_instance_uid = generate_uid(prefix="1.3.6.1.4.1.45593.999.")
         rst1s4.modality = "SR"
         rst1s4.series_number = 999
         rst1s4.series_description = "radiation dose report"
@@ -489,7 +489,7 @@ class QRPhilipsCT(TestCase):
         # Add in a fourth series with modality SR
         rst1s4 = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=rst1)
         rst1s4.query_id = query.query_id
-        rst1s4.series_instance_uid = generate_uid(prefix='1.3.6.1.4.1.45593.999.')
+        rst1s4.series_instance_uid = generate_uid(prefix="1.3.6.1.4.1.45593.999.")
         rst1s4.modality = "SR"
         rst1s4.series_number = 999
         rst1s4.series_description = "radiation dose report"
@@ -526,14 +526,14 @@ class ResponseFiltering(TestCase):
 
         rst1 = DicomQRRspStudy.objects.create(dicom_query=query)
         rst1.query_id = query.query_id
-        rst1.study_instance_uid = generate_uid(prefix='1.3.6.1.4.1.45593.999.')
+        rst1.study_instance_uid = generate_uid(prefix="1.3.6.1.4.1.45593.999.")
         rst1.study_description = "Imported  CT studies"
         rst1.station_name = "badstation"
         rst1.save()
 
         rst1s1 = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=rst1)
         rst1s1.query_id = query.query_id
-        rst1s1.series_instance_uid = generate_uid(prefix='1.3.6.1.4.1.45593.999.')
+        rst1s1.series_instance_uid = generate_uid(prefix="1.3.6.1.4.1.45593.999.")
         rst1s1.modality = "CT"
         rst1s1.series_number = 1
         rst1s1.series_description = "scan projection radiograph"
@@ -542,7 +542,7 @@ class ResponseFiltering(TestCase):
 
         rst1s2 = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=rst1)
         rst1s2.query_id = query.query_id
-        rst1s2.series_instance_uid = generate_uid(prefix='1.3.6.1.4.1.45593.999.')
+        rst1s2.series_instance_uid = generate_uid(prefix="1.3.6.1.4.1.45593.999.")
         rst1s2.modality = "CT"
         rst1s2.series_number = 3
         rst1s2.series_description = "thorax and abdomen"
@@ -551,7 +551,7 @@ class ResponseFiltering(TestCase):
 
         rst1s3 = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=rst1)
         rst1s3.query_id = query.query_id
-        rst1s3.series_instance_uid = generate_uid(prefix='1.3.6.1.4.1.45593.999.')
+        rst1s3.series_instance_uid = generate_uid(prefix="1.3.6.1.4.1.45593.999.")
         rst1s3.modality = "SC"
         rst1s3.series_number = 2394
         rst1s3.series_description = "dose info"
@@ -572,26 +572,26 @@ class ResponseFiltering(TestCase):
 
         rst2 = DicomQRRspStudy.objects.create(dicom_query=query)
         rst2.query_id = query.query_id
-        rst2.study_instance_uid = generate_uid(prefix='1.3.6.1.4.1.45593.999.')
+        rst2.study_instance_uid = generate_uid(prefix="1.3.6.1.4.1.45593.999.")
         rst2.study_description = "Test Response 2"
         rst2.station_name = "goodstation"
         rst2.save()
 
         rst3 = DicomQRRspStudy.objects.create(dicom_query=query)
         rst3.query_id = query.query_id
-        rst3.study_instance_uid = generate_uid(prefix='1.3.6.1.4.1.45593.999.')
+        rst3.study_instance_uid = generate_uid(prefix="1.3.6.1.4.1.45593.999.")
         rst3.study_description = "test response 3"
         rst3.station_name = "goodstation2"
         rst3.save()
 
         rst4 = DicomQRRspStudy.objects.create(dicom_query=query)
         rst4.query_id = query.query_id
-        rst4.study_instance_uid = generate_uid(prefix='1.3.6.1.4.1.45593.999.')
+        rst4.study_instance_uid = generate_uid(prefix="1.3.6.1.4.1.45593.999.")
         rst4.save()
 
         rst5 = DicomQRRspStudy.objects.create(dicom_query=query)
         rst5.query_id = query.query_id
-        rst5.study_instance_uid = generate_uid(prefix='1.3.6.1.4.1.45593.999.')
+        rst5.study_instance_uid = generate_uid(prefix="1.3.6.1.4.1.45593.999.")
         rst5.study_description = ""
         rst5.station_name = None
         rst5.save()
@@ -725,14 +725,14 @@ class PruneSeriesResponses(TestCase):
 
         st1 = DicomQRRspStudy.objects.create(dicom_query=query)
         st1.query_id = query.query_id
-        st1.study_instance_uid = generate_uid(prefix='1.3.6.1.4.1.45593.999.')
+        st1.study_instance_uid = generate_uid(prefix="1.3.6.1.4.1.45593.999.")
         st1.study_description = "MG study no SR"
         st1.set_modalities_in_study(["MG"])
         st1.save()
 
         st1_se1 = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=st1)
         st1_se1.query_id = query.query_id
-        st1_se1.series_instance_uid = generate_uid(prefix='1.3.6.1.4.1.45593.999.')
+        st1_se1.series_instance_uid = generate_uid(prefix="1.3.6.1.4.1.45593.999.")
         st1_se1.modality = "MG"
         st1_se1.series_number = 1
         st1_se1.number_of_series_related_instances = 1
@@ -773,14 +773,14 @@ class PruneSeriesResponses(TestCase):
 
         st2 = DicomQRRspStudy.objects.create(dicom_query=query)
         st2.query_id = query.query_id
-        st2.study_instance_uid = generate_uid(prefix='1.3.6.1.4.1.45593.999.')
+        st2.study_instance_uid = generate_uid(prefix="1.3.6.1.4.1.45593.999.")
         st2.study_description = "MG study with SR"
         st2.set_modalities_in_study(["MG", "SR"])
         st2.save()
 
         st2_se1 = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=st2)
         st2_se1.query_id = query.query_id
-        st2_se1.series_instance_uid = generate_uid(prefix='1.3.6.1.4.1.45593.999.')
+        st2_se1.series_instance_uid = generate_uid(prefix="1.3.6.1.4.1.45593.999.")
         st2_se1.modality = "MG"
         st2_se1.series_number = 1
         st2_se1.number_of_series_related_instances = 1
@@ -788,7 +788,7 @@ class PruneSeriesResponses(TestCase):
 
         st2_se2 = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=st2)
         st2_se2.query_id = query.query_id
-        st2_se2.series_instance_uid = generate_uid(prefix='1.3.6.1.4.1.45593.999.')
+        st2_se2.series_instance_uid = generate_uid(prefix="1.3.6.1.4.1.45593.999.")
         st2_se2.modality = "SR"
         st2_se2.series_number = 2
         st2_se2.number_of_series_related_instances = 1
@@ -796,13 +796,13 @@ class PruneSeriesResponses(TestCase):
 
         st2_se2_im1 = DicomQRRspImage.objects.create(dicom_qr_rsp_series=st2_se2)
         st2_se2_im1.query_id = query.query_id
-        st2_se2_im1.sop_instance_uid = generate_uid(prefix='1.3.6.1.4.1.45593.999.')
+        st2_se2_im1.sop_instance_uid = generate_uid(prefix="1.3.6.1.4.1.45593.999.")
         st2_se2_im1.sop_class_uid = "1.2.840.10008.5.1.4.1.1.88.67"
         st2_se2_im1.save()
 
         st2_se3 = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=st2)
         st2_se3.query_id = query.query_id
-        st2_se3.series_instance_uid = generate_uid(prefix='1.3.6.1.4.1.45593.999.')
+        st2_se3.series_instance_uid = generate_uid(prefix="1.3.6.1.4.1.45593.999.")
         st2_se3.modality = "SR"
         st2_se3.series_number = 3
         st2_se3.number_of_series_related_instances = 1
@@ -810,7 +810,7 @@ class PruneSeriesResponses(TestCase):
 
         st2_se3_im1 = DicomQRRspImage.objects.create(dicom_qr_rsp_series=st2_se3)
         st2_se3_im1.query_id = query.query_id
-        st2_se3_im1.sop_instance_uid = generate_uid(prefix='1.3.6.1.4.1.45593.999.')
+        st2_se3_im1.sop_instance_uid = generate_uid(prefix="1.3.6.1.4.1.45593.999.")
         st2_se3_im1.sop_class_uid = "1.2.840.10008.5.1.4.1.1.88.11"
         st2_se3_im1.save()
 
@@ -851,14 +851,14 @@ class PruneSeriesResponses(TestCase):
 
         st1 = DicomQRRspStudy.objects.create(dicom_query=query)
         st1.query_id = query.query_id
-        st1.study_instance_uid = generate_uid(prefix='1.3.6.1.4.1.45593.999.')
+        st1.study_instance_uid = generate_uid(prefix="1.3.6.1.4.1.45593.999.")
         st1.study_description = "CR study no SR"
         st1.set_modalities_in_study(["CR", "SR"])
         st1.save()
 
         st1_se1 = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=st1)
         st1_se1.query_id = query.query_id
-        st1_se1.series_instance_uid = generate_uid(prefix='1.3.6.1.4.1.45593.999.')
+        st1_se1.series_instance_uid = generate_uid(prefix="1.3.6.1.4.1.45593.999.")
         st1_se1.modality = "CR"
         st1_se1.series_number = 1
         st1_se1.number_of_series_related_instances = 1
@@ -866,7 +866,7 @@ class PruneSeriesResponses(TestCase):
 
         st1_se2 = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=st1)
         st1_se2.query_id = query.query_id
-        st1_se2.series_instance_uid = generate_uid(prefix='1.3.6.1.4.1.45593.999.')
+        st1_se2.series_instance_uid = generate_uid(prefix="1.3.6.1.4.1.45593.999.")
         st1_se2.modality = "SR"
         st1_se2.series_number = 2
         st1_se2.number_of_series_related_instances = 1
@@ -874,7 +874,7 @@ class PruneSeriesResponses(TestCase):
 
         st1_se2_im1 = DicomQRRspImage.objects.create(dicom_qr_rsp_series=st1_se2)
         st1_se2_im1.query_id = query.query_id
-        st1_se2_im1.sop_instance_uid = generate_uid(prefix='1.3.6.1.4.1.45593.999.')
+        st1_se2_im1.sop_instance_uid = generate_uid(prefix="1.3.6.1.4.1.45593.999.")
         st1_se2_im1.sop_class_uid = "1.2.840.10008.5.1.4.1.1.88.11"
         st1_se2_im1.save()
 
@@ -915,14 +915,14 @@ class PruneSeriesResponses(TestCase):
 
         st1 = DicomQRRspStudy.objects.create(dicom_query=query)
         st1.query_id = query.query_id
-        st1.study_instance_uid = generate_uid(prefix='1.3.6.1.4.1.45593.999.')
+        st1.study_instance_uid = generate_uid(prefix="1.3.6.1.4.1.45593.999.")
         st1.study_description = "DX study with RDSR"
         st1.set_modalities_in_study(["DX", "SR"])
         st1.save()
 
         st1_se1 = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=st1)
         st1_se1.query_id = query.query_id
-        st1_se1.series_instance_uid = generate_uid(prefix='1.3.6.1.4.1.45593.999.')
+        st1_se1.series_instance_uid = generate_uid(prefix="1.3.6.1.4.1.45593.999.")
         st1_se1.modality = "DX"
         st1_se1.series_number = 1
         st1_se1.number_of_series_related_instances = 1
@@ -930,7 +930,7 @@ class PruneSeriesResponses(TestCase):
 
         st1_se2 = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=st1)
         st1_se2.query_id = query.query_id
-        st1_se2.series_instance_uid = generate_uid(prefix='1.3.6.1.4.1.45593.999.')
+        st1_se2.series_instance_uid = generate_uid(prefix="1.3.6.1.4.1.45593.999.")
         st1_se2.modality = "SR"
         st1_se2.series_number = 2
         st1_se2.number_of_series_related_instances = 1
@@ -938,13 +938,13 @@ class PruneSeriesResponses(TestCase):
 
         st1_se2_im1 = DicomQRRspImage.objects.create(dicom_qr_rsp_series=st1_se2)
         st1_se2_im1.query_id = query.query_id
-        st1_se2_im1.sop_instance_uid = generate_uid(prefix='1.3.6.1.4.1.45593.999.')
+        st1_se2_im1.sop_instance_uid = generate_uid(prefix="1.3.6.1.4.1.45593.999.")
         st1_se2_im1.sop_class_uid = "1.2.840.10008.5.1.4.1.1.88.67"
         st1_se2_im1.save()
 
         st1_se3 = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=st1)
         st1_se3.query_id = query.query_id
-        st1_se3.series_instance_uid = generate_uid(prefix='1.3.6.1.4.1.45593.999.')
+        st1_se3.series_instance_uid = generate_uid(prefix="1.3.6.1.4.1.45593.999.")
         st1_se3.modality = "SR"
         st1_se3.series_number = 3
         st1_se3.number_of_series_related_instances = 1
@@ -952,13 +952,13 @@ class PruneSeriesResponses(TestCase):
 
         st1_se3_im1 = DicomQRRspImage.objects.create(dicom_qr_rsp_series=st1_se3)
         st1_se3_im1.query_id = query.query_id
-        st1_se3_im1.sop_instance_uid = generate_uid(prefix='1.3.6.1.4.1.45593.999.')
+        st1_se3_im1.sop_instance_uid = generate_uid(prefix="1.3.6.1.4.1.45593.999.")
         st1_se3_im1.sop_class_uid = "1.2.840.10008.5.1.4.1.1.88.11"
         st1_se3_im1.save()
 
         st1_se4 = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=st1)
         st1_se4.query_id = query.query_id
-        st1_se4.series_instance_uid = generate_uid(prefix='1.3.6.1.4.1.45593.999.')
+        st1_se4.series_instance_uid = generate_uid(prefix="1.3.6.1.4.1.45593.999.")
         st1_se4.modality = "SR"
         st1_se4.series_number = 4
         st1_se4.number_of_series_related_instances = 1
@@ -966,7 +966,7 @@ class PruneSeriesResponses(TestCase):
 
         st1_se4_im1 = DicomQRRspImage.objects.create(dicom_qr_rsp_series=st1_se4)
         st1_se4_im1.query_id = query.query_id
-        st1_se4_im1.sop_instance_uid = generate_uid(prefix='1.3.6.1.4.1.45593.999.')
+        st1_se4_im1.sop_instance_uid = generate_uid(prefix="1.3.6.1.4.1.45593.999.")
         st1_se4_im1.sop_class_uid = "1.2.840.10008.5.1.4.1.1.88.22"
         st1_se4_im1.save()
 
@@ -1007,14 +1007,14 @@ class PruneSeriesResponses(TestCase):
 
         st1 = DicomQRRspStudy.objects.create(dicom_query=query)
         st1.query_id = query.query_id
-        st1.study_instance_uid = generate_uid(prefix='1.3.6.1.4.1.45593.999.')
+        st1.study_instance_uid = generate_uid(prefix="1.3.6.1.4.1.45593.999.")
         st1.study_description = "RF study no SR"
         st1.set_modalities_in_study(["RF", "SR"])
         st1.save()
 
         st1_se1 = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=st1)
         st1_se1.query_id = query.query_id
-        st1_se1.series_instance_uid = generate_uid(prefix='1.3.6.1.4.1.45593.999.')
+        st1_se1.series_instance_uid = generate_uid(prefix="1.3.6.1.4.1.45593.999.")
         st1_se1.modality = "RF"
         st1_se1.series_number = 1
         st1_se1.number_of_series_related_instances = 1
@@ -1022,7 +1022,7 @@ class PruneSeriesResponses(TestCase):
 
         st1_se2 = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=st1)
         st1_se2.query_id = query.query_id
-        st1_se2.series_instance_uid = generate_uid(prefix='1.3.6.1.4.1.45593.999.')
+        st1_se2.series_instance_uid = generate_uid(prefix="1.3.6.1.4.1.45593.999.")
         st1_se2.modality = "SR"
         st1_se2.series_number = 2
         st1_se2.number_of_series_related_instances = 1
@@ -1030,7 +1030,7 @@ class PruneSeriesResponses(TestCase):
 
         st1_se2_im1 = DicomQRRspImage.objects.create(dicom_qr_rsp_series=st1_se2)
         st1_se2_im1.query_id = query.query_id
-        st1_se2_im1.sop_instance_uid = generate_uid(prefix='1.3.6.1.4.1.45593.999.')
+        st1_se2_im1.sop_instance_uid = generate_uid(prefix="1.3.6.1.4.1.45593.999.")
         st1_se2_im1.sop_class_uid = "1.2.840.10008.5.1.4.1.1.88.11"
         st1_se2_im1.save()
 
@@ -1067,14 +1067,14 @@ class PruneSeriesResponses(TestCase):
 
         st1 = DicomQRRspStudy.objects.create(dicom_query=query)
         st1.query_id = query.query_id
-        st1.study_instance_uid = generate_uid(prefix='1.3.6.1.4.1.45593.999.')
+        st1.study_instance_uid = generate_uid(prefix="1.3.6.1.4.1.45593.999.")
         st1.study_description = "XA study with ESR and Basic SR"
         st1.set_modalities_in_study(["XA", "SR"])
         st1.save()
 
         st1_se1 = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=st1)
         st1_se1.query_id = query.query_id
-        st1_se1.series_instance_uid = generate_uid(prefix='1.3.6.1.4.1.45593.999.')
+        st1_se1.series_instance_uid = generate_uid(prefix="1.3.6.1.4.1.45593.999.")
         st1_se1.modality = "XA"
         st1_se1.series_number = 1
         st1_se1.number_of_series_related_instances = 1
@@ -1082,7 +1082,7 @@ class PruneSeriesResponses(TestCase):
 
         st1_se2 = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=st1)
         st1_se2.query_id = query.query_id
-        st1_se2.series_instance_uid = generate_uid(prefix='1.3.6.1.4.1.45593.999.')
+        st1_se2.series_instance_uid = generate_uid(prefix="1.3.6.1.4.1.45593.999.")
         st1_se2.modality = "SR"
         st1_se2.series_number = 2
         st1_se2.number_of_series_related_instances = 1
@@ -1090,13 +1090,13 @@ class PruneSeriesResponses(TestCase):
 
         st1_se2_im1 = DicomQRRspImage.objects.create(dicom_qr_rsp_series=st1_se2)
         st1_se2_im1.query_id = query.query_id
-        st1_se2_im1.sop_instance_uid = generate_uid(prefix='1.3.6.1.4.1.45593.999.')
+        st1_se2_im1.sop_instance_uid = generate_uid(prefix="1.3.6.1.4.1.45593.999.")
         st1_se2_im1.sop_class_uid = "1.2.840.10008.5.1.4.1.1.88.22"
         st1_se2_im1.save()
 
         st1_se3 = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=st1)
         st1_se3.query_id = query.query_id
-        st1_se3.series_instance_uid = generate_uid(prefix='1.3.6.1.4.1.45593.999.')
+        st1_se3.series_instance_uid = generate_uid(prefix="1.3.6.1.4.1.45593.999.")
         st1_se3.modality = "SR"
         st1_se3.series_number = 3
         st1_se3.number_of_series_related_instances = 1
@@ -1104,7 +1104,7 @@ class PruneSeriesResponses(TestCase):
 
         st1_se3_im1 = DicomQRRspImage.objects.create(dicom_qr_rsp_series=st1_se3)
         st1_se3_im1.query_id = query.query_id
-        st1_se3_im1.sop_instance_uid = generate_uid(prefix='1.3.6.1.4.1.45593.999.')
+        st1_se3_im1.sop_instance_uid = generate_uid(prefix="1.3.6.1.4.1.45593.999.")
         st1_se3_im1.sop_class_uid = "1.2.840.10008.5.1.4.1.1.88.11"
         st1_se3_im1.save()
 
@@ -1146,14 +1146,14 @@ class PruneSeriesResponses(TestCase):
 
         st2 = DicomQRRspStudy.objects.create(dicom_query=query)
         st2.query_id = query.query_id
-        st2.study_instance_uid = generate_uid(prefix='1.3.6.1.4.1.45593.999.')
+        st2.study_instance_uid = generate_uid(prefix="1.3.6.1.4.1.45593.999.")
         st2.study_description = "MG study with SR"
         st2.set_modalities_in_study(["MG", "SR"])
         st2.save()
 
         st2_se1 = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=st2)
         st2_se1.query_id = query.query_id
-        st2_se1.series_instance_uid = generate_uid(prefix='1.3.6.1.4.1.45593.999.')
+        st2_se1.series_instance_uid = generate_uid(prefix="1.3.6.1.4.1.45593.999.")
         st2_se1.modality = "MG"
         st2_se1.series_number = 1
         st2_se1.number_of_series_related_instances = 1
@@ -1161,7 +1161,7 @@ class PruneSeriesResponses(TestCase):
 
         st2_se2 = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=st2)
         st2_se2.query_id = query.query_id
-        st2_se2.series_instance_uid = generate_uid(prefix='1.3.6.1.4.1.45593.999.')
+        st2_se2.series_instance_uid = generate_uid(prefix="1.3.6.1.4.1.45593.999.")
         st2_se2.modality = "SR"
         st2_se2.series_number = 2
         st2_se2.number_of_series_related_instances = 1
@@ -1204,14 +1204,14 @@ class PruneSeriesResponses(TestCase):
 
         st2 = DicomQRRspStudy.objects.create(dicom_query=query)
         st2.query_id = query.query_id
-        st2.study_instance_uid = generate_uid(prefix='1.3.6.1.4.1.45593.999.')
+        st2.study_instance_uid = generate_uid(prefix="1.3.6.1.4.1.45593.999.")
         st2.study_description = "MG study with SR"
         st2.set_modalities_in_study(["MG", "SR"])
         st2.save()
 
         st2_se1 = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=st2)
         st2_se1.query_id = query.query_id
-        st2_se1.series_instance_uid = generate_uid(prefix='1.3.6.1.4.1.45593.999.')
+        st2_se1.series_instance_uid = generate_uid(prefix="1.3.6.1.4.1.45593.999.")
         st2_se1.modality = "MG"
         st2_se1.series_number = 1
         st2_se1.number_of_series_related_instances = 1
@@ -1219,7 +1219,7 @@ class PruneSeriesResponses(TestCase):
 
         st2_se2 = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=st2)
         st2_se2.query_id = query.query_id
-        st2_se2.series_instance_uid = generate_uid(prefix='1.3.6.1.4.1.45593.999.')
+        st2_se2.series_instance_uid = generate_uid(prefix="1.3.6.1.4.1.45593.999.")
         st2_se2.modality = "SR"
         st2_se2.series_number = 2
         st2_se2.number_of_series_related_instances = 1
@@ -1276,14 +1276,14 @@ class PETCTStudyDuplication(TestCase):
 
         st1 = DicomQRRspStudy.objects.create(dicom_query=query)
         st1.query_id = query.query_id
-        st1.study_instance_uid = generate_uid(prefix='1.3.6.1.4.1.45593.999.')
+        st1.study_instance_uid = generate_uid(prefix="1.3.6.1.4.1.45593.999.")
         st1.study_description = "NM Study with PET Image and CT RDSR"
         st1.set_modalities_in_study(["PT", "SR", "CT"])
         st1.save()
 
         se_rdsr = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=st1)
         se_rdsr.query_id = query.query_id
-        se_rdsr.series_instance_uid = generate_uid(prefix='1.3.6.1.4.1.45593.999.')
+        se_rdsr.series_instance_uid = generate_uid(prefix="1.3.6.1.4.1.45593.999.")
         se_rdsr.modality = "SR"
         se_rdsr.series_number = 1
         se_rdsr.number_of_series_related_instances = 1
@@ -1291,13 +1291,13 @@ class PETCTStudyDuplication(TestCase):
 
         st1_se2_im1 = DicomQRRspImage.objects.create(dicom_qr_rsp_series=se_rdsr)
         st1_se2_im1.query_id = query.query_id
-        st1_se2_im1.sop_instance_uid = generate_uid(prefix='1.3.6.1.4.1.45593.999.')
+        st1_se2_im1.sop_instance_uid = generate_uid(prefix="1.3.6.1.4.1.45593.999.")
         st1_se2_im1.sop_class_uid = "1.2.840.10008.5.1.4.1.1.88.67"
         st1_se2_im1.save()
 
         se_pt = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=st1)
         se_pt.query_id = query.query_id
-        se_pt.series_instance_uid = generate_uid(prefix='1.3.6.1.4.1.45593.999.')
+        se_pt.series_instance_uid = generate_uid(prefix="1.3.6.1.4.1.45593.999.")
         se_pt.modality = "PT"
         se_pt.series_number = 1
         se_pt.number_of_series_related_instances = 1
@@ -1340,13 +1340,13 @@ class PruneSeriesResponseNM(TestCase):
 
         st1 = DicomQRRspStudy.objects.create(dicom_query=query)
         st1.query_id = query.query_id
-        st1.study_instance_uid = generate_uid(prefix='1.3.6.1.4.1.45593.999.')
+        st1.study_instance_uid = generate_uid(prefix="1.3.6.1.4.1.45593.999.")
         st1.study_description = "NM Study with RRDSR"
         st1.save()
 
         se_sr = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=st1)
         se_sr.query_id = query.query_id
-        se_sr.series_instance_uid = generate_uid(prefix='1.3.6.1.4.1.45593.999.')
+        se_sr.series_instance_uid = generate_uid(prefix="1.3.6.1.4.1.45593.999.")
         se_sr.modality = "SR"
         se_sr.series_number = 1
         se_sr.number_of_series_related_instances = 1
@@ -1354,13 +1354,13 @@ class PruneSeriesResponseNM(TestCase):
 
         se_sr_im1 = DicomQRRspImage.objects.create(dicom_qr_rsp_series=se_sr)
         se_sr_im1.query_id = query.query_id
-        se_sr_im1.sop_instance_uid = generate_uid(prefix='1.3.6.1.4.1.45593.999.')
+        se_sr_im1.sop_instance_uid = generate_uid(prefix="1.3.6.1.4.1.45593.999.")
         se_sr_im1.sop_class_uid = "1.2.840.10008.5.1.4.1.1.88.68"
         se_sr_im1.save()
 
         se_pt = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=st1)
         se_pt.query_id = query.query_id
-        se_pt.series_instance_uid = generate_uid(prefix='1.3.6.1.4.1.45593.999.')
+        se_pt.series_instance_uid = generate_uid(prefix="1.3.6.1.4.1.45593.999.")
         se_pt.modality = "PT"
         se_pt.series_number = 1
         se_pt.number_of_series_related_instances = 1
@@ -1368,13 +1368,13 @@ class PruneSeriesResponseNM(TestCase):
 
         se_pt_im1 = DicomQRRspImage.objects.create(dicom_qr_rsp_series=se_pt)
         se_pt_im1.query_id = query.query_id
-        se_pt_im1.sop_instance_uid = generate_uid(prefix='1.3.6.1.4.1.45593.999.')
+        se_pt_im1.sop_instance_uid = generate_uid(prefix="1.3.6.1.4.1.45593.999.")
         se_pt_im1.sop_class_uid = "1.2.840.10008.5.1.4.1.1.128"
         se_pt_im1.save()
 
         se_nm = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=st1)
         se_nm.query_id = query.query_id
-        se_nm.series_instance_uid = generate_uid(prefix='1.3.6.1.4.1.45593.999.')
+        se_nm.series_instance_uid = generate_uid(prefix="1.3.6.1.4.1.45593.999.")
         se_nm.modality = "NM"
         se_nm.series_number = 1
         se_nm.number_of_series_related_instances = 1
@@ -1382,7 +1382,7 @@ class PruneSeriesResponseNM(TestCase):
 
         se_nm_im1 = DicomQRRspImage.objects.create(dicom_qr_rsp_series=se_nm)
         se_nm_im1.query_id = query.query_id
-        se_nm_im1.sop_instance_uid = generate_uid(prefix='1.3.6.1.4.1.45593.999.')
+        se_nm_im1.sop_instance_uid = generate_uid(prefix="1.3.6.1.4.1.45593.999.")
         se_nm_im1.sop_class_uid = "1.2.840.10008.5.1.4.1.1.20"
         se_nm_im1.save()
 
@@ -1504,14 +1504,14 @@ class PruneSeriesResponsesCT(TestCase):
 
         st1 = DicomQRRspStudy.objects.create(dicom_query=query)
         st1.query_id = query.query_id
-        st1.study_instance_uid = generate_uid(prefix='1.3.6.1.4.1.45593.999.')
+        st1.study_instance_uid = generate_uid(prefix="1.3.6.1.4.1.45593.999.")
         st1.study_description = "CT study"
         st1.set_modalities_in_study(["CT", "SR"])
         st1.save()
 
         st1_se1 = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=st1)
         st1_se1.query_id = query.query_id
-        st1_se1.series_instance_uid = generate_uid(prefix='1.3.6.1.4.1.45593.999.')
+        st1_se1.series_instance_uid = generate_uid(prefix="1.3.6.1.4.1.45593.999.")
         st1_se1.modality = "CT"
         st1_se1.series_number = 1
         st1_se1.number_of_series_related_instances = 15
@@ -1520,7 +1520,7 @@ class PruneSeriesResponsesCT(TestCase):
 
         st1_se2 = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=st1)
         st1_se2.query_id = query.query_id
-        st1_se2.series_instance_uid = generate_uid(prefix='1.3.6.1.4.1.45593.999.')
+        st1_se2.series_instance_uid = generate_uid(prefix="1.3.6.1.4.1.45593.999.")
         st1_se2.modality = "SR"
         st1_se2.series_number = 2
         st1_se2.number_of_series_related_instances = 1
@@ -1528,13 +1528,13 @@ class PruneSeriesResponsesCT(TestCase):
 
         st1_se2_im1 = DicomQRRspImage.objects.create(dicom_qr_rsp_series=st1_se2)
         st1_se2_im1.query_id = query.query_id
-        st1_se2_im1.sop_instance_uid = generate_uid(prefix='1.3.6.1.4.1.45593.999.')
+        st1_se2_im1.sop_instance_uid = generate_uid(prefix="1.3.6.1.4.1.45593.999.")
         st1_se2_im1.sop_class_uid = "1.2.840.10008.5.1.4.1.1.88.22"
         st1_se2_im1.save()
 
         st1_se3 = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=st1)
         st1_se3.query_id = query.query_id
-        st1_se3.series_instance_uid = generate_uid(prefix='1.3.6.1.4.1.45593.999.')
+        st1_se3.series_instance_uid = generate_uid(prefix="1.3.6.1.4.1.45593.999.")
         st1_se3.modality = "SR"
         st1_se3.series_number = 3
         st1_se3.number_of_series_related_instances = 1
@@ -1542,13 +1542,13 @@ class PruneSeriesResponsesCT(TestCase):
 
         st1_se3_im1 = DicomQRRspImage.objects.create(dicom_qr_rsp_series=st1_se3)
         st1_se3_im1.query_id = query.query_id
-        st1_se3_im1.sop_instance_uid = generate_uid(prefix='1.3.6.1.4.1.45593.999.')
+        st1_se3_im1.sop_instance_uid = generate_uid(prefix="1.3.6.1.4.1.45593.999.")
         st1_se3_im1.sop_class_uid = "1.2.840.10008.5.1.4.1.1.88.11"
         st1_se3_im1.save()
 
         st1_se4 = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=st1)
         st1_se4.query_id = query.query_id
-        st1_se4.series_instance_uid = generate_uid(prefix='1.3.6.1.4.1.45593.999.')
+        st1_se4.series_instance_uid = generate_uid(prefix="1.3.6.1.4.1.45593.999.")
         st1_se4.modality = "CT"
         st1_se4.series_number = 4
         st1_se4.number_of_series_related_instances = 1
@@ -1557,7 +1557,7 @@ class PruneSeriesResponsesCT(TestCase):
 
         st1_se5 = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=st1)
         st1_se5.query_id = query.query_id
-        st1_se5.series_instance_uid = generate_uid(prefix='1.3.6.1.4.1.45593.999.')
+        st1_se5.series_instance_uid = generate_uid(prefix="1.3.6.1.4.1.45593.999.")
         st1_se5.modality = "SR"
         st1_se5.series_number = 5
         st1_se5.number_of_series_related_instances = 1
@@ -1565,7 +1565,7 @@ class PruneSeriesResponsesCT(TestCase):
 
         st1_se5_im1 = DicomQRRspImage.objects.create(dicom_qr_rsp_series=st1_se5)
         st1_se5_im1.query_id = query.query_id
-        st1_se5_im1.sop_instance_uid = generate_uid(prefix='1.3.6.1.4.1.45593.999.')
+        st1_se5_im1.sop_instance_uid = generate_uid(prefix="1.3.6.1.4.1.45593.999.")
         st1_se5_im1.sop_class_uid = "1.2.840.10008.5.1.4.1.1.88.67"
         st1_se5_im1.save()
 
@@ -2308,12 +2308,12 @@ class DuplicatesInStudyResponse(TestCase):
 
         rst1 = DicomQRRspStudy.objects.create(dicom_query=query)
         rst1.query_id = query.query_id
-        rst1.study_instance_uid = generate_uid(prefix='1.3.6.1.4.1.45593.999.')
+        rst1.study_instance_uid = generate_uid(prefix="1.3.6.1.4.1.45593.999.")
         rst1.save()
 
         rst2 = DicomQRRspStudy.objects.create(dicom_query=query)
         rst2.query_id = query.query_id
-        rst2.study_instance_uid = generate_uid(prefix='1.3.6.1.4.1.45593.999.')
+        rst2.study_instance_uid = generate_uid(prefix="1.3.6.1.4.1.45593.999.")
         rst2.save()
 
         rst3 = DicomQRRspStudy.objects.create(dicom_query=query)
@@ -2335,7 +2335,7 @@ class DuplicatesInStudyResponse(TestCase):
 def _fake_query_each_mod(all_mods, query, d, assoc, ae, remote):
     rsp1 = DicomQRRspStudy.objects.create(dicom_query=query)
     rsp1.query_id = uuid.uuid4()
-    rsp1.study_instance_uid = generate_uid(prefix='1.3.6.1.4.1.45593.999.')
+    rsp1.study_instance_uid = generate_uid(prefix="1.3.6.1.4.1.45593.999.")
     rsp1.station_name = "MIXEDCTNM"
     rsp1.set_modalities_in_study(["PT", "CT", "SR"])
     rsp1.modality = None
@@ -2352,7 +2352,7 @@ def _fake_associate(*args, **kwargs):
 def _fake_query_series(ae, remote, assoc, d2, rsp, query):
     st1_se1 = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=rsp)
     st1_se1.query_id = query.query_id
-    st1_se1.series_instance_uid = generate_uid(prefix='1.3.6.1.4.1.45593.999.')
+    st1_se1.series_instance_uid = generate_uid(prefix="1.3.6.1.4.1.45593.999.")
     st1_se1.modality = "CT"
     st1_se1.series_number = 1
     st1_se1.number_of_series_related_instances = 100
@@ -2361,7 +2361,7 @@ def _fake_query_series(ae, remote, assoc, d2, rsp, query):
 
     st1_se2 = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=rsp)
     st1_se2.query_id = query.query_id
-    st1_se2.series_instance_uid = generate_uid(prefix='1.3.6.1.4.1.45593.999.')
+    st1_se2.series_instance_uid = generate_uid(prefix="1.3.6.1.4.1.45593.999.")
     st1_se2.modality = "PET"
     st1_se2.series_number = 2
     st1_se2.number_of_series_related_instances = 100
@@ -2370,7 +2370,7 @@ def _fake_query_series(ae, remote, assoc, d2, rsp, query):
 
     st1_se3 = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=rsp)
     st1_se3.query_id = query.query_id
-    st1_se3.series_instance_uid = generate_uid(prefix='1.3.6.1.4.1.45593.999.')
+    st1_se3.series_instance_uid = generate_uid(prefix="1.3.6.1.4.1.45593.999.")
     st1_se3.modality = "SR"
     st1_se3.series_number = 3
     st1_se3.number_of_series_related_instances = 1
@@ -2379,7 +2379,7 @@ def _fake_query_series(ae, remote, assoc, d2, rsp, query):
 
     st1_se3_im1 = DicomQRRspImage.objects.create(dicom_qr_rsp_series=st1_se3)
     st1_se3_im1.query_id = query.query_id
-    st1_se3_im1.sop_instance_uid = generate_uid(prefix='1.3.6.1.4.1.45593.999.')
+    st1_se3_im1.sop_instance_uid = generate_uid(prefix="1.3.6.1.4.1.45593.999.")
     st1_se3_im1.sop_class_uid = "1.2.840.10008.5.1.4.1.1.88.67"
     st1_se3_im1.save()
 

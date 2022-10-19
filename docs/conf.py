@@ -31,7 +31,7 @@ django.setup()
 # -- Project information -----------------------------------------------------
 
 project = "OpenREM"
-copyright = "2013-2021, The Royal Marsden NHS Foundation Trust"  # pylint: disable=redefined-builtin
+copyright = "2013-2022, The Royal Marsden NHS Foundation Trust"  # pylint: disable=redefined-builtin
 author = "OpenREM Contributers"
 
 # The version info for the project you're documenting, acts as replacement for
@@ -102,7 +102,7 @@ exclude_patterns = ["_build"]
 # -- Options for sphinx-copybutton ----------------------------------------
 
 copybutton_prompt_text = (
-    r">>> |\.\.\. |\$ |In \[\d*\]: | {2,5}\.\.\.: | {5,8}: |PS [A-Z]:\\[^>]*> "
+    r"/>>> |\.\.\. |\$ |In \[\d*\]: | {2,5}\.\.\.: | {5,8}: |[A-Z]\:[^>]*>|\(venv\) [A-Z]\:[^>]*>|PS [A-Z]:\\[^>]*> "
 )
 copybutton_prompt_is_regexp = True
 copybutton_line_continuation_character = "\\"

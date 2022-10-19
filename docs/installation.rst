@@ -74,6 +74,7 @@ Full upgrade instructions are provided, based on a Windows Server 2019 installat
 
     install_windows
     upgrade_windows
+    upgrade_windows_new_server
     install_offline
 
 

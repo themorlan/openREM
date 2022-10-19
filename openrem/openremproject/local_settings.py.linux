@@ -9,27 +9,26 @@ import os
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',  # Add 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': '/home/user/openrem/openrem.db', # Or path to database file if using sqlite3.
-        'USER': '',                              # Not used with sqlite3.
-        'PASSWORD': '',                          # Not used with sqlite3.
-        'HOST': '',                              # Set to empty string for localhost. Not used with sqlite3.
-        'PORT': '',                              # Set to empty string for default. Not used with sqlite3.
+        'ENGINE': 'django.db.backends.postgresql',  # Or change to '.mysql', '.sqlite3' or '.oracle'.
+        'NAME': 'openremdb',                        # Or path to database file if using sqlite3.
+        'USER': 'openremuser',                      # Not used with sqlite3.
+        'PASSWORD': 'mysecretpassword',             # Not used with sqlite3.
+        'HOST': '',                                 # Set to empty string for localhost. Not used with sqlite3.
+        'PORT': '',                                 # Set to empty string for default. Not used with sqlite3.
     }
 }
-
 
 # Absolute filesystem path to the directory that will hold xlsx and csv
 # exports patient size import files
 # Linux example: '/var/openrem/media/'
 # Windows example: 'C:/Users/myusername/Documents/OpenREM/media/'
-MEDIA_ROOT = ''
+MEDIA_ROOT = '/var/dose/media/'
 
 # Absolute path to the directory static files should be collected to.
 # Don't put anything in this directory yourself; store your static files
 # in apps' 'static/' subdirectories and in STATICFILES_DIRS.
 # Example: '/home/media/media.lawrence.com/static/'
-STATIC_ROOT = ''
+STATIC_ROOT = '/var/dose/static/'
 JS_REVERSE_OUTPUT_PATH = os.path.join(STATIC_ROOT, 'js', 'django_reverse')
 
 # You should generate a new secret key. Make this unique, and don't
@@ -52,11 +51,6 @@ ALLOWED_HOSTS = [
 # LOGIN_URL (always) should be overridden to include the VIRTUAL_DIRECTORY
 VIRTUAL_DIRECTORY = ''
 
-# Date format for exporting data to Excel xlsx files.
-# Default in OpenREM is dd/mm/yyyy. Override it by uncommenting and customising below; a full list of codes is available
-# at https://msdn.microsoft.com/en-us/library/ee634398.aspx.
-# XLSX_DATE = 'mm/dd/yyyy'
-
 # Logging configuration
 # Set the log file location. The example places the log file in the media directory. Change as required - on linux
 # systems you might put these in a subdirectory of /var/log/. If you want all the logs in one file, set the filename
@@ -64,58 +58,55 @@ VIRTUAL_DIRECTORY = ''
 LOG_ROOT = MEDIA_ROOT
 LOG_FILENAME = os.path.join(LOG_ROOT, 'openrem.log')
 QR_FILENAME = os.path.join(LOG_ROOT, 'openrem_qr.log')
-STORE_FILENAME = os.path.join(LOG_ROOT, 'openrem_store.log')
 EXTRACTOR_FILENAME = os.path.join(LOG_ROOT, 'openrem_extractor.log')
 
 LOGGING['handlers']['file']['filename'] = LOG_FILENAME          # General logs
 LOGGING['handlers']['qr_file']['filename'] = QR_FILENAME        # Query Retrieve SCU logs
-LOGGING['handlers']['store_file']['filename'] = STORE_FILENAME  # Store SCP logs
 LOGGING['handlers']['extractor_file']['filename'] = EXTRACTOR_FILENAME  # Extractor logs
 
 # Set log message format. Options are 'verbose' or 'simple'. Recommend leaving as 'verbose'.
 LOGGING['handlers']['file']['formatter'] = 'verbose'        # General logs
 LOGGING['handlers']['qr_file']['formatter'] = 'verbose'     # Query Retrieve SCU logs
-LOGGING['handlers']['store_file']['formatter'] = 'verbose'  # Store SCP logs
 LOGGING['handlers']['extractor_file']['formatter'] = 'verbose'  # Extractor logs
 
 # Set the log level. Options are 'DEBUG', 'INFO', 'WARNING', 'ERROR', and 'CRITICAL', with progressively less logging.
 LOGGING['loggers']['remapp']['level'] = 'INFO'                    # General logs
 LOGGING['loggers']['remapp.netdicom.qrscu']['level'] = 'INFO'     # Query Retrieve SCU logs
-LOGGING['loggers']['remapp.netdicom.storescp']['level'] = 'INFO'  # Store SCP logs
-LOGGING['loggers']['remapp.extractors.ct_toshiba']['level'] = 'INFO'  # Toshiba RDSR creation extractor logs
+LOGGING['loggers']['remapp.extractors']['level'] = 'INFO'  # Extractor logs
 
 # Linux only for now: configure 'rotating' logs so they don't get too big. Remove the '# ' to uncomment. 'LOGGING'
 # should be at the start of the line.
-# LOGGING['handlers']['file']['class'] = 'logging.handlers.RotatingFileHandler'
-# LOGGING['handlers']['file']['maxBytes'] = 10 * 1024 * 1024  # 10*1024*1024 = 10 MB
-# LOGGING['handlers']['file']['backupCount'] = 5  # number of log files to keep before deleting the oldest one
-# LOGGING['handlers']['qr_file']['class'] = 'logging.handlers.RotatingFileHandler'
-# LOGGING['handlers']['qr_file']['maxBytes'] = 10 * 1024 * 1024  # 10*1024*1024 = 10 MB
-# LOGGING['handlers']['qr_file']['backupCount'] = 5  # number of log files to keep before deleting the oldest one
-# LOGGING['handlers']['store_file']['class'] = 'logging.handlers.RotatingFileHandler'
-# LOGGING['handlers']['store_file']['maxBytes'] = 10 * 1024 * 1024  # 10*1024*1024 = 10 MB
-# LOGGING['handlers']['store_file']['backupCount'] = 5  # number of log files to keep before deleting the oldest one
-# LOGGING['handlers']['extractor_file']['class'] = 'logging.handlers.RotatingFileHandler'
-# LOGGING['handlers']['extractor_file']['maxBytes'] = 10 * 1024 * 1024  # 10*1024*1024 = 10 MB
-# LOGGING['handlers']['extractor_file']['backupCount'] = 5  # number of log files to keep before deleting the oldest one
+LOGGING['handlers']['file']['class'] = 'logging.handlers.RotatingFileHandler'
+LOGGING['handlers']['file']['maxBytes'] = 10 * 1024 * 1024  # 10*1024*1024 = 10 MB
+LOGGING['handlers']['file']['backupCount'] = 5  # number of log files to keep before deleting the oldest one
+LOGGING['handlers']['qr_file']['class'] = 'logging.handlers.RotatingFileHandler'
+LOGGING['handlers']['qr_file']['maxBytes'] = 10 * 1024 * 1024  # 10*1024*1024 = 10 MB
+LOGGING['handlers']['qr_file']['backupCount'] = 5  # number of log files to keep before deleting the oldest one
+LOGGING['handlers']['extractor_file']['class'] = 'logging.handlers.RotatingFileHandler'
+LOGGING['handlers']['extractor_file']['maxBytes'] = 10 * 1024 * 1024  # 10*1024*1024 = 10 MB
+LOGGING['handlers']['extractor_file']['backupCount'] = 5  # number of log files to keep before deleting the oldest one
 
-# Local time zone for this installation. Choices can be found here:
-# http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
-# although not all choices may be available on all operating systems.
-# In a Windows environment this must be set to your system time zone.
+# Regionalisation settings
+#   Date format for exporting data to Excel xlsx files.
+#   Default in OpenREM is dd/mm/yyyy. Override it by uncommenting and customising below; a full list of codes is
+#   available at https://msdn.microsoft.com/en-us/library/ee634398.aspx.
+# XLSX_DATE = 'mm/dd/yyyy'
+#   Local time zone for this installation. Choices can be found here:
+#   http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
+#   although not all choices may be available on all operating systems.
+#   In a Windows environment this must be set to your system time zone.
 TIME_ZONE = 'Europe/London'
-
-# Language code for this installation. All choices can be found here:
-# http://www.i18nguy.com/unicode/language-identifiers.html
+#   Language code for this installation. All choices can be found here:
+#   http://www.i18nguy.com/unicode/language-identifiers.html
 LANGUAGE_CODE = 'en-us'
 
 # Locations of various tools for DICOM RDSR creation from CT images
-DCMTK_PATH = 'C:\\Users\\David\\Apps\\dcmtk-3.6.0-win32-i386\\bin'
-DCMCONV = os.path.join(DCMTK_PATH, 'dcmconv.exe')
-DCMMKDIR = os.path.join(DCMTK_PATH, 'dcmmkdir.exe')
-JAVA_EXE = 'C:\\Users\\David\\Apps\\doseUtility\\windows\\jre\\bin\\java.exe'
+DCMTK_PATH = '/usr/bin'
+DCMCONV = os.path.join(DCMTK_PATH, 'dcmconv')
+DCMMKDIR = os.path.join(DCMTK_PATH, 'dcmmkdir')
+JAVA_EXE = '/usr/bin/java'
 JAVA_OPTIONS = '-Xms256m -Xmx512m -Xss1m -cp'
-PIXELMED_JAR = 'C:\\Users\\David\\Apps\\doseUtility\\pixelmed.jar'
+PIXELMED_JAR = '/var/dose/pixelmed/pixelmed.jar'
 PIXELMED_JAR_OPTIONS = '-Djava.awt.headless=true com.pixelmed.doseocr.OCR -'
 
 # E-mail server settings - see https://docs.djangoproject.com/en/2.2/topics/email/
