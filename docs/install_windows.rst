@@ -529,7 +529,7 @@ Configure IIS
 
    Figure 7: Environment Variables Collection Editor
 
-* Under FastCGI Properties -> Process Model click on the ``Activity Timeout`` value and change it to ``300``
+* Under FastCGI Properties -> Process Model click on the ``Activity Timeout`` value and change it to ``1200``
 
 .. admonition:: Activity Timeout on slow running systems
 
