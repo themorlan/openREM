@@ -75,6 +75,19 @@ Set permissions
 
 * Right click on the ``E:\log`` folder and click ``Properties``
 * In the ``Security`` tab click ``Edit...`` and ``Add...``
+
+.. admonition:: If the server is connected to a domain
+
+    If the server is connected to a domain, the ``From this location:`` will have the name of the domain. Click
+    ``Locations...`` and choose the name of the server instead of the domain name.
+
+    .. figure:: img/PermissionsDomain.png
+       :align: center
+       :alt: Set account location
+       :target: _images/PermissionsDomain.png
+
+       Figure 2: Set account location
+
 * Enter the object name ``IIS_IUSRS`` and click ``OK``
 * Tick the ``Modify`` ``Allow`` to enable read and write permissions
 * Click ``OK`` twice to close the dialogues
@@ -153,7 +166,7 @@ Use the ``.exe`` version (software install icon, not the zip icon)
    :alt: gettext download page
    :target: _images/DownloadGetTextHighlighted.png
 
-   Figure 2: gettext download page
+   Figure 3: gettext download page
 
 Open the downloaded file to start the installation:
 
@@ -163,6 +176,10 @@ Open the downloaded file to start the installation:
 * Ready to Install ``Install``
 * ``Finish``
 
+.. admonition:: What is gettext for?
+
+    The gettext binary enables the translations to be available to users of the web interface. It is not
+    essential if you don't want the translations to be available.
 
 Pixelmed
 --------
@@ -176,7 +193,7 @@ bottom of the page and click the ``Windows executable that does not require Java
    :alt: Pixelmed download page
    :target: _images/DownloadPixelmedHighlighted.png
 
-   Figure 3: Pixelmed download page
+   Figure 4: Pixelmed download page
 
 * Open the downloaded zip file and open a new file browser at ``E:\pixelmed``
 * Drag the contents of the zip file to the ``pixelmed`` folder
@@ -192,7 +209,7 @@ Download from https://dcmtk.org/dcmtk.php.en - look for the ``DCMTK executable b
    :alt: DCMTK download page
    :target: _images/DownloadDCMTKHighlighted.png
 
-   Figure 4: DCMTK download page
+   Figure 5: DCMTK download page
 
 * Open the downloaded zip file and open a new file browser at ``E:\dcmtk``
 * Drag the contents of the dcmtk-3.x.x-win64-dynamic folder in the zip file to the ``dcmtk`` folder
@@ -324,7 +341,7 @@ warning to check if you are sure - ``Yes``:
    :alt: openremproject folder
    :target: _images/openremproject_folder.png
 
-   Figure 5: openremproject folder
+   Figure 6: openremproject folder
 
 Edit ``local_settings.py`` as needed (right click ``Edit with Notepad++``) Make sure you change the ``PASSWORD``, the
 ``SECRET_KEY`` (to anything, just change it), the ``ALLOWED_HOSTS`` list, regionalisation settings and the ``EMAIL``
@@ -428,7 +445,8 @@ In a ``CMD`` window, move to the openrem Python folder and activate the virtuale
 
     * Rename ``E:\venv\Lib\site-packages\openrem\remapp\migrations\0001_initial.py.1-0-upgrade`` to ``0001_initial.py``
 
-    Import the database - update the path to the database backup file you copied from the old server:
+    Import the database - update the path to the database backup file you copied from the old server. These steps
+    can take a long time depending on the size of the database and the resources of the server:
 
     .. code-block::
 
@@ -470,7 +488,17 @@ In a ``CMD`` window, move to the openrem Python folder and activate the virtuale
     (venv) E:\venv\Lib\site-packages\openrem>python manage.py migrate
     (venv) E:\venv\Lib\site-packages\openrem>python manage.py loaddata openskin_safelist.json
     (venv) E:\venv\Lib\site-packages\openrem>python manage.py collectstatic --no-input --clear
+
+Create the translation files, assuming ``gettext`` was installed:
+
+.. code-block:: console
+
     (venv) E:\venv\Lib\site-packages\openrem>python manage.py compilemessages
+
+If this is a new install, not an upgrade, create the superuser account:
+
+.. code-block:: console
+
     (venv) E:\venv\Lib\site-packages\openrem>python manage.py createsuperuser
 
 Webserver
@@ -499,7 +527,7 @@ Configure IIS
    :alt: Environment Variables Collection
    :target: _images/CollectionEditor.png
 
-   Figure 6: Environment Variables Collection Editor
+   Figure 7: Environment Variables Collection Editor
 
 * Under FastCGI Properties -> Process Model click on the ``Activity Timeout`` value and change it to ``300``
 
@@ -514,7 +542,7 @@ Configure IIS
    :alt: Add FastCGI Application settings
    :target: _images/FastCGIApplication.png
 
-   Figure 7: Add FastCGI Application settings
+   Figure 8: Add FastCGI Application settings
 
 * Click ``OK`` to close the dialogue box
 
