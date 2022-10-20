@@ -134,14 +134,15 @@ def _get_accumulated_data(accumXrayDose):
 def _add_plane_summary_data(exam):
     """Add plane level accumulated data to examdata
 
-    :param exams: exam to export
-    :param pid: does the user have patient identifiable data permission
-    :param name: has patient name been selected for export
-    :param patid: has patient ID been selected for export
+    :param exam: exam to export
     :return: list of summary data at plane level
     """
     exam_data = []
-    for plane in exam.projectionxrayradiationdose_set.get().accumxraydose_set.all():
+    for plane in (
+        exam.projectionxrayradiationdose_set.get()
+        .accumxraydose_set.all()
+        .order_by("acquisition_plane__code_value")
+    ):
         accum = _get_accumulated_data(plane)
         exam_data += [
             accum["dose_area_product_total"],
@@ -163,7 +164,7 @@ def _add_plane_summary_data(exam):
 def _get_series_data(event, filter_data):
     """Return series level data for protocol sheets
 
-    :param event: evnt in question
+    :param event: event in question
     :return: list of data
     """
 
@@ -633,7 +634,7 @@ def rfxlsx(filterdict, pid=False, name=None, patid=None, user=None):
                     "filter_material": filter_material,
                     "filter_thick": filter_thick,
                 }
-                for exposure in similarexposures:
+                for exposure in similarexposures.order_by("pk"):
                     series_data = _get_series_data(exposure, filter_data)
                     sheetlist[tab_text]["count"] += 1
                     sheetlist[tab_text]["sheet"].write_row(
@@ -647,7 +648,7 @@ def rfxlsx(filterdict, pid=False, name=None, patid=None, user=None):
                             "filter_material": filter_material,
                             "filter_thick": filter_thick,
                         }
-                        for exposure in similarexposures:
+                        for exposure in similarexposures.order_by("pk"):
                             series_data = _get_series_data(exposure, filter_data)
                             sheetlist[tab_text]["count"] += 1
                             sheetlist[tab_text]["sheet"].write_row(

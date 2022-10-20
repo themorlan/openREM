@@ -12,15 +12,12 @@ from django.test import TestCase, override_settings
 
 from ..extractors.dx import dx
 from ..extractors.ptsizecsv2db import (
-    csv2db,
     _create_parser,
     websizeimport,
     _ptsizeinsert,
-    _patientstudymoduleattributes,
 )
 from ..extractors.rdsr import rdsr
 from ..models import GeneralStudyModuleAttr, PatientIDSettings, SizeUpload
-from openrem.openremproject.settings import MEDIA_ROOT
 
 
 class CommandLineUse(TestCase):

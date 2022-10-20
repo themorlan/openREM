@@ -23,8 +23,6 @@ For production use, you will either need the modalities to send the RDSR or imag
 DICOM, or you will need to use query-retrieve to fetch the DICOM objects from the PACS or the modalities. In either of
 these situations, you will need to run a DICOM Store service on your OpenREM server.
 
-To get started, you can make use of the in-built DICOM store that can be configured from within OpenREM:
-
 ..  toctree::
     :maxdepth: 2
 
@@ -32,21 +30,16 @@ To get started, you can make use of the in-built DICOM store that can be configu
 
 ..  _configure_third_party_DICOM:
 
-Third-party DICOM Stores
-------------------------
+DICOM Store
+-----------
 
-The DICOM store built in to OpenREM hasn't proved to be stable over the longer term with the current implementation and
-library that it depends on. This will be rectified in a future version, but for now we recommend you use a third-party
-DICOM store. Previous releases have recommended the Conquest DICOM server which is very good for this task. However, due
-to difficulties with installation on some platforms, we are now recommending the Orthanc DICOM server instead:
+The Orthanc DICOM server is recommended; another store can be used instead but documentation is not provided. Docker
+installs have the Orthanc server build-in. For non-Docker installs, instructions are included in the main installation
+documentation:
 
-..  toctree::
-    :maxdepth: 2
+* Linux: :ref:`dicom_store_scp_linux`
+* Windows: *to be written*
 
-    netdicom-orthanc-config
-    netdicom-store
-
-You ony need one of these - if you already have one installed it is probably easiest to stick to it.
 
 Query-retrieve from a PACS or similar
 =====================================

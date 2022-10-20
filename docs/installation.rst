@@ -19,7 +19,7 @@ Docker
 This is the quickest and easiest way of installing a fully functioning OpenREM instance, complete with database,
 web server and DICOM server, on any operating system that supports Docker with Linux containers. This includes Windows
 10 with Docker Desktop, but currently excludes Windows Server, though this may change with availability of WSL2 for
-Windows Server 2019.
+Windows Server 2022.
 
 The Docker installation has mostly been tested with Ubuntu server, but has also been used successfully with Podman on
 Redhat Enterprise Linux and other distributions.
@@ -35,7 +35,7 @@ computer that does have access to the internet and transferred to the 'offline' 
 
     install_docker
     upgrade_docker
-    install-offline
+    install_offline_docker
 
 Native install on Linux
 -----------------------
@@ -52,8 +52,8 @@ provided, based on an Ubuntu Server installation.
 
     install_linux
     upgrade_linux
-    install-offline
-    upgrade_offline
+    upgrade_linux_new_server
+    install_offline
 
 Native install on Windows
 -------------------------
@@ -70,12 +70,12 @@ different version of Python to the older releases, and some services that were p
 Full upgrade instructions are provided, based on a Windows Server 2019 installation.
 
 ..  toctree::
-    :maxdepth: 2
+    :maxdepth: 1
 
     install_windows
     upgrade_windows
-    install-offline
-    upgrade_offline
+    upgrade_windows_new_server
+    install_offline
 
 
 

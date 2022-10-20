@@ -5,19 +5,26 @@ OpenREM version history
 
 1.0.0b1 (2022-xx-xx)
 --------------------
+* :issue:`953`  Interface: updated "DX and CR" to "Radiography", and "Radiographic" to "Radiography"
+* :issue:`950`  Documentation: removed (outdated) instructions for Conquest
+* :issue:`947`  Tests: enforce ordering within fluoro exposure sets and specify row by time in test
+* :issue:`945`  Exports: order by plane when populating fluoro data
 * :issue:`942`  SkinDose: try to calculate number of frames using exposure time / pulse width if number of frames not available
 * :issue:`941`  Interface: the filtering submit button now updates chart options for fluoroscopy and mammography
 * :issue:`940`  Installation: upgraded Django to 3.2, packages to latest versions
 * :issue:`937`  Interface: correcting bottom row of exports table
 * :issue:`936`  Tasks: added make_skin_map to background tasks on RF RDSR import
+* :issue:`935`  SkinDose: fixed bug which applied 5x5 cm backscatter factor regardless of field size at skin
 * :issue:`934`  DICOM Networking: QR queries are now logged and can be analysed through the web interface
 * :issue:`931`  Exports: export RF DAP as float instead of text
 * :issue:`928`  Documentation: added restriction in postgres version for earlier OpenREM releases
 * :issue:`925`  Docker: docs and config file for enabling bind mounts with SELinux
+* :issue:`923`  Docker: docs and config for virtual directory install
 * :issue:`922`  Database: optimise indexes and duplicate queries
 * :issue:`919`  Interface: fixed bug preventing home page listing if study had no date
 * :issue:`917`  Interface: added horizontal lines between chart option groups and shaded chart option CheckboxSelectMultiple items
 * :issue:`915`  Interface and exports: expose mammo view modifier in interface and exports
+* :issue:`914`  Imports: added compression force, pressure, contact area for mammo RDSR
 * :issue:`913`  SkinDose: made 2d skin dose map overlay visible by default
 * :issue:`911`  Charts: fixed issue with chart data sorting and added label wrap option
 * :issue:`910`  SkinDose: fixed rendering of 2d skin dose map with head
@@ -31,6 +38,7 @@ OpenREM version history
 * :issue:`897`  Docker: fixed permissions for PixelMed - now using root throughout
 * :issue:`896`  Imports: enabling import of DX with text string in PatientSize field
 * :issue:`893`  Charts: fixed issue with over-time charts with many sub-plots failing to plot correctly
+* :issue:`892`  Documentation: Removing references to native DICOM store and log
 * :issue:`888`  SkinDose: added option to support skin dose calculations for listed systems only
 * :issue:`886`  Code quality: addressed some SonarCloud issues
 * :issue:`882`  SkinDose: added percentage of exposures that interact with phantom
@@ -38,6 +46,7 @@ OpenREM version history
 * :issue:`880`  Orthanc: added XA and RF to allowed modalities to enable physics QA images to be kept
 * :issue:`879`  Charts: fixed sorting of fluoroscopy charts when split by physician
 * :issue:`877`  Charts: added acquisition type restrictions to acquisition-level CT charts
+* :issue:`874`  Documentation: updating DICOM query-retrieve documentation
 * :issue:`872`  Charts: added ability to split fluoroscopy over-time and histogram charts by physician
 * :issue:`871`  Charts: corrected RF chart x-axis labels
 * :issue:`870`  Charts: reduced memory footprint of Pandas DataFrame creation
@@ -52,6 +61,7 @@ OpenREM version history
 * :issue:`861`  Interface: added ability to filter mammography on view code, compressed breast thickness and exposure control mode
 * :issue:`860`  DICOM Networking: removed built-in DICOM Store SCP functionality
 * :issue:`858`  DICOM Networking: query-retrieve logging, filtering and error handling improved
+* :issue:`857`  Documentation: resolved documentation build errors
 * :issue:`856`  Interface: removed CT acquisition type restriction tick boxes
 * :issue:`854`  Interface: added date constraints to links on homepage
 * :issue:`853`  Testing: reduced Bitbucket pipeline minutes usage
@@ -75,6 +85,7 @@ OpenREM version history
 * :issue:`827`  SkinDose: made SkinDose results available in OpenREM and made alert triggering possible
 * :issue:`826`  Code quality: split views to make more manageable and testable
 * :issue:`824`  DICOM Networking: enabled declaration and testing of Orthanc Store SCP in Docker
+* :issue:`822`  Code quality: removed remaining future references
 * :issue:`821`  Code quality: fixed literal comparisons Docker was complaining about
 * :issue:`820`  Documentation: converted changes to use sphinx-issues
 * :issue:`819`  Removed colons from commands in documentation as they don't format correctly in PDF
@@ -99,10 +110,14 @@ OpenREM version history
 * :issue:`789`  Python 3: Median function aggregation code simplified; works with Python 3.7
 * :issue:`788`  Tasks: Celery and RabbitMQ dropped, background task processing now managed within Python/OpenREM
 * :issue:`787`  Interface: fixed login error
+* :issue:`786`  Installation: increased Windows IIS timeouts in docs
 * :issue:`777`  Updated OpenREM to use pydicom 1.3
 * :issue:`772`  DICOM Networking: check for station name at series level or study, not both
+* :issue:`764`  Imports: extractor functions log to extractor log instead of default
 * :issue:`744`  Added overwrite mode to size import
 * :issue:`678`  Enabled import of PX modality panoramic exam data - they appear in the Radiographic section
+* :issue:`664`  Documentation: added sample config files to installation
+* :issue:`657`  Documentation: split local_settings.py example into Windows and Linux versions
 * :issue:`530`  Updated OpenREM to use pynetdicom 1.4
 * :issue:`513`  Internationalization: first translation strings added to documentation
 * :issue:`512`  Internationalization: first translation strings added to interface
@@ -233,7 +248,7 @@ OpenREM version history
 * :issue:`659`  Interface: made the summary tables on the home page sortable by clicking on headers
 * :issue:`656`  Install: pegged django-debug-toolbar to 1.9.1 until Django is upgraded
 * :issue:`654`  Documentation: supplemented the Orthanc Lua file config option docs
-* :issue:`653`  Docs: clarified notes to get link to Orthanc lua file correct on release
+* :issue:`653`  Docs: clarified notes to get link to Orthanc Lua file correct on release
 * :issue:`652`  Documentation: added docs showing Celery daemonisation in Linux
 * :issue:`651`  Documentation: added one-page full setup Ubuntu 18.04 install instructions
 * :issue:`650`  Documentation: modified quick install virtualenv docs

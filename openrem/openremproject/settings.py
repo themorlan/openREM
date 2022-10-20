@@ -68,10 +68,6 @@ USE_TZ = os.environ.get("USE_TZ", default=False)
 XLSX_DATE = os.environ.get("XLSX_DATE", default="dd/mm/yyyy")
 XLSX_TIME = os.environ.get("XLSX_TIME", default="hh:mm:ss")
 
-# Additional locations of static files
-STATICFILES_DIRS = (os.path.join(ROOT_PROJECT, "remapp", "static"),)
-
-
 # URL name of the login page (as defined in urls.py)
 LOGIN_URL = "login"
 
@@ -140,7 +136,6 @@ else:
     LOG_ROOT = BASE_DIR
 LOG_FILENAME = os.path.join(LOG_ROOT, "openrem.log")
 QR_FILENAME = os.path.join(LOG_ROOT, "openrem_qr.log")
-STORE_FILENAME = os.path.join(LOG_ROOT, "openrem_store.log")
 EXTRACTOR_FILENAME = os.path.join(LOG_ROOT, "openrem_extractor.log")
 LOGGING = {
     "version": 1,
@@ -171,12 +166,6 @@ LOGGING = {
             "filename": "openrem_qrscu.log",
             "formatter": "verbose",
         },
-        "store_file": {
-            "level": "DEBUG",
-            "class": "logging.FileHandler",
-            "filename": "openrem_storescp.log",
-            "formatter": "verbose",
-        },
         "extractor_file": {
             "level": "DEBUG",
             "class": "logging.FileHandler",
@@ -196,12 +185,7 @@ LOGGING = {
             "level": "INFO",
             "propagate": False,
         },
-        "remapp.netdicom.storescp": {
-            "handlers": ["store_file"],
-            "level": "INFO",
-            "propagate": False,
-        },
-        "remapp.extractors.ct_toshiba": {
+        "remapp.extractors": {
             "handlers": ["extractor_file"],
             "level": "INFO",
             "propagate": False,
@@ -210,13 +194,11 @@ LOGGING = {
 }
 LOGGING["handlers"]["file"]["filename"] = LOG_FILENAME  # General logs
 LOGGING["handlers"]["qr_file"]["filename"] = QR_FILENAME  # Query Retrieve SCU logs
-LOGGING["handlers"]["store_file"]["filename"] = STORE_FILENAME  # Store SCP logs
 LOGGING["handlers"]["extractor_file"]["filename"] = EXTRACTOR_FILENAME  # Extractor logs
 
 # Set log message format. Options are 'verbose' or 'simple'. Recommend leaving as 'verbose'.
 LOGGING["handlers"]["file"]["formatter"] = "verbose"  # General logs
 LOGGING["handlers"]["qr_file"]["formatter"] = "verbose"  # Query Retrieve SCU logs
-LOGGING["handlers"]["store_file"]["formatter"] = "verbose"  # Store SCP logs
 LOGGING["handlers"]["extractor_file"]["formatter"] = "verbose"  # Extractor logs
 
 # Set the log level. Options are 'DEBUG', 'INFO', 'WARNING', 'ERROR', and 'CRITICAL', with progressively less logging.
@@ -227,13 +209,9 @@ LOGGING["loggers"]["remapp"]["level"] = os.environ.get(
 LOGGING["loggers"]["remapp.netdicom.qrscu"]["level"] = os.environ.get(
     "LOG_LEVEL_QRSCU", default="INFO"
 )
-# Store SCP logs
-LOGGING["loggers"]["remapp.netdicom.storescp"]["level"] = os.environ.get(
-    "LOG_LEVEL_STORE", default="INFO"
-)
-# Toshiba RDSR creation extractor logs
-LOGGING["loggers"]["remapp.extractors.ct_toshiba"]["level"] = os.environ.get(
-    "LOG_LEVEL_TOSHIBA", default="INFO"
+# Extractor logs
+LOGGING["loggers"]["remapp.extractors"]["level"] = os.environ.get(
+    "LOG_LEVEL_EXTRACTOR", default="INFO"
 )
 
 # Dummy locations of various tools for DICOM RDSR creation from CT images. Don't set value here - copy variables into
