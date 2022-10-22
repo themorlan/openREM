@@ -133,13 +133,17 @@ Linux installations
 Database backup
 ===============
 
-Ad hoc:
+* Check the database username and change in the command below as necessary (``openremuser``)
+* Check the database name and change in the command below as necessary (``openremdb``)
+* You will need the password for ``openremuser``
+
+* Ad hoc:
 
 .. code-block:: console
 
     $ sudo -u postgres pg_dump -U openremuser -d openremdb -F c -f openremdump.bak
 
-Bash script example:
+* To automate a regular backup (**recommended**) adapt the following command in a bash script:
 
 .. sourcecode:: bash
 
@@ -152,29 +156,27 @@ Bash script example:
 Database restore
 ================
 
-* Requires exactly the same version of OpenREM to be installed as the database was exported from
-* Requires the same username to have been created in PostgreSQL
-
-    * ``sudo -u postgres createuser -P openremuser`` if required
-    * Check ``local_settings.py`` for username previously used!
-
+* Requires the same version of OpenREM to be installed as the database was exported from,
+  unless you are :doc:`upgrade_linux` or :doc:`upgrade_linux_new_server`.
+* Username can be changed on restore by specifying the new user in the restore command. The user must
+  exist in PostgreSQL though - ``sudo -u postgres createuser -P openremuser`` if required
 * ``openrem/remapp/migrations/`` should be empty except ``__init__.py``
 
 .. sourcecode:: console
 
-    sudo -u postgres createdb -T template0 new_openremdb_name
-    sudo -u postgres pg_restore -d new_openremdb_name /db_backup/openremdump.bak
+    $ sudo -u postgres createdb -T template0 new_openremdb_name
+    $ sudo -u postgres pg_restore --no-privileges --no-owner -U openremuser -d new_openremdb_name path-to/openremdump.bak
 
 * Update the ``local_settings.py`` file with the new database details, as per :ref:`updatelinuxconfig`
-* Set up the new database with Django/OpenREM:
+* Set up the new database with Django/OpenREM after activating the virtualenv and moving to the
+  ``site-packages/openrem`` folder:
 
 .. sourcecode:: console
 
-    python manage.py migrate --fake-initial
-    python manage.py makemigrations remapp
-    python manage.py migrate remapp --fake
-
-* If this restore was to a new system prior to upgrade, you can now proceed with the upgrade instructions.
+    $ python manage.py migrate --fake-initial
+    $ python manage.py migrate remapp --fake
+    $ python manage.py makemigrations remapp
+    $ python manage.py migrate
 
 .. _database-windows:
 
@@ -182,5 +184,47 @@ Database restore
 Windows installations
 *********************
 
-TODO
+Database backup
+===============
+
+* Check the database username and change in the command below as necessary (``openremuser``)
+* Check the database name and change in the command below as necessary (``openremdb``)
+* You will need the password for ``openremuser``
+* You will need to edit the command for the path to ``pg_dump.exe`` - the ``14`` is likely to be a lower number
+
+* Ad hoc:
+
+.. code-block:: console
+
+    C:\Users\openrem>"c:\Program Files\PostgreSQL\14\bin\pg_dump.exe" -U openremuser -d openremdb -F c -f windump.bak
+
+* To automate a regular backup (**recommended**) adapt the following command in a bat script:
+
+.. warning::
+
+    Content to be added!
+
+Database restore
+================
+
+* Requires the same version of OpenREM to be installed as the database was exported from,
+  unless you are :doc:`upgrade_windows` or :doc:`upgrade_windows_new_server`.
+* Username can be changed on restore by specifying the new user in the restore command. The user must
+  exist in PostgreSQL though - create the user in pgAdmin if required
+* ``openrem\remapp\migrations\`` should be empty except ``__init__.py``
+
+.. code-block::
+
+    C:\Users\openrem>"c:\Program Files\PostgreSQL\14\bin\pg_restore.exe" --no-privileges --no-owner -U openremuser -d openremdb -W windump.bak
+
+* Update the ``local_settings.py`` file with the new database details, as per :ref:`updatewindowsconfig`
+* Set up the new database with Django/OpenREM after activating the virtualenv and moving to the
+  ``site-packages\openrem`` folder:
+
+.. code-block:: console
+
+    (venv) E:\venv\Lib\site-packages\openrem>python manage.py migrate --fake-initial
+    (venv) E:\venv\Lib\site-packages\openrem>python manage.py migrate remapp --fake
+    (venv) E:\venv\Lib\site-packages\openrem>python manage.py makemigrations remapp
+    (venv) E:\venv\Lib\site-packages\openrem>python manage.py migrate
 

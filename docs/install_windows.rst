@@ -328,6 +328,8 @@ Create database
 * Owner: ``openremuser``
 * ``Save``
 
+.. _updatewindowsconfig:
+
 Configure OpenREM
 ^^^^^^^^^^^^^^^^^
 
