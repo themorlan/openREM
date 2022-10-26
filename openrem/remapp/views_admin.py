@@ -3636,6 +3636,129 @@ def standard_name_update(request, std_name_pk=None, modality=None):
         return redirect(reverse_lazy("standard_names_view"))
 
 
+@login_required
+def standard_name_update_all(request, modality=None):
+    """View to update all standard name entries for a specified modality
+
+    :param request:
+    :param modality: modality to filter by
+    :return:
+    """
+    if not modality in ["CT", "RF", "MG", "DX"]:
+        messages.error(
+            request,
+            "No modality provided.",
+        )
+        return HttpResponseRedirect(reverse_lazy("standard_names_view"))
+
+    if not request.user.groups.filter(name="admingroup"):
+        messages.error(
+            request,
+            "You are not in the administrator group - please contact your administrator",
+        )
+        return redirect(reverse_lazy("standard_names_view"))
+
+    if request.method == "GET":
+        # All StandardNames entries for the required modality
+        std_names = StandardNames.objects.filter(modality=modality)
+
+        # Obtain a list of relevant studies
+        studies = GeneralStudyModuleAttr.objects
+        if modality == "CT":
+            studies = studies.filter(modality_type="CT")
+        elif modality == "MG":
+            studies = studies.filter(modality_type="MG")
+        elif modality == "RF":
+            studies = studies.filter(modality_type="RF")
+        else:
+            studies = studies.filter(
+                Q(modality_type__exact="DX")
+                | Q(modality_type__exact="CR")
+                | Q(modality_type__exact="PX")
+            )
+
+        success_url = reverse_lazy("standard_names_view")
+
+        # Remove reference to the standard names from entries from generalstudymoduleattr (study level)
+        for std_name in std_names:
+            std_name.generalstudymoduleattr_set.clear()
+
+        # Remove references to the StandardName entries from the appropriate acquisition table
+        if modality == "CT":
+            for std_name in std_names:
+                std_name.ctirradiationeventdata_set.clear()
+        else:
+            for std_name in std_names:
+                std_name.irradeventxraydata_set.clear()
+
+        # Add the standard names back at the study level
+        for standard_name in std_names.filter(study_description__isnull=False):
+            standard_name.generalstudymoduleattr_set.add(
+                *studies.filter(
+                    study_description=standard_name.study_description
+                ).values_list("pk", flat=True)
+            )
+
+        for standard_name in std_names.filter(requested_procedure_code_meaning__isnull=False):
+            standard_name.generalstudymoduleattr_set.add(
+                *studies.filter(
+                    requested_procedure_code_meaning=standard_name.requested_procedure_code_meaning
+                ).values_list("pk", flat=True)
+            )
+
+        for standard_name in std_names.filter(procedure_code_meaning__isnull=False):
+            standard_name.generalstudymoduleattr_set.add(
+                *studies.filter(
+                    procedure_code_meaning=standard_name.procedure_code_meaning
+                ).values_list("pk", flat=True)
+            )
+
+        # Add the standard names back at the acquisition level
+        acquisitions = None
+        if modality == "CT":
+            acquisitions = CtIrradiationEventData.objects
+        else:
+            # Filter the IrradEventXRayData.objects to just contain the required modality
+            q = ["DX", "CR", "PX"]
+            if modality == "MG":
+                q = ["MG"]
+            elif modality == "RF":
+                q = ["RF"]
+
+            q_criteria = reduce(
+                operator.or_,
+                (
+                    Q(
+                        projection_xray_radiation_dose__general_study_module_attributes__modality_type__icontains=item
+                    )
+                    for item in q
+                ),
+            )
+            acquisitions = IrradEventXRayData.objects.filter(q_criteria)
+
+        for standard_name in std_names.filter(acquisition_protocol__isnull=False):
+            if modality == "CT":
+                standard_name.ctirradiationeventdata_set.add(
+                    *acquisitions.filter(
+                        acquisition_protocol=standard_name.acquisition_protocol
+                    ).values_list("pk", flat=True)
+                )
+            else:
+                standard_name.irradeventxraydata_set.add(
+                    *acquisitions.filter(
+                        acquisition_protocol=standard_name.acquisition_protocol
+                    ).values_list("pk", flat=True)
+                )
+
+        messages.success(request, "All {0} standard name entries refreshed".format(modality))
+
+        return redirect(success_url)
+
+    else:
+        messages.error(request, "Refreshing {0} standard names failed".format(modality))
+        return redirect(reverse_lazy("standard_names_view"))
+
+
 class StandardNameSettingsUpdate(UpdateView):  # pylint: disable=unused-variable
     """UpdateView to update the standard patient name settings"""
 
