@@ -3637,6 +3637,20 @@ def standard_name_update(request, std_name_pk=None, modality=None):
 
 
 @login_required
+def standard_name_update_all_form(request, modality=None):
+    """Simple hard-coded form view for refreshing standard name mapping database links."""
+
+    admin = {
+        "openremversion": __version__,
+        "docsversion": __docs_version__,
+    }
+    for group in request.user.groups.all():
+        admin[group.name] = True
+
+    return render(request, "remapp/standardnamesrefreshall.html", {"admin": admin, "modality": modality})
+
+
+@login_required
 def standard_name_update_all(request, modality=None):
     """View to update all standard name entries for a specified modality
 
@@ -3752,11 +3766,36 @@ def standard_name_update_all(request, modality=None):
 
         messages.success(request, "All {0} standard name entries refreshed".format(modality))
 
-        return redirect(success_url)
+        django_messages = []
+        for message in messages.get_messages(request):
+            django_messages.append(
+                {
+                    "level": message.level_tag,
+                    "message": message.message,
+                    "extra_tags": message.tags,
+                }
+            )
+
+        return_structure = {"success": True, "messages": django_messages}
+
+        return JsonResponse(return_structure, safe=False)
 
     else:
         messages.error(request, "Refreshing {0} standard names failed".format(modality))
-        return redirect(reverse_lazy("standard_names_view"))
+
+        django_messages = []
+        for message in messages.get_messages(request):
+            django_messages.append(
+                {
+                    "level": message.level_tag,
+                    "message": message.message,
+                    "extra_tags": message.tags,
+                }
+            )
+
+        return_structure = {"success": False, "messages": django_messages}
+
+        return JsonResponse(return_structure, safe=False)
 
 
 class StandardNameSettingsUpdate(UpdateView):  # pylint: disable=unused-variable
