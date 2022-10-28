@@ -20,18 +20,28 @@
 {% block mainblock %}
 
       <div class="row">
-      <div class="col-md-6 col-md-offset-3">
+      <div class="col-md-7 col-md-offset-2">
         <div class="ajax-progress"><img src="{{ STATIC_URL }}img/ajax-loader.gif"></div>
-          <h3>Refresh standard name database links for the {{ modality }} modality</h3>
+          <h3>Refresh
+              {% if modality == "CT" %}CT{% elif modality == "MG" %}mammography{% elif modality == "RF" %}
+                  fluoroscopy{% else %}radiography{% endif %}
+              standard name database links</h3>
         {% if admin.admingroup %}
-            <p>Clicking the button below will remove all internal database links between the standard name table and the
-                study and acquisition tables. The links will then be re-written. This may take several minutes if you
+            <p>Clicking the <code>Refresh {% if modality == "CT" %}CT{% elif modality == "MG" %}
+                mammography{% elif modality == "RF" %}fluoroscopy{% else %}radiography{% endif %} standard names</code>
+                button below will remove all internal database links between the standard name table and the
+                study and acquisition tables for {% if modality == "CT" %}CT{% elif modality == "MG" %}
+                mammography{% elif modality == "RF" %}fluoroscopy{% else %}radiography{% endif %} studies. The links
+                will then be re-written. This may take several minutes if you
                 have a large number of studies and a large number of standard names configured.</p>
             <p>This is useful if you have manually updated or restored the standard names database table and need to
                 force the database to refresh the links between this table and the study and acquisition data tables.
             </p>
-            <a class="btn btn-default" id="{{ modality }}-button">Refresh {{ modality }} standard names</a>
-            <a class="btn btn-default" id="return-button" href="{% url 'standard_names_view' %}" >Return to standard name list</a>
+            <a class="btn btn-danger" id="{{ modality }}-btn">Refresh {% if modality == "CT" %}
+                CT{% elif modality == "MG" %}mammography{% elif modality == "RF" %}fluoroscopy{% else %}
+                radiography{% endif %} standard names</a>
+            <a class="btn btn-primary" id="return-btn" href="{% url 'standard_names_view' %}">Return to standard name
+                list</a>
         {% else %}
             <p>Only users in the Admin group can modify these settings.</p>
         {% endif %}
@@ -42,10 +52,10 @@
         $(document).ready(function() {
             var requestData = arrayToURL(urlToArray(this.URL));
 
-            $("#{{ modality }}-button").click(function(e) {
+            $("#{{ modality }}-btn").click(function(e) {
                 e.preventDefault();
-                $("#{{ modality }}-button").text("Refreshing database - this may take some time").attr("disabled", true);
-                $("#return-button").attr("disabled", true);
+                $("#{{ modality }}-btn").text("Refreshing database - please wait").attr("disabled", true);
+                $("#return-btn").attr("disabled", true);
                 $(".ajax-progress").show();
                 $.ajax({
                     type: "GET",
@@ -55,13 +65,13 @@
                     success: function( json ) {
                         update_messages(json.messages);
                         $(".ajax-progress").hide();
-                        $("#{{ modality }}-button").text("Refresh {{ modality }} standard names").removeAttr("disabled");
-                        $("#return-button").removeAttr("disabled");
+                        $("#{{ modality }}-btn").text("Refresh {{ modality }} standard names").removeAttr("disabled");
+                        $("#return-btn").removeAttr("disabled");
                     },
                     error: function( xhr, status, errorThrown ) {
                         $(".ajax-progress").hide();
-                        $("#{{ modality }}-button").text("Refresh of {{ modality }} standard names failed - try again?").removeAttr("disabled");
-                        $("#return-button").removeAttr("disabled");
+                        $("#{{ modality }}-btn").text("Refresh of {{ modality }} standard names failed - try again?").removeAttr("disabled");
+                        $("#return-btn").removeAttr("disabled");
                         console.log( "Error: " + errorThrown );
                         console.log( "Status: " + status );
                         console.dir( xhr );
