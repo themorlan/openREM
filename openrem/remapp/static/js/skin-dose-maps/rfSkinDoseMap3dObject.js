@@ -217,11 +217,16 @@ function skinDoseMap3dObject(skinDoseMap3dCanvasName, colourScaleName) {
         materialLeft  = new THREE.MeshLambertMaterial( { map: dataTextureLeft  } );
         materialRight = new THREE.MeshLambertMaterial( { map: dataTextureRight } );
         materialHead  = new THREE.MeshLambertMaterial( { map: dataTextureHead } );
-        materialFront.map.minFilter = THREE.LinearFilter;
-        materialBack.map.minFilter = THREE.LinearFilter;
-        materialLeft.map.minFilter = THREE.LinearFilter;
-        materialRight.map.minFilter = THREE.LinearFilter;
-        materialHead.map.minFilter = THREE.LinearFilter;
+        materialFront.map.minFilter = THREE.NearestFilter;
+        materialBack.map.minFilter = THREE.NearestFilter;
+        materialLeft.map.minFilter = THREE.NearestFilter;
+        materialRight.map.minFilter = THREE.NearestFilter;
+        materialHead.map.minFilter = THREE.NearestFilter;
+        materialFront.map.magFilter = THREE.NearestFilter;
+        materialBack.map.magFilter = THREE.NearestFilter;
+        materialLeft.map.magFilter = THREE.NearestFilter;
+        materialRight.map.magFilter = THREE.NearestFilter;
+        materialHead.map.magFilter = THREE.NearestFilter;
 
         var aspectRatio = _this.canvas.width / _this.canvas.height;
 
