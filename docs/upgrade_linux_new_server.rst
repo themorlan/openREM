@@ -31,7 +31,8 @@ Export the database
 ===================
 
 Export the old database on the old server - you will need the password for ``openremuser`` that will be in your
-``local_settings.py`` file:
+``local_settings.py`` file, and you might need to change the ``openremuser`` database username and the ``openremdb``
+name of the database:
 
 .. code-block:: console
 

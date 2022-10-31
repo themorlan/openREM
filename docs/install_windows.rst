@@ -23,6 +23,8 @@ first.
 
 If you are upgrading an existing Windows Server installation in-place, go to :doc:`upgrade_windows` instead.
 
+If you are installing on a server with no internet access, go to :doc:`install_offline` to download the packages.
+
 These instructions assume the following disk layout - there is more information about the reasoning in the box below:
 
 * ``C:`` OS disk
@@ -73,11 +75,26 @@ Set permissions
 
 * Right click on the ``E:\log`` folder and click ``Properties``
 * In the ``Security`` tab click ``Edit...`` and ``Add...``
+
+.. admonition:: If the server is connected to a domain
+
+    If the server is connected to a domain, the ``From this location:`` will have the name of the domain. Click
+    ``Locations...`` and choose the name of the server instead of the domain name.
+
+    .. figure:: img/PermissionsDomain.png
+       :align: center
+       :alt: Set account location
+       :target: _images/PermissionsDomain.png
+
+       Figure 2: Set account location
+
 * Enter the object name ``IIS_IUSRS`` and click ``OK``
 * Tick the ``Modify`` ``Allow`` to enable read and write permissions
 * Click ``OK`` twice to close the dialogues
 
 * Repeat for the ``E:\media`` folder
+
+.. _windows_install_packages:
 
 Installing packages
 ^^^^^^^^^^^^^^^^^^^
@@ -144,6 +161,13 @@ gettext
 Download the 64 bit static version of gettext 0.21 from https://mlocati.github.io/articles/gettext-iconv-windows.html.
 Use the ``.exe`` version (software install icon, not the zip icon)
 
+.. figure:: img/DownloadGetTextHighlighted.png
+   :align: center
+   :alt: gettext download page
+   :target: _images/DownloadGetTextHighlighted.png
+
+   Figure 3: gettext download page
+
 Open the downloaded file to start the installation:
 
 * Accept the agreement ``Next >``
@@ -152,22 +176,40 @@ Open the downloaded file to start the installation:
 * Ready to Install ``Install``
 * ``Finish``
 
+.. admonition:: What is gettext for?
 
-Pixelmed and Java
------------------
+    The gettext binary enables the translations to be available to users of the web interface. It is not
+    essential if you don't want the translations to be available.
+
+Pixelmed
+--------
 
 Download DoseUtility from from the page
 http://www.dclunie.com/pixelmed/software/webstart/DoseUtilityUsage.html - find ``How to install it (locally)`` near the
 bottom of the page and click the ``Windows executable that does not require Java to be installed`` link.
 
+.. figure:: img/DownloadPixelmedHighlighted.png
+   :align: center
+   :alt: Pixelmed download page
+   :target: _images/DownloadPixelmedHighlighted.png
+
+   Figure 4: Pixelmed download page
+
 * Open the downloaded zip file and open a new file browser at ``E:\pixelmed``
 * Drag the contents of the zip file to the ``pixelmed`` folder
 
-dcmtk
+DCMTK
 -----
 
 Download from https://dcmtk.org/dcmtk.php.en - look for the ``DCMTK executable binaries`` section, and download the
 64 bit DLL build for Windows.
+
+.. figure:: img/DownloadDCMTKHighlighted.png
+   :align: center
+   :alt: DCMTK download page
+   :target: _images/DownloadDCMTKHighlighted.png
+
+   Figure 5: DCMTK download page
 
 * Open the downloaded zip file and open a new file browser at ``E:\dcmtk``
 * Drag the contents of the dcmtk-3.x.x-win64-dynamic folder in the zip file to the ``dcmtk`` folder
@@ -181,6 +223,21 @@ Download the 64-bit x64 exe file from https://www.7-zip.org/
 * Type, or click on the ``...`` to browse to ``E:\7-zip\``
 * ``Install``
 * ``Close``
+
+Notepad++
+---------
+
+Download the latest version of Notepad++ from https://notepad-plus-plus.org/downloads/
+
+Open the downloaded file to start the installation:
+
+* Select a language ``OK``
+* Welcome ``Next >``
+* License Agreement ``I Agree``
+* Install Location ``Next >``
+* Choose Components ``Next >``
+* ``Install``
+* ``Finish`` (you can untick the ``Run Notepad++`` option, we don't need it yet)
 
 IIS
 ---
@@ -204,26 +261,11 @@ IIS
 You can check the server is running by browsing to http://localhost/ on the server. You should see the
 default IIS Welcome page. It might not work immediately, check again in a few minutes.
 
-Notepad++
----------
-
-Download the latest version of Notepad++ from https://notepad-plus-plus.org/downloads/
-
-Open the downloaded file to start the installation:
-
-* Select a language ``OK``
-* Welcome ``Next >``
-* License Agreement ``I Agree``
-* Install Location ``Next >``
-* Choose Components ``Next >``
-* ``Install``
-* ``Finish`` (you can untick the ``Run Notepad++`` option, we don't need it yet)
-
 Installing Python packages
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Create the virtualenv
----------------------
+Create and activate the virtualenv
+----------------------------------
 
 Open a ``CMD`` window:
 
@@ -231,13 +273,31 @@ Open a ``CMD`` window:
 
     C:\Users\openrem>e:
     E:\>py -m venv venv
+    E:\>venv\Scripts\activate
+    (venv) E:\>
 
 Install OpenREM
 ---------------
+.. admonition:: Installing on a server with no internet access
+
+    Make sure the virtualenv is activated (command line will have the name of the virtualenv as a prefix:
+    ``(venv) E:\``), then navigate to where the ``openremfiles`` directory is that you copied from the computer *with*
+    internet access, eg if it is in your desktop folder:
+
+    .. code-block:: console
+
+        (venv) E:\>c:
+        (venv) C:\>cd Users\openrem\Desktop
+
+    Now upgrade ``pip`` and install OpenREM and its dependencies:
+
+    .. code-block:: console
+
+        (venv) C:\Users\openrem\Desktop>pip install --no-index --find-links=openremfiles --upgrade pip
+        (venv) C:\Users\openrem\Desktop>pip install --no-index --find-links=openremfiles openrem
 
 .. code-block:: console
 
-    E:\>venv\Scripts\activate
     (venv) E:\>pip install --upgrade pip
     (venv) E:\>pip install openrem
     (venv) E:\>pip install wfastcgi
@@ -248,7 +308,11 @@ OpenREM configuration and database creation
 PostgreSQL database creation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-* Start  pgAdmin 4 - you will need the password you set when installing PostgreSQL
+Start  pgAdmin 4 - you will need the password you set when installing PostgreSQL
+
+Create user
+-----------
+
 * Click on ``Servers`` to expand, enter the password again
 * Right click ``Login/Group Roles``, ``Create``, ``Login/Group Role...``
 * Name: ``openremuser``
@@ -256,10 +320,15 @@ PostgreSQL database creation
 * Privileges: activate ``Can login?`` and ``Create database?``
 * ``Save``
 
+Create database
+---------------
+
 * Right click ``Databases``, ``Create``, ``Database...``
 * Database: ``openremdb``
 * Owner: ``openremuser``
 * ``Save``
+
+.. _updatewindowsconfig:
 
 Configure OpenREM
 ^^^^^^^^^^^^^^^^^
@@ -274,7 +343,7 @@ warning to check if you are sure - ``Yes``:
    :alt: openremproject folder
    :target: _images/openremproject_folder.png
 
-   Figure 2: openremproject folder
+   Figure 6: openremproject folder
 
 Edit ``local_settings.py`` as needed (right click ``Edit with Notepad++``) Make sure you change the ``PASSWORD``, the
 ``SECRET_KEY`` (to anything, just change it), the ``ALLOWED_HOSTS`` list, regionalisation settings and the ``EMAIL``
@@ -284,8 +353,9 @@ in the settings file or elsewhere in the docs.
 .. admonition:: Upgrading to a new server
 
     If you are upgrading to a new Linux server, review the ``local_settings.py`` file from the old server to copy over
-    the ``NAME``, ``USER`` and ``PASSWORD``, ``ALLOWED_HOSTS`` list and the ``EMAIL`` configuration, and check all the
-    other settings. Change the ``SECRET_KEY`` from the default, but it doesn't have to match the one on the old server.
+    the ``ALLOWED_HOSTS`` list and the ``EMAIL`` configuration, and check all the other settings. Change the
+    ``SECRET_KEY`` from the default, but it doesn't have to match the one on the old server. The database ``NAME``,
+    ``USER`` and ``PASSWORD`` will be the ones you created on the new server.
 
 .. code-block:: python
     :emphasize-lines: 4-6, 17-18,26-29,41,46,49,60-67
@@ -371,15 +441,18 @@ In a ``CMD`` window, move to the openrem Python folder and activate the virtuale
     E:\venv\Lib\site-packages\openrem>e:\venv\Scripts\activate
     (venv) E:\venv\Lib\site-packages\openrem>
 
-.. note::
+.. admonition:: Upgrading to a new server
 
-    If you are upgrading to a new Linux server, do these additional steps before continuing with those below:
+    If you are upgrading to a new Windows server, do these additional steps before continuing with those below:
 
     * Rename ``E:\venv\Lib\site-packages\openrem\remapp\migrations\0001_initial.py.1-0-upgrade`` to ``0001_initial.py``
 
-    Import the database - update the path to the database backup file you copied from the old server:
+    Import the database - update the path to the database backup file you copied from the old server. These steps
+    can take a long time depending on the size of the database and the resources of the server:
 
-    * *Instruction to follow*
+    .. code-block::
+
+        C:\Users\openrem>"c:\Program Files\PostgreSQL\14\bin\pg_restore.exe" --no-privileges --no-owner -U openremuser -d openremdb -W windump.bak
 
     Migrate the database:
 
@@ -417,7 +490,17 @@ In a ``CMD`` window, move to the openrem Python folder and activate the virtuale
     (venv) E:\venv\Lib\site-packages\openrem>python manage.py migrate
     (venv) E:\venv\Lib\site-packages\openrem>python manage.py loaddata openskin_safelist.json
     (venv) E:\venv\Lib\site-packages\openrem>python manage.py collectstatic --no-input --clear
+
+Create the translation files, assuming ``gettext`` was installed:
+
+.. code-block:: console
+
     (venv) E:\venv\Lib\site-packages\openrem>python manage.py compilemessages
+
+If this is a new install, not an upgrade, create the superuser account:
+
+.. code-block:: console
+
     (venv) E:\venv\Lib\site-packages\openrem>python manage.py createsuperuser
 
 Webserver
@@ -446,9 +529,9 @@ Configure IIS
    :alt: Environment Variables Collection
    :target: _images/CollectionEditor.png
 
-   Figure 3: Environment Variables Collection Editor
+   Figure 7: Environment Variables Collection Editor
 
-* Under FastCGI Properties -> Process Model click on the ``Activity Timeout`` value and change it to ``300``
+* Under FastCGI Properties -> Process Model click on the ``Activity Timeout`` value and change it to ``1200``
 
 .. admonition:: Activity Timeout on slow running systems
 
@@ -461,7 +544,7 @@ Configure IIS
    :alt: Add FastCGI Application settings
    :target: _images/FastCGIApplication.png
 
-   Figure 4: Add FastCGI Application settings
+   Figure 8: Add FastCGI Application settings
 
 * Click ``OK`` to close the dialogue box
 
@@ -513,7 +596,7 @@ Configure IIS to server the static files
 * There will be a warning about the list order being changed - click ``Yes`` to continue
 
 Test the webserver
-------------------
+^^^^^^^^^^^^^^^^^^
 
 Browse to http://localhost/ on the server, or browse to the servername in a browser on another machine, and you should
 be able to see the new OpenREM web service.
