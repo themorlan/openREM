@@ -338,7 +338,7 @@ the virtualenv is active — prompt will look like
 
 Otherwise see :ref:`activatevirtualenv` and navigate back to that folder.
 
-.. note::
+.. admonition:: Upgrading to a new server
 
     If you are upgrading to a new Linux server, use these additional commands before continuing with those below:
 
@@ -350,7 +350,7 @@ Otherwise see :ref:`activatevirtualenv` and navigate back to that folder.
 
     .. code-block:: console
 
-        $ pg_restore -U openremuser -d openremdb /path/to/pre-1-0-upgrade-dump.bak
+        $ pg_restore --no-privileges --no-owner -U openremuser -d openremdb /path/to/pre-1-0-upgrade-dump.bak
 
 
     Migrate the database:
