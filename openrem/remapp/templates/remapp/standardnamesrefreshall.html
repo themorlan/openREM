@@ -40,8 +40,8 @@
             <a class="btn btn-danger" id="{{ modality }}-btn">Refresh {% if modality == "CT" %}
                 CT{% elif modality == "MG" %}mammography{% elif modality == "RF" %}fluoroscopy{% else %}
                 radiography{% endif %} standard names</a>
-            <a class="btn btn-primary" id="return-btn" href="{% url 'standard_names_view' %}">Return to standard name
-                list</a>
+            <a class="btn btn-primary" id="return-btn" href="{% url 'standard_name_settings' 1 %}">Return to standard name
+                settings</a>
         {% else %}
             <p>Only users in the Admin group can modify these settings.</p>
         {% endif %}
