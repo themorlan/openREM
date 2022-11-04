@@ -47,6 +47,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q, Sum
 from django.db.utils import OperationalError as AvoidDataMigrationErrorSQLite
 from django.db.utils import ProgrammingError as AvoidDataMigrationErrorPostgres
+from django.db.utils import IntegrityError
 from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.template.loader import render_to_string
@@ -2940,8 +2941,12 @@ class StandardNameAddCore(CreateView):
                     modality=form.cleaned_data["modality"],
                     study_description=item,
                 )
-                new_entry.save()
-                new_ids_study.append(new_entry.pk)
+                try:
+                    new_entry.save()
+                    new_ids_study.append(new_entry.pk)
+                except IntegrityError as e:
+                    messages.warning(self.request, mark_safe("Error adding name: {0}".format(e.args)))
+                    return redirect(self.success_url)
 
             new_ids_request = []
             for item in form.cleaned_data["requested_procedure_code_meaning"]:
@@ -2950,8 +2955,12 @@ class StandardNameAddCore(CreateView):
                     modality=form.cleaned_data["modality"],
                     requested_procedure_code_meaning=item,
                 )
-                new_entry.save()
-                new_ids_request.append(new_entry.pk)
+                try:
+                    new_entry.save()
+                    new_ids_request.append(new_entry.pk)
+                except IntegrityError as e:
+                    messages.warning(self.request, mark_safe("Error adding name: {0}".format(e.args)))
+                    return redirect(self.success_url)
 
             new_ids_procedure = []
             for item in form.cleaned_data["procedure_code_meaning"]:
@@ -2960,8 +2969,12 @@ class StandardNameAddCore(CreateView):
                     modality=form.cleaned_data["modality"],
                     procedure_code_meaning=item,
                 )
-                new_entry.save()
-                new_ids_procedure.append(new_entry.pk)
+                try:
+                    new_entry.save()
+                    new_ids_procedure.append(new_entry.pk)
+                except IntegrityError as e:
+                    messages.warning(self.request, mark_safe("Error adding name: {0}".format(e.args)))
+                    return redirect(self.success_url)
 
             new_ids_acquisition = []
             for item in form.cleaned_data["acquisition_protocol"]:
@@ -2970,8 +2983,12 @@ class StandardNameAddCore(CreateView):
                     modality=form.cleaned_data["modality"],
                     acquisition_protocol=item,
                 )
-                new_entry.save()
-                new_ids_acquisition.append(new_entry.pk)
+                try:
+                    new_entry.save()
+                    new_ids_acquisition.append(new_entry.pk)
+                except IntegrityError as e:
+                    messages.warning(self.request, mark_safe("Error adding name: {0}".format(e.args)))
+                    return redirect(self.success_url)
 
             # Obtain a list of the required studies
             studies = GeneralStudyModuleAttr.objects
