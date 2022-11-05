@@ -22,6 +22,10 @@ Headline changes
 * Exports: Much faster, and more consistent
 * Documentation: Extensive user documentation improvements
 
+Upgrade to current version
+==========================
+
+:doc:`upgrade_previous_0.10.0` and then upgrade to 1.0.
 
 
 Specific upgrade instructions
