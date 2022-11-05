@@ -161,12 +161,16 @@ In a shell/command window, move into the ``openrem`` folder:
     python manage.py makemigrations remapp
     python manage.py migrate remapp
 
-Ubuntu installs that followed :doc:`install_linux`
-======================================================
+.. _service_name_change:
 
-Systemd service files have been renamed in these docs to use *openrem-function* rather than *function-openrem*. To
+Systemd service names in Ubuntu installs
+========================================
+
+Systemd service files were renamed in the the 0.9.1 docs to use *openrem-function* rather than *function-openrem*. To
 update the service files accordingly, follow the following steps. **This is optional**, but will make finding them
-easier (e.g. ``sudo systemctl status openrem-[tab][tab]`` will list them!)
+easier (e.g. ``sudo systemctl status openrem-[tab][tab]`` will list them) and these names are assumed for the
+:doc:`upgrade_docker` and :doc:`upgrade_linux` docs. However, only the ``gunicorn`` service remains after the upgrade to
+1.0, so you may find it easier just to remember the only service names, or just rename that one.
 
 .. code-block:: console
 
@@ -203,7 +207,7 @@ in version 0.10.
     :align: center
     :alt: 0.10 upgrade panel before log in
 
-With RabbitMQ, Celery and the web server running, log in as an administrator to start the migration process. If you have
+Log in as an administrator to start the migration process. If you have
 a large number of studies in your database this can take some time. A large database (several hundred studies) on slow
 disks might take a day or two, on faster disks or with a smaller database it could take from a few minutes to an hour
 or so. You will be able to monitor the progress on the home page as seen in the figure at the bottom of this page.

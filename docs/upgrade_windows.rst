@@ -11,6 +11,9 @@ Consider upgrading to a new Windows server instead of upgrading in place. Instru
 * something about a clean install, and/or not having old services that are no longer required
 * something about being a standardised approach which will make upgrade docs and examples easier to follow
 
+**Upgrades from 0.9.1 or earlier should review** :doc:`upgrade_previous_0.10.0` first. Upgrading to 1.0 is only possible
+from 0.10.0.
+
 Then best effort upgrade docs... a lot of this can be copied from the :doc:`install_windows` instructions, or depending
 on what it ends up looking like, we might point there with a few admonitions to point out differences?
 
