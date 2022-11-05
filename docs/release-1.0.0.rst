@@ -1,6 +1,6 @@
-########################
-Upgrade to OpenREM 1.0.0
-########################
+###################################
+OpenREM Release Notes version 1.0.0
+###################################
 
 **Document not ready for translation**
 
