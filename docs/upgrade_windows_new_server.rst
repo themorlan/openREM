@@ -7,6 +7,9 @@ these instructions will guide you through upgrading an existing database to a ne
 
 This install is based on Windows Server 2022 - for details see the main :doc:`install_windows` docs.
 
+* **Upgrades from 0.9.1 or earlier should review** :doc:`upgrade_previous_0.10.0` first. Upgrading to 1.0 is only
+  possible from 0.10.0.
+
 Get the local_settings.py file
 ==============================
 

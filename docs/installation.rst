@@ -54,6 +54,7 @@ provided, based on an Ubuntu Server installation.
     upgrade_linux
     upgrade_linux_new_server
     install_offline
+    upgrade_previous_0.10.0
 
 Native install on Windows
 -------------------------
@@ -76,8 +77,7 @@ Full upgrade instructions are provided, based on a Windows Server 2019 installat
     upgrade_windows
     upgrade_windows_new_server
     install_offline
-
-
+    upgrade_previous_0.10.0
 
 .. _databaselinks:
 
