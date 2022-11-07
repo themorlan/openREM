@@ -7,6 +7,7 @@ OpenREM version history
 --------------------
 * :issue:`953`  Interface: updated "DX and CR" to "Radiography", and "Radiographic" to "Radiography"
 * :issue:`950`  Documentation: removed (outdated) instructions for Conquest
+* :issue:`949`  Documentation: updated the upgrade instructions from older versions
 * :issue:`947`  Tests: enforce ordering within fluoro exposure sets and specify row by time in test
 * :issue:`945`  Exports: order by plane when populating fluoro data
 * :issue:`941`  Interface: the filtering submit button now updates chart options for fluoroscopy and mammography
