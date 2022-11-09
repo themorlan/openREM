@@ -82,7 +82,9 @@ def skin_map(
     # NOTE: this will only work correctly once the bug affecting field size when there is a
     # non-zero secondary angle has been fixed.
     area_count = 0
-    iterator = np.nditer(skin_dose_map, op_flags=["readwrite"], flags=["multi_index", "refs_ok"])
+    iterator = np.nditer(
+        skin_dose_map, op_flags=["readwrite"], flags=["multi_index", "refs_ok"]
+    )
     while not iterator.finished:
         lookup_row = iterator.multi_index[0]
         lookup_col = iterator.multi_index[1]

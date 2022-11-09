@@ -860,7 +860,9 @@ def _irradiationeventxraydata(dataset, proj, fulldataset):  # TID 10003
                 pass
         elif cont.ConceptNameCodeSequence[0].CodeMeaning == "Dose Area Product":
             try:
-                event.dose_area_product = _check_dap_units(cont.MeasuredValueSequence[0])
+                event.dose_area_product = _check_dap_units(
+                    cont.MeasuredValueSequence[0]
+                )
             except LookupError:
                 pass  # Will occur if measured value sequence is missing
         elif cont.ConceptNameCodeSequence[0].CodeMeaning == "Half Value Layer":
