@@ -6,6 +6,7 @@ OpenREM version history
 1.0.0b1 (2022-xx-xx)
 --------------------
 * :issue:`958`  Interface: fixed task table sorting for Started column
+* :issue:`955`  Imports: fixed error when importing RDSR with empty DAP measured value sequence
 * :issue:`953`  Interface: updated "DX and CR" to "Radiography", and "Radiographic" to "Radiography"
 * :issue:`950`  Documentation: removed (outdated) instructions for Conquest
 * :issue:`949`  Documentation: updated the upgrade instructions from older versions
