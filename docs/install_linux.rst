@@ -159,11 +159,6 @@ Activate the virtualenv (note the ``.`` -- you can also use the word ``source``)
 Install Python packages
 -----------------------
 
-.. note::
-
-    If you are installing this server offline, return to the Offline installation docs for
-    :ref:`Offline-python-packages`
-
 .. code-block:: console
 
     $ pip install --upgrade pip

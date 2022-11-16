@@ -17,8 +17,10 @@ Headline changes
 * Exports: fixed bug where sorting by AGD would cause duplicate entries for bilateral studies
 * Exports: fixed another non-ASCII bug
 
-If upgrading from 0.7.4, see also :doc:`release-0.8.0`
+Upgrade to current version
+==========================
 
+:doc:`upgrade_previous_0.10.0` and then upgrade to 1.0.
 
 Specific upgrade instructions
 =============================

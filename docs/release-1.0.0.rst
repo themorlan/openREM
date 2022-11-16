@@ -1,6 +1,6 @@
-########################
-Upgrade to OpenREM 1.0.0
-########################
+###################################
+OpenREM Release Notes version 1.0.0
+###################################
 
 **Document not ready for translation**
 
@@ -16,21 +16,12 @@ Headline changes
 * Performing physician added to standard fluoroscopy exports (:issue:`840`)
 * Station name checked at series level only, option to check at study level only instead (:issue:`772`)
 
-*******************
-Upgrade preparation
-*******************
+Upgrade from 0.10.0
+===================
 
-* These instructions assume you are upgrading from 0.10.0.
-* **Upgrades from 0.9.1 or earlier should review** :doc:`upgrade_previous_0.10.0`. -- needs changing
+Review the :doc:`installation` doc to find the upgrade options
 
-..  toctree::
-    :maxdepth: 1
+Upgrade from an older version
+=============================
 
-    upgrade_previous_0.10.0
-
-.. _post_upgrade0100:
-
-
-
-
-
+:doc:`upgrade_previous_0.10.0`
