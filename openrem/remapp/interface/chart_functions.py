@@ -48,6 +48,7 @@ import plotly.graph_objects as go
 from plotly.offline import plot
 from plotly.subplots import make_subplots
 from scipy import stats
+import warnings
 
 
 def global_config(
@@ -180,18 +181,23 @@ def create_dataframe(
         df[date_field] = pd.to_datetime(df[date_field], format="%Y-%m-%d")
 
     # Character wrap the system and name fields
-    df.update(
-        df["x_ray_system_name"].apply(
-            lambda x: (textwrap.fill(x, char_wrap)).replace("\n", "<br>")
-        )
-    )
-    df["x_ray_system_name"] = df["x_ray_system_name"].astype("category")
-    for field in field_dict["names"]:
+    with warnings.catch_warnings():
+        warnings.filterwarnings("ignore", category=FutureWarning)
         df.update(
-            df[field].apply(
+            df["x_ray_system_name"].apply(
                 lambda x: (textwrap.fill(x, char_wrap)).replace("\n", "<br>")
             )
         )
+
+    df["x_ray_system_name"] = df["x_ray_system_name"].astype("category")
+    for field in field_dict["names"]:
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore", category=FutureWarning)
+            df.update(
+                df[field].apply(
+                    lambda x: (textwrap.fill(x, char_wrap)).replace("\n", "<br>")
+                )
+            )
         df[field] = df[field].astype("category")
 
     if settings.DEBUG:
