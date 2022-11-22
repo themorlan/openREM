@@ -237,13 +237,14 @@ in the settings file or elsewhere in the docs.
     If you are upgrading to a new Linux server, review the ``local_settings.py`` file from the old server to copy over
     the ``NAME``, ``USER`` and ``PASSWORD``, ``ALLOWED_HOSTS`` list and the ``EMAIL`` configuration, and check all the
     other settings. Change the ``SECRET_KEY`` from the default, but it doesn't have to match the one on the old server.
+    For details on the final variable see :ref:`ignore-device-obs-uid`.
 
 .. code-block:: console
 
     $ nano openremproject/local_settings.py
 
 .. code-block:: python
-    :emphasize-lines: 4-6, 17-18,26-29,52,57,60,71-78
+    :emphasize-lines: 4-6, 17-18,26-29,52,57,60,71-78,80
 
     DATABASES = {
         'default': {
@@ -323,6 +324,8 @@ in the settings file or elsewhere in the docs.
     EMAIL_USE_SSL = 0         # Use 0 for False, 1 for True
     EMAIL_DOSE_ALERT_SENDER = 'your.alert@email.address'
     EMAIL_OPENREM_URL = 'http://your.openrem.server'
+
+    IGNORE_DEVICE_OBSERVER_UID_FOR_THESE_MODELS = ['GE OEC Fluorostar']
 
 Now create the database. Make sure you are still in the openrem python folder and
 the virtualenv is active — prompt will look like
