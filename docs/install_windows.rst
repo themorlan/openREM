@@ -348,7 +348,7 @@ warning to check if you are sure - ``Yes``:
 Edit ``local_settings.py`` as needed (right click ``Edit with Notepad++``) Make sure you change the ``PASSWORD``, the
 ``SECRET_KEY`` (to anything, just change it), the ``ALLOWED_HOSTS`` list, regionalisation settings and the ``EMAIL``
 configuration. You can modify the email settings later if necessary. Some settings are not shown here but are documented
-in the settings file or elsewhere in the docs.
+in the settings file or elsewhere in the docs. For details on the final variable see :ref:`ignore-device-obs-uid`.
 
 .. admonition:: Upgrading to a new server
 
@@ -430,6 +430,7 @@ in the settings file or elsewhere in the docs.
     EMAIL_OPENREM_URL = 'http://your.openrem.server'
 
     IGNORE_DEVICE_OBSERVER_UID_FOR_THESE_MODELS = ['GE OEC Fluorostar']
+
 
 Populate OpenREM database and collate static files
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
