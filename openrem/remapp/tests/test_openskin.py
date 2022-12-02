@@ -35,6 +35,11 @@ class OpenSkinBlackBox(TestCase):
         rdsr.rdsr(path_rf1)
 
     def test_skin_map_zee(self):
+        """Set software version to match, ensure skin map is created"""
+        safe_list_entry = OpenSkinSafeList.objects.all().filter(id=1)[0]
+        safe_list_entry.software_version = "VC14J 150507"
+        safe_list_entry.save()
+
         """Test known Siemens Zee RDSR"""
         study = GeneralStudyModuleAttr.objects.order_by("id")[0]
 
@@ -73,7 +78,7 @@ class OpenSkinBlackBox(TestCase):
 
     def test_version_not_matched(self):
         """Set software version to not match, ensure skin map is not created"""
-        safe_list_entry = OpenSkinSafeList.objects.get()
+        safe_list_entry = OpenSkinSafeList.objects.all().filter(id=1)[0]
         safe_list_entry.software_version = "No Match"
         safe_list_entry.save()
 
@@ -97,7 +102,7 @@ class OpenSkinBlackBox(TestCase):
 
     def test_version_match(self):
         """Set software version to match, ensure skin map is created"""
-        safe_list_entry = OpenSkinSafeList.objects.get()
+        safe_list_entry = OpenSkinSafeList.objects.all().filter(id=1)[0]
         safe_list_entry.software_version = "VC14J 150507"
         safe_list_entry.save()
 
@@ -138,7 +143,7 @@ class OpenSkinBlackBox(TestCase):
 
     def test_system_not_matched(self):
         """Set manufacturer to not match, ensure skin map is not created"""
-        safe_list_entry = OpenSkinSafeList.objects.get()
+        safe_list_entry = OpenSkinSafeList.objects.all().filter(id=1)[0]
         safe_list_entry.software_version = ""
         safe_list_entry.manufacturer = "Not Siemens"
         safe_list_entry.save()
