@@ -238,6 +238,14 @@ EMAIL_OPENREM_URL = os.environ.get(
     "EMAIL_OPENREM_URL", default="http://your.openrem.server"
 )
 
+# Save charts as HTML files in a charts sub-folder of the MEDIA_ROOT folder on the OpenREM server.
+SAVE_CHARTS_AS_HTML = False
+
+# Ignore the Device Observer UID of these equipment models when creating display name entries during import of DICOM
+# RDSR data using the rdsr.py extractor.
+# See https://docs.openrem.org/en/latest/env_variables.html#device-observer-uid-settings.
+IGNORE_DEVICE_OBSERVER_UID_FOR_THESE_MODELS = []
+
 DOCKER_INSTALL = int(os.environ.get("DOCKER_INSTALL", default=False))
 
 LOCALE_PATHS = (os.path.join(BASE_DIR, "locale"),)
@@ -247,11 +255,3 @@ try:
 except ImportError:
     # For Docker builds, there will not be a local_settings.py, 'local settings' are passed via environment variables
     pass
-
-# Save charts as HTML files in a charts sub-folder of the MEDIA_ROOT folder on the OpenREM server.
-SAVE_CHARTS_AS_HTML = False
-
-# Ignore the Device Observer UID of these equipment models when creating display name entries during import of DICOM
-# RDSR data using the rdsr.py extractor.
-# See https://docs.openrem.org/en/latest/env_variables.html#device-observer-uid-settings.
-IGNORE_DEVICE_OBSERVER_UID_FOR_THESE_MODELS = []

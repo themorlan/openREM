@@ -1235,3 +1235,19 @@ class ImportDXRDSR(TestCase):
         self.assertAlmostEqual(study.total_dap, Decimal(0.00000580999970))
         self.assertEqual(study.number_of_events, 5)
         self.assertEqual(study.number_of_planes, 1)
+
+    def test_import_dx_rdsr_no_value_sequence(self):
+
+        """
+        Imports a known RDSR file derived from a Canon that has a missing measured value sequence
+        https://bitbucket.org/openrem/openrem/issues/955/list-index-out-of-range-error-possibly
+        """
+
+        PatientIDSettings.objects.create()
+
+        dicom_file = "test_files/DX-RDSR-Canon_CXDI_noDAP.dcm"
+        root_tests = os.path.dirname(os.path.abspath(__file__))
+        dicom_path = os.path.join(root_tests, dicom_file)
+
+        rdsr.rdsr(dicom_path)
+        study = GeneralStudyModuleAttr.objects.order_by("id")[0]

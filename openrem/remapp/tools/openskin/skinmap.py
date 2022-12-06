@@ -82,7 +82,9 @@ def skin_map(
     # and will include any curved areas of the phantom and also account for change in the field
     # area at the skin due to non-zero secondary beam angles.
     area_count = 0
-    iterator = np.nditer(skin_dose_map, op_flags=["readwrite"], flags=["multi_index", "refs_ok"])
+    iterator = np.nditer(
+        skin_dose_map, op_flags=["readwrite"], flags=["multi_index", "refs_ok"]
+    )
     while not iterator.finished:
         lookup_row = iterator.multi_index[0]
         lookup_col = iterator.multi_index[1]
