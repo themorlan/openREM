@@ -10,6 +10,11 @@ Headline changes
 * Exports: DX data now correctly exports to csv and xlsx if studies include multiple filters (eg Cu+Al)
 * Install: New release of dependency django-filter breaks OpenREM. Pegged at previous version for now
 
+Upgrade to current version
+==========================
+
+:doc:`upgrade_previous_0.10.0` and then upgrade to 1.0.
+
 Specific upgrade instructions
 =============================
 

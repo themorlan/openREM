@@ -12,6 +12,11 @@ Headline changes
 * Interface: Fixed delete cancel button in firefox
 * Exports: Fixed export of non-ASCII characters to csv file
 
+Upgrade to current version
+==========================
+
+:doc:`upgrade_previous_0.10.0` and then upgrade to 1.0.
+
 Specific upgrade instructions
 =============================
 

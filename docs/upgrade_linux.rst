@@ -15,14 +15,8 @@ used, substitute 3.10 for that version where necessary below.
 
 If you are upgrading OpenREM on a Linux server with limited internet access, go to the :doc:`install_offline` docs.
 
-* **Upgrades from 0.9.1 or earlier should review** :doc:`upgrade_previous_0.10.0`. -- needs changing
-
-..  toctree::
-    :maxdepth: 1
-
-    upgrade_previous_0.10.0
-
-.. _post_upgrade0100_linux:
+* **Upgrades from 0.9.1 or earlier should review** :doc:`upgrade_previous_0.10.0` first. Upgrading to 1.0 is only
+  possible from 0.10.0.
 
 Preparation
 ===========
@@ -108,11 +102,6 @@ Activate the virtualenv:
 
 Install the new version of OpenREM
 ==================================
-
-.. admonition:: Offline upgrades
-
-    If you are upgrading this server offline, return to the Offline installation docs for
-    :ref:`Offline-python-packages`
 
 Ensure the new virtualenv is active — prompt will look like
 

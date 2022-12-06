@@ -33,7 +33,7 @@ definitions:
           - sonar
           - docker
         script:
-          - pipe: sonarsource/sonarcloud-scan:1.2.0
+          - pipe: sonarsource/sonarcloud-scan:1.4.0
         services:
           - docker
     - step: &sonarcloudqualitygate
@@ -42,7 +42,7 @@ definitions:
           - sonar
           - docker
         script:
-          - pipe: sonarsource/sonarcloud-quality-gate:0.1.4
+          - pipe: sonarsource/sonarcloud-quality-gate:0.1.6
             variables:
               DEBUG: 'true'
         services:
