@@ -1,38 +1,11 @@
-[
+  [
   {
     "model": "remapp.OpenSkinSafeList",
     "pk": 1,
     "fields": {
       "manufacturer": "Siemens",
       "manufacturer_model_name": "AXIOM-Artis",
-      "software_version": "VC14J 150507"
-    }
-  },
-  {
-    "model": "remapp.OpenSkinSafeList",
-    "pk": 2,
-    "fields": {
-      "manufacturer": "Siemens",
-      "manufacturer_model_name": "AXIOM-Artis",
-      "software_version": "test 1"
-    }
-  },
-  {
-    "model": "remapp.OpenSkinSafeList",
-    "pk": 3,
-    "fields": {
-      "manufacturer": "Siemens",
-      "manufacturer_model_name": "AXIOM-Artis",
-      "software_version": " test 2"
-    }
-  },
-  {
-    "model": "remapp.OpenSkinSafeList",
-    "pk": 4,
-    "fields": {
-      "manufacturer": "Siemens",
-      "manufacturer_model_name": "AXIOM-Artis",
-      "software_version": " test 3"
+      "software_version": ""
     }
   }
-]
+  ]
