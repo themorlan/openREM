@@ -45,11 +45,15 @@ if projectpath not in sys.path:
 os.environ["DJANGO_SETTINGS_MODULE"] = "openremproject.settings"
 django.setup()
 
-from ..models import GeneralStudyModuleAttr, SkinDoseMapResults, OpenSkinSafeList
-from .background import record_task_info
-from .save_skin_map_structure import save_openskin_structure
-from .openskin.calc_exp_map import CalcExpMap
-from ..version import __skin_map_version__
+from ..models import (  # pylint: disable=wrong-import-position
+    GeneralStudyModuleAttr,
+    SkinDoseMapResults,
+    OpenSkinSafeList
+)
+from .background import record_task_info  # pylint: wrong-import-position
+from .save_skin_map_structure import save_openskin_structure  # pylint: wrong-import-position
+from .openskin.calc_exp_map import CalcExpMap  # pylint: wrong-import-position
+from ..version import __skin_map_version__  # pylint: wrong-import-position
 
 # Explicitly name logger so that it is still handled when using __main__
 logger = logging.getLogger("remapp.tools.make_skin_map")
@@ -59,6 +63,7 @@ def make_skin_map(study_pk=None, return_structure_for_testing=False):
     # pylint: disable=too-many-branches
     # pylint: disable=too-many-statements
     # pylint: disable=too-many-locals
+    # pylint: disable=too-complex
 
     if study_pk:
         study = GeneralStudyModuleAttr.objects.get(pk=study_pk)
