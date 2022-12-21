@@ -36,7 +36,8 @@ import django
 from django.core.exceptions import ObjectDoesNotExist
 import numpy as np
 
-# setup django/OpenREM
+# Setup django. This is required on windows, because process is created via spawn and
+# django will not be initialized anymore then (On Linux this will only be executed once)
 basepath = os.path.dirname(__file__)
 projectpath = os.path.abspath(os.path.join(basepath, "..", ".."))
 if projectpath not in sys.path:
@@ -44,7 +45,7 @@ if projectpath not in sys.path:
 os.environ["DJANGO_SETTINGS_MODULE"] = "openremproject.settings"
 django.setup()
 
-from remapp.models import GeneralStudyModuleAttr, SkinDoseMapResults, OpenSkinSafeList
+from ..models import GeneralStudyModuleAttr, SkinDoseMapResults, OpenSkinSafeList
 from .background import record_task_info
 from .save_skin_map_structure import save_openskin_structure
 from .openskin.calc_exp_map import CalcExpMap
@@ -55,6 +56,9 @@ logger = logging.getLogger("remapp.tools.make_skin_map")
 
 
 def make_skin_map(study_pk=None, return_structure_for_testing=False):
+    # pylint: disable=too-many-branches
+    # pylint: disable=too-many-statements
+    # pylint: disable=too-many-locals
 
     if study_pk:
         study = GeneralStudyModuleAttr.objects.get(pk=study_pk)
