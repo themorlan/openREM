@@ -75,7 +75,7 @@ def make_skin_map(study_pk=None):
         for current_entry in entries:
             if (
                     current_entry.software_version == study.generalequipmentmoduleattr_set.get().software_versions
-                    or current_entry.software_version is None
+                    or current_entry.software_version is None or not current_entry.software_version
             ):
                 entry = current_entry
                 break
