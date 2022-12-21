@@ -63,6 +63,7 @@ def make_skin_map(study_pk=None, return_structure_for_testing=False):
     # pylint: disable=too-many-branches
     # pylint: disable=too-many-statements
     # pylint: disable=too-many-locals
+    # noqa: C901
 
     if study_pk:
         study = GeneralStudyModuleAttr.objects.get(pk=study_pk)
