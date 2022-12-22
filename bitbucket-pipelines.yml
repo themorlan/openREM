@@ -48,7 +48,7 @@ definitions:
         services:
           - docker
     - step: &test
-        name: run django tests
+        name: run django tests  # excludes tests tagged as slow
         script:
           - mv openrem/openremproject/local_settings.py{.linux,}
           - sed -i "s/INFO/DEBUG/g" openrem/openremproject/local_settings.py
@@ -83,6 +83,7 @@ definitions:
         caches:
           - pip
     - step: &test-slow
+        trigger: manual
         name: run django tests tagged as slow
         script:
           - mv openrem/openremproject/local_settings.py{.linux,}
@@ -155,7 +156,7 @@ definitions:
     - step: &test-python3.8
         trigger: manual
         image: python:3.8
-        name: run django tests against Python 3.8
+        name: Python 3.8 test
         script:
           - mv openrem/openremproject/local_settings.py{.linux,}
           - sed -i "s/INFO/DEBUG/g" openrem/openremproject/local_settings.py
@@ -192,7 +193,7 @@ definitions:
     - step: &test-python3.9
         trigger: manual
         image: python:3.9
-        name: run django tests against Python 3.9
+        name: Python 3.9 test
         script:
           - mv openrem/openremproject/local_settings.py{.linux,}
           - sed -i "s/INFO/DEBUG/g" openrem/openremproject/local_settings.py
