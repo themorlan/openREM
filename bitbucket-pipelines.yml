@@ -48,7 +48,7 @@ definitions:
         services:
           - docker
     - step: &test
-        name: run django tests  # excludes tests tagged as slow
+        name: run django tests except slow tags  # excludes tests tagged as slow
         script:
           - mv openrem/openremproject/local_settings.py{.linux,}
           - sed -i "s/INFO/DEBUG/g" openrem/openremproject/local_settings.py
@@ -119,7 +119,7 @@ definitions:
         caches:
           - pip
     - step: &test-all
-        name: run django tests tagged as slow
+        name: run all django tests
         script:
           - mv openrem/openremproject/local_settings.py{.linux,}
           - sed -i "s/INFO/DEBUG/g" openrem/openremproject/local_settings.py
