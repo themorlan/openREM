@@ -1,16 +1,16 @@
 # test_openskin.py
 
-from decimal import Decimal
 import gzip
-import pickle
 import os
+import pickle
+from unittest import skip
 
-from django.contrib.auth.models import User
 from django.conf import settings
+from django.contrib.auth.models import User
 from django.test import TestCase
 
-from .test_files.skin_map_zee import ZEE_SKIN_MAP
 from .test_files.skin_map_alphenix import ALPHENIX_SKIN_MAP
+from .test_files.skin_map_zee import ZEE_SKIN_MAP
 from ..extractors import rdsr
 from ..models import PatientIDSettings, GeneralStudyModuleAttr, OpenSkinSafeList
 from ..tools.make_skin_map import make_skin_map
@@ -209,6 +209,7 @@ class OpenSkinBlackBox(TestCase):
 
         os.remove(skin_map_path)
 
+    @skip("Don't routinely run the skin map rotational exposure test because it takes a long time.")
     def test_rotational_exposure(self):
         rf1 = "test_files/RF-RDSR-Canon-Alphenix-rotational.dcm"
         root_tests = os.path.dirname(os.path.abspath(__file__))
