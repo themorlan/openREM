@@ -236,6 +236,8 @@ pipelines:
       - step: *test-python3.8
     test-python-3.9:
       - step: *test-python3.9
+    test-slow:
+      - step: *test-slow
   default:  # Standard commits are tested but not deployed
     - step: *test
     - step: *flake8
