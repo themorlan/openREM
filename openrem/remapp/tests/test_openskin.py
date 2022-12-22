@@ -3,11 +3,10 @@
 import gzip
 import os
 import pickle
-from unittest import skip
 
 from django.conf import settings
 from django.contrib.auth.models import User
-from django.test import TestCase
+from django.test import TestCase, tag
 
 from .test_files.skin_map_alphenix import ALPHENIX_SKIN_MAP
 from .test_files.skin_map_zee import ZEE_SKIN_MAP
@@ -209,7 +208,7 @@ class OpenSkinBlackBox(TestCase):
 
         os.remove(skin_map_path)
 
-    @skip("Don't routinely run the skin map rotational exposure test because it takes a long time.")
+    @tag("slow")
     def test_rotational_exposure(self):
         rf1 = "test_files/RF-RDSR-Canon-Alphenix-rotational.dcm"
         root_tests = os.path.dirname(os.path.abspath(__file__))

@@ -72,7 +72,42 @@ definitions:
           - pip install coveralls
           - pip install tblib
           - python openrem/manage.py makemigrations remapp
-          - coverage run openrem/manage.py test remapp --parallel
+          - coverage run openrem/manage.py test remapp --parallel --exclude-tag=slow
+          - coverage combine
+          - coveralls
+          - coverage xml
+        artifacts:
+          - coverage.xml
+        services:
+          - postgres
+        caches:
+          - pip
+    - step: &test-slow
+        name: run django tests tagged as slow
+        script:
+          - mv openrem/openremproject/local_settings.py{.linux,}
+          - sed -i "s/INFO/DEBUG/g" openrem/openremproject/local_settings.py
+          - >-
+            sed -i "/'ENGINE':/c\        'ENGINE': 'django.db.backends.postgresql'," openrem/openremproject/local_settings.py
+          - >-
+            sed -i "/'NAME':/c\        'NAME': 'openremdb'," openrem/openremproject/local_settings.py
+          - >-
+            sed -i "/'USER':/c\        'USER': 'openremuser'," openrem/openremproject/local_settings.py
+          - >-
+            sed -i "/'PASSWORD':/c\        'PASSWORD': 'openremuserpass'," openrem/openremproject/local_settings.py
+          - >-
+            sed -i "/'HOST':/c\        'HOST': '127.0.0.1'," openrem/openremproject/local_settings.py
+          - >-
+            sed -i "/'PORT':/c\        'PORT': '5432'," openrem/openremproject/local_settings.py
+          - >-
+            sed -i "/^MEDIA_ROOT/c\MEDIA_ROOT = ''" openrem/openremproject/local_settings.py
+          - mv openrem/openremproject/wsgi.py{.example,}
+          - pip install -e .
+          - pip install coverage
+          - pip install coveralls
+          - pip install tblib
+          - python openrem/manage.py makemigrations remapp
+          - coverage run openrem/manage.py test remapp --parallel --tag=slow
           - coverage combine
           - coveralls
           - coverage xml
