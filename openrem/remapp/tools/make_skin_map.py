@@ -75,7 +75,7 @@ def make_skin_map(study_pk=None):
         for current_entry in entries:
             if (
                     current_entry.software_version == study.generalequipmentmoduleattr_set.get().software_versions
-                    or current_entry.software_version is None
+                    or current_entry.software_version is None or not current_entry.software_version
             ):
                 entry = current_entry
                 break
@@ -295,7 +295,15 @@ def make_skin_map(study_pk=None):
                 frames = float(
                     irrad.irradeventxraysourcedata_set.get().number_of_pulses
                 )
-            except (ObjectDoesNotExist, TypeError):
+            except TypeError:
+                try:
+                    frames = float(
+                        irrad.irradeventxraysourcedata_set.get().exposure_time /
+                        irrad.irradeventxraysourcedata_set.get().pulsewidth_set.get().pulse_width
+                    )
+                except (ObjectDoesNotExist, TypeError):
+                    frames = None
+            except ObjectDoesNotExist:
                 frames = None
             try:
                 end_angle = float(

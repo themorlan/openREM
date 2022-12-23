@@ -13,6 +13,7 @@ OpenREM version history
 * :issue:`949`  Documentation: updated the upgrade instructions from older versions
 * :issue:`947`  Tests: enforce ordering within fluoro exposure sets and specify row by time in test
 * :issue:`945`  Exports: order by plane when populating fluoro data
+* :issue:`942`  SkinDose: try to calculate number of frames using exposure time / pulse width if number of frames not available
 * :issue:`941`  Interface: the filtering submit button now updates chart options for fluoroscopy and mammography
 * :issue:`940`  Installation: upgraded Django to 3.2, packages to latest versions
 * :issue:`937`  Interface: correcting bottom row of exports table
