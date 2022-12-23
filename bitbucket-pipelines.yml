@@ -48,7 +48,78 @@ definitions:
         services:
           - docker
     - step: &test
-        name: run django tests
+        name: run django tests except slow tags  # excludes tests tagged as slow
+        script:
+          - mv openrem/openremproject/local_settings.py{.linux,}
+          - sed -i "s/INFO/DEBUG/g" openrem/openremproject/local_settings.py
+          - >-
+            sed -i "/'ENGINE':/c\        'ENGINE': 'django.db.backends.postgresql'," openrem/openremproject/local_settings.py
+          - >-
+            sed -i "/'NAME':/c\        'NAME': 'openremdb'," openrem/openremproject/local_settings.py
+          - >-
+            sed -i "/'USER':/c\        'USER': 'openremuser'," openrem/openremproject/local_settings.py
+          - >-
+            sed -i "/'PASSWORD':/c\        'PASSWORD': 'openremuserpass'," openrem/openremproject/local_settings.py
+          - >-
+            sed -i "/'HOST':/c\        'HOST': '127.0.0.1'," openrem/openremproject/local_settings.py
+          - >-
+            sed -i "/'PORT':/c\        'PORT': '5432'," openrem/openremproject/local_settings.py
+          - >-
+            sed -i "/^MEDIA_ROOT/c\MEDIA_ROOT = ''" openrem/openremproject/local_settings.py
+          - mv openrem/openremproject/wsgi.py{.example,}
+          - pip install -e .
+          - pip install coverage
+          - pip install coveralls
+          - pip install tblib
+          - python openrem/manage.py makemigrations remapp
+          - coverage run openrem/manage.py test remapp --parallel --exclude-tag=slow
+          - coverage combine
+          - coveralls
+          - coverage xml
+        artifacts:
+          - coverage.xml
+        services:
+          - postgres
+        caches:
+          - pip
+    - step: &test-slow
+        trigger: manual
+        name: run django tests tagged as slow
+        script:
+          - mv openrem/openremproject/local_settings.py{.linux,}
+          - sed -i "s/INFO/DEBUG/g" openrem/openremproject/local_settings.py
+          - >-
+            sed -i "/'ENGINE':/c\        'ENGINE': 'django.db.backends.postgresql'," openrem/openremproject/local_settings.py
+          - >-
+            sed -i "/'NAME':/c\        'NAME': 'openremdb'," openrem/openremproject/local_settings.py
+          - >-
+            sed -i "/'USER':/c\        'USER': 'openremuser'," openrem/openremproject/local_settings.py
+          - >-
+            sed -i "/'PASSWORD':/c\        'PASSWORD': 'openremuserpass'," openrem/openremproject/local_settings.py
+          - >-
+            sed -i "/'HOST':/c\        'HOST': '127.0.0.1'," openrem/openremproject/local_settings.py
+          - >-
+            sed -i "/'PORT':/c\        'PORT': '5432'," openrem/openremproject/local_settings.py
+          - >-
+            sed -i "/^MEDIA_ROOT/c\MEDIA_ROOT = ''" openrem/openremproject/local_settings.py
+          - mv openrem/openremproject/wsgi.py{.example,}
+          - pip install -e .
+          - pip install coverage
+          - pip install coveralls
+          - pip install tblib
+          - python openrem/manage.py makemigrations remapp
+          - coverage run openrem/manage.py test remapp --parallel --tag=slow
+          - coverage combine
+          - coveralls
+          - coverage xml
+        artifacts:
+          - coverage.xml
+        services:
+          - postgres
+        caches:
+          - pip
+    - step: &test-all
+        name: run all django tests
         script:
           - mv openrem/openremproject/local_settings.py{.linux,}
           - sed -i "s/INFO/DEBUG/g" openrem/openremproject/local_settings.py
@@ -85,7 +156,7 @@ definitions:
     - step: &test-python3.8
         trigger: manual
         image: python:3.8
-        name: run django tests against Python 3.8
+        name: Python 3.8 test
         script:
           - mv openrem/openremproject/local_settings.py{.linux,}
           - sed -i "s/INFO/DEBUG/g" openrem/openremproject/local_settings.py
@@ -122,7 +193,7 @@ definitions:
     - step: &test-python3.9
         trigger: manual
         image: python:3.9
-        name: run django tests against Python 3.9
+        name: Python 3.9 test
         script:
           - mv openrem/openremproject/local_settings.py{.linux,}
           - sed -i "s/INFO/DEBUG/g" openrem/openremproject/local_settings.py
@@ -201,8 +272,11 @@ pipelines:
       - step: *test-python3.8
     test-python-3.9:
       - step: *test-python3.9
+    test-slow:
+      - step: *test-slow
   default:  # Standard commits are tested but not deployed
     - step: *test
+    - step: *test-slow
     - step: *flake8
     - step: *sonarcloud
     - step: *sonarcloudqualitygate
@@ -219,7 +293,7 @@ pipelines:
       - step: *deploy-to-openrem-org
     master:  # Commits to the master branch are tested and pushed to Docker Hub
       - step:
-          <<: *test
+          <<: *test-all
           name: run django tests - master
           deployment: Staging
       - step: *flake8
@@ -227,14 +301,14 @@ pipelines:
       - step: *sonarcloudqualitygate
     '*stage':  # Commits to any branch ending in 'stage' are tested and deployed to testing.openrem.org
       - step:
-          <<: *test
+          <<: *test-all
           name: run django tests - testing
       - step:
           <<: *deploy-to-openrem-org
           deployment: testing  # deployment has $server as a variable = testing.openrem.org
     '*docker':  # Commits to any branch ending in 'docker' are tested and deployed to docker hub. Will add to develop
       - step:
-          <<: *test
+          <<: *test-all
           name: run django tests - testing
       - step:
           <<: *build-and-deploy-to-docker
