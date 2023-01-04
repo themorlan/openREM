@@ -1,13 +1,11 @@
-
- [
- {
+  [
+  {
     "model": "remapp.OpenSkinSafeList",
     "pk": 1,
     "fields": {
       "manufacturer": "Siemens",
       "manufacturer_model_name": "AXIOM-Artis",
-      "software_version":""
+      "software_version": ""
     }
   }
   ]
-
