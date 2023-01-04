@@ -154,9 +154,9 @@ definitions:
         caches:
           - pip
     - step: &test-python3.8
-        trigger: manual
         image: python:3.8
         name: Python 3.8 test
+        trigger: manual
         script:
           - mv openrem/openremproject/local_settings.py{.linux,}
           - sed -i "s/INFO/DEBUG/g" openrem/openremproject/local_settings.py
