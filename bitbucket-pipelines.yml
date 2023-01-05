@@ -173,7 +173,7 @@ definitions:
           - >-
             sed -i "/'PORT':/c\        'PORT': '5432'," openrem/openremproject/local_settings.py
           - >-
-            sed -i "/MEDIA_ROOT:/c\MEDIA_ROOT = ''" openrem/openremproject/local_settings.py
+            sed -i "/^MEDIA_ROOT/c\MEDIA_ROOT = ''" openrem/openremproject/local_settings.py
           - cat openrem/openremproject/local_settings.py
           - mv openrem/openremproject/wsgi.py{.example,}
           - pip install -e .
@@ -211,7 +211,7 @@ definitions:
           - >-
             sed -i "/'PORT':/c\        'PORT': '5432'," openrem/openremproject/local_settings.py
           - >-
-            sed -i "/MEDIA_ROOT/c\MEDIA_ROOT = ''" openrem/openremproject/local_settings.py
+            sed -i "/^MEDIA_ROOT/c\MEDIA_ROOT = ''" openrem/openremproject/local_settings.py
           - mv openrem/openremproject/wsgi.py{.example,}
           - pip install -e .
           - pip install coverage
