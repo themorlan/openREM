@@ -122,7 +122,7 @@ SLQite3 database
 ----------------
 
 * Delete or rename your existing database file (location will be described in your ``local_settings.py`` file)
-* :ref:`database_creation`
+* *? ref to database creation here, if SQLite3 features anywhere?*
 
 Any database
 ------------

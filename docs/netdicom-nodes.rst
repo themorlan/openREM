@@ -6,7 +6,12 @@ DICOM Network Configuration
 Configuring DICOM store nodes in OpenREM
 ****************************************
 
-You need to configure details of the DICOM store node to enable the query-retrieve functionality.
+You need to configure details of the DICOM store node to enable the query-retrieve functionality. You will also need to
+have installed Orthanc or an alternative:
+
+* Orthanc enabled by default in Docker
+* Installed in the Linux instructions and configured at :ref:`dicom_store_scp_linux`
+* Installed in the Windows instructions and configured at *to be written*
 
 To configure a DICOM Store SCP, on the ``Config`` menu select ``DICOM networking``, then click
 ``Add new Store`` and fill in the details (see figure 1):
@@ -27,10 +32,6 @@ To configure a DICOM Store SCP, on the ``Config`` menu select ``DICOM networking
   between the remote nodes (modalities, PACS) and the OpenREM server, then you need to make sure that the firewall is
   configured to allow the port you choose here
 
-Third-party DICOM store node for scripted import to OpenREM
-===========================================================
-
-See :doc:`conquestUbuntu` and :doc:`conquestAsWindowsService` for more information about using Conquest with OpenREM
 
 *******************************
 Status of DICOM Store SCP nodes

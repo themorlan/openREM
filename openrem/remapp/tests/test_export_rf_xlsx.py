@@ -136,9 +136,7 @@ class ExportRFxlsx(
             for i, x in enumerate(headers, start=1)
             if x.value == "Mean filter thickness (mm)"
         ][0]
-        time_col = [
-            i for i, x in enumerate(headers, start=1) if x.value == "Time"
-        ][0]
+        time_col = [i for i, x in enumerate(headers, start=1) if x.value == "Time"][0]
         times = siemens_sheet[get_column_letter(time_col)]
         exp1_row = [
             i for i, x in enumerate(times, start=1) if x.value == "2016-05-12 10:11:54"
@@ -155,7 +153,8 @@ class ExportRFxlsx(
             siemens_sheet.cell(row=exp1_row, column=filter_material_col).value, "Cu"
         )
         self.assertEqual(
-            siemens_sheet.cell(row=exp1_row, column=filter_thickness_col).value, "0.6000"
+            siemens_sheet.cell(row=exp1_row, column=filter_thickness_col).value,
+            "0.6000",
         )
 
         # cleanup

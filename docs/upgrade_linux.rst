@@ -15,6 +15,9 @@ used, substitute 3.10 for that version where necessary below.
 
 If you are upgrading OpenREM on a Linux server with limited internet access, go to the :doc:`install_offline` docs.
 
+* **Upgrades from 0.9.1 or earlier should review** :doc:`upgrade_previous_0.10.0` first. Upgrading to 1.0 is only
+  possible from 0.10.0.
+
 Preparation
 ===========
 
@@ -83,7 +86,7 @@ command, replacing ``1001`` (user ``uid``) and ``1002`` (``openrem`` group ``gid
     These settings enable the web server user ``www-data``, the DICOM server user ``orthanc`` and the OpenREM server
     users (you and your colleagues) to all read, write and execute the OpenREM files. The ``setfacl`` command
     relies on Access Control Lists being available on your system - they are usually enabled on ext4 and can be
-    enabled on others. See :ref:`add_linx_user` for adding colleagues access to the Linux folders.
+    enabled on others. See :ref:`add_linux_user` for adding colleagues access to the Linux folders.
 
 Create a new Python virtual environment:
 
@@ -99,11 +102,6 @@ Activate the virtualenv:
 
 Install the new version of OpenREM
 ==================================
-
-.. admonition:: Offline upgrades
-
-    If you are upgrading this server offline, return to the Offline installation docs for
-    :ref:`Offline-python-packages`
 
 Ensure the new virtualenv is active — prompt will look like
 

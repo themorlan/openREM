@@ -62,20 +62,27 @@ def make_skin_map(study_pk=None):
             f"Unit: {study.generalequipmentmoduleattr_set.get().unique_equipment_name.display_name} | "
             f"PK: {study_pk} | Study UID: {study.study_instance_uid.replace('.', '. ')}"
         )
-        try:
-            entry = OpenSkinSafeList.objects.get(
-                manufacturer=study.generalequipmentmoduleattr_set.get().manufacturer,
-                manufacturer_model_name=study.generalequipmentmoduleattr_set.get().manufacturer_model_name,
-            )
-        except ObjectDoesNotExist:
-            entry = None
-        if entry is not None and entry.software_version:
+
+        # Get all OpenSkinSafeList table entries that match the manufacturer and model name of the current study
+        entries = OpenSkinSafeList.objects.all().filter(
+            manufacturer=study.generalequipmentmoduleattr_set.get().manufacturer,
+            manufacturer_model_name=study.generalequipmentmoduleattr_set.get().manufacturer_model_name
+        )
+
+        # Look for an entry which has a matching software version with the current study,
+        # or an entry where the software version is blank (any software version)
+        entry = None
+        for current_entry in entries:
             if (
-                study.generalequipmentmoduleattr_set.get().software_versions
-                != entry.software_version
+                    current_entry.software_version == study.generalequipmentmoduleattr_set.get().software_versions
+                    or current_entry.software_version is None or not current_entry.software_version
             ):
-                entry = None
+                entry = current_entry
+                break
+
         if entry is None:
+            # There is no match, so return a blank dummy openSkin structure without trying
+            # to calculate a skin dose map
             save_openskin_structure(
                 study,
                 {
@@ -288,7 +295,15 @@ def make_skin_map(study_pk=None):
                 frames = float(
                     irrad.irradeventxraysourcedata_set.get().number_of_pulses
                 )
-            except (ObjectDoesNotExist, TypeError):
+            except TypeError:
+                try:
+                    frames = float(
+                        irrad.irradeventxraysourcedata_set.get().exposure_time /
+                        irrad.irradeventxraysourcedata_set.get().pulsewidth_set.get().pulse_width
+                    )
+                except (ObjectDoesNotExist, TypeError):
+                    frames = None
+            except ObjectDoesNotExist:
                 frames = None
             try:
                 end_angle = float(
@@ -332,7 +347,7 @@ def make_skin_map(study_pk=None):
         except ObjectDoesNotExist:
             pass
         # assume that calculation failed if max(peak_skin_dose) == 0 ==> set peak_skin_dose to None
-        max_skin_dose = np.max(my_exp_map.my_dose.total_dose)
+        max_skin_dose = np.max(my_exp_map.my_dose.total_dose, initial=0)
         max_skin_dose = max_skin_dose if max_skin_dose > 0 else None
         SkinDoseMapResults(
             general_study_module_attributes=study,

@@ -5,8 +5,15 @@ OpenREM version history
 
 1.0.0b1 (2022-xx-xx)
 --------------------
+* :issue:`960`  SkinDose: fixed bug where multiple entries in the openskin safelist table with different software versions caused an error
+* :issue:`958`  Interface: fixed task table sorting for Started column
+* :issue:`955`  Imports: fixed error when importing RDSR with empty DAP measured value sequence
+* :issue:`953`  Interface: updated "DX and CR" to "Radiography", and "Radiographic" to "Radiography"
+* :issue:`950`  Documentation: removed (outdated) instructions for Conquest
+* :issue:`949`  Documentation: updated the upgrade instructions from older versions
 * :issue:`947`  Tests: enforce ordering within fluoro exposure sets and specify row by time in test
 * :issue:`945`  Exports: order by plane when populating fluoro data
+* :issue:`942`  SkinDose: try to calculate number of frames using exposure time / pulse width if number of frames not available
 * :issue:`941`  Interface: the filtering submit button now updates chart options for fluoroscopy and mammography
 * :issue:`940`  Installation: upgraded Django to 3.2, packages to latest versions
 * :issue:`937`  Interface: correcting bottom row of exports table
@@ -16,6 +23,7 @@ OpenREM version history
 * :issue:`931`  Exports: export RF DAP as float instead of text
 * :issue:`928`  Documentation: added restriction in postgres version for earlier OpenREM releases
 * :issue:`925`  Docker: docs and config file for enabling bind mounts with SELinux
+* :issue:`923`  Docker: docs and config for virtual directory install
 * :issue:`922`  Database: optimise indexes and duplicate queries
 * :issue:`919`  Interface: fixed bug preventing home page listing if study had no date
 * :issue:`917`  Interface: added horizontal lines between chart option groups and shaded chart option CheckboxSelectMultiple items
@@ -57,6 +65,7 @@ OpenREM version history
 * :issue:`861`  Interface: added ability to filter mammography on view code, compressed breast thickness and exposure control mode
 * :issue:`860`  DICOM Networking: removed built-in DICOM Store SCP functionality
 * :issue:`858`  DICOM Networking: query-retrieve logging, filtering and error handling improved
+* :issue:`857`  Documentation: resolved documentation build errors
 * :issue:`856`  Interface: removed CT acquisition type restriction tick boxes
 * :issue:`854`  Interface: added date constraints to links on homepage
 * :issue:`853`  Testing: reduced Bitbucket pipeline minutes usage
@@ -106,6 +115,7 @@ OpenREM version history
 * :issue:`789`  Python 3: Median function aggregation code simplified; works with Python 3.7
 * :issue:`788`  Tasks: Celery and RabbitMQ dropped, background task processing now managed within Python/OpenREM
 * :issue:`787`  Interface: fixed login error
+* :issue:`786`  Installation: increased Windows IIS timeouts in docs
 * :issue:`777`  Updated OpenREM to use pydicom 1.3
 * :issue:`772`  DICOM Networking: check for station name at series level or study, not both
 * :issue:`764`  Imports: extractor functions log to extractor log instead of default

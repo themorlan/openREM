@@ -49,6 +49,8 @@ to the one you are running the server on) and you should see the OpenREM interfa
     ``DEBUG`` mode is set to ``False``, which prevents the test web server
     serving those files. The ``--insecure`` option allows them to be served again.
 
+.. _user-settings:
+
 Configure the settings
 ======================
 

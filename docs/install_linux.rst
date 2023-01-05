@@ -17,7 +17,7 @@ The instructions should work for Ubuntu 20.04 too, references to jammy will be f
 There are various commands and paths that reference the Python version 3.10 in these instructions. If you are using
 Python 3.8 or Python 3.9 then these will need to be modified accordingly.
 
-If you are upgrading an existing installation on a new Linux server, go to the :doc:`upgrade_linux_new_server` docs
+If you are upgrading an existing installation to a new Linux server, go to the :doc:`upgrade_linux_new_server` docs
 first.
 
 If you are installing OpenREM on a Linux server with limited internet access, go to the :doc:`install_offline` docs.
@@ -159,11 +159,6 @@ Activate the virtualenv (note the ``.`` -- you can also use the word ``source``)
 Install Python packages
 -----------------------
 
-.. note::
-
-    If you are installing this server offline, return to the Offline installation docs for
-    :ref:`Offline-python-packages`
-
 .. code-block:: console
 
     $ pip install --upgrade pip
@@ -234,20 +229,22 @@ Navigate to the Python openrem folder and copy the example ``local_settings.py``
 
 Edit ``local_settings.py`` as needed - make sure you change the ``PASSWORD``, the ``SECRET_KEY`` (to anything, just
 change it), the ``ALLOWED_HOSTS`` list, regionalisation settings and the ``EMAIL`` configuration. You can modify the
-email settings later if necessary.
+email settings later if necessary. Some settings are not shown here but are documented
+in the settings file or elsewhere in the docs. For details on the final variable see :ref:`ignore-device-obs-uid`.
 
 .. admonition:: Upgrading to a new server
 
     If you are upgrading to a new Linux server, review the ``local_settings.py`` file from the old server to copy over
     the ``NAME``, ``USER`` and ``PASSWORD``, ``ALLOWED_HOSTS`` list and the ``EMAIL`` configuration, and check all the
     other settings. Change the ``SECRET_KEY`` from the default, but it doesn't have to match the one on the old server.
+    For details on the final variable see :ref:`ignore-device-obs-uid`.
 
 .. code-block:: console
 
     $ nano openremproject/local_settings.py
 
 .. code-block:: python
-    :emphasize-lines: 4-6, 16-17,25-28,51,56,59,70-77
+    :emphasize-lines: 4-6, 17-18,26-29,52,57,60,71-78,80
 
     DATABASES = {
         'default': {
@@ -263,6 +260,7 @@ email settings later if necessary.
     MEDIA_ROOT = '/var/dose/media/'
 
     STATIC_ROOT = '/var/dose/static/'
+    JS_REVERSE_OUTPUT_PATH = os.path.join(STATIC_ROOT, 'js', 'django_reverse')
 
     # Change secret key
     SECRET_KEY = 'hmj#)-$smzqk*=wuz9^a46rex30^$_j$rghp+1#y&amp;i+pys5b@$'
@@ -327,6 +325,8 @@ email settings later if necessary.
     EMAIL_DOSE_ALERT_SENDER = 'your.alert@email.address'
     EMAIL_OPENREM_URL = 'http://your.openrem.server'
 
+    IGNORE_DEVICE_OBSERVER_UID_FOR_THESE_MODELS = ['GE OEC Fluorostar']
+
 Now create the database. Make sure you are still in the openrem python folder and
 the virtualenv is active — prompt will look like
 
@@ -336,7 +336,7 @@ the virtualenv is active — prompt will look like
 
 Otherwise see :ref:`activatevirtualenv` and navigate back to that folder.
 
-.. note::
+.. admonition:: Upgrading to a new server
 
     If you are upgrading to a new Linux server, use these additional commands before continuing with those below:
 
@@ -348,7 +348,7 @@ Otherwise see :ref:`activatevirtualenv` and navigate back to that folder.
 
     .. code-block:: console
 
-        $ pg_restore -U openremuser -d openremdb /path/to/pre-1-0-upgrade-dump.bak
+        $ pg_restore --no-privileges --no-owner -U openremuser -d openremdb /path/to/pre-1-0-upgrade-dump.bak
 
 
     Migrate the database:
@@ -478,6 +478,8 @@ You can check that NGINX and Gunicorn are running with the following two command
 
     $ sudo systemctl status nginx.service
 
+.. _dicom_store_scp_linux:
+
 DICOM Store SCP
 ^^^^^^^^^^^^^^^
 
@@ -486,7 +488,7 @@ Copy the Lua file to the Orthanc folder. This will control how we process the in
 .. code-block:: console
 
     $ cd /var/dose/veopenrem3/lib/python3.10/site-packages/openrem/
-    $ cp sample-config/openrem_orthanc_config.lua.linux /var/dose/orthanc/openrem_orthanc_config.lua
+    $ cp sample-config/openrem_orthanc_config_linux.lua /var/dose/orthanc/
 
 Edit the Orthanc Lua configuration options:
 
@@ -555,7 +557,7 @@ Add the Lua script to the Orthanc config:
     // List of paths to the custom Lua scripts that are to be loaded
     // into this instance of Orthanc
     "LuaScripts" : [
-    "/var/dose/orthanc/openrem_orthanc_config.lua"
+    "/var/dose/orthanc/openrem_orthanc_config_linux.lua"
     ],
 
 Set the AE Title and port:

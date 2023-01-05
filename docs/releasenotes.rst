@@ -21,8 +21,14 @@ the links below for the appropriate version.
 Version specific information
 ============================
 
+This release:
 
-* :doc:`release-1.0.0` (this release)
+.. toctree::
+    :maxdepth: 1
+
+    release-1.0.0
+
+Previous releases:
 
 ..  toctree::
     :maxdepth: 1

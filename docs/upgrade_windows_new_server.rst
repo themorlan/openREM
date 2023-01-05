@@ -1,21 +1,14 @@
-*******************************
-Upgrading to a new Linux server
-*******************************
+*********************************
+Upgrading to a new Windows server
+*********************************
 
-If OpenREM has been running on an older Linux distribution, or you wish to move to Linux to host OpenREM and don't want
-to use Docker, these instructions will guide you through upgrading an existing database to a new server.
+If OpenREM has been running on an older Windows server version, or you wish to move to Windows Server to host OpenREM,
+these instructions will guide you through upgrading an existing database to a new server.
+
+This install is based on Windows Server 2022 - for details see the main :doc:`install_windows` docs.
 
 * **Upgrades from 0.9.1 or earlier should review** :doc:`upgrade_previous_0.10.0` first. Upgrading to 1.0 is only
   possible from 0.10.0.
-
-This install is based on Ubuntu 22.04 using:
-
-* Python 3.10 running in a virtualenv
-* Database: PostgreSQL
-* DICOM Store SCP: Orthanc running on port 104
-* Webserver: NGINX with Gunicorn
-* All OpenREM files in ``/var/dose/`` with group owner of ``openrem``
-* Collects any Physics (QA) images and zips them
 
 Get the local_settings.py file
 ==============================
@@ -33,13 +26,16 @@ Get ``local_settings.py`` file from the old server - it should be in one of thes
 Export the database
 ===================
 
-Export the old database on the old server - you will need the password for ``openremuser`` that will be in your
-``local_settings.py`` file, and you might need to change the ``openremuser`` database username and the ``openremdb``
-name of the database:
+Export the old database on the old server - get details from the ``local_settings.py`` file:
+
+* Check the database username and change in the command below as necessary (``openremuser``)
+* Check the database name and change in the command below as necessary (``openremdb``)
+* You will need the password for ``openremuser``
+* You will need to edit the command for the path to ``pg_dump.exe`` - the ``14`` is likely to be a lower number
 
 .. code-block:: console
 
-    $ pg_dump -U openremuser -d openremdb -F c -f pre-1-0-upgrade-dump.bak
+    C:\Users\openrem>"c:\Program Files\PostgreSQL\14\bin\pg_dump.exe" -U openremuser -d openremdb -F c -f windump.bak
 
 Transfer the files
 ==================
@@ -49,6 +45,5 @@ Copy these two files to your new server.
 Continue on the new server
 ==========================
 
-Now follow the :doc:`install_linux` instructions looking out for the additional steps for upgrading to a new Linux
+Now follow the :doc:`install_windows` instructions looking out for the additional steps for upgrading to a new
 server.
-

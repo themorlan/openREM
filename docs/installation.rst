@@ -28,7 +28,7 @@ Existing Windows or Linux installations of OpenREM 0.10 can be upgraded to run i
 
 It is advisable that the server OpenREM is installed on has access to the internet to get images from Docker and
 security updates for the operating system. However, if this is not possible the Docker images can be obtained on a
-computer that does have access to the internet and transferred to the 'offline' serer for installation.
+computer that does have access to the internet and transferred to the 'offline' server for installation.
 
 ..  toctree::
     :maxdepth: 1
@@ -54,6 +54,7 @@ provided, based on an Ubuntu Server installation.
     upgrade_linux
     upgrade_linux_new_server
     install_offline
+    upgrade_previous_0.10.0
 
 Native install on Windows
 -------------------------
@@ -74,9 +75,9 @@ Full upgrade instructions are provided, based on a Windows Server 2019 installat
 
     install_windows
     upgrade_windows
+    upgrade_windows_new_server
     install_offline
-
-
+    upgrade_previous_0.10.0
 
 .. _databaselinks:
 

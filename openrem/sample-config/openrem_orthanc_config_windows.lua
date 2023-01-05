@@ -2,17 +2,16 @@
 -- OpenREM python environment and other settings
 
 -- Set this to the path and name of the python executable used by OpenREM
-local python_executable = 'D:\\Server_Apps\\python27\\python.exe'
+local python_executable = 'E:\\venv\\Scripts\\python.exe'
 
 -- Set this to the path of the python scripts folder used by OpenREM
-local python_scripts_path = 'D:\\Server_Apps\\python27\\Scripts\\'
+local python_scripts_path = 'E:\\venv\\Scripts\\'
 
 -- Set this to the path where you want Orthanc to temporarily store DICOM files
-local temp_path = 'E:\\conquest\\dicom\\'
+local temp_path = 'E:\\orthanc\\dicom\\'
 
 -- Set this to 'mkdir' on Windows, or 'mkdir -p' on Linux
 local mkdir_cmd = 'mkdir'
--- local mkdir_cmd = 'mkdir -p'
 
 -- Set this to '\\'' on Windows, or '/' on Linux
 local dir_sep = '\\'
@@ -22,20 +21,15 @@ local dir_sep = '\\'
 local use_physics_filtering = true
 
 -- Set this to the path where you want to keep physics-related DICOM images
-local physics_to_keep_folder = 'E:\\conquest\\dicom\\physics\\'
+local physics_to_keep_folder = 'E:\\orthanc\\physics\\'
 
 -- Set this to the path and name of your zip utility, and include any switches that
--- are needed to create an archive and include all files in a supplied folder
--- (used with physics-related images)
-local zip_executable = 'D:\\Server_Apps\\7zip\\7za.exe a -r'
--- For Linux use the path to your zip command with the -r switch, such as:
--- local zip_executable = '/usr/bin/zip -r'
+-- are needed to create an archive and include all files in a supplied folder (used with physics-related images)
+local zip_executable = 'E:\\7-Zip\\7z.exe a -r'
 
 -- Set this to the path and name of your remove folder command, including switches
 -- for it to be quiet (used with physics-related images)
 local rmdir_cmd = 'rmdir /s/q'
--- You can use the command 'rm -r' if you are using Linux:
--- local rmdir_cmd = 'rm -r'
 -------------------------------------------------------------------------------------
 
 -- Set this to true if you use this script on windows, false otherwise
@@ -53,7 +47,7 @@ local physics_to_keep = {'physics'}
 
 -- Lists of things to ignore. Orthanc will ignore anything matching the content of
 -- these lists: they will not be imported into OpenREM.
-local manufacturers_to_ignore = {'Agfa', 'Agfa-Gevaert', 'Agfa-Gevaert AG', 'Faxitron X-Ray LLC', 'Gendex-KaVo'}
+local manufacturers_to_ignore = {'Faxitron X-Ray LLC', 'Gendex-KaVo'}
 local model_names_to_ignore = {'CR 85', 'CR 75', 'CR 35', 'CR 25', 'ADC_5146', 'CR975'}
 local station_names_to_ignore = {'CR85 Main', 'CR75 Main'}
 local software_versions_to_ignore = {'VixWin Platinum v3.3'}
@@ -77,8 +71,8 @@ function ToAscii(s)
     -- https://groups.google.com/d/msg/orthanc-users/qMLgkEmwwPI/6jRpCrlgBwAJ
     return s:gsub('[^a-zA-Z0-9-/-:-\\ ]', '_')
  end
- 
- 
+
+
  function ReceivedInstanceFilter(dicom)
      -- Only allow incoming objects we can use, plus XA and RF to enable physics filtering with XA/RF images
      local mod = dicom.Modality
@@ -88,16 +82,16 @@ function ToAscii(s)
          return true
      end
  end
- 
- 
+
+
  function OnStoredInstance(instanceId)
      --print('Starting OnStoredInstance')
- 
+
      -- Retrieve the DICOM tags from the instance. The tags parameter doesn't include all the useful
      -- tags - this does.
      local instance_tags = ParseJson(RestApiGet('/instances/' .. instanceId .. '/simplified-tags'))
- 
- 
+
+
      -------------------------------------------------------------------------------------
      -- See if the images are physics tests - if so, keep them and exit this function
      --print('Is it a physics test?')
@@ -120,8 +114,8 @@ function ToAscii(s)
          end
      end
      -------------------------------------------------------------------------------------
- 
- 
+
+
      -------------------------------------------------------------------------------------
      -- If the instance matches something in one of the "ignore" lists then remove the file
      -- and do not import it into Orthanc
@@ -135,7 +129,7 @@ function ToAscii(s)
              end
          end
      end
- 
+
      if instance_tags.ManufacturerModelName ~= nil then
          for i = 1, #model_names_to_ignore do
              --print('Checking against: ' .. model_names_to_ignore[i])
@@ -146,7 +140,7 @@ function ToAscii(s)
              end
          end
      end
- 
+
      if instance_tags.StationName ~= nil then
          for i = 1, #station_names_to_ignore do
              --print('Checking against: ' .. station_names_to_ignore[i])
@@ -157,7 +151,7 @@ function ToAscii(s)
              end
          end
      end
- 
+
      if instance_tags.SoftwareVersions ~= nil then
          for i = 1, #software_versions_to_ignore do
              --print('Checking against: ' .. software_versions_to_ignore[i])
@@ -168,7 +162,7 @@ function ToAscii(s)
              end
          end
      end
- 
+
      if instance_tags.DeviceSerialNumber ~= nil then
          for i = 1, #device_serial_numbers_to_ignore do
              --print('Checking against: ' .. device_serial_numbers_to_ignore[i])
@@ -181,7 +175,7 @@ function ToAscii(s)
      end
      -- End of seeing if we should igore the instance
      -------------------------------------------------------------------------------------
- 
+
      -------------------------------------------------------------------------------------
      -- Work out if file can be used by the RDSR, MG, DX or ctphilips extractors
      local import_script = ''
@@ -212,13 +206,13 @@ function ToAscii(s)
          end
      end
      -------------------------------------------------------------------------------------
- 
- 
+
+
      -------------------------------------------------------------------------------------
      -- Work out if the Toshiba CT extractor should be used - must be CT and a match with
      -- a make/model pair in toshiba_extractor_systems
      local toshiba_extractor_match = false
- 
+
      if use_toshiba_ct_extractor == true then
          if import_script == '' then
              if (instance_tags.Manufacturer == nil) or (instance_tags.ManufacturerModelName == nil) then
@@ -241,8 +235,8 @@ function ToAscii(s)
          end
      end
      -------------------------------------------------------------------------------------
- 
- 
+
+
      -------------------------------------------------------------------------------------
      -- If we're not using the Toshiba CT extractor and import_script is empty then we
      -- don't know how to deal with this DICOM file - delete the instance from Orthanc and
@@ -263,8 +257,8 @@ function ToAscii(s)
          return true
      end
      -------------------------------------------------------------------------------------
- 
- 
+
+
      -------------------------------------------------------------------------------------
      -- If we've got this far then we can import the instance into OpenREM and then delete
      -- it from Orthanc. First write the DICOM content to a temporary file
@@ -273,7 +267,7 @@ function ToAscii(s)
      local dicom = RestApiGet('/instances/' .. instanceId .. '/file')
      target:write(dicom)
      target:close()
- 
+
      -- Call OpenREM import script. Runs as orthanc user in linux, so log files must be writable by Orthanc
      -- Run in detached mode, so long imports don't lead to network problems
 	 if (use_postgres) then
@@ -285,24 +279,24 @@ function ToAscii(s)
 	else
 	    os.execute(python_executable .. ' ' .. python_scripts_path .. import_script .. ' ' .. temp_file_path)
 	end
- 
-     -- Do not remove the dicom file. It is read async (so probably still needed and if it should be deleted after 
+
+     -- Do not remove the dicom file. It is read async (so probably still needed and if it should be deleted after
      -- import or not should be chosen by the user)
      -- os.remove(temp_file_path)
- 
+
      -- Remove study from Orthanc
      Delete(instanceId)
      -------------------------------------------------------------------------------------
  end
- 
- 
+
+
  function OnStableStudy(studyId)
      --print('This study is now stable, writing its instances on the disk: ' .. studyId)
- 
+
      -- Retrieve the shared DICOM tags from the study. The tags parameter doesn't include
      -- all the useful tags - this does
      local study_tags = ParseJson(RestApiGet('/studies/' .. studyId .. '/shared-tags?simplify'))
- 
+
      -------------------------------------------------------------------------------------
      -- See if any of the physics strings are in patient name or ID. If they are then
      -- copy the image to the physics_to_keep_folder and then remove it from Orthanc
@@ -326,66 +320,66 @@ function ToAscii(s)
          else
              patient_id = 'blank'
          end
- 
+
          for i = 1, #physics_to_keep do
              if string.match(string.lower(patient_name), string.lower(physics_to_keep[i])) or string.match(string.lower(patient_id), string.lower(physics_to_keep[i])) then
                  -- It is a physics patient - save them to the physics folder
                  --print('It is physics')
                  local first_series = true
                  local temp_files_path = ''
- 
+
                  -- Retrieve the IDs of all the series in this study
                  local series = ParseJson(RestApiGet('/studies/' .. studyId)) ['Series']
- 
+
                  -- using _ as a placeholder as I'm not interested in the key value
                  for _, current_series in pairs(series) do
- 
+
                      if first_series == true then
                          -- Create a string containing the folder path.
                          temp_files_path = ToAscii(physics_to_keep_folder .. study_tags.StudyDate .. dir_sep .. patient_folder)
                          -- print('temp_files_path is: ' .. temp_files_path)
- 
+
                          -- Create the folder
                          os.execute(mkdir_cmd .. ' "' .. temp_files_path .. '"')
                          -- print('Just tried to create folder: ' .. mkdir_cmd .. ' "' .. temp_files_path .. '"')
- 
+
                          first_series = false
                      end
- 
+
                      local instances = ParseJson(RestApiGet('/series/' .. current_series)) ['Instances']
- 
+
                      -- Loop through each instance in the current_series
                      -- using _ as a placeholder as I'm not interested in the key value
                      for _, instance in pairs(instances) do
                          -- Retrieve the DICOM file from Orthanc
                          local dicom = RestApiGet('/instances/' .. instance .. '/file')
- 
+
                          -- Write the DICOM file to the folder created earlier
                          local target = assert(io.open(temp_files_path .. dir_sep .. instance .. '.dcm', 'wb'))
                          -- print('Trying to write file: ' .. temp_files_path .. dir_sep .. instance .. '.dcm')
                          target:write(dicom)
                          target:close()
- 
+
                          -- Remove the instance from Orthanc
                          Delete(instance)
                      end
                  end
- 
+
                  -- Zip the study files to save space and remove the originals after zipping
                  print('Zipping physics images: ' .. zip_executable .. ' "' .. temp_files_path .. '.zip"' .. ' "' .. temp_files_path .. dir_sep .. '"')
                  os.execute(zip_executable .. ' "' .. temp_files_path .. '.zip"' .. ' "' .. temp_files_path .. dir_sep .. '"')
                  print('Removing physics study folder: ' .. rmdir_cmd .. ' "' .. temp_files_path .. '"')
                  os.execute(rmdir_cmd .. ' "' .. temp_files_path .. '"')
- 
+
                  -- Exit the function, as a physics study was found and the images moved
                  return true
- 
+
              end
          end
      end
      -------------------------------------------------------------------------------------
- 
- 
+
+
      -------------------------------------------------------------------------------------
      -- Use the CT Toshiba extractor on the study if the manufacturer and model are in the
      -- toshiba_extractor_systems list.
@@ -397,65 +391,65 @@ function ToAscii(s)
              Delete(studyId)
              return true
          end
- 
+
          for i = 1, #toshiba_extractor_systems do
              local first_series
              local temp_files_path
              if (study_tags.Modality == 'CT')
                    and (string.lower(study_tags.Manufacturer) == string.lower(toshiba_extractor_systems[i][1]))
                    and (string.lower(study_tags.ManufacturerModelName) == string.lower(toshiba_extractor_systems[i][2])) then
- 
+
                  first_series = true
                  temp_files_path = ''
- 
+
                  -- Retrieve the IDs of all the series in this study
                  local series = ParseJson(RestApiGet('/studies/' .. studyId)) ['Series']
- 
+
                  -- using _ as a placeholder as I'm not interested in the key value
                  for _, current_series in pairs(series) do
- 
+
                      if first_series == true then
                          -- Create a string containing the folder path. This needs to be a single folder so that the Toshiba CT extractor
                          -- is able to remove it once the data has been imported into OpenREM.
                          temp_files_path = ToAscii(temp_path .. study_tags.StudyDate .. '_' .. study_tags.PatientID .. '_' .. studyId)
                          -- print('temp_files_path is: ' .. temp_files_path)
- 
+
                          -- Create the folder
                          os.execute(mkdir_cmd .. ' "' .. temp_files_path .. '"')
                          -- print('Just tried to create folder: ' .. mkdir_cmd .. ' "' .. temp_files_path .. '"')
- 
+
                          first_series = false
                      end
- 
+
                      -- Obtain a table of instances in the series
                      local instances = ParseJson(RestApiGet('/series/' .. current_series)) ['Instances']
- 
+
                      -- Loop through each instance
                      -- using _ as a placeholder as I'm not interested in the key value
                      for _, instance in pairs(instances) do
                          -- Retrieve the DICOM file from Orthanc
                          local dicom = RestApiGet('/instances/' .. instance .. '/file')
- 
+
                          -- Write the DICOM file to the folder created earlier
                          local target = assert(io.open(temp_files_path .. dir_sep .. instance .. '.dcm', 'wb'))
                          -- print('Trying to write file: ' .. temp_files_path .. dir_sep .. instance .. '.dcm')
                          target:write(dicom)
                          target:close()
- 
+
                          -- Remove the instance from Orthanc
                          Delete(instance)
                      end
                  end
- 
+
                  -- Run the Toshiba extractor on the folder. The extractor will remove the temp_files_path folder.
                  -- print('Trying to run: ' .. python_executable.. ' ' .. python_scripts_path .. 'openrem_cttoshiba.py' .. ' ' .. temp_files_path)
                  os.execute(python_executable.. ' ' .. python_scripts_path .. 'openrem_cttoshiba.py' .. ' ' .. temp_files_path)
- 
+
                  -- Exit the function
                  return true
              end
          end
      end
      -------------------------------------------------------------------------------------
- 
+
   end
