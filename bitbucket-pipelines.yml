@@ -154,7 +154,6 @@ definitions:
         caches:
           - pip
     - step: &test-python3.8
-        trigger: manual
         image: python:3.8
         name: Python 3.8 test
         script:
