@@ -16,7 +16,7 @@
       <td>{{ task.task_type|safe }}</td>
       <td>{{ task.info|safe }}</td>
       <td>{{  task.error|safe }}</td>
-      <td>
+      <td sorttable_customkey="{{ task.started_at|date:'Y-m-d H:i' }}">
         {% if task.started_at is not None %}
           {{ task.started_at }}
         {% endif %}

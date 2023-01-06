@@ -5,6 +5,9 @@ Upgrading to a new Linux server
 If OpenREM has been running on an older Linux distribution, or you wish to move to Linux to host OpenREM and don't want
 to use Docker, these instructions will guide you through upgrading an existing database to a new server.
 
+* **Upgrades from 0.9.1 or earlier should review** :doc:`upgrade_previous_0.10.0` first. Upgrading to 1.0 is only
+  possible from 0.10.0.
+
 This install is based on Ubuntu 22.04 using:
 
 * Python 3.10 running in a virtualenv
