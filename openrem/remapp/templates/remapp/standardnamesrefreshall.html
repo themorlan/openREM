@@ -1,0 +1,92 @@
+{% extends "remapp/base.html" %}
+
+    {% block headextras %}
+    <!-- Including chartCommonFunctions to use urlToArray and arrayToUrl functions -->
+    <script src="{{ STATIC_URL }}js/charts/chartCommonFunctions.js"></script>
+    {% endblock %}
+
+
+{% block confnav %}<li class="dropdown active">{% endblock %}
+
+{% block navhelp %}
+        <li>
+            <a href="https://docs.openrem.org/en/{{ admin.docsversion }}/" target="_blank"
+               data-toggle="tooltip" title="OpenREM documentation - opens in a new tab">
+                OpenREM documentation
+            </a>
+        </li>
+{% endblock %}
+
+{% block mainblock %}
+
+      <div class="row">
+      <div class="col-md-7 col-md-offset-2">
+        <div class="ajax-progress"><img src="{{ STATIC_URL }}img/ajax-loader.gif"></div>
+          <h3>Refresh
+              {% if modality == "CT" %}CT{% elif modality == "MG" %}mammography{% elif modality == "RF" %}
+                  fluoroscopy{% else %}radiography{% endif %}
+              standard name database links</h3>
+        {% if admin.admingroup %}
+            <p>Clicking the <code>Refresh {% if modality == "CT" %}CT{% elif modality == "MG" %}
+                mammography{% elif modality == "RF" %}fluoroscopy{% else %}radiography{% endif %} standard names</code>
+                button below will remove all internal database links between the standard name table and the
+                study and acquisition tables for {% if modality == "CT" %}CT{% elif modality == "MG" %}
+                mammography{% elif modality == "RF" %}fluoroscopy{% else %}radiography{% endif %} studies. The links
+                will then be re-written. This may take several minutes if you
+                have a large number of studies and a large number of standard names configured.</p>
+            <p>This is useful if you have manually updated or restored the standard names database table and need to
+                force the database to refresh the links between this table and the study and acquisition data tables.
+            </p>
+            <a class="btn btn-danger" id="{{ modality }}-btn">Refresh {% if modality == "CT" %}
+                CT{% elif modality == "MG" %}mammography{% elif modality == "RF" %}fluoroscopy{% else %}
+                radiography{% endif %} standard names</a>
+            <a class="btn btn-primary" id="return-btn" href="{% url 'standard_name_settings' 1 %}">Return to standard name
+                settings</a>
+        {% else %}
+            <p>Only users in the Admin group can modify these settings.</p>
+        {% endif %}
+      </div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            var requestData = arrayToURL(urlToArray(this.URL));
+
+            $("#{{ modality }}-btn").click(function(e) {
+                e.preventDefault();
+                $("#{{ modality }}-btn").text("Refreshing database - please wait").attr("disabled", true);
+                $("#return-btn").attr("disabled", true);
+                $(".ajax-progress").show();
+                $.ajax({
+                    type: "GET",
+                    url: "{% url 'update_all_std_names' modality %}",
+                    data: requestData,
+                    dataType: "json",
+                    success: function( json ) {
+                        update_messages(json.messages);
+                        $(".ajax-progress").hide();
+                        $("#{{ modality }}-btn").text("Refresh {{ modality }} standard names").removeAttr("disabled");
+                        $("#return-btn").removeAttr("disabled");
+                    },
+                    error: function( xhr, status, errorThrown ) {
+                        $(".ajax-progress").hide();
+                        $("#{{ modality }}-btn").text("Refresh of {{ modality }} standard names failed - try again?").removeAttr("disabled");
+                        $("#return-btn").removeAttr("disabled");
+                        console.log( "Error: " + errorThrown );
+                        console.log( "Status: " + status );
+                        console.dir( xhr );
+                    }
+                });
+                return false;
+            })
+        });
+
+        function update_messages(messages) {
+            $.each(messages, function (i, m) {
+                var button = "<button type='button' class='close' data-dismiss='alert' aria-label='close'><span aria-hidden='true'>x</span></button>";
+                var msg_div = "<div class='alert alert-" + m.level + " alert-dismissible fade-in'>" + button + m.message + "</div>";
+                $(msg_div).insertBefore(".row");
+            });
+        }
+    </script>
+{% endblock %}

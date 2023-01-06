@@ -47,6 +47,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q, Sum
 from django.db.utils import OperationalError as AvoidDataMigrationErrorSQLite
 from django.db.utils import ProgrammingError as AvoidDataMigrationErrorPostgres
+from django.db.utils import IntegrityError
 from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.template.loader import render_to_string
@@ -2940,8 +2941,12 @@ class StandardNameAddCore(CreateView):
                     modality=form.cleaned_data["modality"],
                     study_description=item,
                 )
-                new_entry.save()
-                new_ids_study.append(new_entry.pk)
+                try:
+                    new_entry.save()
+                    new_ids_study.append(new_entry.pk)
+                except IntegrityError as e:
+                    messages.warning(self.request, mark_safe("Error adding name: {0}".format(e.args)))
+                    return redirect(self.success_url)
 
             new_ids_request = []
             for item in form.cleaned_data["requested_procedure_code_meaning"]:
@@ -2950,8 +2955,12 @@ class StandardNameAddCore(CreateView):
                     modality=form.cleaned_data["modality"],
                     requested_procedure_code_meaning=item,
                 )
-                new_entry.save()
-                new_ids_request.append(new_entry.pk)
+                try:
+                    new_entry.save()
+                    new_ids_request.append(new_entry.pk)
+                except IntegrityError as e:
+                    messages.warning(self.request, mark_safe("Error adding name: {0}".format(e.args)))
+                    return redirect(self.success_url)
 
             new_ids_procedure = []
             for item in form.cleaned_data["procedure_code_meaning"]:
@@ -2960,8 +2969,12 @@ class StandardNameAddCore(CreateView):
                     modality=form.cleaned_data["modality"],
                     procedure_code_meaning=item,
                 )
-                new_entry.save()
-                new_ids_procedure.append(new_entry.pk)
+                try:
+                    new_entry.save()
+                    new_ids_procedure.append(new_entry.pk)
+                except IntegrityError as e:
+                    messages.warning(self.request, mark_safe("Error adding name: {0}".format(e.args)))
+                    return redirect(self.success_url)
 
             new_ids_acquisition = []
             for item in form.cleaned_data["acquisition_protocol"]:
@@ -2970,8 +2983,12 @@ class StandardNameAddCore(CreateView):
                     modality=form.cleaned_data["modality"],
                     acquisition_protocol=item,
                 )
-                new_entry.save()
-                new_ids_acquisition.append(new_entry.pk)
+                try:
+                    new_entry.save()
+                    new_ids_acquisition.append(new_entry.pk)
+                except IntegrityError as e:
+                    messages.warning(self.request, mark_safe("Error adding name: {0}".format(e.args)))
+                    return redirect(self.success_url)
 
             # Obtain a list of the required studies
             studies = GeneralStudyModuleAttr.objects
@@ -3634,6 +3651,168 @@ def standard_name_update(request, std_name_pk=None, modality=None):
     else:
         messages.error(request, "Incorrect attempt to update standard name.")
         return redirect(reverse_lazy("standard_names_view"))
+
+
+@login_required
+def standard_name_update_all_form(request, modality=None):
+    """Simple hard-coded form view for refreshing standard name mapping database links."""
+
+    admin = {
+        "openremversion": __version__,
+        "docsversion": __docs_version__,
+    }
+    for group in request.user.groups.all():
+        admin[group.name] = True
+
+    return render(request, "remapp/standardnamesrefreshall.html", {"admin": admin, "modality": modality})
+
+
+@login_required
+def standard_name_update_all(request, modality=None):
+    """View to update all standard name entries for a specified modality
+
+    :param request:
+    :param modality: modality to filter by
+    :return:
+    """
+    if not modality in ["CT", "RF", "MG", "DX"]:
+        messages.error(
+            request,
+            "No modality provided.",
+        )
+        return HttpResponseRedirect(reverse_lazy("standard_names_view"))
+
+    if not request.user.groups.filter(name="admingroup"):
+        messages.error(
+            request,
+            "You are not in the administrator group - please contact your administrator",
+        )
+        return redirect(reverse_lazy("standard_names_view"))
+
+    if request.method == "GET":
+        # All StandardNames entries for the required modality
+        std_names = StandardNames.objects.filter(modality=modality)
+
+        # Obtain a list of relevant studies
+        studies = GeneralStudyModuleAttr.objects
+        if modality == "CT":
+            studies = studies.filter(modality_type="CT")
+        elif modality == "MG":
+            studies = studies.filter(modality_type="MG")
+        elif modality == "RF":
+            studies = studies.filter(modality_type="RF")
+        else:
+            studies = studies.filter(
+                Q(modality_type__exact="DX")
+                | Q(modality_type__exact="CR")
+                | Q(modality_type__exact="PX")
+            )
+
+        success_url = reverse_lazy("standard_names_view")
+
+        # Remove reference to the standard names from entries from generalstudymoduleattr (study level)
+        for std_name in std_names:
+            std_name.generalstudymoduleattr_set.clear()
+
+        # Remove references to the StandardName entries from the appropriate acquisition table
+        if modality == "CT":
+            for std_name in std_names:
+                std_name.ctirradiationeventdata_set.clear()
+        else:
+            for std_name in std_names:
+                std_name.irradeventxraydata_set.clear()
+
+        # Add the standard names back at the study level
+        for standard_name in std_names.filter(study_description__isnull=False):
+            standard_name.generalstudymoduleattr_set.add(
+                *studies.filter(
+                    study_description=standard_name.study_description
+                ).values_list("pk", flat=True)
+            )
+
+        for standard_name in std_names.filter(requested_procedure_code_meaning__isnull=False):
+            standard_name.generalstudymoduleattr_set.add(
+                *studies.filter(
+                    requested_procedure_code_meaning=standard_name.requested_procedure_code_meaning
+                ).values_list("pk", flat=True)
+            )
+
+        for standard_name in std_names.filter(procedure_code_meaning__isnull=False):
+            standard_name.generalstudymoduleattr_set.add(
+                *studies.filter(
+                    procedure_code_meaning=standard_name.procedure_code_meaning
+                ).values_list("pk", flat=True)
+            )
+
+        # Add the standard names back at the acquisition level
+        acquisitions = None
+        if modality == "CT":
+            acquisitions = CtIrradiationEventData.objects
+        else:
+            # Filter the IrradEventXRayData.objects to just contain the required modality
+            q = ["DX", "CR", "PX"]
+            if modality == "MG":
+                q = ["MG"]
+            elif modality == "RF":
+                q = ["RF"]
+
+            q_criteria = reduce(
+                operator.or_,
+                (
+                    Q(
+                        projection_xray_radiation_dose__general_study_module_attributes__modality_type__icontains=item
+                    )
+                    for item in q
+                ),
+            )
+            acquisitions = IrradEventXRayData.objects.filter(q_criteria)
+
+        for standard_name in std_names.filter(acquisition_protocol__isnull=False):
+            if modality == "CT":
+                standard_name.ctirradiationeventdata_set.add(
+                    *acquisitions.filter(
+                        acquisition_protocol=standard_name.acquisition_protocol
+                    ).values_list("pk", flat=True)
+                )
+            else:
+                standard_name.irradeventxraydata_set.add(
+                    *acquisitions.filter(
+                        acquisition_protocol=standard_name.acquisition_protocol
+                    ).values_list("pk", flat=True)
+                )
+
+        messages.success(request, "All {0} standard name entries refreshed".format(modality))
+
+        django_messages = []
+        for message in messages.get_messages(request):
+            django_messages.append(
+                {
+                    "level": message.level_tag,
+                    "message": message.message,
+                    "extra_tags": message.tags,
+                }
+            )
+
+        return_structure = {"success": True, "messages": django_messages}
+
+        return JsonResponse(return_structure, safe=False)
+
+    else:
+        messages.error(request, "Refreshing {0} standard names failed".format(modality))
+
+        django_messages = []
+        for message in messages.get_messages(request):
+            django_messages.append(
+                {
+                    "level": message.level_tag,
+                    "message": message.message,
+                    "extra_tags": message.tags,
+                }
+            )
+
+        return_structure = {"success": False, "messages": django_messages}
+
+        return JsonResponse(return_structure, safe=False)
 
 
 class StandardNameSettingsUpdate(UpdateView):  # pylint: disable=unused-variable

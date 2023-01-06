@@ -154,9 +154,9 @@ definitions:
         caches:
           - pip
     - step: &test-python3.8
-        trigger: manual
         image: python:3.8
         name: Python 3.8 test
+#        trigger: manual
         script:
           - mv openrem/openremproject/local_settings.py{.linux,}
           - sed -i "s/INFO/DEBUG/g" openrem/openremproject/local_settings.py
@@ -173,7 +173,7 @@ definitions:
           - >-
             sed -i "/'PORT':/c\        'PORT': '5432'," openrem/openremproject/local_settings.py
           - >-
-            sed -i "/MEDIA_ROOT/c\MEDIA_ROOT = ''" openrem/openremproject/local_settings.py
+            sed -i "/^MEDIA_ROOT/c\MEDIA_ROOT = ''" openrem/openremproject/local_settings.py
           - mv openrem/openremproject/wsgi.py{.example,}
           - pip install -e .
           - pip install coverage
@@ -191,7 +191,6 @@ definitions:
         caches:
           - pip
     - step: &test-python3.9
-        trigger: manual
         image: python:3.9
         name: Python 3.9 test
         script:
@@ -210,7 +209,7 @@ definitions:
           - >-
             sed -i "/'PORT':/c\        'PORT': '5432'," openrem/openremproject/local_settings.py
           - >-
-            sed -i "/MEDIA_ROOT/c\MEDIA_ROOT = ''" openrem/openremproject/local_settings.py
+            sed -i "/^MEDIA_ROOT/c\MEDIA_ROOT = ''" openrem/openremproject/local_settings.py
           - mv openrem/openremproject/wsgi.py{.example,}
           - pip install -e .
           - pip install coverage
@@ -280,8 +279,6 @@ pipelines:
     - step: *flake8
     - step: *sonarcloud
     - step: *sonarcloudqualitygate
-    - step: *test-python3.8
-    - step: *test-python3.9
   branches:
     develop:  # Commits to the develop branch are tested and deployed to dev.openrem.org on success
       - step:
