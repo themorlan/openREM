@@ -5,13 +5,17 @@ OpenREM version history
 
 1.0.0b1 (2022-xx-xx)
 --------------------
+* :issue:`962`  Documentation: updated packages to make bullet points work again
+* :issue:`960`  SkinDose: fixed bug where multiple entries in the openskin safelist table with different software versions caused an error
 * :issue:`958`  Interface: fixed task table sorting for Started column
+* :issue:`956`  Interface: enable updating of standard name database links
 * :issue:`955`  Imports: fixed error when importing RDSR with empty DAP measured value sequence
 * :issue:`953`  Interface: updated "DX and CR" to "Radiography", and "Radiographic" to "Radiography"
 * :issue:`950`  Documentation: removed (outdated) instructions for Conquest
 * :issue:`949`  Documentation: updated the upgrade instructions from older versions
 * :issue:`947`  Tests: enforce ordering within fluoro exposure sets and specify row by time in test
 * :issue:`945`  Exports: order by plane when populating fluoro data
+* :issue:`942`  SkinDose: try to calculate number of frames using exposure time / pulse width if number of frames not available
 * :issue:`941`  Interface: the filtering submit button now updates chart options for fluoroscopy and mammography
 * :issue:`940`  Installation: upgraded Django to 3.2, packages to latest versions
 * :issue:`937`  Interface: correcting bottom row of exports table

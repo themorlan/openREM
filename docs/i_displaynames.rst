@@ -151,3 +151,23 @@ Review of studies that failed to import
 Studies that have failed early in the import process might not have an entry in the ``unique_equipment_name`` table, and
 therefore will not appear in any of the other tables on this page. The table at the end allows the user to review these
 studies and delete them. See :ref:`failed_import_studies` for more details.
+
+.. _ignore-device-obs-uid:
+
+Systems where Device Observer UID is not static
+===============================================
+
+OpenREM users have found one x-ray system which incorrectly sets the Device Observer UID to be equal to the Study
+Instance UID. In this situation a new entry is created in the display name settings for every new exam that arrives
+in OpenREM, making the display name table fill with many duplicate entries for the same system. To avoid this problem
+a list of models can be specified using the variable below - OpenREM will ignore the Device Observer UID value when
+creating new display names for any model in this list. The model name text must exactly match what is contained in
+the system's Manufacturer's Model Name DICOM tag (0008,1090).
+
+.. code-block:: none
+
+    IGNORE_DEVICE_OBSERVER_UID_FOR_THESE_MODELS = ['GE OEC Fluorostar']
+
+* For Docker installations, this setting is in the :doc:`env_variables`.
+* For Linux installations, see the :ref:`updatelinuxconfig` docs.
+* For Windows installations, see the :ref:`updatewindowsconfig` docs.
