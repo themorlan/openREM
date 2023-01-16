@@ -5,6 +5,7 @@ OpenREM version history
 
 1.0.0b1 (2022-xx-xx)
 --------------------
+* :issue:`962`  Documentation: updated packages to make bullet points work again
 * :issue:`960`  SkinDose: fixed bug where multiple entries in the openskin safelist table with different software versions caused an error
 * :issue:`958`  Interface: fixed task table sorting for Started column
 * :issue:`956`  Interface: enable updating of standard name database links
