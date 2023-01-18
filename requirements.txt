@@ -1,4 +1,4 @@
-django>=3.2,<4
+django>=3.2.16,<4
 django-filter==22.1
 django-solo==2.0.0
 django-crispy-forms==1.14.0
@@ -7,11 +7,11 @@ django-js-reverse==0.9.1
 pydicom==2.3.1
 pynetdicom==2.0.2
 
-matplotlib==3.6.2
-numpy==1.23.4
-plotly==5.11.0
-scipy==1.9.3
-pandas==1.5.1
+matplotlib==3.6.3
+numpy==1.24.1
+plotly==5.12.0
+scipy==1.10.0
+pandas==1.5.2
 
 pytz==2022.6
 humanize==4.4.0
