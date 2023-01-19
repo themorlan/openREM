@@ -75,8 +75,8 @@ from .interface.mod_filters import (
     MGFilterPlusPid,
     MGFilterPlusStdNames,
     MGFilterPlusPidPlusStdNames,
-    nm_filter,
 )
+from .interface.mod_adv_filters import nm_filter
 from .tools.make_skin_map import make_skin_map
 from .views_charts_ct import (
     generate_required_ct_charts_list,

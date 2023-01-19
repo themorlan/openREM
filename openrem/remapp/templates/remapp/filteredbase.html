@@ -10,6 +10,7 @@
     <script src="{{ STATIC_URL }}js/bootstrap-datepicker.js"></script>
     <script src="{{ STATIC_URL }}js/charts/chartCommonFunctions.js"></script>
     <script src="{{ STATIC_URL }}js/sorttable.js"></script>
+    <script src="{{ STATIC_URL }}js/adv_filters.js"></script>
 
     <!-- Internet Explorer (up to version 8) doesn't support array indexOf. The script
     below adds the functionality if it is missing. -->
@@ -80,6 +81,135 @@
                 {% endif %}
 
             {% endblock %}
+
+
+
+
+        <div class="modal fade" id="newFilterModal" tabindex="-1" role="dialog" aria-labelledby="newFilterModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="newFilterModalLabel">New exam filter</h4>
+                    </div>
+                    <div class="modal-body">
+                        <form id="newExamFilter" class="form-inline" role="form">
+                            {% for field in filter.form.visible_fields %}
+                            <div class="form-group">
+                                <label>{{ field.label_tag }}</label>
+                                {{ field.errors }}
+                                {{ field }}
+                            </div>
+                            {% endfor %}
+                            {% for field in filter.form.hidden_fields %}
+                            <div style="display:none">{{ field }}</div>
+                            {% endfor %}
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Discard changes</button>
+                        <button type="button" class="btn btn-primary" id="saveFilter">Save exam filter</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel panel-info" style="display: block;">
+            <div class="panel-heading" role="tab" id="headingSearch">
+                <table style="width: 100%;">
+                    <tr>
+                        <td>
+                            <h3 class="panel-title">
+                                <span class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion"
+                                    href="#collapseSearch" aria-expanded="false" aria-controls="collapseSearch">
+                                    Advanced filtering
+                                </span>
+                            </h3>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div id="collapseSearch" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingSearch">
+                <div id="advFilters"></div>
+                <div id="search_builder" class="search_builder_class">
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#newFilterModal"
+                        data-group="0">Add Expression</button>
+                </div>
+                <div>
+                    <form>
+                        <div class="panel panel-info" style="display: block; margin-left: 5%; margin-right: 5%;">
+                            <div class="panel-heading" role="tab" id="headingChartOptions">
+                                <table style="width: 100%;">
+                                    <tr>
+                                        <td>
+                                            <h3 class="panel-title">
+                                                <span class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion"
+                                                    href="#collapseChartOptions" aria-expanded="false" aria-controls="collapseChartOptions">
+                                                    Chart options
+                                                </span>
+                                            </h3>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div id="collapseChartOptions" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingChartOptions">
+                                <div class="panel-body">
+                                    <table aria-describedby="CT chart options">
+                                        {% csrf_token %}
+                                        {% for field in chartOptionsForm %}
+                                            <tr>
+                                            {% if field.field.widget.attrs.class == 'CheckboxSelectMultiple' %}
+                                                <td class="shaded_top_bottom_border"><label for="{{ field.auto_id }}">{{ field.label }}</label></td>
+                                                <td class="shaded_top_bottom_border">{{ field }}</td>
+                                            {% elif field.label == 'Study frequency' or field.label == 'Time period' %}
+                                                <td class="top_border"><label for="{{ field.auto_id }}">{{ field.label }}</label></td>
+                                                <td class="top_border">{{ field }}</td>
+                                            {% else %}
+                                                <td><label for="{{ field.auto_id }}">{{ field.label }}</label></td>
+                                                <td>{{ field }}</td>
+                                            {% endif %}
+                                            </tr>
+                                        {% endfor %}
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="panel panel-info" style="display: block; margin-left: 5%; margin-right: 5%;">
+                            <div class="panel-heading" role="tab" id="headingTableOptions">
+                                <table style="width: 100%;">
+                                    <tr>
+                                        <td>
+                                            <h3 class="panel-title">
+                                                <span class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion"
+                                                    href="#collapseTableOptions" aria-expanded="false" aria-controls="collapseTableOptions">
+                                                    Table options
+                                                </span>
+                                            </h3>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div id="collapseTableOptions" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTableOptions">
+                                <div class="panel-body">
+                                    <table aria-describedby="CT chart options">
+                                        {{ itemsPerPageForm }}
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <input type="hidden" id="filterQuery" name="filterQuery" value="" />
+                        <input class="btn btn-default" name="submit" type="submit" />
+                    </form>
+                </div>
+                <div>
+                    <p id="myQuery"></p>
+                </div>
+            </div>
+        </div>
+
+
             {% block col1 %}
             {% endblock %}
             {% block paginate_bottom %}
