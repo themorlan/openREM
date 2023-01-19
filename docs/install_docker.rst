@@ -48,3 +48,11 @@ Open a web browser and go to http://localhost/
 
 If you want to run the OpenREM in a virtual directory (like http://server/dms/) there is further configuration to be
 done - go to :doc:`virtual_directory`.
+
+Troubleshooting
+^^^^^^^^^^^^^^^
+
+If there is a timeout on the first run and some of the containers fail to start, take them down again, make sure
+none are running, and try again.
+
+To see how to do this, and for other Docker commands, look at :doc:`troubleshooting`.
