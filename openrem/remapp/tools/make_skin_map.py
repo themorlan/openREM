@@ -362,7 +362,7 @@ def make_skin_map(study_pk=None):
             patient_size=pat_height,
             skin_map_version=__skin_map_version__,
             peak_skin_dose=max_skin_dose,
-            dap_fraction=my_exp_map.my_dose.dap_count / np.float(study.total_dap),
+            dap_fraction=my_exp_map.my_dose.dap_count / float(study.total_dap),
         ).save()
         return_structure = {
             "skin_map": my_exp_map.my_dose.total_dose.flatten().tolist(),
@@ -381,7 +381,7 @@ def make_skin_map(study_pk=None):
             "patient_height_source": pat_height_source,
             "patient_mass_source": pat_mass_source,
             "patient_orientation_source": pat_pos_source,
-            "fraction_DAP": my_exp_map.my_dose.dap_count / np.float(study.total_dap),
+            "fraction_DAP": my_exp_map.my_dose.dap_count / float(study.total_dap),
             "skin_map_version": __skin_map_version__,
         }
 

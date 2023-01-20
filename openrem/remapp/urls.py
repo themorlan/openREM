@@ -369,6 +369,11 @@ standard_name_patterns = [  # pylint: disable=invalid-name
     path("add_name_dx/", views_admin.StandardNameAddDX.as_view(), name="add_name_dx"),
     path("add_name_rf/", views_admin.StandardNameAddRF.as_view(), name="add_name_rf"),
     path("add_name_mg/", views_admin.StandardNameAddMG.as_view(), name="add_name_mg"),
+
+    path("update_all_std_names/<str:modality>/", views_admin.standard_name_update_all, name="update_all_std_names"),
+    path("update_all_std_names_form/<str:modality>/", views_admin.standard_name_update_all_form,
+         name="update_all_std_names_form"),
+
     path(
         "update_name/<int:std_name_pk>/<str:modality>/",
         views_admin.standard_name_update,
