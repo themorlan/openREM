@@ -22,10 +22,10 @@ scipy
 defusedxml
 psycopg2-binary
 gunicorn
-sphinx>=4.3.0
-sphinx-rtd-theme>=0.5.1
-readthedocs-sphinx-ext==2.1.1
-sphinx-issues==1.2.0
+sphinx==5.3.0
+sphinx_rtd_theme==1.1.1
+readthedocs-sphinx-ext==2.2.0
+sphinx-issues==3.0.1
 sphinxcontrib-programoutput
 sphinxcontrib-autoprogram
 sphinx-argparse
