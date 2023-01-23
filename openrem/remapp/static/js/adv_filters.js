@@ -46,19 +46,16 @@ function getNewId() {
 }
 
 const rootGroup = createGroup();
-let currentGroup = null;
+let currentGroupId = null;
 let previousId = null;
 let nextId = null;
-let currentButton = null;
-let currentFilter = null;
-let doUpdate = false;
+let currentFilterId = null;
 
 let pattern = {
     "root": rootGroup
 };
 
 $(document).ready(function () {
-    // Search for filterQuery parameter and load it if it exists
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
 
@@ -68,24 +65,11 @@ $(document).ready(function () {
         pattern = newPattern;
     }
 
-    renderQuery();
-
-    $('#newFilterModal').on('show.bs.modal', function (event) {
-        var button = $(event.relatedTarget);
-        currentGroup = button.data('group');
-        previousId = button.data('previous');
-        nextId = button.data('next');
-        currentButton = button;
-    });      
+    renderPattern();
 
     $('#saveFilter').on('click', _ => {
-        if (doUpdate === true) {
-            updateFilter();
-        } else {
-            addFilter();
-        }
-        $('#newFilterModal').modal('hide');
-        renderQuery();
+        saveFilter(currentFilterId);
+        renderPattern();
     });
 });
 
@@ -95,10 +79,10 @@ function updateOperator(id) {
         return;
     }
     op["operator"] = $('#' + id).val();
-    renderQuery();
+    renderPattern();
 }
 
-function addFilter() {
+function saveFilter(id) {
     let filterFields = {};
     $.each($('#newExamFilter').serializeArray(), function (_, kv) {
         if (kv.value === "") {
@@ -113,8 +97,15 @@ function addFilter() {
     if (Object.keys(filterFields).length <= 0) {
         return;
     }
+    pattern[id].fields = filterFields;
+}
 
-    let newFilterId = getNewId();
+function addEntry(caller, newEntry, newEntryId) {
+    currentGroupId = caller.data("group");
+    previousId = caller.data("previous");
+    nextId = caller.data("next");
+
+    newEntry.parent = currentGroupId;
     let newOperatorId = getNewId();
 
     if (previousId === undefined || !(previousId in pattern)) {
@@ -126,59 +117,42 @@ function addFilter() {
     }
 
     if (previousId === null && nextId === null) {
-        pattern[newFilterId] = createFilter(filterFields, null, null, currentGroup);
-        pattern[currentGroup].first = newFilterId;
-        currentButton.hide();
-        return;
+        pattern[currentGroupId].first = newEntryId;
     } else if (previousId === null) {
-        pattern[newFilterId] = createFilter(filterFields, null, newOperatorId, currentGroup);
-        pattern[currentGroup].first = newFilterId;
+        pattern[currentGroupId].first = newEntryId;
+        newEntry.next = newOperatorId;
         pattern[nextId].prev = newOperatorId;
-        pattern[newOperatorId] = createOperator("OR", newFilterId, nextId, currentGroup);
-        currentButton.data('previous', newOperatorId);
-        return;
+        pattern[newOperatorId] = createOperator("OR", newEntryId, nextId, currentGroupId);
     } else if (nextId === null) {
-        pattern[newFilterId] = createFilter(filterFields, newOperatorId, null, currentGroup);
-        pattern[newOperatorId] = createOperator("OR", previousId, newFilterId, currentGroup);
+        newEntry.prev = newOperatorId;
+        pattern[newOperatorId] = createOperator("OR", previousId, newEntryId, currentGroupId);
         pattern[previousId].next = newOperatorId;
-        currentButton.data('next', newOperatorId);
-        return;
-    }
-
-    if (pattern[previousId].type === "operator") {
-        pattern[newFilterId] = createFilter(filterFields, previousId, newOperatorId, currentGroup);
-        pattern[newOperatorId] = createOperator("OR", newFilterId, nextId, currentGroup);
-        currentButton.data('next', newFilterId);
-        pattern[previousId].next = newFilterId;
-        pattern[nextId].prev = newOperatorId;
     } else {
-        pattern[newOperatorId] = createOperator("OR", previousId, newFilterId, currentGroup);
-        pattern[newFilterId] = createFilter(filterFields, newOperatorId, nextId, currentGroup);
-        currentButton.data('next', newOperatorId);
-        pattern[previousId].next = newOperatorId;
-        pattern[nextId].prev = newFilterId;
+        if (pattern[previousId].type === "operator") {
+            newEntry.prev = previousId;
+            newEntry.next = newOperatorId;
+            pattern[newOperatorId] = createOperator("OR", newEntryId, nextId, currentGroupId);
+            pattern[previousId].next = newEntryId;
+            pattern[nextId].prev = newOperatorId;
+        } else {
+            newEntry.prev = newOperatorId;
+            newEntry.next = nextId;
+            pattern[newOperatorId] = createOperator("OR", previousId, newEntryId, currentGroupId);
+            pattern[previousId].next = newOperatorId;
+            pattern[nextId].prev = newEntryId;
+        }
     }
+    pattern[newEntryId] = newEntry;
 }
 
-function updateFilter() {
-    if (currentFilter === undefined || currentFilter === null) {
-        return;
-    }
-    let filterFields = {};
-    $.each($('#newExamFilter').serializeArray(), function (_, kv) {
-        if (kv.value === "") {
-            return;
-        }
-        let lookupType = null;
-        if ($('#' + kv.name + "_lookupType").length) {
-            lookupType = $('#' + kv.name + "_lookupType").val();
-        }
-        filterFields[kv.name] = [kv.value, lookupType];
-    })
-    if (Object.keys(filterFields).length <= 0) {
-        return;
-    }
-    pattern[currentFilter].fields = filterFields;
+function addFilter(caller) {
+    let newFilterId = getNewId();
+    const newFilter = createFilter({}, null, null, null);
+
+    currentFilterId = newFilterId;
+
+    addEntry($(caller), newFilter, newFilterId);
+    openFilter(currentFilterId);
 }
 
 function openFilter(id) {
@@ -199,11 +173,10 @@ function openFilter(id) {
         }
         $('#id_'+kv.name).val(value);
     });
-    doUpdate = true;
-    currentFilter = id;
+    currentFilterId = id;
     previousId = filter.prev;
     nextId = filter.next;
-    currentGroup = filter.parent;
+    currentGroupId = filter.parent;
 }
 
 function removeFilter(id) {
@@ -225,6 +198,9 @@ function removeFilter(id) {
 
     if (prevOp === null && nextOp === null) {
         pattern[filter.parent].first = null;
+        if (filter.parent !== "root") {
+            removeFilter(filter.parent)
+        }
         delete pattern[id];
     } else if (prevOp === null) {
         pattern[nextOp.next].prev = null;
@@ -242,48 +218,60 @@ function removeFilter(id) {
 
     $('#' + id + '_row').remove();
     delete pattern[id];
-    renderQuery();
+    renderPattern();
 }
 
-function renderQuery(group='root', level=0) {
-    $('#myQuery').text(JSON.stringify(pattern));
+function addGroup(caller) {    
+    let newGroupId = getNewId();
+    let newGroup = createGroup(null, null, null, null);
+    
+    currentFilterId = getNewId();
 
+    addEntry($(caller), newGroup, newGroupId);
+
+    newGroup.first = currentFilterId;
+    pattern[newGroupId] = newGroup;
+    
+    let newFilter = createFilter({}, null, null, newGroupId);
+    pattern[currentFilterId] = newFilter;
+
+    renderPattern();
+    openFilter(currentFilterId);
+}
+
+function renderGroup(group="root", level=0) {
     let content = "";
     let currentId = pattern[group].first;
     
     while (currentId !== null) {
-        let current = pattern[currentId];
+        const current = pattern[currentId];
         if (current.type === "filter") {
             content += `
                 <div id="${currentId}_row">
+                    ${getButtonTemplate(group, level, current.prev, currentId)}
                     <div class="row">
-                        <a class="btn btn-success" data-toggle="modal" data-target="#newFilterModal"
-                        data-group="${group}" data-previous="${current.prev}" data-next="${currentId}">+</a>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-2">
+                        <div class="col-md-1 col-md-offset-${level} text-center">
+                            <a class="btn btn-danger" onclick="removeFilter('${currentId}')">
+                                <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                            </a>
+                        </div>
+                        <div class="col-md-2 text-center">
                             <a class="btn btn-primary" onclick="openFilter('${currentId}')"
                             data-group="${group}" data-previous="${current["prev"]}"
                             data-next="${current["next"]}">Edit filter</a>
                         </div>
-                        <div class="col-md-2">
-                            <button onclick="removeFilter('${currentId}')">X</button>
-                        </div>
-                        <div class="col-md-2">
+                        <div class="col-md-*">
                             <p>${JSON.stringify(current.fields)}</p>
                         </div>
                     </div>
-                    <div class="row">
-                        <a class="btn btn-success" data-toggle="modal" data-target="#newFilterModal"
-                        data-group="${group}" data-previous="${currentId}" data-next="${current.next}">+</a>
-                    </div>
+                    ${getButtonTemplate(group, level, currentId, current.next)}
                 </div>
             `;
         } else if (current.type === "operator") {
             content += `
                 <div class="row" id="${currentId}_row">
-                    <div class="col-md-2">
-                        <select id="${currentId}" class="form-control" onchange="updateOperator('${currentId}')">
+                    <div class="col-md-2 col-md-offset-1">
+                        <select id="${currentId}" class="form-control text-center" onchange="updateOperator('${currentId}')">
                             <option>${current.operator}</option>
                             <option>OR</option>
                             <option>AND</option>
@@ -292,10 +280,51 @@ function renderQuery(group='root', level=0) {
                 </div>
             `;
         } else if (current.type === "group") {
-            // TODO: Add ability to have nested groups
+            content += `
+                <div id="${currentId}_row">
+                    ${getButtonTemplate(group, level, current.prev, currentId)}
+                    ${renderGroup(currentId, level + 1)}
+                    ${getButtonTemplate(group, level, currentId, current.next)}
+                </div>
+            `;
         }
         currentId = pattern[currentId].next;
     }
-    $('#advFilters').html(content);
+    return content;
+}
+
+function renderPattern() {
+    $('#myQuery').text(JSON.stringify(pattern));
+    
+    const content = renderGroup();
+    if (content.length > 0) {
+        $('#advFilters').html(content);
+    } else {
+        $('#advFilters').html(`
+            <div class="row">
+                <div class="col-md-2 text-center">
+                    <a class="btn btn-primary" onclick="addFilter(this)"
+                    data-group="root" data-previous="null" data-next="null">Add filter</a>
+                </div>
+            </div>
+        `);
+    }
     $('#filterQuery').val(encodeURIComponent(JSON.stringify(pattern)))
+}
+
+function getButtonTemplate(group, level=0, prevId, nextId) {
+    return `
+        <div class="row" style="margin-top: 1em; margin-bottom: 1em;">
+            <div class="col-md-2  col-md-offset-${level + 1} text-center">
+                <a class="btn btn-success btn-xs" onclick="addFilter(this)"
+                data-group="${group}" data-previous="${prevId}" data-next="${nextId}">
+                    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+                </a>
+                <a class="btn btn-success btn-xs" onclick="addGroup(this)"
+                data-group="${group}" data-previous="${prevId}" data-next="${nextId}">
+                    <span class="glyphicon glyphicon-menu-hamburger" aria-hidden="true"></span>
+                </a>
+            </div>
+        </div>
+    `;
 }

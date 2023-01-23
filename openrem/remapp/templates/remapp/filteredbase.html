@@ -125,7 +125,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal">Discard changes</button>
-                        <button type="button" class="btn btn-primary" id="saveFilter">Save exam filter</button>
+                        <button type="button" class="btn btn-primary" data-dismiss="modal" id="saveFilter">Save exam filter</button>
                     </div>
                 </div>
             </div>
@@ -147,17 +147,13 @@
                 </table>
             </div>
             <div id="collapseSearch" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingSearch">
-                <div id="advFilters"></div>
-                <div id="search_builder" class="search_builder_class">
-                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#newFilterModal"
-                        data-group="root" data-previous="null" data-next="null">Add Expression</button>
-                </div>
+                <container id="advFilters" class="container"></container>
                 <div>    
                     <input type="hidden" id="filterQuery" name="filterQuery" value="" />
                 </div>
-                <div>
-                    <p id="myQuery"></p>
-                </div>
+                <container class="container">
+                    <span id="myQuery" class="help-block"></span>
+                </container>
             </div>
         </div>
 
