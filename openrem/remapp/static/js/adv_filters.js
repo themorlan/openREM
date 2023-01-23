@@ -201,12 +201,10 @@ function removeFilter(id) {
         if (filter.parent !== "root") {
             removeFilter(filter.parent)
         }
-        delete pattern[id];
     } else if (prevOp === null) {
         pattern[nextOp.next].prev = null;
         pattern[filter.parent].first = nextOp.next;
         delete pattern[filter.next]
-        delete pattern[id];
     } else if (nextOp === null) {
         pattern[prevOp.prev].next = null;
         delete pattern[filter.prev]
@@ -270,7 +268,7 @@ function renderGroup(group="root", level=0) {
         } else if (current.type === "operator") {
             content += `
                 <div class="row" id="${currentId}_row">
-                    <div class="col-md-2 col-md-offset-1">
+                    <div class="col-md-2 col-md-offset-${level + 1}">
                         <select id="${currentId}" class="form-control text-center" onchange="updateOperator('${currentId}')">
                             <option>${current.operator}</option>
                             <option>OR</option>

@@ -48,7 +48,6 @@ def json_to_query(pattern, group="root") -> Q:
     """
         Transforms the JSON pattern into a Q object
     """
-    print(pattern)
     q = Q()
     operator = Q.AND
     nextEntryId = pattern[group]["first"]
@@ -68,7 +67,8 @@ def json_to_query(pattern, group="root") -> Q:
                 operator = nextEntry["operator"]
             except KeyError:
                 raise InvalidQuery
-        pass
+        if q_type == "group":
+            q.add(json_to_query(pattern, nextEntryId), operator)
         nextEntryId = nextEntry["next"]
     return q
 
@@ -76,7 +76,7 @@ def get_filter(fields: dict) -> Q:
     q = Q()
     for field, value in fields.items():
         if value[1] in ALLOWED_LOOKUP_TYPES:
-            field = field+"__"+value[1]
+            field = field + "__" + value[1]
         q.add(Q(**{field: value[0]}), Q.AND)
     return q
 
@@ -245,7 +245,6 @@ def nm_filter(filters, pid=False):
         import urllib.parse
         data = urllib.parse.unquote(a)
         data = json.loads(data)
-        print(data)
         try:
             q = json_to_query(data)
             studies = studies.filter(q)
