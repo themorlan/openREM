@@ -94,17 +94,33 @@
                         <h4 class="modal-title" id="newFilterModalLabel">New exam filter</h4>
                     </div>
                     <div class="modal-body">
-                        <form id="newExamFilter" class="form-inline" role="form">
-                            {% for field in filter.form.visible_fields %}
-                            <div class="form-group">
-                                <label>{{ field.label_tag }}</label>
-                                {{ field.errors }}
-                                {{ field }}
+                        <form id="newExamFilter" class="form-horizontal" role="form">
+                            <div class="panel-body">
+                                <em>Date format yyyy-mm-dd</em>
+                                {% for field in filter.form.visible_fields %}
+                                    <div class="form-group">
+                                        <div class="col-xs-4">
+                                            <label>{{ field.label_tag }}</label>
+                                        </div>
+                                        {% if "__" not in field.auto_id %}
+                                            <div class="col-xs-2">
+                                                <select id="{{field.name}}_lookupType">
+                                                    <option value="">is</option>
+                                                    <option value="icontains">contains</option>
+                                                    <option value="iregex">regex</option>
+                                                </select>
+                                            </div>
+                                        {% endif %}
+                                        <div class="col-xs-6">
+                                            {{ field.errors }}
+                                            {{ field }}
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                                {% for field in filter.form.hidden_fields %}
+                                    <div style="display:none">{{ field }}</div>
+                                {% endfor %}
                             </div>
-                            {% endfor %}
-                            {% for field in filter.form.hidden_fields %}
-                            <div style="display:none">{{ field }}</div>
-                            {% endfor %}
                         </form>
                     </div>
                     <div class="modal-footer">
@@ -114,7 +130,7 @@
                 </div>
             </div>
         </div>
-
+        <form>
         <div class="panel panel-info" style="display: block;">
             <div class="panel-heading" role="tab" id="headingSearch">
                 <table style="width: 100%;">
@@ -134,74 +150,10 @@
                 <div id="advFilters"></div>
                 <div id="search_builder" class="search_builder_class">
                     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#newFilterModal"
-                        data-group="0">Add Expression</button>
+                        data-group="root" data-previous="null" data-next="null">Add Expression</button>
                 </div>
-                <div>
-                    <form>
-                        <div class="panel panel-info" style="display: block; margin-left: 5%; margin-right: 5%;">
-                            <div class="panel-heading" role="tab" id="headingChartOptions">
-                                <table style="width: 100%;">
-                                    <tr>
-                                        <td>
-                                            <h3 class="panel-title">
-                                                <span class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion"
-                                                    href="#collapseChartOptions" aria-expanded="false" aria-controls="collapseChartOptions">
-                                                    Chart options
-                                                </span>
-                                            </h3>
-                                        </td>
-                                    </tr>
-                                </table>
-                            </div>
-                            <div id="collapseChartOptions" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingChartOptions">
-                                <div class="panel-body">
-                                    <table aria-describedby="CT chart options">
-                                        {% csrf_token %}
-                                        {% for field in chartOptionsForm %}
-                                            <tr>
-                                            {% if field.field.widget.attrs.class == 'CheckboxSelectMultiple' %}
-                                                <td class="shaded_top_bottom_border"><label for="{{ field.auto_id }}">{{ field.label }}</label></td>
-                                                <td class="shaded_top_bottom_border">{{ field }}</td>
-                                            {% elif field.label == 'Study frequency' or field.label == 'Time period' %}
-                                                <td class="top_border"><label for="{{ field.auto_id }}">{{ field.label }}</label></td>
-                                                <td class="top_border">{{ field }}</td>
-                                            {% else %}
-                                                <td><label for="{{ field.auto_id }}">{{ field.label }}</label></td>
-                                                <td>{{ field }}</td>
-                                            {% endif %}
-                                            </tr>
-                                        {% endfor %}
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="panel panel-info" style="display: block; margin-left: 5%; margin-right: 5%;">
-                            <div class="panel-heading" role="tab" id="headingTableOptions">
-                                <table style="width: 100%;">
-                                    <tr>
-                                        <td>
-                                            <h3 class="panel-title">
-                                                <span class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion"
-                                                    href="#collapseTableOptions" aria-expanded="false" aria-controls="collapseTableOptions">
-                                                    Table options
-                                                </span>
-                                            </h3>
-                                        </td>
-                                    </tr>
-                                </table>
-                            </div>
-                            <div id="collapseTableOptions" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTableOptions">
-                                <div class="panel-body">
-                                    <table aria-describedby="CT chart options">
-                                        {{ itemsPerPageForm }}
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                        <input type="hidden" id="filterQuery" name="filterQuery" value="" />
-                        <input class="btn btn-default" name="submit" type="submit" />
-                    </form>
+                <div>    
+                    <input type="hidden" id="filterQuery" name="filterQuery" value="" />
                 </div>
                 <div>
                     <p id="myQuery"></p>
@@ -209,6 +161,69 @@
             </div>
         </div>
 
+        <div class="panel panel-info" style="display: block;">
+            <div class="panel-heading" role="tab" id="headingChartOptions">
+                <table style="width: 100%;">
+                    <tr>
+                        <td>
+                            <h3 class="panel-title">
+                                <span class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion"
+                                    href="#collapseChartOptions" aria-expanded="false" aria-controls="collapseChartOptions">
+                                    Chart options
+                                </span>
+                            </h3>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div id="collapseChartOptions" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingChartOptions">
+                <div class="panel-body">
+                    <table aria-describedby="CT chart options">
+                        {% csrf_token %}
+                        {% for field in chartOptionsForm %}
+                            <tr>
+                            {% if field.field.widget.attrs.class == 'CheckboxSelectMultiple' %}
+                                <td class="shaded_top_bottom_border"><label for="{{ field.auto_id }}">{{ field.label }}</label></td>
+                                <td class="shaded_top_bottom_border">{{ field }}</td>
+                            {% elif field.label == 'Study frequency' or field.label == 'Time period' %}
+                                <td class="top_border"><label for="{{ field.auto_id }}">{{ field.label }}</label></td>
+                                <td class="top_border">{{ field }}</td>
+                            {% else %}
+                                <td><label for="{{ field.auto_id }}">{{ field.label }}</label></td>
+                                <td>{{ field }}</td>
+                            {% endif %}
+                            </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel panel-info" style="display: block;">
+            <div class="panel-heading" role="tab" id="headingTableOptions">
+                <table style="width: 100%;">
+                    <tr>
+                        <td>
+                            <h3 class="panel-title">
+                                <span class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion"
+                                    href="#collapseTableOptions" aria-expanded="false" aria-controls="collapseTableOptions">
+                                    Table options
+                                </span>
+                            </h3>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div id="collapseTableOptions" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTableOptions">
+                <div class="panel-body">
+                    <table aria-describedby="CT chart options">
+                        {{ itemsPerPageForm }}
+                    </table>
+                </div>
+            </div>
+        </div>
+        <input class="btn btn-default" name="submit" type="submit" />
+        </form>
 
             {% block col1 %}
             {% endblock %}

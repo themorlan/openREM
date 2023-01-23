@@ -1,5 +1,5 @@
 #    OpenREM - Radiation Exposure Monitoring tools for the physicist
-#    Copyright (C) 2022 The Royal Marsden NHS Foundation Trust
+#    Copyright (C) 2023 The Royal Marsden NHS Foundation Trust
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -22,7 +22,7 @@
 
 """
 ..  module:: mod_adv_filters
-    :synopsis: Module to to advanced filtering
+    :synopsis: Module to do advanced filtering
 
 ..  moduleauthor:: Kevin Schärer
 
@@ -35,40 +35,49 @@ from remapp.models import (
 )
 import django_filters
 from .mod_filters import custom_id_filter, custom_name_filter, _custom_acc_filter, TEST_CHOICES, DateTimeOrderingFilter
+import json
+
+ALLOWED_LOOKUP_TYPES = ["iexact", "icontains", "iregex"]
 
 class InvalidQuery(Exception):
     "Raised when the given query is invalid"
     pass
 
-def json_to_query(input) -> Q:
-    """
-        Transforms the JSON input into a Q object
 
+def json_to_query(pattern, group="root") -> Q:
     """
+        Transforms the JSON pattern into a Q object
+    """
+    print(pattern)
     q = Q()
     operator = Q.AND
-
-    for entry in input:
-        if not "type" in entry:
+    nextEntryId = pattern[group]["first"]
+    
+    while nextEntryId != None:
+        nextEntry = pattern[nextEntryId]
+        if not "type" in nextEntry:
             raise InvalidQuery
-        q_type = entry["type"]
+        q_type = nextEntry["type"]
         if q_type == "filter":
             try:
-                q.add(get_filter(entry["value"]), operator)
+                q.add(get_filter(nextEntry["fields"]), operator)
             except KeyError:
                 raise InvalidQuery
         if q_type == "operator":
             try:
-                operator = entry["value"]
+                operator = nextEntry["operator"]
             except KeyError:
                 raise InvalidQuery
+        pass
+        nextEntryId = nextEntry["next"]
     return q
 
 def get_filter(fields: dict) -> Q:
     q = Q()
     for field, value in fields.items():
-        print(field + ": " + value)
-        q.add(Q(**{field: value}), Q.AND)
+        if value[1] in ALLOWED_LOOKUP_TYPES:
+            field = field+"__"+value[1]
+        q.add(Q(**{field: value[0]}), Q.AND)
     return q
 
 class NMSummaryListFilter(django_filters.FilterSet):
@@ -230,14 +239,13 @@ class NMFilterPlusPid(NMSummaryListFilter):
 
 
 def nm_filter(filters, pid=False):
-    import json
     studies = GeneralStudyModuleAttr.objects.filter(modality_type__exact="NM")
     a = filters.get("filterQuery")
     if a != None and a != "":
         import urllib.parse
         data = urllib.parse.unquote(a)
         data = json.loads(data)
-        from .mod_adv_filters import json_to_query, InvalidQuery
+        print(data)
         try:
             q = json_to_query(data)
             studies = studies.filter(q)
