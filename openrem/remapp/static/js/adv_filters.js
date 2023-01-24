@@ -40,6 +40,7 @@ function makeid(length) {
 function getNewId() {
     let newId = makeid(16);
     while (newId in pattern) {
+        // prevent using an existing id
         newId = makeid(16);
     }
     return newId;
@@ -50,6 +51,8 @@ let currentGroupId = null;
 let previousId = null;
 let nextId = null;
 let currentFilterId = null;
+let isNewEntry = false;
+let discardChanges = true;
 
 let pattern = {
     "root": rootGroup
@@ -68,8 +71,19 @@ $(document).ready(function () {
     renderPattern();
 
     $('#saveFilter').on('click', _ => {
+        discardChanges = false;
         saveFilter(currentFilterId);
+        $('#newFilterModal').modal('hide');
         renderPattern();
+    });
+
+    $('#newFilterModal').on('hide.bs.modal', function (e) {
+        if (isNewEntry && discardChanges) {
+            removeFilter(currentFilterId);
+            currentFilterId = null;
+        }
+        isNewEntry = false;
+        discardChanges = true;
     });
 });
 
@@ -152,6 +166,9 @@ function addFilter(caller) {
     currentFilterId = newFilterId;
 
     addEntry($(caller), newFilter, newFilterId);
+
+    isNewEntry = true;
+
     openFilter(currentFilterId);
 }
 
@@ -233,7 +250,7 @@ function addGroup(caller) {
     let newFilter = createFilter({}, null, null, newGroupId);
     pattern[currentFilterId] = newFilter;
 
-    renderPattern();
+    renderPattern(); 
     openFilter(currentFilterId);
 }
 
@@ -291,9 +308,7 @@ function renderGroup(group="root", level=0) {
     return content;
 }
 
-function renderPattern() {
-    $('#myQuery').text(JSON.stringify(pattern));
-    
+function renderPattern() {    
     const content = renderGroup();
     if (content.length > 0) {
         $('#advFilters').html(content);

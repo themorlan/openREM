@@ -125,7 +125,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal">Discard changes</button>
-                        <button type="button" class="btn btn-primary" data-dismiss="modal" id="saveFilter">Save exam filter</button>
+                        <button type="button" class="btn btn-primary" id="saveFilter">Save exam filter</button>
                     </div>
                 </div>
             </div>
@@ -151,9 +151,6 @@
                 <div>    
                     <input type="hidden" id="filterQuery" name="filterQuery" value="" />
                 </div>
-                <container class="container">
-                    <span id="myQuery" class="help-block"></span>
-                </container>
             </div>
         </div>
 
@@ -174,23 +171,55 @@
             </div>
             <div id="collapseChartOptions" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingChartOptions">
                 <div class="panel-body">
-                    <table aria-describedby="CT chart options">
-                        {% csrf_token %}
-                        {% for field in chartOptionsForm %}
-                            <tr>
-                            {% if field.field.widget.attrs.class == 'CheckboxSelectMultiple' %}
-                                <td class="shaded_top_bottom_border"><label for="{{ field.auto_id }}">{{ field.label }}</label></td>
-                                <td class="shaded_top_bottom_border">{{ field }}</td>
-                            {% elif field.label == 'Study frequency' or field.label == 'Time period' %}
-                                <td class="top_border"><label for="{{ field.auto_id }}">{{ field.label }}</label></td>
-                                <td class="top_border">{{ field }}</td>
-                            {% else %}
-                                <td><label for="{{ field.auto_id }}">{{ field.label }}</label></td>
-                                <td>{{ field }}</td>
-                            {% endif %}
-                            </tr>
-                        {% endfor %}
-                    </table>
+                    {% csrf_token %}
+                    {% regroup chartOptionsForm by field.group as field_groups %}
+    
+                    {% for field_group in field_groups %}
+    
+                        {% if field_group.grouper == 'PlotCharts' %}
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <h4 class="panel-title">
+                                        <label style="font-weight: normal" for="{{ field_group.list.0.auto_id }}">{{ field_group.list.0.label }}</label>&nbsp;{{ field_group.list.0 }}
+                                    </h4>
+                                </div>
+                            </div>
+                        {% else %}
+                            <div class="panel panel-default">
+    
+                                <div class="panel-heading">
+                                    <h4 class="panel-title">
+                                        <a class="no-decoration" data-toggle="collapse" data-target="#{{ field_group.grouper|cut:" " }}">{{ field_group.grouper }}</a>
+                                    </h4>
+                                </div>
+    
+                                <div id="{{ field_group.grouper|cut:" " }}" class="panel-collapse collapse in">
+                                    <div class="panel-body">
+    
+                                        <table class="table table-condensed">
+                                        {% for field in field_group.list %}
+                                            <tr>
+                                            {% if field.field.widget.attrs.class == 'CheckboxSelectMultiple' %}
+                                                <td class="shaded_top_bottom_border"><label for="{{ field.auto_id }}">{{ field.label }}</label></td>
+                                                <td class="shaded_top_bottom_border">{{ field }}</td>
+                                            {% elif field.label == 'Acquisition frequency' or field.label == 'Standard study frequency' or field.label == 'Requested procedure frequency' or field.label == 'Time period' %}
+                                                <td class="top_border"><label for="{{ field.auto_id }}">{{ field.label }}</label></td>
+                                                <td class="top_border">{{ field }}</td>
+                                            {% else %}
+                                                <td><label for="{{ field.auto_id }}">{{ field.label }}</label></td>
+                                                <td>{{ field }}</td>
+                                            {% endif %}
+                                            </tr>
+                                        {% endfor %}
+                                        </table>
+    
+                                    </div>
+                                </div>
+    
+                            </div>
+                        {% endif %}
+    
+                    {% endfor %}
                 </div>
             </div>
         </div>
@@ -212,14 +241,19 @@
             </div>
             <div id="collapseTableOptions" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTableOptions">
                 <div class="panel-body">
-                    <table aria-describedby="CT chart options">
+                    <table class="table table-condensed">
                         {{ itemsPerPageForm }}
                     </table>
                 </div>
             </div>
         </div>
-        <input class="btn btn-default" name="submit" type="submit" />
+        <div style="margin-bottom: 1em;">
+            <input class="btn btn-default" name="submit" type="submit" />
+        </div>
         </form>
+
+        <script src="{{ STATIC_URL }}js/datepicker.js"></script>
+        <script src="{{ STATIC_URL }}js/formatDate.js"></script>
 
             {% block col1 %}
             {% endblock %}
