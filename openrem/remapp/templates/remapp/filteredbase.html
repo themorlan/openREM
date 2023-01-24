@@ -139,17 +139,61 @@
                             <h3 class="panel-title">
                                 <span class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion"
                                     href="#collapseSearch" aria-expanded="false" aria-controls="collapseSearch">
-                                    Advanced filtering
+                                    Filter
                                 </span>
                             </h3>
                         </td>
                     </tr>
                 </table>
             </div>
-            <div id="collapseSearch" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingSearch">
-                <container id="advFilters" class="container"></container>
-                <div>    
-                    <input type="hidden" id="filterQuery" name="filterQuery" value="" />
+            <div style="margin-left: 1em; margin-right: 1em;">
+                <div id="collapseSearch" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingSearch">
+                    <container id="advFilters" class="container"></container>
+                    <div>    
+                        <input type="hidden" id="filterQuery" name="filterQuery" value="" />
+                    </div>
+                    <div class="panel panel-info" style="display: block;">
+                        <div class="panel-heading" role="tab" id="headingFilterLibrary">
+                            <table style="width: 100%;">
+                                <tr>
+                                    <td>
+                                        <h3 class="panel-title">
+                                            <span class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion"
+                                                href="#collapseFilterLibrary" aria-expanded="false" aria-controls="collapseFilterLibrary">
+                                                Library
+                                            </span>
+                                        </h3>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div id="collapseFilterLibrary" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFilterLibrary">
+                            <div class="panel-body">
+                                <input type="hidden" value="{{ csrf_token }}" id="postToken" />
+                                <table class="table table-striped">
+                                    <tr>
+                                        <td><input type="text" class="form-control" name="newFilterLibraryName" placeholder="Name"></td>
+                                        <td><button class="btn btn-default">Save new</button></td>
+                                    </tr>
+                                    {% if selectableLibraries|length > 0 %}
+                                        <tr>
+                                            <td>
+                                                <select class="form-control" id="filterLibraryId">
+                                                    {% for field in selectableLibraries %}
+                                                        <option value="{{ field.id }}">{{ field.name }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </td>
+                                            <td>
+                                                <a class="btn btn-default" onclick="loadFromLibrary()">Load</a>
+                                                <button class="btn btn-danger">Delete</button>
+                                            </td>
+                                        </tr>
+                                    {% endif %}
+                                </table>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

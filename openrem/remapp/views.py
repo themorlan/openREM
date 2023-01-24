@@ -107,6 +107,7 @@ from .models import (
     UpgradeStatus,
     StandardNameSettings,
     StandardNames,
+    FilterLibrary,
 )
 from .version import __version__, __docs_version__, __skin_map_version__
 
@@ -205,6 +206,8 @@ def create_paginated_study_list(request, f, user_profile):
 def generate_return_structure(request, f):
     user_profile = get_or_create_user(request)
     items_per_page_form = update_items_per_page_form(request, user_profile)
+    # TODO: filter the filters
+    selectable_libraries = FilterLibrary.objects.all()
     admin = create_admin_info(request)
     study_list = create_paginated_study_list(request, f, user_profile)
     enable_standard_names = standard_name_settings()
@@ -213,6 +216,7 @@ def generate_return_structure(request, f):
         "study_list": study_list,
         "admin": admin,
         "itemsPerPageForm": items_per_page_form,
+        "selectableLibraries": selectable_libraries,
         "showStandardNames": enable_standard_names,
     }
     return user_profile, return_structure
@@ -634,6 +638,13 @@ def rf_detail_view_skin_map(request, pk=None):
 @login_required
 def nm_summary_list_filter(request):
     """Obtain data for NM summary view."""
+    
+    if request.is_ajax():
+        data = request.POST
+        libraryId = data.get("libraryId")
+        a = FilterLibrary.objects.get(pk=int(libraryId)).pattern
+        return HttpResponse(json.dumps({ "pattern": a }), content_type="application/json")
+    
     pid = bool(request.user.groups.filter(name="pidgroup"))
     f = nm_filter(request.GET, pid=pid)
 

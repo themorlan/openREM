@@ -3358,3 +3358,13 @@ class UpgradeStatus(SingletonModel):
     """
 
     from_0_9_1_summary_fields = models.BooleanField(default=False)
+
+
+class FilterLibrary(models.Model):
+    """
+    Record filter libraries for all modalities
+    """
+
+    pattern = models.JSONField()
+    name = models.CharField(max_length=32)
+    modality_type = models.CharField(max_length=2, null=True)

@@ -61,7 +61,7 @@ let pattern = {
 $(document).ready(function () {
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
-
+    
     const filterQuery = urlParams.get('filterQuery')
     const newPattern = JSON.parse(decodeURIComponent(filterQuery));
     if (newPattern !== null) {
@@ -255,6 +255,20 @@ function addGroup(caller) {
 
     renderPattern(); 
     openFilter(currentFilterId);
+}
+
+function loadFromLibrary() {
+    // Performing POST request to fetch the new pattern
+    let libraryId = $('#filterLibraryId').val();
+    if (libraryId === NaN) {
+        return;
+    }
+    $.post("", { libraryId: libraryId, csrfmiddlewaretoken: $('#postToken').val() }, function(data) {
+        if (data.pattern !== undefined && data.pattern !== null) {
+            pattern = data.pattern;
+            renderPattern();
+        }
+    });
 }
 
 function renderGroup(group="root", level=0) {
