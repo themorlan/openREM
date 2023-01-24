@@ -27,7 +27,8 @@ To start the containers and detach (so you get the command prompt back instead o
 
     $ docker-compose up -d
 
-To stop the containers:
+To stop the containers - occasionally you need to check the containers actually stopped (``docker-compose ps``) and
+then issue the ``down`` command again:
 
 .. code-block:: console
 
