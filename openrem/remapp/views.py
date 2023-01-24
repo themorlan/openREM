@@ -41,6 +41,7 @@ from decimal import Decimal
 import pickle  # nosec
 from collections import OrderedDict
 
+from django.db.utils import IntegrityError
 from django.db.models import (
     Sum,
     Q,
@@ -641,9 +642,19 @@ def nm_summary_list_filter(request):
     
     if request.is_ajax():
         data = request.POST
-        libraryId = data.get("libraryId")
-        a = FilterLibrary.objects.get(pk=int(libraryId)).pattern
-        return HttpResponse(json.dumps({ "pattern": a }), content_type="application/json")
+        req_type = data.get("type")
+        if req_type == "save":
+            libraryName = data.get("libraryName")
+            pattern = json.loads(data.get("pattern"))
+            try:
+                FilterLibrary.objects.create(pattern=pattern, name=libraryName, modality_type="nm")
+            except IntegrityError:
+                pass
+            return HttpResponse()
+        elif req_type == "load":
+            libraryId = data.get("libraryId")
+            pattern = FilterLibrary.objects.get(pk=int(libraryId)).pattern
+            return HttpResponse(json.dumps({ "pattern": pattern }), content_type="application/json")
     
     pid = bool(request.user.groups.filter(name="pidgroup"))
     f = nm_filter(request.GET, pid=pid)

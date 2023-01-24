@@ -172,8 +172,8 @@
                                 <input type="hidden" value="{{ csrf_token }}" id="postToken" />
                                 <table class="table table-striped">
                                     <tr>
-                                        <td><input type="text" class="form-control" name="newFilterLibraryName" placeholder="Name"></td>
-                                        <td><button class="btn btn-default">Save new</button></td>
+                                        <td><input type="text" class="form-control" id="newFilterLibraryName" placeholder="Name"></td>
+                                        <td><a class="btn btn-default" onclick="saveToLibrary()">Save new</a></td>
                                     </tr>
                                     {% if selectableLibraries|length > 0 %}
                                         <tr>

@@ -258,12 +258,26 @@ function addGroup(caller) {
 }
 
 function loadFromLibrary() {
-    // Performing POST request to fetch the new pattern
+    // Performing POST request to fetch the selected pattern
     let libraryId = $('#filterLibraryId').val();
     if (libraryId === NaN) {
         return;
     }
-    $.post("", { libraryId: libraryId, csrfmiddlewaretoken: $('#postToken').val() }, function(data) {
+    $.post("", { type: "load", libraryId: libraryId, csrfmiddlewaretoken: $('#postToken').val() }, function(data) {
+        if (data.pattern !== undefined && data.pattern !== null) {
+            pattern = data.pattern;
+            renderPattern();
+        }
+    });
+}
+
+function saveToLibrary() {
+    // Perofrming POST request to store a new pattern
+    let libraryName = $('#newFilterLibraryName').val();
+    if (libraryName === undefined || libraryName === null) {
+        return;
+    }
+    $.post("", { type: "save", libraryName: libraryName, pattern: JSON.stringify(pattern), csrfmiddlewaretoken: $('#postToken').val() }, function(data) {
         if (data.pattern !== undefined && data.pattern !== null) {
             pattern = data.pattern;
             renderPattern();
