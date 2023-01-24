@@ -155,6 +155,8 @@ database), and create the static files:
 
     $ docker-compose exec openrem python manage.py makemigrations remapp
 
+You may be asked if fields have been renamed - answer ``N``.
+
 .. code-block:: console
 
     $ docker-compose exec openrem python manage.py migrate
