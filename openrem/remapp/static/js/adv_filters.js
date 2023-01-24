@@ -78,6 +78,9 @@ $(document).ready(function () {
     });
 
     $('#newFilterModal').on('hide.bs.modal', function (e) {
+        if (e.namespace !== "bs.modal") {
+            return;
+        }
         if (isNewEntry && discardChanges) {
             removeFilter(currentFilterId);
             currentFilterId = null;
