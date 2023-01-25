@@ -6,7 +6,7 @@ from django.contrib.auth.models import User, Group
 from django.test import TestCase, RequestFactory
 from remapp.extractors import mam, rdsr
 from remapp.models import GeneralStudyModuleAttr, PatientIDSettings
-from remapp.interface.mod_filters import MGSummaryListFilter
+from remapp.interface.mod_filters import MGSummaryListFilter, get_studies_queryset
 from remapp.tests.test_charts_common import (
     check_series_and_category_names,
     check_frequency_data,
@@ -55,7 +55,7 @@ class ChartsMG(TestCase):
         filter_set = ""
         f = MGSummaryListFilter(
             filter_set,
-            queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact="MG")
+            queryset=get_studies_queryset(filter_set, "MG")
             .order_by()
             .distinct(),
         )

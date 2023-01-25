@@ -77,6 +77,7 @@ from .interface.mod_filters import (
     MGFilterPlusPid,
     MGFilterPlusStdNames,
     MGFilterPlusPidPlusStdNames,
+    get_studies_queryset,
 )
 from .interface.mod_filters import nm_filter
 from .tools.make_skin_map import make_skin_map
@@ -751,7 +752,7 @@ def mg_summary_list_filter(request):
         del filter_data["page"]
 
     queryset = (
-        GeneralStudyModuleAttr.objects.filter(modality_type__exact="MG")
+        get_studies_queryset(filter_data, "MG")
         .order_by("-study_date", "-study_time")
         .distinct()
     )

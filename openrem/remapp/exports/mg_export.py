@@ -255,6 +255,7 @@ def exportMG2excel(filterdict, pid=False, name=None, patid=None, user=None, xlsx
         MGFilterPlusPid,
         MGFilterPlusStdNames,
         MGFilterPlusPidPlusStdNames,
+        get_studies_queryset,
     )
 
     # Obtain the system-level enable_standard_names setting
@@ -301,36 +302,33 @@ def exportMG2excel(filterdict, pid=False, name=None, patid=None, user=None, xlsx
             logger.info("Replacing AGD ordering with study date to avoid duplication")
             filterdict["o"] = "-study_date"
 
+    queryset = (
+        get_studies_queryset(filterdict, "MG")
+        .distinct()
+    )
+
     # Get the data!
     if pid:
         if enable_standard_names:
             df_filtered_qs = MGFilterPlusPidPlusStdNames(
                 filterdict,
-                queryset=GeneralStudyModuleAttr.objects.filter(
-                    modality_type__exact="MG"
-                ).distinct(),
+                queryset=queryset,
             )
         else:
             df_filtered_qs = MGFilterPlusPid(
                 filterdict,
-                queryset=GeneralStudyModuleAttr.objects.filter(
-                    modality_type__exact="MG"
-                ).distinct(),
+                queryset=queryset,
             )
     else:
         if enable_standard_names:
             df_filtered_qs = MGFilterPlusStdNames(
                 filterdict,
-                queryset=GeneralStudyModuleAttr.objects.filter(
-                    modality_type__exact="MG"
-                ).distinct(),
+                queryset=queryset,
             )
         else:
             df_filtered_qs = MGSummaryListFilter(
                 filterdict,
-                queryset=GeneralStudyModuleAttr.objects.filter(
-                    modality_type__exact="MG"
-                ).distinct(),
+                queryset=queryset,
             )
 
     studies = df_filtered_qs.qs

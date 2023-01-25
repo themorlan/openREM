@@ -14,6 +14,7 @@ from remapp.interface.mod_filters import (
     MGFilterPlusPid,
     MGFilterPlusStdNames,
     MGFilterPlusPidPlusStdNames,
+    get_studies_queryset,
 )
 from remapp.models import (
     GeneralStudyModuleAttr,
@@ -303,43 +304,35 @@ def mg_summary_chart_data(request):
         "enable_standard_names", flat=True
     )[0]
 
+    data = request.GET
+
+    queryset = (
+        get_studies_queryset(data, "MG")
+        .order_by()
+        .distinct()
+    )
+
     if request.user.groups.filter(name="pidgroup"):
         if enable_standard_names:
             f = MGFilterPlusPidPlusStdNames(
-                request.GET,
-                queryset=GeneralStudyModuleAttr.objects.filter(
-                    modality_type__exact="MG"
-                )
-                .order_by()
-                .distinct(),
+                data,
+                queryset=queryset,
             )
         else:
             f = MGFilterPlusPid(
-                request.GET,
-                queryset=GeneralStudyModuleAttr.objects.filter(
-                    modality_type__exact="MG"
-                )
-                .order_by()
-                .distinct(),
+                data,
+                queryset=queryset,
             )
     else:
         if enable_standard_names:
             f = MGFilterPlusStdNames(
-                request.GET,
-                queryset=GeneralStudyModuleAttr.objects.filter(
-                    modality_type__exact="MG"
-                )
-                .order_by()
-                .distinct(),
+                data,
+                queryset=queryset,
             )
         else:
             f = MGSummaryListFilter(
-                request.GET,
-                queryset=GeneralStudyModuleAttr.objects.filter(
-                    modality_type__exact="MG"
-                )
-                .order_by()
-                .distinct(),
+                data,
+                queryset=queryset,
             )
     try:
         # See if the user has plot settings in userprofile

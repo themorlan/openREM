@@ -663,13 +663,13 @@ class MGSummaryListFilter(django_filters.FilterSet):
         lookup_expr="gte",
         label="Date from",
         field_name="study_date",
-        widget=forms.TextInput(attrs={"class": "datepicker"}),
+        widget=forms.TextInput(attrs={"class": "datepicker", "static_lookup": True}),
     )
     study_date__lt = django_filters.DateFilter(
         lookup_expr="lte",
         label="Date until",
         field_name="study_date",
-        widget=forms.TextInput(attrs={"class": "datepicker"}),
+        widget=forms.TextInput(attrs={"class": "datepicker", "static_lookup": True}),
     )
     study_description = django_filters.CharFilter(
         lookup_expr="icontains", label="Study description"
@@ -698,11 +698,13 @@ class MGSummaryListFilter(django_filters.FilterSet):
         lookup_expr="gte",
         label="Min age (yrs)",
         field_name="patientstudymoduleattr__patient_age_decimal",
+        widget=forms.NumberInput(attrs={"static_lookup": True}),
     )
     patientstudymoduleattr__patient_age_decimal__lte = django_filters.NumberFilter(
         lookup_expr="lte",
         label="Max age (yrs)",
         field_name="patientstudymoduleattr__patient_age_decimal",
+        widget=forms.NumberInput(attrs={"static_lookup": True}),
     )
     generalequipmentmoduleattr__institution_name = django_filters.CharFilter(
         lookup_expr="icontains", label="Hospital"
@@ -726,14 +728,14 @@ class MGSummaryListFilter(django_filters.FilterSet):
         method=_specify_event_numbers,
         label="Num. events total",
         choices=EVENT_NUMBER_CHOICES,
-        widget=forms.Select,
+        widget=forms.Select(attrs={"static_lookup": True}),
     )
     test_data = django_filters.ChoiceFilter(
         lookup_expr="isnull",
         label="Include possible test data",
         field_name="patientmoduleattr__not_patient_indicator",
         choices=TEST_CHOICES,
-        widget=forms.Select,
+        widget=forms.Select(attrs={"static_lookup": True}),
     )
 
     class Meta:
@@ -840,6 +842,24 @@ class MGFilterPlusPidPlusStdNames(MGFilterPlusPid):
     projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name = django_filters.CharFilter(
         lookup_expr="icontains", label="Standard acquisition name"
     )
+
+
+def get_studies_queryset(filters, modality=None):
+    studies = GeneralStudyModuleAttr.objects.filter(modality_type__exact=modality)
+    try:
+        pattern = filters.get("filterQuery")
+    except Exception:  # pylint: disable=broad-except
+        return studies
+    if pattern != None and pattern != "":
+        import urllib.parse
+        data = urllib.parse.unquote(pattern)
+        data = json.loads(data)
+        try:
+            q = json_to_query(data)
+            studies = studies.filter(q)
+        except InvalidQuery:
+            pass
+    return studies
 
 
 class DXSummaryListFilter(django_filters.FilterSet):
