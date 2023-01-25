@@ -78,7 +78,7 @@ from .interface.mod_filters import (
     MGFilterPlusStdNames,
     MGFilterPlusPidPlusStdNames,
 )
-from .interface.mod_adv_filters import nm_filter
+from .interface.mod_filters import nm_filter
 from .tools.make_skin_map import make_skin_map
 from .views_charts_ct import (
     generate_required_ct_charts_list,
@@ -205,11 +205,10 @@ def create_paginated_study_list(request, f, user_profile):
     return study_list
 
 
-def generate_return_structure(request, f):
+def generate_return_structure(request, f, modality=""):
     user_profile = get_or_create_user(request)
     items_per_page_form = update_items_per_page_form(request, user_profile)
-    # TODO: filter the filters
-    selectable_libraries = FilterLibrary.objects.all()
+    selectable_libraries = FilterLibrary.objects.filter(modality_type=modality)
     admin = create_admin_info(request)
     study_list = create_paginated_study_list(request, f, user_profile)
     enable_standard_names = standard_name_settings()
@@ -643,7 +642,7 @@ def nm_summary_list_filter(request):
     pid = bool(request.user.groups.filter(name="pidgroup"))
     f = nm_filter(request.GET, pid=pid)
 
-    user_profile, return_structure = generate_return_structure(request, f)
+    user_profile, return_structure = generate_return_structure(request, f, "NM")
     chart_options_form = nm_chart_form_processing(request, user_profile)
     return_structure["chartOptionsForm"] = chart_options_form
 
@@ -1242,13 +1241,13 @@ def delete_filter_from_library(request, pk=None):
 
 @login_required
 @require_POST
-def add_filter_to_library(request):
-    """Returns the filter pattern for the given pk"""
+def add_filter_to_library(request, modality):
+    """Add a new filter pattern to the library"""
     data = request.POST
     libraryName = data.get("libraryName")
     pattern = json.loads(data.get("pattern"))
     try:
-        FilterLibrary.objects.create(pattern=pattern, name=libraryName, modality_type="nm")
+        FilterLibrary.objects.create(pattern=pattern, name=libraryName, modality_type=modality)
     except IntegrityError:
         pass
     return HttpResponse()

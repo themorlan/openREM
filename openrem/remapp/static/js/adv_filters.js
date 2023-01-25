@@ -304,7 +304,7 @@ function saveToLibrary() {
     if (libraryName === undefined || libraryName === null) {
         return;
     }
-    $.post("/openrem/filters/add/", { libraryName: libraryName, pattern: JSON.stringify(pattern), csrfmiddlewaretoken: $('#postToken').val() }, function(data) {
+    $.post("/openrem/filters/add/NM/", { libraryName: libraryName, pattern: JSON.stringify(pattern), csrfmiddlewaretoken: $('#postToken').val() }, function(data) {
         renderPattern();
         $('#submitQuery').click();
     });

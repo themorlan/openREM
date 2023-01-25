@@ -44,10 +44,12 @@ from remapp.models import (
     StandardNameSettings,
 )
 from ..tools.hash_id import hash_id
+import json
 
 logger = logging.getLogger(__name__)
 
 TEST_CHOICES = (("", "Yes (default)"), (2, "No (caution)"))
+ALLOWED_LOOKUP_TYPES = ["iexact", "icontains", "iregex"]
 
 
 def custom_name_filter(queryset, name, value):
@@ -1083,13 +1085,13 @@ class NMSummaryListFilter(django_filters.FilterSet):
         lookup_expr="gte",
         label="Date from",
         field_name="study_date",
-        widget=forms.TextInput(attrs={"class": "datepicker"}),
+        widget=forms.TextInput(attrs={"class": "datepicker", "static_lookup": True}),
     )
     study_date__lt = django_filters.DateFilter(
         lookup_expr="lte",
         label="Date until",
         field_name="study_date",
-        widget=forms.TextInput(attrs={"class": "datepicker"}),
+        widget=forms.TextInput(attrs={"class": "datepicker", "static_lookup": True}),
     )
     study_description = django_filters.CharFilter(
         lookup_expr="icontains", label="Study description"
@@ -1104,21 +1106,25 @@ class NMSummaryListFilter(django_filters.FilterSet):
         lookup_expr="gte",
         label="Min age (yrs)",
         field_name="patientstudymoduleattr__patient_age_decimal",
+        widget=forms.NumberInput(attrs={"static_lookup": True}),
     )
     patientstudymoduleattr__patient_age_decimal__lte = django_filters.NumberFilter(
         lookup_expr="lte",
         label="Max age (yrs)",
         field_name="patientstudymoduleattr__patient_age_decimal",
+        widget=forms.NumberInput(attrs={"static_lookup": True}),
     )
     patientstudymoduleattr__patient_weight__gte = django_filters.NumberFilter(
         lookup_expr="gte",
         label="Min weight (kg)",
         field_name="patientstudymoduleattr__patient_weight",
+        widget=forms.NumberInput(attrs={"static_lookup": True}),
     )
     patientstudymoduleattr__patient_weight__lte = django_filters.NumberFilter(
         lookup_expr="lte",
         label="Max weight (kg)",
         field_name="patientstudymoduleattr__patient_weight",
+        widget=forms.NumberInput(attrs={"static_lookup": True}),
     )
     generalequipmentmoduleattr__institution_name = django_filters.CharFilter(
         lookup_expr="icontains", label="Hospital"
@@ -1139,11 +1145,13 @@ class NMSummaryListFilter(django_filters.FilterSet):
         lookup_expr="gte",
         label="Min administered dose (MBq)",
         field_name="radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__administered_activity",
+        widget=forms.NumberInput(attrs={"static_lookup": True}),
     )
     radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__administered_activity_lte = django_filters.NumberFilter(
         lookup_expr="lte",
         label="Max administered dose (MBq)",
         field_name="radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__administered_activity",
+        widget=forms.NumberInput(attrs={"static_lookup": True}),
     )
     generalequipmentmoduleattr__unique_equipment_name__display_name = (
         django_filters.CharFilter(lookup_expr="icontains", label="Display name")
@@ -1153,7 +1161,7 @@ class NMSummaryListFilter(django_filters.FilterSet):
         label="Include possible test data",
         field_name="patientmoduleattr__not_patient_indicator",
         choices=TEST_CHOICES,
-        widget=forms.Select,
+        widget=forms.Select(attrs={"static_lookup": True}),
     )
 
     class Meta:
@@ -1234,10 +1242,65 @@ class NMFilterPlusPid(NMSummaryListFilter):
 
 def nm_filter(filters, pid=False):
     studies = GeneralStudyModuleAttr.objects.filter(modality_type__exact="NM")
+    pattern = filters.get("filterQuery")
+    if pattern != None and pattern != "":
+        import urllib.parse
+        data = urllib.parse.unquote(pattern)
+        data = json.loads(data)
+        try:
+            q = json_to_query(data)
+            studies = studies.filter(q)
+        except InvalidQuery:
+            pass
     if pid:
-        return NMFilterPlusPid(
-            filters, studies.order_by("-study_date", "-study_time").distinct()
+        return NMFilterPlusPid(filters, queryset=studies.order_by("-study_date", "-study_time").distinct()
         )
-    return NMSummaryListFilter(
-        filters, studies.order_by("-study_date", "-study_time").distinct()
+    return NMSummaryListFilter(filters, queryset=studies.order_by("-study_date", "-study_time").distinct()
     )
+
+
+class InvalidQuery(Exception):
+    "Raised when the given query is invalid"
+    pass
+
+
+def json_to_query(pattern, group="root") -> Q:
+    """
+        Transforms the JSON pattern into a Q object
+    """
+    q = Q()
+    operator = Q.AND
+    nextEntryId = pattern[group]["first"]
+    
+    while nextEntryId != None:
+        nextEntry = pattern[nextEntryId]
+        if not "type" in nextEntry:
+            raise InvalidQuery
+        q_type = nextEntry["type"]
+        if q_type == "filter":
+            try:
+                q.add(get_filter(nextEntry["fields"]), operator)
+            except KeyError:
+                raise InvalidQuery
+        if q_type == "operator":
+            try:
+                operator = nextEntry["operator"]
+            except KeyError:
+                raise InvalidQuery
+        if q_type == "group":
+            q.add(json_to_query(pattern, nextEntryId), operator)
+        nextEntryId = nextEntry["next"]
+    return q
+
+
+def get_filter(fields: dict) -> Q:
+    q = Q()
+    for field, value in fields.items():
+        if value[1] in ALLOWED_LOOKUP_TYPES:
+            field = field + "__" + value[1]
+        add_q = Q(**{field: value[0]})
+        if value[2]:
+            q.add(~add_q, Q.AND)
+        else:
+            q.add(add_q, Q.AND)
+    return q

@@ -7,7 +7,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse
 from django.utils.translation import gettext as _
 from remapp.forms import NMChartOptionsForm
-from remapp.interface.mod_adv_filters import nm_filter
+from remapp.interface.mod_filters import nm_filter
 from remapp.models import (
     UserProfile,
     create_user_profile,
