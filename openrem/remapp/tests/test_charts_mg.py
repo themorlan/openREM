@@ -55,9 +55,7 @@ class ChartsMG(TestCase):
         filter_set = ""
         f = MGSummaryListFilter(
             filter_set,
-            queryset=get_studies_queryset(filter_set, "MG")
-            .order_by()
-            .distinct(),
+            queryset=get_studies_queryset(filter_set, "MG").order_by().distinct(),
         )
         # Reset the user profile
         user_profile_reset(self)

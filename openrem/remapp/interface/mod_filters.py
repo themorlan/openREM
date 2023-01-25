@@ -411,13 +411,13 @@ class CTSummaryListFilter(django_filters.FilterSet):
         lookup_expr="gte",
         label="Date from",
         field_name="study_date",
-        widget=forms.TextInput(attrs={"class": "datepicker"}),
+        widget=forms.TextInput(attrs={"class": "datepicker", "static_lookup": True}),
     )
     study_date__lt = django_filters.DateFilter(
         lookup_expr="lte",
         label="Date until",
         field_name="study_date",
-        widget=forms.TextInput(attrs={"class": "datepicker"}),
+        widget=forms.TextInput(attrs={"class": "datepicker", "static_lookup": True}),
     )
     study_description = django_filters.CharFilter(
         lookup_expr="icontains", label="Study description"
@@ -435,21 +435,25 @@ class CTSummaryListFilter(django_filters.FilterSet):
         lookup_expr="gte",
         label="Min age (yrs)",
         field_name="patientstudymoduleattr__patient_age_decimal",
+        widget=forms.NumberInput(attrs={"static_lookup": True}),
     )
     patientstudymoduleattr__patient_age_decimal__lte = django_filters.NumberFilter(
         lookup_expr="lte",
         label="Max age (yrs)",
         field_name="patientstudymoduleattr__patient_age_decimal",
+        widget=forms.NumberInput(attrs={"static_lookup": True}),
     )
     patientstudymoduleattr__patient_weight__gte = django_filters.NumberFilter(
         lookup_expr="gte",
         label="Min weight (kg)",
         field_name="patientstudymoduleattr__patient_weight",
+        widget=forms.NumberInput(attrs={"static_lookup": True}),
     )
     patientstudymoduleattr__patient_weight__lte = django_filters.NumberFilter(
         lookup_expr="lte",
         label="Max weight (kg)",
         field_name="patientstudymoduleattr__patient_weight",
+        widget=forms.NumberInput(attrs={"static_lookup": True}),
     )
     generalequipmentmoduleattr__institution_name = django_filters.CharFilter(
         lookup_expr="icontains", label="Hospital"
@@ -467,10 +471,16 @@ class CTSummaryListFilter(django_filters.FilterSet):
         method=_custom_acc_filter, label="Accession number"
     )
     total_dlp__gte = django_filters.NumberFilter(
-        lookup_expr="gte", field_name="total_dlp", label="Min study DLP"
+        lookup_expr="gte",
+        field_name="total_dlp",
+        label="Min study DLP",
+        widget=forms.NumberInput(attrs={"static_lookup": True}),
     )
     total_dlp__lte = django_filters.NumberFilter(
-        lookup_expr="lte", field_name="total_dlp", label="Max study DLP"
+        lookup_expr="lte",
+        field_name="total_dlp",
+        label="Max study DLP",
+        widget=forms.NumberInput(attrs={"static_lookup": True}),
     )
     generalequipmentmoduleattr__unique_equipment_name__display_name = (
         django_filters.CharFilter(lookup_expr="icontains", label="Display name")
@@ -480,37 +490,37 @@ class CTSummaryListFilter(django_filters.FilterSet):
         label="Include possible test data",
         field_name="patientmoduleattr__not_patient_indicator",
         choices=TEST_CHOICES,
-        widget=forms.Select,
+        widget=forms.Select(attrs={"static_lookup": True}),
     )
     num_events = django_filters.ChoiceFilter(
         method=_specify_event_numbers,
         label="Num. events total",
         choices=EVENT_NUMBER_CHOICES,
-        widget=forms.Select,
+        widget=forms.Select(attrs={"static_lookup": True}),
     )
     num_spiral_events = django_filters.ChoiceFilter(
         method=_specify_event_numbers,
         label="Num. spiral events",
         choices=EVENT_NUMBER_CHOICES,
-        widget=forms.Select,
+        widget=forms.Select(attrs={"static_lookup": True}),
     )
     num_axial_events = django_filters.ChoiceFilter(
         method=_specify_event_numbers,
         label="Num. axial events",
         choices=EVENT_NUMBER_CHOICES,
-        widget=forms.Select,
+        widget=forms.Select(attrs={"static_lookup": True}),
     )
     num_spr_events = django_filters.ChoiceFilter(
         method=_specify_event_numbers,
         label="Num. localisers",
         choices=EVENT_NUMBER_CHOICES,
-        widget=forms.Select,
+        widget=forms.Select(attrs={"static_lookup": True}),
     )
     num_stationary_events = django_filters.ChoiceFilter(
         method=_specify_event_numbers,
         label="Num. stationary events",
         choices=EVENT_NUMBER_CHOICES,
-        widget=forms.Select,
+        widget=forms.Select(attrs={"static_lookup": True}),
     )
 
     class Meta:
@@ -634,7 +644,7 @@ def ct_acq_filter(filters, pid=False):
         "enable_standard_names", flat=True
     )[0]
 
-    studies = GeneralStudyModuleAttr.objects.filter(modality_type__exact="CT")
+    studies = get_studies_queryset(filters, "CT")
 
     if pid:
         if enable_standard_names:
@@ -852,6 +862,7 @@ def get_studies_queryset(filters, modality=None):
         return studies
     if pattern != None and pattern != "":
         import urllib.parse
+
         data = urllib.parse.unquote(pattern)
         data = json.loads(data)
         try:
@@ -1261,21 +1272,13 @@ class NMFilterPlusPid(NMSummaryListFilter):
 
 
 def nm_filter(filters, pid=False):
-    studies = GeneralStudyModuleAttr.objects.filter(modality_type__exact="NM")
-    pattern = filters.get("filterQuery")
-    if pattern != None and pattern != "":
-        import urllib.parse
-        data = urllib.parse.unquote(pattern)
-        data = json.loads(data)
-        try:
-            q = json_to_query(data)
-            studies = studies.filter(q)
-        except InvalidQuery:
-            pass
+    studies = get_studies_queryset(filters, "NM")
     if pid:
-        return NMFilterPlusPid(filters, queryset=studies.order_by("-study_date", "-study_time").distinct()
+        return NMFilterPlusPid(
+            filters, queryset=studies.order_by("-study_date", "-study_time").distinct()
         )
-    return NMSummaryListFilter(filters, queryset=studies.order_by("-study_date", "-study_time").distinct()
+    return NMSummaryListFilter(
+        filters, queryset=studies.order_by("-study_date", "-study_time").distinct()
     )
 
 
@@ -1286,12 +1289,12 @@ class InvalidQuery(Exception):
 
 def json_to_query(pattern, group="root") -> Q:
     """
-        Transforms the JSON pattern into a Q object
+    Transforms the JSON pattern into a Q object
     """
     q = Q()
     operator = Q.AND
     nextEntryId = pattern[group]["first"]
-    
+
     while nextEntryId != None:
         nextEntry = pattern[nextEntryId]
         if not "type" in nextEntry:

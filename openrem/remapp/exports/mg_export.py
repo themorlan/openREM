@@ -302,10 +302,7 @@ def exportMG2excel(filterdict, pid=False, name=None, patid=None, user=None, xlsx
             logger.info("Replacing AGD ordering with study date to avoid duplication")
             filterdict["o"] = "-study_date"
 
-    queryset = (
-        get_studies_queryset(filterdict, "MG")
-        .distinct()
-    )
+    queryset = get_studies_queryset(filterdict, "MG").distinct()
 
     # Get the data!
     if pid:

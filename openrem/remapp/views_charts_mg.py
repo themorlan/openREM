@@ -306,11 +306,7 @@ def mg_summary_chart_data(request):
 
     data = request.GET
 
-    queryset = (
-        get_studies_queryset(data, "MG")
-        .order_by()
-        .distinct()
-    )
+    queryset = get_studies_queryset(data, "MG").order_by().distinct()
 
     if request.user.groups.filter(name="pidgroup"):
         if enable_standard_names:

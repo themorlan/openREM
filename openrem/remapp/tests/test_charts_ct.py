@@ -11,7 +11,7 @@ from remapp.models import (
     StandardNameSettings,
 )
 from django.core.exceptions import ObjectDoesNotExist
-from remapp.interface.mod_filters import CTSummaryListFilter
+from remapp.interface.mod_filters import CTSummaryListFilter, get_studies_queryset
 from remapp.tests.test_charts_common import (
     check_series_and_category_names,
     check_frequencies,
@@ -71,7 +71,7 @@ class ChartsCT(TestCase):
         filter_set = ""
         f = CTSummaryListFilter(
             filter_set,
-            queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact="CT")
+            queryset=get_studies_queryset(filter_set, "CT")
             .order_by()
             .distinct(),
         )

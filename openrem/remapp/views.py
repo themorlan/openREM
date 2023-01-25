@@ -55,7 +55,13 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import Group
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.http import HttpResponseRedirect, HttpResponse, JsonResponse, HttpResponseBadRequest, HttpResponseNotFound
+from django.http import (
+    HttpResponseRedirect,
+    HttpResponse,
+    JsonResponse,
+    HttpResponseBadRequest,
+    HttpResponseNotFound,
+)
 from django.shortcuts import render, redirect
 from django.template.defaultfilters import register
 from django.urls import reverse_lazy
@@ -1226,7 +1232,9 @@ def get_filter_from_library(request, pk=None):
         pattern = FilterLibrary.objects.get(pk=pk).pattern
     except ObjectDoesNotExist:
         return HttpResponseNotFound()
-    return HttpResponse(json.dumps({ "pattern": pattern }), content_type="application/json")
+    return HttpResponse(
+        json.dumps({"pattern": pattern}), content_type="application/json"
+    )
 
 
 @login_required
@@ -1240,6 +1248,7 @@ def delete_filter_from_library(request, pk=None):
         return HttpResponseNotFound()
     return HttpResponse()
 
+
 @login_required
 @require_POST
 def add_filter_to_library(request, modality):
@@ -1248,7 +1257,9 @@ def add_filter_to_library(request, modality):
     libraryName = data.get("libraryName")
     pattern = json.loads(data.get("pattern"))
     try:
-        FilterLibrary.objects.create(pattern=pattern, name=libraryName, modality_type=modality)
+        FilterLibrary.objects.create(
+            pattern=pattern, name=libraryName, modality_type=modality
+        )
     except IntegrityError:
         pass
     return HttpResponse()
