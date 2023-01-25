@@ -77,7 +77,11 @@ def get_filter(fields: dict) -> Q:
     for field, value in fields.items():
         if value[1] in ALLOWED_LOOKUP_TYPES:
             field = field + "__" + value[1]
-        q.add(Q(**{field: value[0]}), Q.AND)
+        add_q = Q(**{field: value[0]})
+        if value[2]:
+            q.add(~add_q, Q.AND)
+        else:
+            q.add(add_q, Q.AND)
     return q
 
 class NMSummaryListFilter(django_filters.FilterSet):
@@ -89,13 +93,13 @@ class NMSummaryListFilter(django_filters.FilterSet):
         lookup_expr="gte",
         label="Date from",
         field_name="study_date",
-        widget=forms.TextInput(attrs={"class": "datepicker"}),
+        widget=forms.TextInput(attrs={"class": "datepicker", "static_lookup": True}),
     )
     study_date__lt = django_filters.DateFilter(
         lookup_expr="lte",
         label="Date until",
         field_name="study_date",
-        widget=forms.TextInput(attrs={"class": "datepicker"}),
+        widget=forms.TextInput(attrs={"class": "datepicker", "static_lookup": True}),
     )
     study_description = django_filters.CharFilter(
         lookup_expr="icontains", label="Study description"
@@ -110,21 +114,25 @@ class NMSummaryListFilter(django_filters.FilterSet):
         lookup_expr="gte",
         label="Min age (yrs)",
         field_name="patientstudymoduleattr__patient_age_decimal",
+        widget=forms.NumberInput(attrs={"static_lookup": True}),
     )
     patientstudymoduleattr__patient_age_decimal__lte = django_filters.NumberFilter(
         lookup_expr="lte",
         label="Max age (yrs)",
         field_name="patientstudymoduleattr__patient_age_decimal",
+        widget=forms.NumberInput(attrs={"static_lookup": True}),
     )
     patientstudymoduleattr__patient_weight__gte = django_filters.NumberFilter(
         lookup_expr="gte",
         label="Min weight (kg)",
         field_name="patientstudymoduleattr__patient_weight",
+        widget=forms.NumberInput(attrs={"static_lookup": True}),
     )
     patientstudymoduleattr__patient_weight__lte = django_filters.NumberFilter(
         lookup_expr="lte",
         label="Max weight (kg)",
         field_name="patientstudymoduleattr__patient_weight",
+        widget=forms.NumberInput(attrs={"static_lookup": True}),
     )
     generalequipmentmoduleattr__institution_name = django_filters.CharFilter(
         lookup_expr="icontains", label="Hospital"
@@ -145,11 +153,13 @@ class NMSummaryListFilter(django_filters.FilterSet):
         lookup_expr="gte",
         label="Min administered dose (MBq)",
         field_name="radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__administered_activity",
+        widget=forms.NumberInput(attrs={"static_lookup": True}),
     )
     radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__administered_activity_lte = django_filters.NumberFilter(
         lookup_expr="lte",
         label="Max administered dose (MBq)",
         field_name="radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__administered_activity",
+        widget=forms.NumberInput(attrs={"static_lookup": True}),
     )
     generalequipmentmoduleattr__unique_equipment_name__display_name = (
         django_filters.CharFilter(lookup_expr="icontains", label="Display name")
@@ -159,7 +169,7 @@ class NMSummaryListFilter(django_filters.FilterSet):
         label="Include possible test data",
         field_name="patientmoduleattr__not_patient_indicator",
         choices=TEST_CHOICES,
-        widget=forms.Select,
+        widget=forms.Select(attrs={"static_lookup": True}),
     )
 
     class Meta:
@@ -240,10 +250,10 @@ class NMFilterPlusPid(NMSummaryListFilter):
 
 def nm_filter(filters, pid=False):
     studies = GeneralStudyModuleAttr.objects.filter(modality_type__exact="NM")
-    a = filters.get("filterQuery")
-    if a != None and a != "":
+    pattern = filters.get("filterQuery")
+    if pattern != None and pattern != "":
         import urllib.parse
-        data = urllib.parse.unquote(a)
+        data = urllib.parse.unquote(pattern)
         data = json.loads(data)
         try:
             q = json_to_query(data)

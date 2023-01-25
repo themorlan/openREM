@@ -20,6 +20,7 @@ function createOperator(operator="OR", prev=null, next=null, parent=null) {
     res.type = "operator";
     return res;
 }
+
 function createGroup(first=null, prev=null, next=null, parent=null) {
     let res = createEntry(prev, next, parent);
     res.first = first;
@@ -109,7 +110,11 @@ function saveFilter(id) {
         if ($('#' + kv.name + "_lookupType").length) {
             lookupType = $('#' + kv.name + "_lookupType").val();
         }
-        filterFields[kv.name] = [kv.value, lookupType];
+        let invert = false;
+        if ($('#' + kv.name + "_notToggle").length) {
+            invert = $('#' + kv.name + "_notToggle").hasClass("active");
+        }
+        filterFields[kv.name] = [kv.value, lookupType, invert];
     })
     if (Object.keys(filterFields).length <= 0) {
         return;
@@ -182,14 +187,23 @@ function openFilter(id) {
     }
     $('#newFilterModal').modal('show');
     $(':input', '#newExamFilter').val('');
+    $('*[id*=lookupType]').each(function() {
+        $(this).val("iexact");
+    });
+    $('*[id*=notToggle]').each(function() {
+        $(this).removeClass("active");
+    });   
     $.each($('#newExamFilter').serializeArray(), function (_, kv) {
         let val = filter["fields"][kv.name];
         if (val === undefined) {
             return;
         }
-        var [value, lookupType] = val;
+        var [value, lookupType, invert] = val;
         if ($('#' + kv.name + "_lookupType").length) {
             $('#' + kv.name + "_lookupType").val(lookupType);
+        }
+        if ($('#' + kv.name + "_notToggle").length && invert) {
+            $('#' + kv.name + "_notToggle").addClass("active");
         }
         $('#id_'+kv.name).val(value);
     });
@@ -267,6 +281,7 @@ function loadFromLibrary() {
         if (data.pattern !== undefined && data.pattern !== null) {
             pattern = data.pattern;
             renderPattern();
+            $('#submitQuery').click();
         }
     });
 }
@@ -278,7 +293,8 @@ function deleteFromLibrary() {
     }
 
     $.get("/openrem/filters/delete/" + libraryId, function(data) {
-        location.reload();
+        renderPattern();
+        $('#submitQuery').click();
     });
 }
 
@@ -289,7 +305,8 @@ function saveToLibrary() {
         return;
     }
     $.post("/openrem/filters/add/", { libraryName: libraryName, pattern: JSON.stringify(pattern), csrfmiddlewaretoken: $('#postToken').val() }, function(data) {
-        location.reload();
+        renderPattern();
+        $('#submitQuery').click();
     });
 }
 

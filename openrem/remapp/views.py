@@ -640,7 +640,6 @@ def rf_detail_view_skin_map(request, pk=None):
 @login_required
 def nm_summary_list_filter(request):
     """Obtain data for NM summary view."""
-    
     pid = bool(request.user.groups.filter(name="pidgroup"))
     f = nm_filter(request.GET, pid=pid)
 
@@ -1245,7 +1244,6 @@ def delete_filter_from_library(request, pk=None):
 @require_POST
 def add_filter_to_library(request):
     """Returns the filter pattern for the given pk"""
-    print("ok")
     data = request.POST
     libraryName = data.get("libraryName")
     pattern = json.loads(data.get("pattern"))
