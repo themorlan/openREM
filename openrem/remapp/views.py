@@ -55,12 +55,13 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import Group
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
+from django.http import HttpResponseRedirect, HttpResponse, JsonResponse, HttpResponseBadRequest, HttpResponseNotFound
 from django.shortcuts import render, redirect
 from django.template.defaultfilters import register
 from django.urls import reverse_lazy
 from django.utils.translation import gettext as _
 from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
 from django.conf import settings
 import numpy as np
 
@@ -640,22 +641,6 @@ def rf_detail_view_skin_map(request, pk=None):
 def nm_summary_list_filter(request):
     """Obtain data for NM summary view."""
     
-    if request.is_ajax():
-        data = request.POST
-        req_type = data.get("type")
-        if req_type == "save":
-            libraryName = data.get("libraryName")
-            pattern = json.loads(data.get("pattern"))
-            try:
-                FilterLibrary.objects.create(pattern=pattern, name=libraryName, modality_type="nm")
-            except IntegrityError:
-                pass
-            return HttpResponse()
-        elif req_type == "load":
-            libraryId = data.get("libraryId")
-            pattern = FilterLibrary.objects.get(pk=int(libraryId)).pattern
-            return HttpResponse(json.dumps({ "pattern": pattern }), content_type="application/json")
-    
     pid = bool(request.user.groups.filter(name="pidgroup"))
     f = nm_filter(request.GET, pid=pid)
 
@@ -1231,3 +1216,41 @@ def update_study_workload(request):
         template = "remapp/home-modality-workload.html"
 
         return render(request, template, {"data": data, "modality": modality.lower()})
+
+
+@login_required
+def get_filter_from_library(request, pk=None):
+    """Returns the filter pattern for the given pk"""
+    if pk is None:
+        return HttpResponseBadRequest()
+    try:
+        pattern = FilterLibrary.objects.get(pk=pk).pattern
+    except ObjectDoesNotExist:
+        return HttpResponseNotFound()
+    return HttpResponse(json.dumps({ "pattern": pattern }), content_type="application/json")
+
+
+@login_required
+def delete_filter_from_library(request, pk=None):
+    """Deletes the specified filter from the library"""
+    if pk is None:
+        return HttpResponseBadRequest()
+    try:
+        FilterLibrary.objects.get(pk=pk).delete()
+    except ObjectDoesNotExist:
+        return HttpResponseNotFound()
+    return HttpResponse()
+
+@login_required
+@require_POST
+def add_filter_to_library(request):
+    """Returns the filter pattern for the given pk"""
+    print("ok")
+    data = request.POST
+    libraryName = data.get("libraryName")
+    pattern = json.loads(data.get("pattern"))
+    try:
+        FilterLibrary.objects.create(pattern=pattern, name=libraryName, modality_type="nm")
+    except IntegrityError:
+        pass
+    return HttpResponse()

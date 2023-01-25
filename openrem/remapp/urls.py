@@ -421,6 +421,13 @@ standard_name_patterns = [  # pylint: disable=invalid-name
     ),
 ]
 
+filter_patterns = [  # pylint: disable=invalid-name
+    path("<int:pk>/", views.get_filter_from_library, name="filters_get"),
+    path("add/", views.add_filter_to_library, name="filters_add"),
+    path("delete/<int:pk>/", views.delete_filter_from_library, name="filters_delete"),
+    #path("update/<int:pk>/", views.update_filter_in_library, name="filters_update"),
+]
+
 urlpatterns = [
     path("", include(main_patterns)),
     path("export/", include(export_patterns)),
@@ -431,5 +438,6 @@ urlpatterns = [
     path("tasks/", include(tasks_patterns)),
     path("import/", include(import_patterns)),
     path("names/", include(standard_name_patterns)),
+    path("filters/", include(filter_patterns)),
     url(r"^jsi18n/$", django_views.i18n.JavaScriptCatalog.as_view(), name="jsi18n"),
 ]

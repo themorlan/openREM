@@ -258,16 +258,27 @@ function addGroup(caller) {
 }
 
 function loadFromLibrary() {
-    // Performing POST request to fetch the selected pattern
     let libraryId = $('#filterLibraryId').val();
     if (libraryId === NaN) {
         return;
     }
-    $.post("", { type: "load", libraryId: libraryId, csrfmiddlewaretoken: $('#postToken').val() }, function(data) {
+
+    $.get("/openrem/filters/" + libraryId, function(data) {
         if (data.pattern !== undefined && data.pattern !== null) {
             pattern = data.pattern;
             renderPattern();
         }
+    });
+}
+
+function deleteFromLibrary() {
+    let libraryId = $('#filterLibraryId').val();
+    if (libraryId === NaN) {
+        return;
+    }
+
+    $.get("/openrem/filters/delete/" + libraryId, function(data) {
+        location.reload();
     });
 }
 
@@ -277,11 +288,8 @@ function saveToLibrary() {
     if (libraryName === undefined || libraryName === null) {
         return;
     }
-    $.post("", { type: "save", libraryName: libraryName, pattern: JSON.stringify(pattern), csrfmiddlewaretoken: $('#postToken').val() }, function(data) {
-        if (data.pattern !== undefined && data.pattern !== null) {
-            pattern = data.pattern;
-            renderPattern();
-        }
+    $.post("/openrem/filters/add/", { libraryName: libraryName, pattern: JSON.stringify(pattern), csrfmiddlewaretoken: $('#postToken').val() }, function(data) {
+        location.reload();
     });
 }
 
