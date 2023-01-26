@@ -172,6 +172,12 @@
 
 {% endblock %}
 
+{% block jsblock %}
+    <script>
+        modality = "MG";
+    </script>
+{% endblock %}
+
 {% block plotdata %}
 
     {% if request.user.userprofile.plotCharts %}

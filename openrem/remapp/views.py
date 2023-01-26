@@ -61,6 +61,7 @@ from django.http import (
     JsonResponse,
     HttpResponseBadRequest,
     HttpResponseNotFound,
+    HttpResponseForbidden,
 )
 from django.shortcuts import render, redirect
 from django.template.defaultfilters import register
@@ -215,7 +216,8 @@ def create_paginated_study_list(request, f, user_profile):
 def generate_return_structure(request, f, modality=""):
     user_profile = get_or_create_user(request)
     items_per_page_form = update_items_per_page_form(request, user_profile)
-    selectable_libraries = FilterLibrary.objects.filter(modality_type=modality)
+    user_libraries = FilterLibrary.objects.filter(modality_type=modality, user=user_profile.user_id, shared=False)
+    shared_libraries = FilterLibrary.objects.filter(modality_type=modality, shared=True)
     admin = create_admin_info(request)
     study_list = create_paginated_study_list(request, f, user_profile)
     enable_standard_names = standard_name_settings()
@@ -224,7 +226,8 @@ def generate_return_structure(request, f, modality=""):
         "study_list": study_list,
         "admin": admin,
         "itemsPerPageForm": items_per_page_form,
-        "selectableLibraries": selectable_libraries,
+        "userLibraries": user_libraries,
+        "sharedLibraries": shared_libraries,
         "showStandardNames": enable_standard_names,
     }
     return user_profile, return_structure
@@ -696,7 +699,7 @@ def ct_summary_list_filter(request):
     pid = bool(request.user.groups.filter(name="pidgroup"))
     f = ct_acq_filter(request.GET, pid=pid)
 
-    user_profile, return_structure = generate_return_structure(request, f)
+    user_profile, return_structure = generate_return_structure(request, f, "CT")
     chart_options_form = ct_chart_form_processing(request, user_profile)
     return_structure["chartOptionsForm"] = chart_options_form
 
@@ -786,7 +789,7 @@ def mg_summary_list_filter(request):
                 queryset=queryset,
             )
 
-    user_profile, return_structure = generate_return_structure(request, f)
+    user_profile, return_structure = generate_return_structure(request, f, "MG")
     chart_options_form = mg_chart_form_processing(request, user_profile)
     return_structure["chartOptionsForm"] = chart_options_form
 
@@ -1243,7 +1246,11 @@ def delete_filter_from_library(request, pk=None):
     if pk is None:
         return HttpResponseBadRequest()
     try:
-        FilterLibrary.objects.get(pk=pk).delete()
+        filter = FilterLibrary.objects.get(pk=pk)
+        if request.user == filter.user or request.user.groups.filter(name="admingroup"):
+            filter.delete()
+        else:
+            return HttpResponseForbidden()
     except ObjectDoesNotExist:
         return HttpResponseNotFound()
     return HttpResponse()
@@ -1257,9 +1264,35 @@ def add_filter_to_library(request, modality):
     libraryName = data.get("libraryName")
     pattern = json.loads(data.get("pattern"))
     try:
-        FilterLibrary.objects.create(
-            pattern=pattern, name=libraryName, modality_type=modality
+        new_entry = FilterLibrary.objects.create(
+            pattern=pattern,
+            name=libraryName,
+            modality_type=modality,
+            user=request.user,
         )
     except IntegrityError:
-        pass
+        return HttpResponseBadRequest()
+    return HttpResponse(
+        json.dumps({"id": new_entry.pk, "name": new_entry.name}), content_type="application/json"
+    )
+
+
+@login_required
+def toggle_filter_visibility(request, pk=None):
+    """Toggles visibility (shared bool) for the specified filter"""
+    if pk is None:
+        return HttpResponseBadRequest()
+    
+    if not request.user.groups.filter(name="admingroup"):
+        messages.error(
+            request, "Only members of the admingroup are allowed to share or retain filters"
+        )
+        return HttpResponseForbidden()
+    
+    try:
+        filter = FilterLibrary.objects.get(pk=pk)
+        filter.shared = not filter.shared
+        filter.save()
+    except ObjectDoesNotExist:
+        return HttpResponseNotFound()
     return HttpResponse()

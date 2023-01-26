@@ -10,7 +10,7 @@
     <script src="{{ STATIC_URL }}js/bootstrap-datepicker.js"></script>
     <script src="{{ STATIC_URL }}js/charts/chartCommonFunctions.js"></script>
     <script src="{{ STATIC_URL }}js/sorttable.js"></script>
-    <script src="{{ STATIC_URL }}js/adv_filters.js"></script>
+    <script src="{{ STATIC_URL }}js/mod_filters.js"></script>
 
     <!-- Internet Explorer (up to version 8) doesn't support array indexOf. The script
     below adds the functionality if it is missing. -->
@@ -111,8 +111,8 @@
                                             </div>
                                             <div class="col-xs-2">
                                                 <select id="{{field.name}}_lookupType">
-                                                    <option value="iexact">is</option>
                                                     <option value="icontains">contains</option>
+                                                    <option value="iexact">is</option>
                                                     <option value="iregex">regex</option>
                                                 </select>
                                             </div>
@@ -176,27 +176,66 @@
                         <div id="collapseFilterLibrary" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFilterLibrary">
                             <div class="panel-body">
                                 <input type="hidden" value="{{ csrf_token }}" id="postToken" />
-                                <table class="table table-striped">
-                                    <tr>
-                                        <td><input type="text" class="form-control" id="newFilterLibraryName" placeholder="Name"></td>
-                                        <td><a class="btn btn-default" onclick="saveToLibrary()">Save new</a></td>
-                                    </tr>
-                                    {% if selectableLibraries|length > 0 %}
-                                        <tr>
-                                            <td>
-                                                <select class="form-control" id="filterLibraryId">
-                                                    {% for field in selectableLibraries %}
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title">
+                                            <a class="no-decoration" data-toggle="collapse" data-target="#savePatternPanel">Save current pattern</a>
+                                        </h4>
+                                    </div>
+        
+                                    <div id="savePatternPanel" class="panel-collapse collapse in">
+                                        <div class="panel-body form-inline">
+                                            <input type="text" style="min-width: 50%" class="form-control" id="newFilterLibraryName" placeholder="Name">
+                                            <a class="btn btn-default" onclick="saveToLibrary()">Save</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% if userLibraries|length > 0 %}
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                <a class="no-decoration" data-toggle="collapse" data-target="#userPatternsPanel">Your patterns</a>
+                                            </h4>
+                                        </div>
+                                        <div id="userPatternsPanel" class="panel-collapse collapse in">
+                                            <div class="panel-body form-inline">
+                                                <select style="min-width: 50%" class="form-control" id="userFilterLibraryId">
+                                                    {% for field in userLibraries %}
                                                         <option value="{{ field.id }}">{{ field.name }}</option>
                                                     {% endfor %}
                                                 </select>
-                                            </td>
-                                            <td>
-                                                <a class="btn btn-default" onclick="loadFromLibrary()">Load</a>
-                                                <a class="btn btn-danger" onclick="deleteFromLibrary()">Delete</a>
-                                            </td>
-                                        </tr>
-                                    {% endif %}
-                                </table>
+                                                <a class="btn btn-default" onclick="loadFromLibrary('userFilterLibraryId')">Load</a>
+                                                <a class="btn btn-danger" onclick="deleteFromLibrary('userFilterLibraryId')">Delete</a>
+                                                {% if admin.admingroup %}
+                                                    <a class="btn btn-info" onclick="toggleSharedPattern('userFilterLibraryId')">Share pattern</a>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                                {% if sharedLibraries|length > 0 %}
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                <a class="no-decoration" data-toggle="collapse" data-target="#sharedPatternsPanel">Shared patterns</a>
+                                            </h4>
+                                        </div>
+                                        <div id="sharedPatternsPanel" class="panel-collapse collapse in">
+                                            <div class="panel-body form-inline">
+                                                <select style="min-width: 50%" class="form-control" id="sharedFilterLibraryId">
+                                                    {% for field in sharedLibraries %}
+                                                        <option value="{{ field.id }}">{{ field.name }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                                <a class="btn btn-default" onclick="loadFromLibrary('sharedFilterLibraryId')">Load</a>
+                                                {% if admin.admingroup %}
+                                                    <a class="btn btn-danger" onclick="deleteFromLibrary('sharedFilterLibraryId')">Delete</a>
+                                                    <a class="btn btn-warning" onclick="toggleSharedPattern('sharedFilterLibraryId')">Retain pattern</a>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endif %}
                             </div>
                         </div>
                     </div>
