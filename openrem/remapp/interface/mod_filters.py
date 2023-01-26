@@ -1330,6 +1330,7 @@ class NMFilterPlusPid(NMSummaryListFilter):
 
 
 def nm_filter(filters, pid=False):
+    filters = filters.copy()
     studies = get_studies_queryset(filters, "NM")
     if pid:
         return NMFilterPlusPid(

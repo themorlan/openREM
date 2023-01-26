@@ -14,7 +14,7 @@ from remapp.models import (
 from remapp.tools.make_skin_map import make_skin_map
 from django.core.exceptions import ObjectDoesNotExist
 from django.urls import reverse
-from remapp.interface.mod_filters import RFSummaryListFilter, get_studies_queryset
+from remapp.interface.mod_filters import RFSummaryListFilter
 from decimal import Decimal
 
 

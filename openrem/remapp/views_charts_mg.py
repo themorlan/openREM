@@ -304,7 +304,7 @@ def mg_summary_chart_data(request):
         "enable_standard_names", flat=True
     )[0]
 
-    data = request.GET
+    data = request.GET.copy()
 
     queryset = get_studies_queryset(data, "MG").order_by().distinct()
 
