@@ -315,7 +315,7 @@ def rfxlsx(filterdict, pid=False, name=None, patid=None, user=None):
     if not tmpxlsx:
         exit()
 
-    filters = filterdict.copy()
+    filters = filterdict
 
     queryset = get_studies_queryset(filters, "RF").distinct()
 
@@ -768,7 +768,7 @@ def exportFL2excel(filterdict, pid=False, name=None, patid=None, user=None):
     if not tmpfile:
         exit()
 
-    filters = filterdict.copy()
+    filters = filterdict
 
     queryset = get_studies_queryset(filters, "RF").distinct()
 

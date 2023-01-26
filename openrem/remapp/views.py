@@ -296,7 +296,7 @@ def rf_summary_list_filter(request):
     """Obtain data for radiographic summary view."""
 
     enable_standard_names = standard_name_settings()
-    filters = request.GET.copy()
+    filters = request.GET
     queryset = (
         get_studies_queryset(filters, "RF")
         .order_by("-study_date", "-study_time")

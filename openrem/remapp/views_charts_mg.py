@@ -304,30 +304,30 @@ def mg_summary_chart_data(request):
         "enable_standard_names", flat=True
     )[0]
 
-    data = request.GET.copy()
+    filters = request.GET
 
-    queryset = get_studies_queryset(data, "MG").order_by().distinct()
+    queryset = get_studies_queryset(filters, "MG").order_by().distinct()
 
     if request.user.groups.filter(name="pidgroup"):
         if enable_standard_names:
             f = MGFilterPlusPidPlusStdNames(
-                data,
+                filters,
                 queryset=queryset,
             )
         else:
             f = MGFilterPlusPid(
-                data,
+                filters,
                 queryset=queryset,
             )
     else:
         if enable_standard_names:
             f = MGFilterPlusStdNames(
-                data,
+                filters,
                 queryset=queryset,
             )
         else:
             f = MGSummaryListFilter(
-                data,
+                filters,
                 queryset=queryset,
             )
     try:

@@ -662,8 +662,6 @@ def ct_acq_filter(filters, pid=False):
         "enable_standard_names", flat=True
     )[0]
 
-    filters = filters.copy()
-
     studies = get_studies_queryset(filters, "CT")
 
     if pid:
@@ -896,7 +894,7 @@ def filter_studies_queryset(filters, studies):
         data = urllib.parse.unquote(pattern)
         data = json.loads(data)
         try:
-            q = json_to_query(data, filters)
+            q = json_to_query(data)
             studies = studies.filter(q)
         except InvalidQuery:
             pass
@@ -1128,8 +1126,6 @@ def dx_acq_filter(filters, pid=False):
         "enable_standard_names", flat=True
     )[0]
 
-    filters = filters.copy()
-
     studies = GeneralStudyModuleAttr.objects.filter(
         Q(modality_type__exact="DX")
         | Q(modality_type__exact="CR")
@@ -1330,7 +1326,6 @@ class NMFilterPlusPid(NMSummaryListFilter):
 
 
 def nm_filter(filters, pid=False):
-    filters = filters.copy()
     studies = get_studies_queryset(filters, "NM")
     if pid:
         return NMFilterPlusPid(
@@ -1350,7 +1345,7 @@ class SkipAdvancedFilter(Exception):
     pass
 
 
-def json_to_query(pattern, filters, group="root") -> Q:
+def json_to_query(pattern, group="root") -> Q:
     """
     Transforms the JSON pattern into a Q object
     """
@@ -1365,9 +1360,7 @@ def json_to_query(pattern, filters, group="root") -> Q:
         q_type = nextEntry["type"]
         if q_type == "filter":
             try:
-                q.add(get_filter(nextEntry["fields"], filters), operator)
-            except SkipAdvancedFilter:
-                pass
+                q.add(get_filter(nextEntry["fields"]), operator)
             except KeyError:
                 raise InvalidQuery
         if q_type == "operator":
@@ -1376,19 +1369,16 @@ def json_to_query(pattern, filters, group="root") -> Q:
             except KeyError:
                 raise InvalidQuery
         if q_type == "group":
-            q.add(json_to_query(pattern, filters, nextEntryId), operator)
+            q.add(json_to_query(pattern, nextEntryId), operator)
         nextEntryId = nextEntry["next"]
     return q
 
 
-def get_filter(fields: dict, filters) -> Q:
+def get_filter(fields: dict) -> Q:
     q = Q()
     for field, value in fields.items():
         if value[1] in ALLOWED_LOOKUP_TYPES:
             field = field + "__" + value[1]
-        else:
-            filters[field] = value[0]
-            raise SkipAdvancedFilter
         add_q = Q(**{field: value[0]})
         if value[2]:
             q.add(~add_q, Q.AND)

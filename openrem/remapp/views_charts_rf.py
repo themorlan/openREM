@@ -280,30 +280,30 @@ def rf_summary_chart_data(request):
         "enable_standard_names", flat=True
     )[0]
 
-    filters = request.GET.copy()
+    filters = request.GET
 
     queryset = get_studies_queryset(filters, "RF").order_by().distinct()
 
     if request.user.groups.filter(name="pidgroup"):
         if enable_standard_names:
             f = RFFilterPlusPidPlusStdNames(
-                request.GET,
+                filters,
                 queryset=queryset,
             )
         else:
             f = RFFilterPlusPid(
-                request.GET,
+                filters,
                 queryset=queryset,
             )
     else:
         if enable_standard_names:
             f = RFFilterPlusStdNames(
-                request.GET,
+                filters,
                 queryset=queryset,
             )
         else:
             f = RFSummaryListFilter(
-                request.GET,
+                filters,
                 queryset=queryset,
             )
     try:
