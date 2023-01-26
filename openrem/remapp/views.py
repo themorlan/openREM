@@ -239,7 +239,7 @@ def dx_summary_list_filter(request):
     pid = bool(request.user.groups.filter(name="pidgroup"))
     f = dx_acq_filter(request.GET, pid=pid)
 
-    user_profile, return_structure = generate_return_structure(request, f)
+    user_profile, return_structure = generate_return_structure(request, f, "DX")
     chart_options_form = dx_chart_form_processing(request, user_profile)
     return_structure["chartOptionsForm"] = chart_options_form
 
@@ -296,8 +296,9 @@ def rf_summary_list_filter(request):
     """Obtain data for radiographic summary view."""
 
     enable_standard_names = standard_name_settings()
+    filters = request.GET.copy()
     queryset = (
-        GeneralStudyModuleAttr.objects.filter(modality_type__exact="RF")
+        get_studies_queryset(filters, "RF")
         .order_by("-study_date", "-study_time")
         .distinct()
     )
@@ -305,27 +306,27 @@ def rf_summary_list_filter(request):
     if request.user.groups.filter(name="pidgroup"):
         if enable_standard_names:
             f = RFFilterPlusPidPlusStdNames(
-                request.GET,
+                filters,
                 queryset=queryset,
             )
         else:
             f = RFFilterPlusPid(
-                request.GET,
+                filters,
                 queryset=queryset,
             )
     else:
         if enable_standard_names:
             f = RFFilterPlusStdNames(
-                request.GET,
+                filters,
                 queryset=queryset,
             )
         else:
             f = RFSummaryListFilter(
-                request.GET,
+                filters,
                 queryset=queryset,
             )
 
-    user_profile, return_structure = generate_return_structure(request, f)
+    user_profile, return_structure = generate_return_structure(request, f, "RF")
     chart_options_form = rf_chart_form_processing(request, user_profile)
 
     # Import total DAP and total dose at reference point alert levels. Create with default values if not found.

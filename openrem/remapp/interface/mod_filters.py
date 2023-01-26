@@ -158,13 +158,13 @@ class RFSummaryListFilter(django_filters.FilterSet):
         lookup_expr="gte",
         label="Date from",
         field_name="study_date",
-        widget=forms.TextInput(attrs={"class": "datepicker"}),
+        widget=forms.TextInput(attrs={"class": "datepicker", "static_lookup": True}),
     )
     study_date__lt = django_filters.DateFilter(
         lookup_expr="lte",
         label="Date until",
         field_name="study_date",
-        widget=forms.TextInput(attrs={"class": "datepicker"}),
+        widget=forms.TextInput(attrs={"class": "datepicker", "static_lookup": True}),
     )
     study_description = django_filters.CharFilter(
         lookup_expr="icontains", label="Study description"
@@ -182,21 +182,25 @@ class RFSummaryListFilter(django_filters.FilterSet):
         lookup_expr="gte",
         label="Min age (yrs)",
         field_name="patientstudymoduleattr__patient_age_decimal",
+        widget=forms.NumberInput(attrs={"static_lookup": True}),
     )
     patientstudymoduleattr__patient_age_decimal__lte = django_filters.NumberFilter(
         lookup_expr="lte",
         label="Max age (yrs)",
         field_name="patientstudymoduleattr__patient_age_decimal",
+        widget=forms.NumberInput(attrs={"static_lookup": True}),
     )
     patientstudymoduleattr__patient_weight__gte = django_filters.NumberFilter(
         lookup_expr="gte",
         label="Min weight (kg)",
         field_name="patientstudymoduleattr__patient_weight",
+        widget=forms.NumberInput(attrs={"static_lookup": True}),
     )
     patientstudymoduleattr__patient_weight__lte = django_filters.NumberFilter(
         lookup_expr="lte",
         label="Max weight (kg)",
         field_name="patientstudymoduleattr__patient_weight",
+        widget=forms.NumberInput(attrs={"static_lookup": True}),
     )
     generalequipmentmoduleattr__institution_name = django_filters.CharFilter(
         lookup_expr="icontains", label="Hospital"
@@ -214,13 +218,17 @@ class RFSummaryListFilter(django_filters.FilterSet):
         lookup_expr="icontains", label="Physician"
     )
     accession_number = django_filters.CharFilter(
-        method=_custom_acc_filter, label="Accession number"
+        method=_custom_acc_filter,
+        label="Accession number",
+        widget=forms.TextInput(attrs={"static_lookup": True}),
     )
     study_dap_min = django_filters.NumberFilter(
-        method=_dap_filter, label="Min study DAP (cGy·cm²)"
+        method=_dap_filter, label="Min study DAP (cGy·cm²)",
+        widget=forms.NumberInput(attrs={"static_lookup": True}),
     )
     study_dap_max = django_filters.NumberFilter(
-        method=_dap_filter, label="Max study DAP (cGy·cm²)"
+        method=_dap_filter, label="Max study DAP (cGy·cm²)",
+        widget=forms.NumberInput(attrs={"static_lookup": True}),
     )
     generalequipmentmoduleattr__unique_equipment_name__display_name = (
         django_filters.CharFilter(lookup_expr="icontains", label="Display name")
@@ -230,7 +238,7 @@ class RFSummaryListFilter(django_filters.FilterSet):
         label="Include possible test data",
         field_name="patientmoduleattr__not_patient_indicator",
         choices=TEST_CHOICES,
-        widget=forms.Select,
+        widget=forms.Select(attrs={"static_lookup": True}),
     )
 
     class Meta:
@@ -320,10 +328,14 @@ class RFFilterPlusPid(RFSummaryListFilter):
     def __init__(self, *args, **kwargs):
         super(RFFilterPlusPid, self).__init__(*args, **kwargs)
         self.filters["patient_name"] = django_filters.CharFilter(
-            method=custom_name_filter, label="Patient name"
+            method=custom_name_filter,
+            label="Patient name",
+            widget=forms.TextInput(attrs={"static_lookup": True}),
         )
         self.filters["patient_id"] = django_filters.CharFilter(
-            method=custom_id_filter, label="Patient ID"
+            method=custom_id_filter,
+            label="Patient ID",
+            widget=forms.TextInput(attrs={"static_lookup": True}),
         )
 
 
@@ -468,7 +480,9 @@ class CTSummaryListFilter(django_filters.FilterSet):
         lookup_expr="icontains", label="Station name"
     )
     accession_number = django_filters.CharFilter(
-        method=_custom_acc_filter, label="Accession number"
+        method=_custom_acc_filter,
+        label="Accession number",
+        widget=forms.TextInput(attrs={"static_lookup": True}),
     )
     total_dlp__gte = django_filters.NumberFilter(
         lookup_expr="gte",
@@ -613,10 +627,14 @@ class CTFilterPlusPid(CTSummaryListFilter):
     def __init__(self, *args, **kwargs):
         super(CTFilterPlusPid, self).__init__(*args, **kwargs)
         self.filters["patient_name"] = django_filters.CharFilter(
-            method=custom_name_filter, label="Patient name"
+            method=custom_name_filter,
+            label="Patient name",
+            widget=forms.TextInput(attrs={"static_lookup": True}),
         )
         self.filters["patient_id"] = django_filters.CharFilter(
-            method=custom_id_filter, label="Patient ID"
+            method=custom_id_filter,
+            label="Patient ID",
+            widget=forms.TextInput(attrs={"static_lookup": True}),
         )
 
 
@@ -643,6 +661,8 @@ def ct_acq_filter(filters, pid=False):
     enable_standard_names = StandardNameSettings.objects.values_list(
         "enable_standard_names", flat=True
     )[0]
+
+    filters = filters.copy()
 
     studies = get_studies_queryset(filters, "CT")
 
@@ -729,7 +749,9 @@ class MGSummaryListFilter(django_filters.FilterSet):
         lookup_expr="icontains", label="Station name"
     )
     accession_number = django_filters.CharFilter(
-        method=_custom_acc_filter, label="Accession number"
+        method=_custom_acc_filter,
+        label="Accession number",
+        widget=forms.TextInput(attrs={"static_lookup": True}),
     )
     generalequipmentmoduleattr__unique_equipment_name__display_name = (
         django_filters.CharFilter(lookup_expr="icontains", label="Display name")
@@ -835,10 +857,14 @@ class MGFilterPlusPid(MGSummaryListFilter):
     def __init__(self, *args, **kwargs):
         super(MGFilterPlusPid, self).__init__(*args, **kwargs)
         self.filters["patient_name"] = django_filters.CharFilter(
-            method=custom_name_filter, label="Patient name"
+            method=custom_name_filter,
+            label="Patient name",
+            widget=forms.TextInput(attrs={"static_lookup": True}),
         )
         self.filters["patient_id"] = django_filters.CharFilter(
-            method=custom_id_filter, label="Patient ID"
+            method=custom_id_filter,
+            label="Patient ID",
+            widget=forms.TextInput(attrs={"static_lookup": True}),
         )
 
 
@@ -856,6 +882,10 @@ class MGFilterPlusPidPlusStdNames(MGFilterPlusPid):
 
 def get_studies_queryset(filters, modality=None):
     studies = GeneralStudyModuleAttr.objects.filter(modality_type__exact=modality)
+    return filter_studies_queryset(filters, studies)
+
+
+def filter_studies_queryset(filters, studies):
     try:
         pattern = filters.get("filterQuery")
     except Exception:  # pylint: disable=broad-except
@@ -866,7 +896,7 @@ def get_studies_queryset(filters, modality=None):
         data = urllib.parse.unquote(pattern)
         data = json.loads(data)
         try:
-            q = json_to_query(data)
+            q = json_to_query(data, filters)
             studies = studies.filter(q)
         except InvalidQuery:
             pass
@@ -881,13 +911,13 @@ class DXSummaryListFilter(django_filters.FilterSet):
         lookup_expr="gte",
         label="Date from",
         field_name="study_date",
-        widget=forms.TextInput(attrs={"class": "datepicker"}),
+        widget=forms.TextInput(attrs={"class": "datepicker", "static_lookup": True}),
     )
     study_date__lt = django_filters.DateFilter(
         lookup_expr="lte",
         label="Date until",
         field_name="study_date",
-        widget=forms.TextInput(attrs={"class": "datepicker"}),
+        widget=forms.TextInput(attrs={"class": "datepicker", "static_lookup": True}),
     )
     study_description = django_filters.CharFilter(
         lookup_expr="icontains", label="Study description"
@@ -905,21 +935,25 @@ class DXSummaryListFilter(django_filters.FilterSet):
         lookup_expr="gte",
         label="Min age (yrs)",
         field_name="patientstudymoduleattr__patient_age_decimal",
+        widget=forms.NumberInput(attrs={"static_lookup": True}),
     )
     patientstudymoduleattr__patient_age_decimal__lte = django_filters.NumberFilter(
         lookup_expr="lte",
         label="Max age (yrs)",
         field_name="patientstudymoduleattr__patient_age_decimal",
+        widget=forms.NumberInput(attrs={"static_lookup": True}),
     )
     patientstudymoduleattr__patient_weight__gte = django_filters.NumberFilter(
         lookup_expr="gte",
         label="Min weight (kg)",
         field_name="patientstudymoduleattr__patient_weight",
+        widget=forms.NumberInput(attrs={"static_lookup": True}),
     )
     patientstudymoduleattr__patient_weight__lte = django_filters.NumberFilter(
         lookup_expr="lte",
         label="Max weight (kg)",
         field_name="patientstudymoduleattr__patient_weight",
+        widget=forms.NumberInput(attrs={"static_lookup": True}),
     )
     generalequipmentmoduleattr__institution_name = django_filters.CharFilter(
         lookup_expr="icontains", label="Hospital"
@@ -934,19 +968,29 @@ class DXSummaryListFilter(django_filters.FilterSet):
         lookup_expr="icontains", label="Station name"
     )
     accession_number = django_filters.CharFilter(
-        method=_custom_acc_filter, label="Accession number"
+        method=_custom_acc_filter,
+        label="Accession number",
+        widget=forms.TextInput(attrs={"static_lookup": True}),
     )
     study_dap_min = django_filters.NumberFilter(
-        method=_dap_filter, label="Min study DAP (cGy·cm²)"
+        method=_dap_filter,
+        label="Min study DAP (cGy·cm²)",
+        widget=forms.NumberInput(attrs={"static_lookup": True}),
     )
     study_dap_max = django_filters.NumberFilter(
-        method=_dap_filter, label="Max study DAP (cGy·cm²)"
+        method=_dap_filter,
+        label="Max study DAP (cGy·cm²)",
+        widget=forms.NumberInput(attrs={"static_lookup": True}),
     )
     event_dap_min = django_filters.NumberFilter(
-        method=_dap_filter, label="Min acquisition DAP (cGy·cm²)"
+        method=_dap_filter,
+        label="Min acquisition DAP (cGy·cm²)",
+        widget=forms.NumberInput(attrs={"static_lookup": True}),
     )
     event_dap_max = django_filters.NumberFilter(
-        method=_dap_filter, label="Max acquisition DAP (cGy·cm²)"
+        method=_dap_filter,
+        label="Max acquisition DAP (cGy·cm²)",
+        widget=forms.NumberInput(attrs={"static_lookup": True}),
     )
     generalequipmentmoduleattr__unique_equipment_name__display_name = (
         django_filters.CharFilter(lookup_expr="icontains", label="Display name")
@@ -955,14 +999,14 @@ class DXSummaryListFilter(django_filters.FilterSet):
         method=_specify_event_numbers,
         label="Num. events total",
         choices=EVENT_NUMBER_CHOICES,
-        widget=forms.Select,
+        widget=forms.Select(attrs={"static_lookup": True}),
     )
     test_data = django_filters.ChoiceFilter(
         lookup_expr="isnull",
         label="Include possible test data",
         field_name="patientmoduleattr__not_patient_indicator",
         choices=TEST_CHOICES,
-        widget=forms.Select,
+        widget=forms.Select(attrs={"static_lookup": True}),
     )
 
     class Meta:
@@ -1051,10 +1095,14 @@ class DXFilterPlusPid(DXSummaryListFilter):
     def __init__(self, *args, **kwargs):
         super(DXFilterPlusPid, self).__init__(*args, **kwargs)
         self.filters["patient_name"] = django_filters.CharFilter(
-            method=custom_name_filter, label="Patient name"
+            method=custom_name_filter,
+            label="Patient name",
+            widget=forms.TextInput(attrs={"static_lookup": True}),
         )
         self.filters["patient_id"] = django_filters.CharFilter(
-            method=custom_id_filter, label="Patient ID"
+            method=custom_id_filter,
+            label="Patient ID",
+            widget=forms.TextInput(attrs={"static_lookup": True}),
         )
 
 
@@ -1080,30 +1128,34 @@ def dx_acq_filter(filters, pid=False):
         "enable_standard_names", flat=True
     )[0]
 
+    filters = filters.copy()
+
     studies = GeneralStudyModuleAttr.objects.filter(
         Q(modality_type__exact="DX")
         | Q(modality_type__exact="CR")
         | Q(modality_type__exact="PX")
     )
 
+    queryset = filter_studies_queryset(filters, studies)
+
     if pid:
         if enable_standard_names:
             return DXFilterPlusPidPlusStdNames(
                 filters,
-                queryset=studies.order_by("-study_date", "-study_time").distinct(),
+                queryset=queryset.order_by("-study_date", "-study_time").distinct(),
             )
         else:
             return DXFilterPlusPid(
                 filters,
-                queryset=studies.order_by("-study_date", "-study_time").distinct(),
+                queryset=queryset.order_by("-study_date", "-study_time").distinct(),
             )
     if enable_standard_names:
         return DXFilterPlusStdNames(
-            filters, queryset=studies.order_by("-study_date", "-study_time").distinct()
+            filters, queryset=queryset.order_by("-study_date", "-study_time").distinct()
         )
     else:
         return DXSummaryListFilter(
-            filters, queryset=studies.order_by("-study_date", "-study_time").distinct()
+            filters, queryset=queryset.order_by("-study_date", "-study_time").distinct()
         )
 
 
@@ -1170,7 +1222,9 @@ class NMSummaryListFilter(django_filters.FilterSet):
         lookup_expr="icontains", label="Station name"
     )
     accession_number = django_filters.CharFilter(
-        method=_custom_acc_filter, label="Accession number"
+        method=_custom_acc_filter,
+        label="Accession number",
+        widget=forms.TextInput(attrs={"static_lookup": True}),
     )
     radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__administered_activity_gte = django_filters.NumberFilter(
         lookup_expr="gte",
@@ -1264,10 +1318,14 @@ class NMFilterPlusPid(NMSummaryListFilter):
     def __init__(self, *args, **kwargs):
         super(NMFilterPlusPid, self).__init__(*args, **kwargs)
         self.filters["patient_name"] = django_filters.CharFilter(
-            method=custom_name_filter, label="Patient name"
+            method=custom_name_filter,
+            label="Patient name",
+            widget=forms.TextInput(attrs={"static_lookup": True}),
         )
         self.filters["patient_id"] = django_filters.CharFilter(
-            method=custom_id_filter, label="Patient ID"
+            method=custom_id_filter,
+            label="Patient ID",
+            widget=forms.TextInput(attrs={"static_lookup": True}),
         )
 
 
@@ -1286,8 +1344,12 @@ class InvalidQuery(Exception):
     "Raised when the given query is invalid"
     pass
 
+class SkipAdvancedFilter(Exception):
+    "Raised when the given field should bypass the advanced filter"
+    pass
 
-def json_to_query(pattern, group="root") -> Q:
+
+def json_to_query(pattern, filters, group="root") -> Q:
     """
     Transforms the JSON pattern into a Q object
     """
@@ -1302,7 +1364,9 @@ def json_to_query(pattern, group="root") -> Q:
         q_type = nextEntry["type"]
         if q_type == "filter":
             try:
-                q.add(get_filter(nextEntry["fields"]), operator)
+                q.add(get_filter(nextEntry["fields"], filters), operator)
+            except SkipAdvancedFilter:
+                pass
             except KeyError:
                 raise InvalidQuery
         if q_type == "operator":
@@ -1311,16 +1375,19 @@ def json_to_query(pattern, group="root") -> Q:
             except KeyError:
                 raise InvalidQuery
         if q_type == "group":
-            q.add(json_to_query(pattern, nextEntryId), operator)
+            q.add(json_to_query(pattern, filters, nextEntryId), operator)
         nextEntryId = nextEntry["next"]
     return q
 
 
-def get_filter(fields: dict) -> Q:
+def get_filter(fields: dict, filters) -> Q:
     q = Q()
     for field, value in fields.items():
         if value[1] in ALLOWED_LOOKUP_TYPES:
             field = field + "__" + value[1]
+        else:
+            filters[field] = value[0]
+            raise SkipAdvancedFilter
         add_q = Q(**{field: value[0]})
         if value[2]:
             q.add(~add_q, Q.AND)

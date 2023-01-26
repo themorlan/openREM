@@ -14,6 +14,7 @@ from remapp.interface.mod_filters import (
     RFFilterPlusPid,
     RFFilterPlusStdNames,
     RFFilterPlusPidPlusStdNames,
+    get_studies_queryset
 )
 from remapp.models import (
     GeneralStudyModuleAttr,
@@ -279,43 +280,31 @@ def rf_summary_chart_data(request):
         "enable_standard_names", flat=True
     )[0]
 
+    filters = request.GET.copy()
+
+    queryset = get_studies_queryset(filters, "RF").order_by().distinct()
+
     if request.user.groups.filter(name="pidgroup"):
         if enable_standard_names:
             f = RFFilterPlusPidPlusStdNames(
                 request.GET,
-                queryset=GeneralStudyModuleAttr.objects.filter(
-                    modality_type__exact="RF"
-                )
-                .order_by()
-                .distinct(),
+                queryset=queryset,
             )
         else:
             f = RFFilterPlusPid(
                 request.GET,
-                queryset=GeneralStudyModuleAttr.objects.filter(
-                    modality_type__exact="RF"
-                )
-                .order_by()
-                .distinct(),
+                queryset=queryset,
             )
     else:
         if enable_standard_names:
             f = RFFilterPlusStdNames(
                 request.GET,
-                queryset=GeneralStudyModuleAttr.objects.filter(
-                    modality_type__exact="RF"
-                )
-                .order_by()
-                .distinct(),
+                queryset=queryset,
             )
         else:
             f = RFSummaryListFilter(
                 request.GET,
-                queryset=GeneralStudyModuleAttr.objects.filter(
-                    modality_type__exact="RF"
-                )
-                .order_by()
-                .distinct(),
+                queryset=queryset,
             )
     try:
         # See if the user has plot settings in userprofile

@@ -62,6 +62,7 @@ from ..interface.mod_filters import (
     RFFilterPlusPid,
     RFFilterPlusStdNames,
     RFFilterPlusPidPlusStdNames,
+    get_studies_queryset,
 )
 from ..tools.get_values import return_for_export
 
@@ -314,36 +315,32 @@ def rfxlsx(filterdict, pid=False, name=None, patid=None, user=None):
     if not tmpxlsx:
         exit()
 
+    filters = filterdict.copy()
+
+    queryset = get_studies_queryset(filters, "RF").distinct()
+
     # Get the data
     if pid:
         if enable_standard_names:
             df_filtered_qs = RFFilterPlusPidPlusStdNames(
-                filterdict,
-                queryset=GeneralStudyModuleAttr.objects.filter(
-                    modality_type__exact="RF"
-                ).distinct(),
+                filters,
+                queryset=queryset,
             )
         else:
             df_filtered_qs = RFFilterPlusPid(
-                filterdict,
-                queryset=GeneralStudyModuleAttr.objects.filter(
-                    modality_type__exact="RF"
-                ).distinct(),
+                filters,
+                queryset=queryset,
             )
     else:
         if enable_standard_names:
             df_filtered_qs = RFFilterPlusStdNames(
-                filterdict,
-                queryset=GeneralStudyModuleAttr.objects.filter(
-                    modality_type__exact="RF"
-                ).distinct(),
+                filters,
+                queryset=queryset,
             )
         else:
             df_filtered_qs = RFSummaryListFilter(
-                filterdict,
-                queryset=GeneralStudyModuleAttr.objects.filter(
-                    modality_type__exact="RF"
-                ).distinct(),
+                filters,
+                queryset=queryset,
             )
 
     e = df_filtered_qs.qs
@@ -771,36 +768,32 @@ def exportFL2excel(filterdict, pid=False, name=None, patid=None, user=None):
     if not tmpfile:
         exit()
 
+    filters = filterdict.copy()
+
+    queryset = get_studies_queryset(filters, "RF").distinct()
+
     # Get the data!
     if pid:
         if enable_standard_names:
             df_filtered_qs = RFFilterPlusPidPlusStdNames(
-                filterdict,
-                queryset=GeneralStudyModuleAttr.objects.filter(
-                    modality_type__exact="RF"
-                ).distinct(),
+                filters,
+                queryset=queryset,
             )
         else:
             df_filtered_qs = RFFilterPlusPid(
-                filterdict,
-                queryset=GeneralStudyModuleAttr.objects.filter(
-                    modality_type__exact="RF"
-                ).distinct(),
+                filters,
+                queryset=queryset,
             )
     else:
         if enable_standard_names:
             df_filtered_qs = RFFilterPlusStdNames(
-                filterdict,
-                queryset=GeneralStudyModuleAttr.objects.filter(
-                    modality_type__exact="RF"
-                ).distinct(),
+                filters,
+                queryset=queryset,
             )
         else:
             df_filtered_qs = RFSummaryListFilter(
-                filterdict,
-                queryset=GeneralStudyModuleAttr.objects.filter(
-                    modality_type__exact="RF"
-                ).distinct(),
+                filters,
+                queryset=queryset,
             )
 
     e = df_filtered_qs.qs
