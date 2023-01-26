@@ -3366,7 +3366,7 @@ class FilterLibrary(models.Model):
     """
 
     pattern = models.JSONField()
-    name = models.CharField(max_length=32)
+    name = models.CharField(max_length=64)
     modality_type = models.CharField(max_length=2, null=True)
     user = models.ForeignKey(
         User, blank=True, null=True, on_delete=models.CASCADE

@@ -219,8 +219,8 @@ function addGroup(caller) {
     openFilter(currentFilterId);
 }
 
-function loadFromLibrary(selectId) {
-    let libraryId = $('#' + selectId).val();
+function loadFromLibrary(patternId) {
+    let libraryId = $(`#${patternId}Select`).val();
     if (libraryId === NaN) {
         return;
     }
@@ -234,14 +234,17 @@ function loadFromLibrary(selectId) {
     });
 }
 
-function deleteFromLibrary(selectId) {
-    let libraryId = $('#' + selectId).val();
+function deleteFromLibrary(patternId) {
+    let libraryId = $(`#${patternId}Select`).val();
     if (libraryId === NaN) {
         return;
     }
     $.get("/openrem/filters/delete/" + libraryId, function (data) {
         renderPattern();
-        $(`#${selectId} option:selected`).remove();
+        $(`#${patternId}Select option:selected`).remove();
+        if ($(`#${patternId}Select option`).length <= 0) {
+            $(`#${patternId}`).remove();
+        }
     });
 }
 
@@ -256,8 +259,8 @@ function saveToLibrary() {
     });
 }
 
-function toggleSharedPattern(selectId) {
-    let libraryId = $('#' + selectId).val();
+function toggleSharedPattern(patternId) {
+    let libraryId = $(`#${patternId}Select`).val();
     if (libraryId === NaN) {
         return;
     }
