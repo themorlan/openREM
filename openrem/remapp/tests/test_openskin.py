@@ -98,13 +98,15 @@ class OpenSkinBlackBox(TestCase):
         with gzip.open(skin_map_path, "rb") as f:
             existing_skin_map_data = pickle.load(f)
 
-            self.assertAlmostEqual(existing_skin_map_data["width"], 90)
-            self.assertAlmostEqual(existing_skin_map_data["height"], 70)
-            self.assertAlmostEqual(existing_skin_map_data["phantom_width"], 34)
-            self.assertAlmostEqual(existing_skin_map_data["phantom_height"], 70)
-            self.assertAlmostEqual(existing_skin_map_data["phantom_depth"], 20)
-            self.assertAlmostEqual(existing_skin_map_data["phantom_flat_dist"], 14)
-            self.assertAlmostEqual(existing_skin_map_data["phantom_curved_dist"], 31)
+            self.assertEqual(existing_skin_map_data["width"], 90)
+            self.assertEqual(existing_skin_map_data["height"], 70)
+            self.assertAlmostEqual(existing_skin_map_data["phantom_width"], 33.735, 3)
+            self.assertEqual(existing_skin_map_data["phantom_height"], 70)
+            self.assertAlmostEqual(existing_skin_map_data["phantom_head_height"], 24.0)
+            self.assertAlmostEqual(existing_skin_map_data["phantom_head_radius"], 9.231, 3)
+            self.assertAlmostEqual(existing_skin_map_data["phantom_depth"], 19.735, 3)
+            self.assertAlmostEqual(existing_skin_map_data["phantom_flat_dist"], 14.0)
+            self.assertAlmostEqual(existing_skin_map_data["phantom_curved_dist"], 31.0)
             self.assertAlmostEqual(existing_skin_map_data["patient_height"], 178.6)
             self.assertAlmostEqual(existing_skin_map_data["patient_mass"], 73.2)
             self.assertEqual(existing_skin_map_data["patient_orientation"], "HFS")
@@ -113,7 +115,8 @@ class OpenSkinBlackBox(TestCase):
             self.assertEqual(
                 existing_skin_map_data["patient_orientation_source"], "extracted"
             )
-            self.assertEqual(existing_skin_map_data["skin_map_version"], "0.8")
+            self.assertAlmostEqual(existing_skin_map_data["fraction_DAP"], 1.0)
+            self.assertEqual(existing_skin_map_data["skin_map_version"], "0.9.0")
             self.assertEqual(existing_skin_map_data["skin_map"], ZEE_SKIN_MAP)
 
         os.remove(skin_map_path)
@@ -163,13 +166,15 @@ class OpenSkinBlackBox(TestCase):
         with gzip.open(skin_map_path, "rb") as f:
             existing_skin_map_data = pickle.load(f)
 
-            self.assertAlmostEqual(existing_skin_map_data["width"], 90)
-            self.assertAlmostEqual(existing_skin_map_data["height"], 70)
-            self.assertAlmostEqual(existing_skin_map_data["phantom_width"], 34)
-            self.assertAlmostEqual(existing_skin_map_data["phantom_height"], 70)
-            self.assertAlmostEqual(existing_skin_map_data["phantom_depth"], 20)
-            self.assertAlmostEqual(existing_skin_map_data["phantom_flat_dist"], 14)
-            self.assertAlmostEqual(existing_skin_map_data["phantom_curved_dist"], 31)
+            self.assertEqual(existing_skin_map_data["width"], 90)
+            self.assertEqual(existing_skin_map_data["height"], 70)
+            self.assertAlmostEqual(existing_skin_map_data["phantom_width"], 33.735, 3)
+            self.assertEqual(existing_skin_map_data["phantom_height"], 70)
+            self.assertAlmostEqual(existing_skin_map_data["phantom_head_height"], 24.0)
+            self.assertAlmostEqual(existing_skin_map_data["phantom_head_radius"], 9.231, 3)
+            self.assertAlmostEqual(existing_skin_map_data["phantom_depth"], 19.735, 3)
+            self.assertAlmostEqual(existing_skin_map_data["phantom_flat_dist"], 14.0)
+            self.assertAlmostEqual(existing_skin_map_data["phantom_curved_dist"], 31.0)
             self.assertAlmostEqual(existing_skin_map_data["patient_height"], 178.6)
             self.assertAlmostEqual(existing_skin_map_data["patient_mass"], 73.2)
             self.assertEqual(existing_skin_map_data["patient_orientation"], "HFS")
@@ -178,9 +183,9 @@ class OpenSkinBlackBox(TestCase):
             self.assertEqual(
                 existing_skin_map_data["patient_orientation_source"], "extracted"
             )
-            self.assertEqual(existing_skin_map_data["skin_map_version"], "0.8")
+            self.assertAlmostEqual(existing_skin_map_data["fraction_DAP"], 1.0)
+            self.assertEqual(existing_skin_map_data["skin_map_version"], "0.9.0")
             self.assertEqual(existing_skin_map_data["skin_map"], ZEE_SKIN_MAP)
-
         os.remove(skin_map_path)
 
     def test_system_not_matched(self):
@@ -210,14 +215,9 @@ class OpenSkinBlackBox(TestCase):
 
     @tag("slow")
     def test_rotational_exposure(self):
-        rf1 = "test_files/RF-RDSR-Canon-Alphenix-rotational.dcm"
-        root_tests = os.path.dirname(os.path.abspath(__file__))
-        path_rf1 = os.path.join(root_tests, rf1)
-
-        rdsr.rdsr(path_rf1)
         study = GeneralStudyModuleAttr.objects.filter(generalequipmentmoduleattr__manufacturer__exact="CANON_MEC")[0]
-        make_skin_map(study.pk)
 
+        make_skin_map(study.pk)
         study_date = study.study_date
         skin_map_path = os.path.join(
             settings.MEDIA_ROOT,
@@ -230,13 +230,15 @@ class OpenSkinBlackBox(TestCase):
         with gzip.open(skin_map_path, "rb") as f:
             existing_skin_map_data = pickle.load(f)
 
-            self.assertAlmostEqual(existing_skin_map_data["width"], 94)
-            self.assertAlmostEqual(existing_skin_map_data["height"], 70)
-            self.assertAlmostEqual(existing_skin_map_data["phantom_width"], 35)
-            self.assertAlmostEqual(existing_skin_map_data["phantom_height"], 70)
-            self.assertAlmostEqual(existing_skin_map_data["phantom_depth"], 20)
-            self.assertAlmostEqual(existing_skin_map_data["phantom_flat_dist"], 15)
-            self.assertAlmostEqual(existing_skin_map_data["phantom_curved_dist"], 32)
+            self.assertEqual(existing_skin_map_data["width"], 94)
+            self.assertEqual(existing_skin_map_data["height"], 70)
+            self.assertAlmostEqual(existing_skin_map_data["phantom_width"], 35.372, 3)
+            self.assertEqual(existing_skin_map_data["phantom_height"], 70)
+            self.assertAlmostEqual(existing_skin_map_data["phantom_head_height"], 24.0)
+            self.assertAlmostEqual(existing_skin_map_data["phantom_head_radius"], 9.231, 3)
+            self.assertAlmostEqual(existing_skin_map_data["phantom_depth"], 20.372, 3)
+            self.assertAlmostEqual(existing_skin_map_data["phantom_flat_dist"], 15.0)
+            self.assertAlmostEqual(existing_skin_map_data["phantom_curved_dist"], 32.0)
             self.assertAlmostEqual(existing_skin_map_data["patient_height"], 179.0)
             self.assertAlmostEqual(existing_skin_map_data["patient_mass"], 77.0)
             self.assertEqual(existing_skin_map_data["patient_orientation"], "HFS")
@@ -245,7 +247,8 @@ class OpenSkinBlackBox(TestCase):
             self.assertEqual(
                 existing_skin_map_data["patient_orientation_source"], "supine assumed"
             )
-            self.assertEqual(existing_skin_map_data["skin_map_version"], "0.8")
+            self.assertAlmostEqual(existing_skin_map_data["fraction_DAP"], 0.9999, 4)
+            self.assertEqual(existing_skin_map_data["skin_map_version"], "0.9.0")
             self.assertEqual(existing_skin_map_data["skin_map"], ALPHENIX_SKIN_MAP)
 
         os.remove(skin_map_path)

@@ -40,7 +40,7 @@ class CalcExpMap:
         self.table_length = table_length
         self.matt_thick = matt_thick
         self.pat_pos = pat_pos
-        self.table_trans = 1
+        self.table_trans = 1.0
 
         if self.phantom_type == "flat":
             # I think that the values passed to geomclass.PhantomFlat below should be parameters
@@ -147,6 +147,8 @@ class CalcExpMap:
                     self.table_width,
                     self.table_trans,
                     self.table_thick + self.matt_thick,
+                    angle_x,
+                    angle_y
                 ),
                 dap,
             )
@@ -164,6 +166,8 @@ class CalcExpMap:
                     self.table_width,
                     self.table_trans,
                     self.table_thick + self.matt_thick,
+                    angle_x,
+                    angle_y
                 ),
                 dap,
             )
