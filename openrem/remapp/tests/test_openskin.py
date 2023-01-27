@@ -116,7 +116,7 @@ class OpenSkinBlackBox(TestCase):
                 existing_skin_map_data["patient_orientation_source"], "extracted"
             )
             self.assertAlmostEqual(existing_skin_map_data["fraction_DAP"], 1.0)
-            self.assertEqual(existing_skin_map_data["skin_map_version"], "0.9")
+            self.assertEqual(existing_skin_map_data["skin_map_version"], "0.9.0")
             self.assertEqual(existing_skin_map_data["skin_map"], ZEE_SKIN_MAP)
 
         os.remove(skin_map_path)
@@ -184,7 +184,7 @@ class OpenSkinBlackBox(TestCase):
                 existing_skin_map_data["patient_orientation_source"], "extracted"
             )
             self.assertAlmostEqual(existing_skin_map_data["fraction_DAP"], 1.0)
-            self.assertEqual(existing_skin_map_data["skin_map_version"], "0.9")
+            self.assertEqual(existing_skin_map_data["skin_map_version"], "0.9.0")
             self.assertEqual(existing_skin_map_data["skin_map"], ZEE_SKIN_MAP)
         os.remove(skin_map_path)
 
@@ -248,7 +248,7 @@ class OpenSkinBlackBox(TestCase):
                 existing_skin_map_data["patient_orientation_source"], "supine assumed"
             )
             self.assertAlmostEqual(existing_skin_map_data["fraction_DAP"], 0.9999, 4)
-            self.assertEqual(existing_skin_map_data["skin_map_version"], "0.9")
+            self.assertEqual(existing_skin_map_data["skin_map_version"], "0.9.0")
             self.assertEqual(existing_skin_map_data["skin_map"], ALPHENIX_SKIN_MAP)
 
         os.remove(skin_map_path)
