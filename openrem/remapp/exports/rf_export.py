@@ -57,13 +57,7 @@ from ..exports.export_common import (
     create_export_task,
     get_patient_study_data,
 )
-from ..interface.mod_filters import (
-    RFSummaryListFilter,
-    RFFilterPlusPid,
-    RFFilterPlusStdNames,
-    RFFilterPlusPidPlusStdNames,
-    get_studies_queryset,
-)
+from ..interface.mod_filters import rf_acq_filter, get_filtered_studies, RFSummaryListFilter
 from ..tools.get_values import return_for_export
 
 logger = logging.getLogger(__name__)
@@ -315,35 +309,7 @@ def rfxlsx(filterdict, pid=False, name=None, patid=None, user=None):
     if not tmpxlsx:
         exit()
 
-    filters = filterdict
-
-    queryset = get_studies_queryset(filters, "RF").distinct()
-
-    # Get the data
-    if pid:
-        if enable_standard_names:
-            df_filtered_qs = RFFilterPlusPidPlusStdNames(
-                filters,
-                queryset=queryset,
-            )
-        else:
-            df_filtered_qs = RFFilterPlusPid(
-                filters,
-                queryset=queryset,
-            )
-    else:
-        if enable_standard_names:
-            df_filtered_qs = RFFilterPlusStdNames(
-                filters,
-                queryset=queryset,
-            )
-        else:
-            df_filtered_qs = RFSummaryListFilter(
-                filters,
-                queryset=queryset,
-            )
-
-    e = df_filtered_qs.qs
+    e = rf_acq_filter(filterdict, pid=pid).qs
 
     tsk.num_records = e.count()
     if abort_if_zero_studies(tsk.num_records, tsk):
@@ -768,35 +734,7 @@ def exportFL2excel(filterdict, pid=False, name=None, patid=None, user=None):
     if not tmpfile:
         exit()
 
-    filters = filterdict
-
-    queryset = get_studies_queryset(filters, "RF").distinct()
-
-    # Get the data!
-    if pid:
-        if enable_standard_names:
-            df_filtered_qs = RFFilterPlusPidPlusStdNames(
-                filters,
-                queryset=queryset,
-            )
-        else:
-            df_filtered_qs = RFFilterPlusPid(
-                filters,
-                queryset=queryset,
-            )
-    else:
-        if enable_standard_names:
-            df_filtered_qs = RFFilterPlusStdNames(
-                filters,
-                queryset=queryset,
-            )
-        else:
-            df_filtered_qs = RFSummaryListFilter(
-                filters,
-                queryset=queryset,
-            )
-
-    e = df_filtered_qs.qs
+    e = rf_acq_filter(filterdict, pid=pid).qs
 
     tsk.num_records = e.count()
     if abort_if_zero_studies(tsk.num_records, tsk):
@@ -1134,10 +1072,8 @@ def rf_phe_2019(filterdict, user=None):
         exit()
     sheet = book.add_worksheet("PHE IR-Fluoro")
 
-    exams = RFSummaryListFilter(
-        filterdict,
-        queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact="RF"),
-    ).qs
+    exams = get_filtered_studies(filterdict, GeneralStudyModuleAttr.objects.filter(modality_type__exact="RF"), RFSummaryListFilter).qs
+
     tsk.num_records = exams.count()
     if abort_if_zero_studies(tsk.num_records, tsk):
         return

@@ -7,7 +7,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse
 from django.utils.translation import gettext as _
 from remapp.forms import NMChartOptionsForm
-from remapp.interface.mod_filters import nm_filter
+from remapp.interface.mod_filters import nm_acq_filter
 from remapp.models import (
     UserProfile,
     create_user_profile,
@@ -166,7 +166,7 @@ def generate_required_nm_charts_list(user_profile: UserProfile):
 @login_required
 def nm_summary_chart_data(request):
     pid = bool(request.user.groups.filter(name="pidgroup"))
-    f = nm_filter(request.GET, pid=pid)
+    f = nm_acq_filter(request.GET, pid=pid)
 
     try:
         # See if the user has plot settings in userprofile

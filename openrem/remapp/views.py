@@ -74,19 +74,12 @@ import numpy as np
 
 from .forms import itemsPerPageForm
 from .interface.mod_filters import (
-    RFSummaryListFilter,
-    RFFilterPlusStdNames,
-    RFFilterPlusPid,
-    RFFilterPlusPidPlusStdNames,
     dx_acq_filter,
     ct_acq_filter,
-    MGSummaryListFilter,
-    MGFilterPlusPid,
-    MGFilterPlusStdNames,
-    MGFilterPlusPidPlusStdNames,
-    get_studies_queryset,
+    rf_acq_filter,
+    mg_acq_filter,
+    nm_acq_filter,
 )
-from .interface.mod_filters import nm_filter
 from .tools.make_skin_map import make_skin_map
 from .views_charts_ct import (
     generate_required_ct_charts_list,
@@ -294,37 +287,8 @@ def dx_detail_view(request, pk=None):
 @login_required
 def rf_summary_list_filter(request):
     """Obtain data for radiographic summary view."""
-
-    enable_standard_names = standard_name_settings()
-    filters = request.GET
-    queryset = (
-        get_studies_queryset(filters, "RF")
-        .order_by("-study_date", "-study_time")
-        .distinct()
-    )
-
-    if request.user.groups.filter(name="pidgroup"):
-        if enable_standard_names:
-            f = RFFilterPlusPidPlusStdNames(
-                filters,
-                queryset=queryset,
-            )
-        else:
-            f = RFFilterPlusPid(
-                filters,
-                queryset=queryset,
-            )
-    else:
-        if enable_standard_names:
-            f = RFFilterPlusStdNames(
-                filters,
-                queryset=queryset,
-            )
-        else:
-            f = RFSummaryListFilter(
-                filters,
-                queryset=queryset,
-            )
+    pid = bool(request.user.groups.filter(name="pidgroup"))
+    f = rf_acq_filter(request.GET, pid=pid)
 
     user_profile, return_structure = generate_return_structure(request, f, "RF")
     chart_options_form = rf_chart_form_processing(request, user_profile)
@@ -651,7 +615,7 @@ def rf_detail_view_skin_map(request, pk=None):
 def nm_summary_list_filter(request):
     """Obtain data for NM summary view."""
     pid = bool(request.user.groups.filter(name="pidgroup"))
-    f = nm_filter(request.GET, pid=pid)
+    f = nm_acq_filter(request.GET, pid=pid)
 
     user_profile, return_structure = generate_return_structure(request, f, "NM")
     chart_options_form = nm_chart_form_processing(request, user_profile)
@@ -755,40 +719,8 @@ def ct_detail_view(request, pk=None):
 @login_required
 def mg_summary_list_filter(request):
     """Mammography data for summary view."""
-
-    enable_standard_names = standard_name_settings()
-    filter_data = request.GET.copy()
-    if "page" in filter_data:
-        del filter_data["page"]
-
-    queryset = (
-        get_studies_queryset(filter_data, "MG")
-        .order_by("-study_date", "-study_time")
-        .distinct()
-    )
-
-    if request.user.groups.filter(name="pidgroup"):
-        if enable_standard_names:
-            f = MGFilterPlusPidPlusStdNames(
-                filter_data,
-                queryset=queryset,
-            )
-        else:
-            f = MGFilterPlusPid(
-                filter_data,
-                queryset=queryset,
-            )
-    else:
-        if enable_standard_names:
-            f = MGFilterPlusStdNames(
-                filter_data,
-                queryset=queryset,
-            )
-        else:
-            f = MGSummaryListFilter(
-                filter_data,
-                queryset=queryset,
-            )
+    pid = bool(request.user.groups.filter(name="pidgroup"))
+    f = mg_acq_filter(request.GET, pid=pid)
 
     user_profile, return_structure = generate_return_structure(request, f, "MG")
     chart_options_form = mg_chart_form_processing(request, user_profile)

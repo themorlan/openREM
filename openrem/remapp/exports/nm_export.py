@@ -40,7 +40,7 @@ from openrem.remapp.tools.background import (
     record_task_error_exit,
 )
 
-from ..interface.mod_filters import nm_filter
+from ..interface.mod_filters import nm_acq_filter
 from .export_common import (
     create_summary_sheet,
     get_common_data,
@@ -79,7 +79,7 @@ def unknown_error(task, date_stamp):
 
 
 def _get_data(filterdict, pid, task):
-    data = nm_filter(filterdict, pid).qs
+    data = nm_acq_filter(filterdict, pid).qs
 
     task.num_records = data.count()
     if abort_if_zero_studies(task.num_records, task):

@@ -250,13 +250,7 @@ def exportMG2excel(filterdict, pid=False, name=None, patid=None, user=None, xlsx
     """
 
     from remapp.models import GeneralStudyModuleAttr
-    from ..interface.mod_filters import (
-        MGSummaryListFilter,
-        MGFilterPlusPid,
-        MGFilterPlusStdNames,
-        MGFilterPlusPidPlusStdNames,
-        get_studies_queryset,
-    )
+    from ..interface.mod_filters import mg_acq_filter
 
     # Obtain the system-level enable_standard_names setting
     try:
@@ -302,33 +296,7 @@ def exportMG2excel(filterdict, pid=False, name=None, patid=None, user=None, xlsx
             logger.info("Replacing AGD ordering with study date to avoid duplication")
             filterdict["o"] = "-study_date"
 
-    queryset = get_studies_queryset(filterdict, "MG").distinct()
-
-    # Get the data!
-    if pid:
-        if enable_standard_names:
-            df_filtered_qs = MGFilterPlusPidPlusStdNames(
-                filterdict,
-                queryset=queryset,
-            )
-        else:
-            df_filtered_qs = MGFilterPlusPid(
-                filterdict,
-                queryset=queryset,
-            )
-    else:
-        if enable_standard_names:
-            df_filtered_qs = MGFilterPlusStdNames(
-                filterdict,
-                queryset=queryset,
-            )
-        else:
-            df_filtered_qs = MGSummaryListFilter(
-                filterdict,
-                queryset=queryset,
-            )
-
-    studies = df_filtered_qs.qs
+    studies = mg_acq_filter(filterdict, pid=pid).qs
 
     tsk.progress = "Required study filter complete."
     tsk.save()

@@ -31,10 +31,13 @@
 
 from decimal import Decimal, InvalidOperation
 import logging
+import copy
 
 from django import forms
 from django.core.exceptions import ObjectDoesNotExist
-from django.db.models import Q
+from django.db.models import Q, QuerySet
+from django_filters import FilterSet
+from typing import Type
 import django_filters
 
 from remapp.models import (
@@ -45,6 +48,7 @@ from remapp.models import (
 )
 from ..tools.hash_id import hash_id
 import json
+import urllib.parse
 
 logger = logging.getLogger(__name__)
 
@@ -349,6 +353,30 @@ class RFFilterPlusPidPlusStdNames(RFFilterPlusPid):
     projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name = django_filters.CharFilter(
         lookup_expr="icontains", label="Standard acquisition name"
     )
+
+
+def rf_acq_filter(filters, pid=False):
+
+    # Obtain the system-level enable_standard_names setting
+    try:
+        StandardNameSettings.objects.get()
+    except ObjectDoesNotExist:
+        StandardNameSettings.objects.create()
+    enable_standard_names = StandardNameSettings.objects.values_list(
+        "enable_standard_names", flat=True
+    )[0]
+
+    qs = GeneralStudyModuleAttr.objects.filter(modality_type__exact="RF").order_by("-study_date", "-study_time").distinct()
+
+    if pid:
+        if enable_standard_names:
+            return get_filtered_studies(filters, qs, RFFilterPlusPidPlusStdNames)
+        else:
+            return get_filtered_studies(filters, qs, RFFilterPlusPid)
+    if enable_standard_names:
+        return get_filtered_studies(filters, qs, RFFilterPlusStdNames)
+    else:
+        return get_filtered_studies(filters, qs, RFSummaryListFilter)
 
 
 EVENT_NUMBER_CHOICES = (
@@ -662,25 +690,17 @@ def ct_acq_filter(filters, pid=False):
         "enable_standard_names", flat=True
     )[0]
 
-    studies = get_studies_queryset(filters, "CT")
+    qs = GeneralStudyModuleAttr.objects.filter(modality_type__exact="CT").order_by("-study_date", "-study_time").distinct()
 
     if pid:
         if enable_standard_names:
-            return CTFilterPlusPidPlusStdNames(
-                filters, studies.order_by("-study_date", "-study_time").distinct()
-            )
+            return get_filtered_studies(filters, qs, CTFilterPlusPidPlusStdNames)
         else:
-            return CTFilterPlusPid(
-                filters, studies.order_by("-study_date", "-study_time").distinct()
-            )
+            return get_filtered_studies(filters, qs, CTFilterPlusPid)
     if enable_standard_names:
-        return CTFilterPlusStdNames(
-            filters, studies.order_by("-study_date", "-study_time").distinct()
-        )
+        return get_filtered_studies(filters, qs, CTFilterPlusStdNames)
     else:
-        return CTSummaryListFilter(
-            filters, studies.order_by("-study_date", "-study_time").distinct()
-        )
+        return get_filtered_studies(filters, qs, CTSummaryListFilter)
 
 
 class MGSummaryListFilter(django_filters.FilterSet):
@@ -878,27 +898,28 @@ class MGFilterPlusPidPlusStdNames(MGFilterPlusPid):
     )
 
 
-def get_studies_queryset(filters, modality=None):
-    studies = GeneralStudyModuleAttr.objects.filter(modality_type__exact=modality)
-    return filter_studies_queryset(filters, studies)
+def mg_acq_filter(filters, pid=False):
 
-
-def filter_studies_queryset(filters, studies):
+    # Obtain the system-level enable_standard_names setting
     try:
-        pattern = filters.get("filterQuery")
-    except Exception:  # pylint: disable=broad-except
-        return studies
-    if pattern != None and pattern != "":
-        import urllib.parse
+        StandardNameSettings.objects.get()
+    except ObjectDoesNotExist:
+        StandardNameSettings.objects.create()
+    enable_standard_names = StandardNameSettings.objects.values_list(
+        "enable_standard_names", flat=True
+    )[0]
 
-        data = urllib.parse.unquote(pattern)
-        data = json.loads(data)
-        try:
-            q = json_to_query(data)
-            studies = studies.filter(q)
-        except InvalidQuery:
-            pass
-    return studies
+    qs = GeneralStudyModuleAttr.objects.filter(modality_type__exact="MG").order_by("-study_date", "-study_time").distinct()
+
+    if pid:
+        if enable_standard_names:
+            return get_filtered_studies(filters, qs, MGFilterPlusPidPlusStdNames)
+        else:
+            return get_filtered_studies(filters, qs, MGFilterPlusPid)
+    if enable_standard_names:
+        return get_filtered_studies(filters, qs, MGFilterPlusStdNames)
+    else:
+        return get_filtered_studies(filters, qs, MGSummaryListFilter)
 
 
 class DXSummaryListFilter(django_filters.FilterSet):
@@ -1132,27 +1153,17 @@ def dx_acq_filter(filters, pid=False):
         | Q(modality_type__exact="PX")
     )
 
-    queryset = filter_studies_queryset(filters, studies)
+    qs = studies.order_by("-study_date", "-study_time").distinct()
 
     if pid:
         if enable_standard_names:
-            return DXFilterPlusPidPlusStdNames(
-                filters,
-                queryset=queryset.order_by("-study_date", "-study_time").distinct(),
-            )
+            return get_filtered_studies(filters, qs, DXFilterPlusPidPlusStdNames)
         else:
-            return DXFilterPlusPid(
-                filters,
-                queryset=queryset.order_by("-study_date", "-study_time").distinct(),
-            )
+            return get_filtered_studies(filters, qs, DXFilterPlusPid)
     if enable_standard_names:
-        return DXFilterPlusStdNames(
-            filters, queryset=queryset.order_by("-study_date", "-study_time").distinct()
-        )
+        return get_filtered_studies(filters, qs, DXFilterPlusStdNames)
     else:
-        return DXSummaryListFilter(
-            filters, queryset=queryset.order_by("-study_date", "-study_time").distinct()
-        )
+        return get_filtered_studies(filters, qs, DXSummaryListFilter)
 
 
 class NMSummaryListFilter(django_filters.FilterSet):
@@ -1325,32 +1336,36 @@ class NMFilterPlusPid(NMSummaryListFilter):
         )
 
 
-def nm_filter(filters, pid=False):
-    studies = get_studies_queryset(filters, "NM")
+def nm_acq_filter(filters, pid=False) -> FilterSet:
+    qs = GeneralStudyModuleAttr.objects.filter(modality_type__exact="NM").order_by("-study_date", "-study_time").distinct()
     if pid:
-        return NMFilterPlusPid(
-            filters, queryset=studies.order_by("-study_date", "-study_time").distinct()
-        )
-    return NMSummaryListFilter(
-        filters, queryset=studies.order_by("-study_date", "-study_time").distinct()
-    )
+        return get_filtered_studies(filters, qs, NMFilterPlusPid)
+    return get_filtered_studies(filters, qs, NMSummaryListFilter)
+
+
+def get_filtered_studies(filters, qs, filterClass: Type[FilterSet]) -> FilterSet:
+    fs = filterClass(queryset=qs)
+    try:
+        pattern = filters.get("filterQuery")
+        if pattern != None and pattern != "":
+            filters = json.loads(urllib.parse.unquote(pattern))
+            fs = filterClass(queryset=json_to_query(filters, qs, filterClass))
+    except Exception:  # pylint: disable=broad-except
+        pass
+    return fs
 
 
 class InvalidQuery(Exception):
     "Raised when the given query is invalid"
     pass
 
-class SkipAdvancedFilter(Exception):
-    "Raised when the given field should bypass the advanced filter"
-    pass
 
-
-def json_to_query(pattern, group="root") -> Q:
+def json_to_query(pattern, qs: QuerySet, filterClass: Type[FilterSet], group="root") -> QuerySet:
     """
     Transforms the JSON pattern into a Q object
     """
-    q = Q()
-    operator = Q.AND
+    temp_qs = copy.deepcopy(qs)
+    operator = None
     nextEntryId = pattern[group]["first"]
 
     while nextEntryId != None:
@@ -1360,7 +1375,13 @@ def json_to_query(pattern, group="root") -> Q:
         q_type = nextEntry["type"]
         if q_type == "filter":
             try:
-                q.add(get_filter(nextEntry["fields"]), operator)
+                rhs_qs = get_filter(nextEntry["fields"], filterClass, qs)
+                if operator is None:
+                    temp_qs = rhs_qs
+                elif operator == "AND":
+                    temp_qs &= rhs_qs
+                elif operator == "OR":
+                    temp_qs |= rhs_qs
             except KeyError:
                 raise InvalidQuery
         if q_type == "operator":
@@ -1369,19 +1390,21 @@ def json_to_query(pattern, group="root") -> Q:
             except KeyError:
                 raise InvalidQuery
         if q_type == "group":
-            q.add(json_to_query(pattern, nextEntryId), operator)
+            rhs_qs = json_to_query(pattern, qs, filterClass, nextEntryId)
+            if operator is None:
+                temp_qs = rhs_qs
+            elif operator == "AND":
+                temp_qs &= rhs_qs
+            elif operator == "OR":
+                temp_qs |= rhs_qs
         nextEntryId = nextEntry["next"]
-    return q
+    return temp_qs
 
 
-def get_filter(fields: dict) -> Q:
-    q = Q()
+def get_filter(fields: dict, filterClass: Type[FilterSet], qs) -> QuerySet:
+    fs = filterClass({k: v[0] for (k, v) in fields.items()}, copy.deepcopy(qs))
     for field, value in fields.items():
         if value[1] in ALLOWED_LOOKUP_TYPES:
-            field = field + "__" + value[1]
-        add_q = Q(**{field: value[0]})
-        if value[2]:
-            q.add(~add_q, Q.AND)
-        else:
-            q.add(add_q, Q.AND)
-    return q
+            fs.get_filters()[field].lookup_expr = value[1]
+        fs.__dict__["filters"][field].exclude = value[2]
+    return fs.qs

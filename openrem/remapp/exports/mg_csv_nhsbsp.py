@@ -46,7 +46,7 @@ def mg_csv_nhsbsp(filterdict, user=None):
     """
 
     from remapp.models import GeneralStudyModuleAttr
-    from ..interface.mod_filters import MGSummaryListFilter, get_studies_queryset
+    from ..interface.mod_filters import MGSummaryListFilter, get_filtered_studies
     from .export_common import (
         create_csv,
         write_export,
@@ -81,11 +81,10 @@ def mg_csv_nhsbsp(filterdict, user=None):
             filterdict["o"] = "-study_date"
 
     # Get the data!
-    studies_qs = MGSummaryListFilter(
-        filterdict,
-        queryset=get_studies_queryset(filterdict, "MG"),
-    )
-    s = studies_qs.qs
+    qs = GeneralStudyModuleAttr.objects.filter(modality_type__exact="MG")
+    studies = get_filtered_studies(filterdict, qs, MGSummaryListFilter)
+
+    s = studies.qs
 
     tsk.progress = "Required study filter complete."
     tsk.save()

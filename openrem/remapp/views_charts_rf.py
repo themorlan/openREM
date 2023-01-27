@@ -9,15 +9,8 @@ from remapp.forms import (
     RFChartOptionsForm,
     RFChartOptionsFormIncStandard,
 )
-from remapp.interface.mod_filters import (
-    RFSummaryListFilter,
-    RFFilterPlusPid,
-    RFFilterPlusStdNames,
-    RFFilterPlusPidPlusStdNames,
-    get_studies_queryset
-)
+from remapp.interface.mod_filters import rf_acq_filter
 from remapp.models import (
-    GeneralStudyModuleAttr,
     create_user_profile,
     StandardNameSettings,
 )
@@ -270,42 +263,9 @@ def generate_required_rf_charts_list(profile):
 @login_required
 def rf_summary_chart_data(request):
     """Obtain data for Ajax chart call"""
+    pid = bool(request.user.groups.filter(name="pidgroup"))
+    f = rf_acq_filter(request.GET, pid)
 
-    # Obtain the system-level enable_standard_names setting
-    try:
-        StandardNameSettings.objects.get()
-    except ObjectDoesNotExist:
-        StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values_list(
-        "enable_standard_names", flat=True
-    )[0]
-
-    filters = request.GET
-
-    queryset = get_studies_queryset(filters, "RF").order_by().distinct()
-
-    if request.user.groups.filter(name="pidgroup"):
-        if enable_standard_names:
-            f = RFFilterPlusPidPlusStdNames(
-                filters,
-                queryset=queryset,
-            )
-        else:
-            f = RFFilterPlusPid(
-                filters,
-                queryset=queryset,
-            )
-    else:
-        if enable_standard_names:
-            f = RFFilterPlusStdNames(
-                filters,
-                queryset=queryset,
-            )
-        else:
-            f = RFSummaryListFilter(
-                filters,
-                queryset=queryset,
-            )
     try:
         # See if the user has plot settings in userprofile
         user_profile = request.user.userprofile

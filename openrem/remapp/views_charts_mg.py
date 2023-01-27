@@ -9,15 +9,8 @@ from remapp.forms import (
     MGChartOptionsForm,
     MGChartOptionsFormIncStandard,
 )
-from remapp.interface.mod_filters import (
-    MGSummaryListFilter,
-    MGFilterPlusPid,
-    MGFilterPlusStdNames,
-    MGFilterPlusPidPlusStdNames,
-    get_studies_queryset,
-)
+from remapp.interface.mod_filters import mg_acq_filter
 from remapp.models import (
-    GeneralStudyModuleAttr,
     create_user_profile,
     StandardNameSettings,
 )
@@ -294,42 +287,9 @@ def generate_required_mg_charts_list(profile):
 @login_required
 def mg_summary_chart_data(request):
     """Obtain data for mammography chart data Ajax view"""
+    pid = bool(request.user.groups.filter(name="pidgroup"))
+    f = mg_acq_filter(request.GET, pid)
 
-    # Obtain the system-level enable_standard_names setting
-    try:
-        StandardNameSettings.objects.get()
-    except ObjectDoesNotExist:
-        StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values_list(
-        "enable_standard_names", flat=True
-    )[0]
-
-    filters = request.GET
-
-    queryset = get_studies_queryset(filters, "MG").order_by().distinct()
-
-    if request.user.groups.filter(name="pidgroup"):
-        if enable_standard_names:
-            f = MGFilterPlusPidPlusStdNames(
-                filters,
-                queryset=queryset,
-            )
-        else:
-            f = MGFilterPlusPid(
-                filters,
-                queryset=queryset,
-            )
-    else:
-        if enable_standard_names:
-            f = MGFilterPlusStdNames(
-                filters,
-                queryset=queryset,
-            )
-        else:
-            f = MGSummaryListFilter(
-                filters,
-                queryset=queryset,
-            )
     try:
         # See if the user has plot settings in userprofile
         user_profile = request.user.userprofile
