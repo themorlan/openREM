@@ -356,6 +356,17 @@ class DicomRemoteQR(models.Model):
         return self.name
 
 
+class BackgroundTaskMaximumRows(SingletonModel):
+    """
+    Table to store the maximum number of rows allowed in the BackgroundTask table
+    """
+
+    max_background_task_rows = models.IntegerField(
+        default=2000,
+        verbose_name="The maximum number of historic background task records to keep",
+    )
+
+
 class BackgroundTask(models.Model):
     uuid = models.TextField()
     proc_id = models.IntegerField()
@@ -366,6 +377,12 @@ class BackgroundTask(models.Model):
     complete = models.BooleanField(default=False)
     started_at = models.DateTimeField(blank=True, null=True)
 
+    def save(self, *args, **kwargs):
+        all_tasks_qs = BackgroundTask.objects.order_by("id")
+        if all_tasks_qs.count() > BackgroundTaskMaximumRows.get_solo().max_background_task_rows:
+            all_tasks_qs[0].delete()
+
+        super(BackgroundTask, self).save(*args, **kwargs)
 
 class DicomQuery(models.Model):
     """
