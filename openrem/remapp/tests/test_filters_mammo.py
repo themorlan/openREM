@@ -7,7 +7,9 @@ from django.test import TestCase
 from django.urls import reverse_lazy, reverse
 from remapp.extractors import mam, rdsr
 from remapp.models import PatientIDSettings
-
+from .test_filters_data import get_simple_query, get_simple_multiple_query
+import urllib.parse
+import json
 
 class FilterViewTests(TestCase):
     """
@@ -51,10 +53,15 @@ class FilterViewTests(TestCase):
         Apply study description filter
         """
         self.client.login(username="temporary", password="temporary")
-        response = self.client.get(
-            reverse_lazy("mg_summary_list_filter") + "?study_description=bilateral",
-            follow=True,
+        query = urllib.parse.quote(
+            json.dumps(
+                get_simple_query("study_description", "bilateral")
+            )
         )
+        response = self.client.get(
+            reverse_lazy("mg_summary_list_filter") + f"?filterQuery={query}", follow=True
+        )
+        
         self.assertEqual(response.status_code, 200)
         one_responses_text = "There are 1 studies in this list."
         self.assertContains(response, one_responses_text)
@@ -68,10 +75,13 @@ class FilterViewTests(TestCase):
         Apply procedure filter
         """
         self.client.login(username="temporary", password="temporary")
+        query = urllib.parse.quote(
+            json.dumps(
+                get_simple_query("procedure_code_meaning", "Flat field tomo")
+            )
+        )
         response = self.client.get(
-            reverse_lazy("mg_summary_list_filter")
-            + "?procedure_code_meaning=Flat+field+tomo",
-            follow=True,
+            reverse_lazy("mg_summary_list_filter") + f"?filterQuery={query}", follow=True
         )
         self.assertEqual(response.status_code, 200)
         one_responses_text = "There are 1 studies in this list."
@@ -86,11 +96,15 @@ class FilterViewTests(TestCase):
         Apply acquisition protocol filter
         """
         self.client.login(username="temporary", password="temporary")
-        response = self.client.get(
-            reverse("mg_summary_list_filter")
-            + "?projectionxrayradiationdose__irradeventxraydata__acquisition_protocol=routine",
-            follow=True,
+        query = urllib.parse.quote(
+            json.dumps(
+                get_simple_query("projectionxrayradiationdose__irradeventxraydata__acquisition_protocol", "routine")
+            )
         )
+        response = self.client.get(
+            reverse("mg_summary_list_filter") + f"?filterQuery={query}", follow=True
+        )
+        
         self.assertEqual(response.status_code, 200)
         one_responses_text = "There are 1 studies in this list."
         self.assertContains(response, one_responses_text)
@@ -104,11 +118,15 @@ class FilterViewTests(TestCase):
         Apply exposure control mode filter
         """
         self.client.login(username="temporary", password="temporary")
-        response = self.client.get(
-            reverse("mg_summary_list_filter")
-            + "?projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure_control_mode=automatic",
-            follow=True,
+        query = urllib.parse.quote(
+            json.dumps(
+                get_simple_query("projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure_control_mode", "automatic")
+            )
         )
+        response = self.client.get(
+            reverse("mg_summary_list_filter") + f"?filterQuery={query}", follow=True
+        )
+
         self.assertEqual(response.status_code, 200)
         one_responses_text = "There are 1 studies in this list."
         self.assertContains(response, one_responses_text)
@@ -120,12 +138,18 @@ class FilterViewTests(TestCase):
         Apply compressed breast thickness filter
         """
         self.client.login(username="temporary", password="temporary")
-        response = self.client.get(
-            reverse("mg_summary_list_filter")
-            + "?projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness__range_min=0"
-            + "&projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness__range_max=18",
-            follow=True,
+        query = urllib.parse.quote(
+            json.dumps(
+                get_simple_multiple_query({
+                    "projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness__range_min": "0",
+                    "projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness__range_max": "18",
+                })
+            )
         )
+        response = self.client.get(
+            reverse("mg_summary_list_filter") + f"?filterQuery={query}", follow=True
+        )
+
         self.assertEqual(response.status_code, 200)
         one_responses_text = "There are 1 studies in this list."
         self.assertContains(response, one_responses_text)
@@ -137,12 +161,19 @@ class FilterViewTests(TestCase):
         Apply compressed breast thickness filter
         """
         self.client.login(username="temporary", password="temporary")
-        response = self.client.get(
-            reverse("mg_summary_list_filter")
-            + "?projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness__range_min=42"
-            + "&projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness__range_max=44",
-            follow=True,
+        query = urllib.parse.quote(
+            json.dumps(
+                get_simple_multiple_query({
+                    "projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness__range_min": "42",
+                    "projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness__range_max": "44",
+                })
+            )
         )
+        response = self.client.get(
+            reverse("mg_summary_list_filter") + f"?filterQuery={query}", follow=True
+        )
+
+
         self.assertEqual(response.status_code, 200)
         one_responses_text = "There are 1 studies in this list."
         self.assertContains(response, one_responses_text)
@@ -154,11 +185,16 @@ class FilterViewTests(TestCase):
         Apply compressed breast thickness filter
         """
         self.client.login(username="temporary", password="temporary")
+        query = urllib.parse.quote(
+            json.dumps(
+                get_simple_multiple_query({
+                    "projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness__range_min": "53",
+                    "projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness__range_max": "100",
+                })
+            )
+        )
         response = self.client.get(
-            reverse("mg_summary_list_filter")
-            + "?projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness__range_min=53"
-            + "&projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness__range_max=100",
-            follow=True,
+            reverse("mg_summary_list_filter") + f"?filterQuery={query}", follow=True
         )
         self.assertEqual(response.status_code, 200)
         one_responses_text = "There are 1 studies in this list."
@@ -171,11 +207,15 @@ class FilterViewTests(TestCase):
         Apply exposure control mode filter
         """
         self.client.login(username="temporary", password="temporary")
-        response = self.client.get(
-            reverse("mg_summary_list_filter")
-            + "?projectionxrayradiationdose__irradeventxraydata__image_view__code_meaning=lateral",
-            follow=True,
+        query = urllib.parse.quote(
+            json.dumps(
+                get_simple_query("projectionxrayradiationdose__irradeventxraydata__image_view__code_meaning", "lateral")
+            )
         )
+        response = self.client.get(
+            reverse("mg_summary_list_filter") + f"?filterQuery={query}", follow=True
+        )
+
         self.assertEqual(response.status_code, 200)
         one_responses_text = "There are 1 studies in this list."
         self.assertContains(response, one_responses_text)

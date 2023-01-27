@@ -7,7 +7,9 @@ from django.test import TestCase
 from django.urls import reverse_lazy, reverse
 from remapp.extractors import rdsr
 from remapp.models import PatientIDSettings
-
+from .test_filters_data import get_simple_query, get_simple_multiple_query
+import urllib.parse
+import json
 
 class FilterViewTests(TestCase):
     """
@@ -45,11 +47,11 @@ class FilterViewTests(TestCase):
         Apply study description filter
         """
         self.client.login(username="temporary", password="temporary")
+        query = urllib.parse.quote(json.dumps(get_simple_query("study_description", "liuotushoidon raajojen")))
         response = self.client.get(
-            reverse_lazy("rf_summary_list_filter")
-            + "?study_description=liuotushoidon+raajojen",
-            follow=True,
+            reverse_lazy("rf_summary_list_filter") + f"?filterQuery={query}", follow=True
         )
+
         self.assertEqual(response.status_code, 200)
         one_responses_text = "There are 1 studies in this list."
         self.assertContains(response, one_responses_text)
@@ -63,11 +65,11 @@ class FilterViewTests(TestCase):
         Apply acquisition protocol filter
         """
         self.client.login(username="temporary", password="temporary")
+        query = urllib.parse.quote(json.dumps(get_simple_query("projectionxrayradiationdose__irradeventxraydata__acquisition_protocol", "2fps")))
         response = self.client.get(
-            reverse_lazy("rf_summary_list_filter")
-            + "?projectionxrayradiationdose__irradeventxraydata__acquisition_protocol=2fps",
-            follow=True,
+            reverse_lazy("rf_summary_list_filter") + f"?filterQuery={query}", follow=True
         )
+
         self.assertEqual(response.status_code, 200)
         one_responses_text = "There are 1 studies in this list."
         self.assertContains(response, one_responses_text)
@@ -86,11 +88,14 @@ class FilterViewTests(TestCase):
         # The Siemens test study does not have patient weight data
 
         # Test filtering using min weight of 80 kg and max weight of 90 kg - this should exclude the Siemens study
+        query = urllib.parse.quote(json.dumps(get_simple_multiple_query({
+            "patientstudymoduleattr__patient_weight__gte": "80",
+            "patientstudymoduleattr__patient_weight__lte": "90",
+        })))
         response = self.client.get(
-            reverse_lazy("rf_summary_list_filter")
-            + "?patientstudymoduleattr__patient_weight__gte=80&patientstudymoduleattr__patient_weight__lte=90",
-            follow=True,
+            reverse_lazy("rf_summary_list_filter") + f"?filterQuery={query}", follow=True
         )
+        
         self.assertEqual(response.status_code, 200)
         one_responses_text = "There are 1 studies in this list."
         self.assertContains(response, one_responses_text)
@@ -98,20 +103,22 @@ class FilterViewTests(TestCase):
         self.assertContains(response, accession_number)
 
         # Test filtering using min weight of 90 kg - this should exclude both studies
+        query = urllib.parse.quote(json.dumps(get_simple_query(
+            "patientstudymoduleattr__patient_weight__gte", "90"
+        )))
         response = self.client.get(
-            reverse_lazy("rf_summary_list_filter")
-            + "?patientstudymoduleattr__patient_weight__gte=90",
-            follow=True,
+            reverse_lazy("rf_summary_list_filter") + f"?filterQuery={query}", follow=True
         )
         self.assertEqual(response.status_code, 200)
         zero_responses_text = "There are 0 studies in this list."
         self.assertContains(response, zero_responses_text)
 
         # Test filtering using max weight of 80 kg - this should exclude both studies
+        query = urllib.parse.quote(json.dumps(get_simple_query(
+            "patientstudymoduleattr__patient_weight__lte", "80"
+        )))
         response = self.client.get(
-            reverse_lazy("rf_summary_list_filter")
-            + "?patientstudymoduleattr__patient_weight__lte=80",
-            follow=True,
+            reverse_lazy("rf_summary_list_filter") + f"?filterQuery={query}", follow=True
         )
         self.assertEqual(response.status_code, 200)
         zero_responses_text = "There are 0 studies in this list."

@@ -1404,7 +1404,10 @@ def json_to_query(pattern, qs: QuerySet, filterClass: Type[FilterSet], group="ro
 def get_filter(fields: dict, filterClass: Type[FilterSet], qs) -> QuerySet:
     fs = filterClass({k: v[0] for (k, v) in fields.items()}, copy.deepcopy(qs))
     for field, value in fields.items():
+        filter_fields = fs.__dict__["filters"]
+        if field not in filter_fields:
+            continue
         if value[1] in ALLOWED_LOOKUP_TYPES:
-            fs.get_filters()[field].lookup_expr = value[1]
-        fs.__dict__["filters"][field].exclude = value[2]
+            filter_fields[field].lookup_expr = value[1]
+        filter_fields[field].exclude = value[2]
     return fs.qs

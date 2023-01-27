@@ -7,7 +7,9 @@ from django.test import TestCase
 from django.urls import reverse_lazy, reverse
 from remapp.extractors import rdsr, dx
 from remapp.models import PatientIDSettings
-
+from .test_filters_data import get_simple_query, get_simple_multiple_query
+import urllib.parse
+import json
 
 class FilterViewTests(TestCase):
     """
@@ -63,10 +65,11 @@ class FilterViewTests(TestCase):
         Apply study description filter
         """
         self.client.login(username="temporary", password="temporary")
+        query = urllib.parse.quote(json.dumps(get_simple_query("study_description", "CR")))
         response = self.client.get(
-            reverse_lazy("dx_summary_list_filter") + "?study_description=CR",
-            follow=True,
+            reverse_lazy("dx_summary_list_filter") + f"?filterQuery={query}", follow=True
         )
+
         self.assertEqual(response.status_code, 200)
         one_responses_text = "There are 2 studies in this list."
         self.assertContains(response, one_responses_text)
@@ -80,11 +83,11 @@ class FilterViewTests(TestCase):
         Apply acquisition protocol filter
         """
         self.client.login(username="temporary", password="temporary")
+        query = urllib.parse.quote(json.dumps(get_simple_query("projectionxrayradiationdose__irradeventxraydata__acquisition_protocol", "thigh")))
         response = self.client.get(
-            reverse_lazy("dx_summary_list_filter")
-            + "?projectionxrayradiationdose__irradeventxraydata__acquisition_protocol=thigh",
-            follow=True,
+            reverse_lazy("dx_summary_list_filter") + f"?filterQuery={query}", follow=True
         )
+
         self.assertEqual(response.status_code, 200)
         one_responses_text = "There are 1 studies in this list."
         self.assertContains(response, one_responses_text)

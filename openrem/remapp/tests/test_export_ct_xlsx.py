@@ -8,6 +8,9 @@ from openpyxl import load_workbook
 from remapp.extractors import rdsr
 from remapp.exports.ct_export import ctxlsx, ct_csv, ct_phe_2019
 from remapp.models import PatientIDSettings, Exports
+from .test_filters_data import get_simple_multiple_query
+import urllib.parse
+import json
 
 
 class ExportCTxlsx(TestCase):
@@ -48,6 +51,8 @@ class ExportCTxlsx(TestCase):
 
     def test_id_as_text(self):  # See https://bitbucket.org/openrem/openrem/issues/443
         filter_set = {"o": "-study_date"}
+        filter_set = {"filterQuery": urllib.parse.quote(json.dumps(get_simple_multiple_query(filter_set)))}
+
         pid = True
         name = False
         patient_id = True
@@ -139,6 +144,8 @@ class ExportCTxlsx(TestCase):
     def test_zero_filter(self):
         """Test error handled correctly when empty filter."""
         filter_set = {"study_description": "asd"}
+        filter_set = {"filterQuery": urllib.parse.quote(json.dumps(get_simple_multiple_query(filter_set)))}
+
         pid = True
         name = False
         patient_id = True
@@ -157,6 +164,8 @@ class ExportCTxlsx(TestCase):
             "num_spiral_events": "some",
             "o": "-study_date",
         }
+        filter_set = {"filterQuery": urllib.parse.quote(json.dumps(get_simple_multiple_query(filter_set)))}
+
         pid = True
         name = False
         patient_id = True
@@ -178,6 +187,8 @@ class ExportCTxlsx(TestCase):
             "num_axial_events": "some",
             "o": "-study_date",
         }
+        filter_set = {"filterQuery": urllib.parse.quote(json.dumps(get_simple_multiple_query(filter_set)))}
+
         pid = True
         name = False
         patient_id = True
@@ -200,6 +211,8 @@ class ExportCTxlsx(TestCase):
             "num_axial_events": "some",
             "o": "-study_date",
         }
+        filter_set = {"filterQuery": urllib.parse.quote(json.dumps(get_simple_multiple_query(filter_set)))}
+
         pid = True
         name = False
         patient_id = True
@@ -213,7 +226,8 @@ class ExportCTxlsx(TestCase):
         task.filename.delete()  # delete file so local testing doesn't get too messy!
 
     def test_export_phe(self):
-        filter_set = {"num_spiral_events": "2", "o": "-study_date"}
+        filter_set = {"num_spiral_events": "2"}
+        filter_set = {"filterQuery": urllib.parse.quote(json.dumps(get_simple_multiple_query(filter_set)))}
 
         ct_phe_2019(filter_set, user=self.user)
 

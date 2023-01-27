@@ -7,12 +7,16 @@ from django.test import TestCase
 from django.urls import reverse_lazy, reverse
 from ..extractors import rdsr, ct_philips
 from ..models import PatientIDSettings
-
+from .test_filters_data import get_simple_query, get_simple_multiple_query
+import urllib.parse
+import json
 
 class FilterViewTests(TestCase):
     """
     Class to test the filter views for CT
     """
+
+
 
     def setUp(self):
         """
@@ -60,8 +64,9 @@ class FilterViewTests(TestCase):
         Apply study description filter
         """
         self.client.login(username="temporary", password="temporary")
+        query = urllib.parse.quote(json.dumps(get_simple_query("study_description", "abdomen")))
         response = self.client.get(
-            "http://test/openrem/ct/?study_description=abdomen", follow=True
+            f"http://test/openrem/ct/?filterQuery={query}", follow=True
         )
         self.assertEqual(response.status_code, 200)
         one_responses_text = "There are 1 studies in this list."
@@ -76,8 +81,9 @@ class FilterViewTests(TestCase):
         Apply procedure filter
         """
         self.client.login(username="temporary", password="temporary")
+        query = urllib.parse.quote(json.dumps(get_simple_query("procedure_code_meaning", "abdomen")))
         response = self.client.get(
-            "http://test/openrem/ct/?procedure_code_meaning=abdomen", follow=True
+            f"http://test/openrem/ct/?filterQuery={query}", follow=True
         )
         self.assertEqual(response.status_code, 200)
         one_responses_text = "There are 1 studies in this list."
@@ -92,9 +98,9 @@ class FilterViewTests(TestCase):
         Apply procedure filter
         """
         self.client.login(username="temporary", password="temporary")
+        query = urllib.parse.quote(json.dumps(get_simple_query("requested_procedure_code_meaning", "bones")))
         response = self.client.get(
-            "http://test/openrem/ct/?requested_procedure_code_meaning=bones",
-            follow=True,
+            f"http://test/openrem/ct/?filterQuery={query}", follow=True
         )
         self.assertEqual(response.status_code, 200)
         one_responses_text = "There are 1 studies in this list."
@@ -109,9 +115,16 @@ class FilterViewTests(TestCase):
         Apply acquisition protocol filter
         """
         self.client.login(username="temporary", password="temporary")
+        query = urllib.parse.quote(
+            json.dumps(
+                get_simple_query(
+                    "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
+                    "monitoring"
+                )
+            )
+        )
         response = self.client.get(
-            "http://test/openrem/ct/?ctradiationdose__ctirradiationeventdata__acquisition_protocol=monitoring",
-            follow=True,
+            f"http://test/openrem/ct/?filterQuery={query}", follow=True
         )
         self.assertEqual(response.status_code, 200)
         one_responses_text = "There are 1 studies in this list."
@@ -125,10 +138,20 @@ class FilterViewTests(TestCase):
         """
         self.client.login(username="temporary", password="temporary")
 
-        response = self.client.get(
-            "http://test/openrem/ct/?num_spiral_events=2&num_axial_events=&num_spr_events=&num_stationary_events=",
-            follow=True,
+        query = urllib.parse.quote(
+            json.dumps(
+                get_simple_multiple_query({
+                    "num_spiral_events": "2",
+                    "num_axial_events": "",
+                    "num_spr_events": "",
+                    "num_stationary_events": ""
+                })
+            )
         )
+        response = self.client.get(
+            f"http://test/openrem/ct/?filterQuery={query}", follow=True
+        )
+
         self.assertEqual(response.status_code, 200)
         four_responses_text = "There are 4 studies in this list."
         self.assertContains(response, four_responses_text)
@@ -141,10 +164,20 @@ class FilterViewTests(TestCase):
         self.assertContains(response, accession_number_3)
         self.assertContains(response, accession_number_4)
 
-        response = self.client.get(
-            "http://test/openrem/ct/?num_spiral_events=2&num_axial_events=0&num_spr_events=&num_stationary_events=",
-            follow=True,
+        query = urllib.parse.quote(
+            json.dumps(
+                get_simple_multiple_query({
+                    "num_spiral_events": "2",
+                    "num_axial_events": "0",
+                    "num_spr_events": "",
+                    "num_stationary_events": ""
+                })
+            )
         )
+        response = self.client.get(
+            f"http://test/openrem/ct/?filterQuery={query}", follow=True
+        )
+
         self.assertEqual(response.status_code, 200)
         three_responses_text = "There are 3 studies in this list."
         self.assertContains(response, three_responses_text)
@@ -155,19 +188,38 @@ class FilterViewTests(TestCase):
         self.assertContains(response, accession_number_2)
         self.assertContains(response, accession_number_3)
 
-        response = self.client.get(
-            "http://test/openrem/ct/?num_spiral_events=2&num_axial_events=5&num_spr_events=&num_stationary_events=4",
-            follow=True,
+        query = urllib.parse.quote(
+            json.dumps(
+                get_simple_multiple_query({
+                    "num_spiral_events": "2",
+                    "num_axial_events": "5",
+                    "num_spr_events": "",
+                    "num_stationary_events": "4"
+                })
+            )
         )
+        response = self.client.get(
+            f"http://test/openrem/ct/?filterQuery={query}", follow=True
+        )
+
         self.assertEqual(response.status_code, 200)
         one_responses_text = "There are 1 studies in this list."
         self.assertContains(response, one_responses_text)
         accession_number_1 = "001234512345678"
         self.assertContains(response, accession_number_1)
 
+        query = urllib.parse.quote(
+            json.dumps(
+                get_simple_multiple_query({
+                    "num_spiral_events": "1",
+                    "num_axial_events": "0",
+                    "num_spr_events": "1",
+                    "num_stationary_events": "2"
+                })
+            )
+        )
         response = self.client.get(
-            "http://test/openrem/ct/?num_spiral_events=1&num_axial_events=0&num_spr_events=1&num_stationary_events=2",
-            follow=True,
+            f"http://test/openrem/ct/?filterQuery={query}", follow=True
         )
         self.assertEqual(response.status_code, 200)
         one_responses_text = "There are 1 studies in this list."
@@ -175,9 +227,18 @@ class FilterViewTests(TestCase):
         accession_number_1 = "ACC12345601"
         self.assertContains(response, accession_number_1)
 
+        query = urllib.parse.quote(
+            json.dumps(
+                get_simple_multiple_query({
+                    "num_spiral_events": "",
+                    "num_axial_events": "5",
+                    "num_spr_events": "",
+                    "num_stationary_events": ""
+                })
+            )
+        )
         response = self.client.get(
-            "http://test/openrem/ct/?num_spiral_events=&num_axial_events=5&num_spr_events=&num_stationary_events=",
-            follow=True,
+            f"http://test/openrem/ct/?filterQuery={query}", follow=True
         )
         self.assertEqual(response.status_code, 200)
         one_responses_text = "There are 1 studies in this list."
@@ -185,9 +246,18 @@ class FilterViewTests(TestCase):
         accession_number_1 = "001234512345678"
         self.assertContains(response, accession_number_1)
 
+        query = urllib.parse.quote(
+            json.dumps(
+                get_simple_multiple_query({
+                    "num_spiral_events": "",
+                    "num_axial_events": "",
+                    "num_spr_events": "1",
+                    "num_stationary_events": ""
+                })
+            )
+        )
         response = self.client.get(
-            "http://test/openrem/ct/?num_spiral_events=&num_axial_events=&num_spr_events=1&num_stationary_events=",
-            follow=True,
+            f"http://test/openrem/ct/?filterQuery={query}", follow=True
         )
         self.assertEqual(response.status_code, 200)
         three_responses_text = "There are 3 studies in this list."
@@ -199,9 +269,18 @@ class FilterViewTests(TestCase):
         self.assertContains(response, accession_number_2)
         self.assertContains(response, accession_number_3)
 
+        query = urllib.parse.quote(
+            json.dumps(
+                get_simple_multiple_query({
+                    "num_spiral_events": "",
+                    "num_axial_events": "",
+                    "num_spr_events": "",
+                    "num_stationary_events": "2"
+                })
+            )
+        )
         response = self.client.get(
-            "http://test/openrem/ct/?num_spiral_events=&num_axial_events=&num_spr_events=&num_stationary_events=2",
-            follow=True,
+            f"http://test/openrem/ct/?filterQuery={query}", follow=True
         )
         self.assertEqual(response.status_code, 200)
         one_responses_text = "There are 1 studies in this list."
@@ -209,9 +288,18 @@ class FilterViewTests(TestCase):
         accession_number_1 = "ACC12345601"
         self.assertContains(response, accession_number_1)
 
+        query = urllib.parse.quote(
+            json.dumps(
+                get_simple_multiple_query({
+                    "num_spiral_events": "",
+                    "num_axial_events": "5",
+                    "num_spr_events": "",
+                    "num_stationary_events": "4"
+                })
+            )
+        )
         response = self.client.get(
-            "http://test/openrem/ct/?num_spiral_events=&num_axial_events=5&num_spr_events=&num_stationary_events=4",
-            follow=True,
+            f"http://test/openrem/ct/?filterQuery={query}", follow=True
         )
         self.assertEqual(response.status_code, 200)
         one_responses_text = "There are 1 studies in this list."
@@ -219,9 +307,18 @@ class FilterViewTests(TestCase):
         accession_number_1 = "001234512345678"
         self.assertContains(response, accession_number_1)
 
+        query = urllib.parse.quote(
+            json.dumps(
+                get_simple_multiple_query({
+                    "num_spiral_events": "1",
+                    "num_axial_events": "",
+                    "num_spr_events": "1",
+                    "num_stationary_events": ""
+                })
+            )
+        )
         response = self.client.get(
-            "http://test/openrem/ct/?num_spiral_events=1&num_axial_events=&num_spr_events=1&num_stationary_events=",
-            follow=True,
+            f"http://test/openrem/ct/?filterQuery={query}", follow=True
         )
         self.assertEqual(response.status_code, 200)
         one_responses_text = "There are 1 studies in this list."
@@ -229,9 +326,18 @@ class FilterViewTests(TestCase):
         accession_number_1 = "ACC12345601"
         self.assertContains(response, accession_number_1)
 
+        query = urllib.parse.quote(
+            json.dumps(
+                get_simple_multiple_query({
+                    "num_spiral_events": "2",
+                    "num_axial_events": "",
+                    "num_spr_events": "",
+                    "num_stationary_events": "7"
+                })
+            )
+        )
         response = self.client.get(
-            "http://test/openrem/ct/?num_spiral_events=2&num_axial_events=&num_spr_events=&num_stationary_events=7",
-            follow=True,
+            f"http://test/openrem/ct/?filterQuery={query}", follow=True
         )
         self.assertEqual(response.status_code, 200)
         one_responses_text = "There are 1 studies in this list."
@@ -239,9 +345,18 @@ class FilterViewTests(TestCase):
         accession_number_1 = "74624646290"
         self.assertContains(response, accession_number_1)
 
+        query = urllib.parse.quote(
+            json.dumps(
+                get_simple_multiple_query({
+                    "num_spiral_events": "1",
+                    "num_axial_events": "",
+                    "num_spr_events": "1",
+                    "num_stationary_events": "2"
+                })
+            )
+        )
         response = self.client.get(
-            "http://test/openrem/ct/?num_spiral_events=1&num_axial_events=&num_spr_events=1&num_stationary_events=2",
-            follow=True,
+            f"http://test/openrem/ct/?filterQuery={query}", follow=True
         )
         self.assertEqual(response.status_code, 200)
         one_responses_text = "There are 1 studies in this list."
@@ -249,9 +364,18 @@ class FilterViewTests(TestCase):
         accession_number_1 = "ACC12345601"
         self.assertContains(response, accession_number_1)
 
+        query = urllib.parse.quote(
+            json.dumps(
+                get_simple_multiple_query({
+                    "num_spiral_events": "",
+                    "num_axial_events": "",
+                    "num_spr_events": "some",
+                    "num_stationary_events": ""
+                })
+            )
+        )
         response = self.client.get(
-            "http://test/openrem/ct/?num_spiral_events=&num_axial_events=&num_spr_events=some&num_stationary_events=",
-            follow=True,
+            f"http://test/openrem/ct/?filterQuery={query}", follow=True
         )
         self.assertEqual(response.status_code, 200)
         five_responses_text = "There are 5 studies in this list."
@@ -273,10 +397,17 @@ class FilterViewTests(TestCase):
 
         # Filter min weight 70 kg, max weight 90 kg
         # This should leave the four studies that have weight data
+        
+        query = urllib.parse.quote(
+            json.dumps(
+                get_simple_multiple_query({
+                    "patientstudymoduleattr__patient_weight__gte": "70",
+                    "patientstudymoduleattr__patient_weight__lte": "90",
+                })
+            )
+        )
         response = self.client.get(
-            reverse_lazy("ct_summary_list_filter")
-            + "?patientstudymoduleattr__patient_weight__gte=70&patientstudymoduleattr__patient_weight__lte=90",
-            follow=True,
+            f"http://test/openrem/ct/?filterQuery={query}", follow=True
         )
         self.assertEqual(response.status_code, 200)
         four_responses_text = "There are 4 studies in this list."
@@ -292,10 +423,16 @@ class FilterViewTests(TestCase):
 
         # Filter min weight 70 kg, max weight 76 kg
         # This should leave two studies
+        query = urllib.parse.quote(
+            json.dumps(
+                get_simple_multiple_query({
+                    "patientstudymoduleattr__patient_weight__gte": "70",
+                    "patientstudymoduleattr__patient_weight__lte": "76",
+                })
+            )
+        )
         response = self.client.get(
-            reverse_lazy("ct_summary_list_filter")
-            + "?patientstudymoduleattr__patient_weight__gte=70&patientstudymoduleattr__patient_weight__lte=76",
-            follow=True,
+            f"http://test/openrem/ct/?filterQuery={query}", follow=True
         )
         self.assertEqual(response.status_code, 200)
         two_responses_text = "There are 2 studies in this list."
@@ -307,10 +444,16 @@ class FilterViewTests(TestCase):
 
         # Filter min weight 76 kg, max weight 90 kg
         # This should leave two studies
+        query = urllib.parse.quote(
+            json.dumps(
+                get_simple_multiple_query({
+                    "patientstudymoduleattr__patient_weight__gte": "76",
+                    "patientstudymoduleattr__patient_weight__lte": "90",
+                })
+            )
+        )
         response = self.client.get(
-            reverse_lazy("ct_summary_list_filter")
-            + "?patientstudymoduleattr__patient_weight__gte=76&patientstudymoduleattr__patient_weight__lte=90",
-            follow=True,
+            f"http://test/openrem/ct/?filterQuery={query}", follow=True
         )
         self.assertEqual(response.status_code, 200)
         two_responses_text = "There are 2 studies in this list."
