@@ -291,6 +291,12 @@ settings_patterns = [
         name="rf_recalculate_accum_doses",
     ),
     path("notpatientindicators/", include(settings_not_patient_indicators_patterns)),
+    path(
+        "background_task_settings/<int:pk>/",
+        views_admin.BackgroundTaskMaximumRowsUpdate.as_view(),
+        name="background_task_settings",
+    ),
+
 ]
 
 

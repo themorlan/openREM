@@ -82,6 +82,7 @@ from .forms import (
     StandardNameFormRF,
     StandardNameSettingsForm,
     NMChartOptionsDisplayForm,
+    BackgroundTaskMaximumRowsForm,
 )
 from .models import (
     AccumIntegratedProjRadiogDose,
@@ -109,6 +110,7 @@ from .models import (
     CommonVariables,
     StandardNames,
     StandardNameSettings,
+    BackgroundTaskMaximumRows,
 )
 from .tools.get_values import get_keys_by_value
 from .tools.hash_id import hash_id
@@ -3853,3 +3855,40 @@ class StandardNameSettingsUpdate(UpdateView):  # pylint: disable=unused-variable
                 "No changes made - standard name mapping remains " + status_word,
             )
             return redirect(reverse_lazy("standard_name_settings", kwargs={"pk": 1}))
+
+
+class BackgroundTaskMaximumRowsUpdate(UpdateView):  # pylint: disable=unused-variable
+    """UpdateView to update the background task maximum rows value"""
+
+    try:
+        BackgroundTaskMaximumRows.get_solo()  # will create item if it doesn't exist
+    except (AvoidDataMigrationErrorPostgres, AvoidDataMigrationErrorSQLite):
+        pass
+
+    model = BackgroundTaskMaximumRows
+    form_class = BackgroundTaskMaximumRowsForm
+
+    def get_context_data(self, **context):
+        context = super(BackgroundTaskMaximumRowsUpdate, self).get_context_data(**context)
+        admin = {
+            "openremversion": __version__,
+            "docsversion": __docs_version__,
+        }
+        for group in self.request.user.groups.all():
+            admin[group.name] = True
+        context["admin"] = admin
+        return context
+
+    def form_valid(self, form):
+        if form.has_changed():
+            if form.cleaned_data["max_background_task_rows"]:
+                messages.success(self.request, "Maximum number of rows updated")
+            else:
+                messages.info(self.request, "No changes made")
+            return super(BackgroundTaskMaximumRowsUpdate, self).form_valid(form)
+        else:
+            messages.info(
+                self.request,
+                "No changes made",
+            )
+            return redirect(reverse_lazy("background_task_settings", kwargs={"pk": 1}))

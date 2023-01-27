@@ -366,6 +366,9 @@ class BackgroundTaskMaximumRows(SingletonModel):
         verbose_name="The maximum number of historic background task records to keep",
     )
 
+    def get_absolute_url(self):
+        return reverse("background_task_settings", kwargs={"pk": 1})
+
 
 class BackgroundTask(models.Model):
     uuid = models.TextField()
