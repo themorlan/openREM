@@ -356,6 +356,10 @@ def make_skin_map(study_pk=None):
         # assume that calculation failed if max(peak_skin_dose) == 0 ==> set peak_skin_dose to None
         max_skin_dose = np.max(my_exp_map.my_dose.total_dose, initial=0)
         max_skin_dose = max_skin_dose if max_skin_dose > 0 else None
+        try:
+            dap_fraction = my_exp_map.my_dose.dap_count / float(study.total_dap)
+        except ZeroDivisionError:
+            dap_fraction = 1.0
         SkinDoseMapResults(
             general_study_module_attributes=study,
             patient_orientation=pat_pos,
@@ -369,7 +373,7 @@ def make_skin_map(study_pk=None):
             patient_size=pat_height,
             skin_map_version=__skin_map_version__,
             peak_skin_dose=max_skin_dose,
-            dap_fraction=my_exp_map.my_dose.dap_count / float(study.total_dap),
+            dap_fraction=dap_fraction,
         ).save()
         return_structure = {
             "skin_map": my_exp_map.my_dose.total_dose.flatten().tolist(),
