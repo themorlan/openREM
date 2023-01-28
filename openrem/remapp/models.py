@@ -370,6 +370,17 @@ class BackgroundTaskMaximumRows(SingletonModel):
         return reverse("background_task_settings", kwargs={"pk": 1})
 
 
+def limit_background_task_table_rows(sender, instance, **kwargs):
+    """
+    Method to limit the number of rows in the BackgroundTask table. This method is triggered by a post_save
+    signal associated with the BackgroundTask table.
+    """
+
+    all_tasks_qs = BackgroundTask.objects.order_by("id")
+    if all_tasks_qs.count() > BackgroundTaskMaximumRows.get_solo().max_background_task_rows:
+        all_tasks_qs[0].delete()
+
+
 class BackgroundTask(models.Model):
     uuid = models.TextField()
     proc_id = models.IntegerField()
@@ -380,12 +391,9 @@ class BackgroundTask(models.Model):
     complete = models.BooleanField(default=False)
     started_at = models.DateTimeField(blank=True, null=True)
 
-    def save(self, *args, **kwargs):
-        all_tasks_qs = BackgroundTask.objects.order_by("id")
-        if all_tasks_qs.count() > BackgroundTaskMaximumRows.get_solo().max_background_task_rows:
-            all_tasks_qs[0].delete()
 
-        super(BackgroundTask, self).save(*args, **kwargs)
+post_save.connect(limit_background_task_table_rows, sender=BackgroundTask)
+
 
 class DicomQuery(models.Model):
     """
