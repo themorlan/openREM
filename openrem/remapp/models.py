@@ -370,13 +370,13 @@ class BackgroundTaskMaximumRows(SingletonModel):
         return reverse("background_task_settings", kwargs={"pk": 1})
 
 
-def limit_background_task_table_rows(sender, instance, **kwargs):
+def limit_background_task_table_rows(sender, instance, **kwargs):  # pylint: disable=unused-argument
     """
     Method to limit the number of rows in the BackgroundTask table. This method is triggered by a post_save
     signal associated with the BackgroundTask table.
     """
 
-    all_tasks_qs = sender.objects.order_by("id")
+    all_tasks_qs = BackgroundTask.objects.order_by("id")
     if all_tasks_qs.count() > BackgroundTaskMaximumRows.get_solo().max_background_task_rows:
         all_tasks_qs[0].delete()
 
