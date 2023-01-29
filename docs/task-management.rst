@@ -42,7 +42,7 @@ tasks started by that process!
 Configuring the size of task history
 ====================================
 
-By default the status of 2000 active, recent and older tasks are stored in the OpenREM database. This limit can be
+The status of 2000 active, recent and older tasks are stored in the OpenREM database. This limit can be
 altered by users who are logged in with admin rights by clicking on **Task settings** in the **Config** menu and
 changing the current value. If this limit is set to a very high value it can cause the web browser to run out of
 memory when trying to view the **Task** page due to the large number of rows in the tables.
