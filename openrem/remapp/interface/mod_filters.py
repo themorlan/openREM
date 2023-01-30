@@ -1366,8 +1366,8 @@ def get_filtered_studies(filters, qs, filterClass: Type[FilterSet]) -> FilterSet
     try:
         pattern = filters.get("filterQuery")
         if pattern != None and pattern != "":
-            filters = json.loads(urllib.parse.unquote(pattern))
-            fs = filterClass(queryset=json_to_query(filters, qs, filterClass))
+            queryFilters = json.loads(urllib.parse.unquote(pattern))
+            fs = filterClass(data=filters, queryset=json_to_query(queryFilters, qs, filterClass))
     except Exception:  # pylint: disable=broad-except
         pass
     return fs

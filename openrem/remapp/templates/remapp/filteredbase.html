@@ -106,30 +106,32 @@
                             <div class="panel-body">
                                 <em>Date format yyyy-mm-dd</em>
                                 {% for field in filter.form.visible_fields %}
-                                    <div class="form-group">
-                                        <div class="col-xs-4">
-                                            <label>{{ field.label_tag }}</label>
-                                        </div>
-                                        {% if not field.field.widget.attrs.static_lookup %}
-                                            <div class="col-xs-1">
-                                                <button type="button" class="btn btn-default btn-xs" id="{{field.name}}_notToggle"
-                                                data-toggle="button" aria-pressed="false" autocomplete="off">
-                                                    not
-                                                </button>
+                                    {% if field.name != "o" %}
+                                        <div class="form-group">
+                                            <div class="col-xs-4">
+                                                <label>{{ field.label_tag }}</label>
                                             </div>
-                                            <div class="col-xs-2">
-                                                <select id="{{field.name}}_lookupType">
-                                                    <option value="icontains">contains</option>
-                                                    <option value="iexact">is</option>
-                                                    <option value="iregex">regex</option>
-                                                </select>
+                                            {% if not field.field.widget.attrs.static_lookup %}
+                                                <div class="col-xs-1">
+                                                    <button type="button" class="btn btn-default btn-xs" id="{{field.name}}_notToggle"
+                                                    data-toggle="button" aria-pressed="false" autocomplete="off">
+                                                        not
+                                                    </button>
+                                                </div>
+                                                <div class="col-xs-2">
+                                                    <select id="{{field.name}}_lookupType">
+                                                        <option value="icontains">contains</option>
+                                                        <option value="iexact">is</option>
+                                                        <option value="iregex">regex</option>
+                                                    </select>
+                                                </div>
+                                            {% endif %}
+                                            <div class="col-xs-5">
+                                                {{ field.errors }}
+                                                {{ field }}
                                             </div>
-                                        {% endif %}
-                                        <div class="col-xs-5">
-                                            {{ field.errors }}
-                                            {{ field }}
                                         </div>
-                                    </div>
+                                    {% endif %}
                                 {% endfor %}
                                 {% for field in filter.form.hidden_fields %}
                                     <div style="display:none">{{ field }}</div>
@@ -336,6 +338,14 @@
             <div id="collapseTableOptions" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTableOptions">
                 <div class="panel-body">
                     <table class="table table-condensed">
+                        {% for field in filter.form.visible_fields %}
+                            {% if field.name == "o" %}
+                                <tr>
+                                    <th>{{ field.label_tag }}</th>
+                                    <td>{{ field }}</td>
+                                </tr>
+                            {% endif %}
+                        {% endfor %}
                         {{ itemsPerPageForm }}
                     </table>
                 </div>
