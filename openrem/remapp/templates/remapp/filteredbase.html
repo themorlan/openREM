@@ -27,6 +27,14 @@
         }
     </script>
 
+    <style>
+        .row > div {
+            display: inline-block;
+            vertical-align: middle;
+            float: none;
+        }
+    </style>
+
     {% block headscript %}
     {% endblock %}
 {% endblock %}
@@ -177,8 +185,6 @@
                             <div class="panel-body">
                                 <input type="hidden" value="{{ csrf_token }}" id="postToken" />
                                 <div id="libraryAlerts"></div>
-                                <div class="alert alert-success" role="alert" id="libraryAlertSuccess" hidden></div>
-                                <div class="alert alert-danger" role="alert" id="libraryAlertDanger" hidden></div>
                                 <div class="panel panel-default">
                                     <div class="panel-heading">
                                         <h4 class="panel-title">

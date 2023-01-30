@@ -19,7 +19,7 @@ $(document).ready(function () {
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
 
-    const filterQuery = urlParams.get('filterQuery')
+    const filterQuery = urlParams.get('filterQuery');
     const newPattern = JSON.parse(decodeURIComponent(filterQuery));
     if (newPattern !== null) {
         pattern = newPattern;
@@ -224,12 +224,11 @@ function loadFromLibrary(libraryPanelId) {
     if (libraryId === NaN) {
         return;
     }
-
     $.get("/openrem/filters/" + libraryId, function (data) {
         if (data.pattern !== undefined && data.pattern !== null) {
             pattern = data.pattern;
             renderPattern();
-            $('#submitQuery').click();
+            showLibraryAlert(`Pattern has been loaded successfully!`, "success");
         }
     });
 }
@@ -315,7 +314,7 @@ function renderGroup(group = ROOT_GROUP_ID, level = 0) {
                             data-next="${current["next"]}">Edit filter</a>
                         </div>
                         <div class="col-md-*">
-                            <p>${JSON.stringify(current.fields)}</p>
+                            <span>${renderFilterContent(current.fields)}</span>
                         </div>
                     </div>
                     ${getButtonTemplate(group, level, currentId, current.next)}
@@ -344,6 +343,24 @@ function renderGroup(group = ROOT_GROUP_ID, level = 0) {
         }
         currentId = pattern[currentId].next;
     }
+    return content;
+}
+
+function renderFilterContent(fields) {
+    let content = "";
+
+    for (const [key, value] of Object.entries(fields)) {
+        if (value[1] === null) {}
+        let a = $(`#newExamFilter label[for=id_${key}]`).text();
+        console.log(`${key} ${value}`);
+        console.log(`${a}`);
+
+        console.log(`#newExamFilter label[for=id_${key}]`)
+        content += `
+            <span class="label label-default">${a} ${value[0]}</span>
+        `;
+    }
+    
     return content;
 }
 
