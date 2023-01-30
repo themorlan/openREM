@@ -11,6 +11,7 @@ from .test_filters_data import get_simple_query, get_simple_multiple_query
 import urllib.parse
 import json
 
+
 class FilterViewTests(TestCase):
     """
     Class to test the filter views for radiography
@@ -65,9 +66,12 @@ class FilterViewTests(TestCase):
         Apply study description filter
         """
         self.client.login(username="temporary", password="temporary")
-        query = urllib.parse.quote(json.dumps(get_simple_query("study_description", "CR")))
+        query = urllib.parse.quote(
+            json.dumps(get_simple_query("study_description", "CR"))
+        )
         response = self.client.get(
-            reverse_lazy("dx_summary_list_filter") + f"?filterQuery={query}", follow=True
+            reverse_lazy("dx_summary_list_filter") + f"?filterQuery={query}",
+            follow=True,
         )
 
         self.assertEqual(response.status_code, 200)
@@ -83,9 +87,17 @@ class FilterViewTests(TestCase):
         Apply acquisition protocol filter
         """
         self.client.login(username="temporary", password="temporary")
-        query = urllib.parse.quote(json.dumps(get_simple_query("projectionxrayradiationdose__irradeventxraydata__acquisition_protocol", "thigh")))
+        query = urllib.parse.quote(
+            json.dumps(
+                get_simple_query(
+                    "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
+                    "thigh",
+                )
+            )
+        )
         response = self.client.get(
-            reverse_lazy("dx_summary_list_filter") + f"?filterQuery={query}", follow=True
+            reverse_lazy("dx_summary_list_filter") + f"?filterQuery={query}",
+            follow=True,
         )
 
         self.assertEqual(response.status_code, 200)

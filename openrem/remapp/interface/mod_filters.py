@@ -227,11 +227,13 @@ class RFSummaryListFilter(django_filters.FilterSet):
         widget=forms.TextInput(attrs={"static_lookup": True}),
     )
     study_dap_min = django_filters.NumberFilter(
-        method=_dap_filter, label="Min study DAP (cGy·cm²)",
+        method=_dap_filter,
+        label="Min study DAP (cGy·cm²)",
         widget=forms.NumberInput(attrs={"static_lookup": True}),
     )
     study_dap_max = django_filters.NumberFilter(
-        method=_dap_filter, label="Max study DAP (cGy·cm²)",
+        method=_dap_filter,
+        label="Max study DAP (cGy·cm²)",
         widget=forms.NumberInput(attrs={"static_lookup": True}),
     )
     generalequipmentmoduleattr__unique_equipment_name__display_name = (
@@ -366,7 +368,11 @@ def rf_acq_filter(filters, pid=False):
         "enable_standard_names", flat=True
     )[0]
 
-    qs = GeneralStudyModuleAttr.objects.filter(modality_type__exact="RF").order_by("-study_date", "-study_time").distinct()
+    qs = (
+        GeneralStudyModuleAttr.objects.filter(modality_type__exact="RF")
+        .order_by("-study_date", "-study_time")
+        .distinct()
+    )
 
     if pid:
         if enable_standard_names:
@@ -690,7 +696,11 @@ def ct_acq_filter(filters, pid=False):
         "enable_standard_names", flat=True
     )[0]
 
-    qs = GeneralStudyModuleAttr.objects.filter(modality_type__exact="CT").order_by("-study_date", "-study_time").distinct()
+    qs = (
+        GeneralStudyModuleAttr.objects.filter(modality_type__exact="CT")
+        .order_by("-study_date", "-study_time")
+        .distinct()
+    )
 
     if pid:
         if enable_standard_names:
@@ -909,7 +919,11 @@ def mg_acq_filter(filters, pid=False):
         "enable_standard_names", flat=True
     )[0]
 
-    qs = GeneralStudyModuleAttr.objects.filter(modality_type__exact="MG").order_by("-study_date", "-study_time").distinct()
+    qs = (
+        GeneralStudyModuleAttr.objects.filter(modality_type__exact="MG")
+        .order_by("-study_date", "-study_time")
+        .distinct()
+    )
 
     if pid:
         if enable_standard_names:
@@ -1337,7 +1351,11 @@ class NMFilterPlusPid(NMSummaryListFilter):
 
 
 def nm_acq_filter(filters, pid=False) -> FilterSet:
-    qs = GeneralStudyModuleAttr.objects.filter(modality_type__exact="NM").order_by("-study_date", "-study_time").distinct()
+    qs = (
+        GeneralStudyModuleAttr.objects.filter(modality_type__exact="NM")
+        .order_by("-study_date", "-study_time")
+        .distinct()
+    )
     if pid:
         return get_filtered_studies(filters, qs, NMFilterPlusPid)
     return get_filtered_studies(filters, qs, NMSummaryListFilter)
@@ -1360,7 +1378,9 @@ class InvalidQuery(Exception):
     pass
 
 
-def json_to_query(pattern, qs: QuerySet, filterClass: Type[FilterSet], group="root") -> QuerySet:
+def json_to_query(
+    pattern, qs: QuerySet, filterClass: Type[FilterSet], group="root"
+) -> QuerySet:
     """
     Transforms the JSON pattern into a Q object
     """

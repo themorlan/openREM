@@ -11,6 +11,7 @@ from .test_filters_data import get_simple_query, get_simple_multiple_query
 import urllib.parse
 import json
 
+
 class FilterViewTests(TestCase):
     """
     Class to test the filter views for mammography
@@ -54,14 +55,13 @@ class FilterViewTests(TestCase):
         """
         self.client.login(username="temporary", password="temporary")
         query = urllib.parse.quote(
-            json.dumps(
-                get_simple_query("study_description", "bilateral")
-            )
+            json.dumps(get_simple_query("study_description", "bilateral"))
         )
         response = self.client.get(
-            reverse_lazy("mg_summary_list_filter") + f"?filterQuery={query}", follow=True
+            reverse_lazy("mg_summary_list_filter") + f"?filterQuery={query}",
+            follow=True,
         )
-        
+
         self.assertEqual(response.status_code, 200)
         one_responses_text = "There are 1 studies in this list."
         self.assertContains(response, one_responses_text)
@@ -76,12 +76,11 @@ class FilterViewTests(TestCase):
         """
         self.client.login(username="temporary", password="temporary")
         query = urllib.parse.quote(
-            json.dumps(
-                get_simple_query("procedure_code_meaning", "Flat field tomo")
-            )
+            json.dumps(get_simple_query("procedure_code_meaning", "Flat field tomo"))
         )
         response = self.client.get(
-            reverse_lazy("mg_summary_list_filter") + f"?filterQuery={query}", follow=True
+            reverse_lazy("mg_summary_list_filter") + f"?filterQuery={query}",
+            follow=True,
         )
         self.assertEqual(response.status_code, 200)
         one_responses_text = "There are 1 studies in this list."
@@ -98,13 +97,16 @@ class FilterViewTests(TestCase):
         self.client.login(username="temporary", password="temporary")
         query = urllib.parse.quote(
             json.dumps(
-                get_simple_query("projectionxrayradiationdose__irradeventxraydata__acquisition_protocol", "routine")
+                get_simple_query(
+                    "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
+                    "routine",
+                )
             )
         )
         response = self.client.get(
             reverse("mg_summary_list_filter") + f"?filterQuery={query}", follow=True
         )
-        
+
         self.assertEqual(response.status_code, 200)
         one_responses_text = "There are 1 studies in this list."
         self.assertContains(response, one_responses_text)
@@ -120,7 +122,10 @@ class FilterViewTests(TestCase):
         self.client.login(username="temporary", password="temporary")
         query = urllib.parse.quote(
             json.dumps(
-                get_simple_query("projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure_control_mode", "automatic")
+                get_simple_query(
+                    "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure_control_mode",
+                    "automatic",
+                )
             )
         )
         response = self.client.get(
@@ -140,10 +145,12 @@ class FilterViewTests(TestCase):
         self.client.login(username="temporary", password="temporary")
         query = urllib.parse.quote(
             json.dumps(
-                get_simple_multiple_query({
-                    "projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness__range_min": "0",
-                    "projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness__range_max": "18",
-                })
+                get_simple_multiple_query(
+                    {
+                        "projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness__range_min": "0",
+                        "projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness__range_max": "18",
+                    }
+                )
             )
         )
         response = self.client.get(
@@ -163,16 +170,17 @@ class FilterViewTests(TestCase):
         self.client.login(username="temporary", password="temporary")
         query = urllib.parse.quote(
             json.dumps(
-                get_simple_multiple_query({
-                    "projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness__range_min": "42",
-                    "projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness__range_max": "44",
-                })
+                get_simple_multiple_query(
+                    {
+                        "projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness__range_min": "42",
+                        "projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness__range_max": "44",
+                    }
+                )
             )
         )
         response = self.client.get(
             reverse("mg_summary_list_filter") + f"?filterQuery={query}", follow=True
         )
-
 
         self.assertEqual(response.status_code, 200)
         one_responses_text = "There are 1 studies in this list."
@@ -187,10 +195,12 @@ class FilterViewTests(TestCase):
         self.client.login(username="temporary", password="temporary")
         query = urllib.parse.quote(
             json.dumps(
-                get_simple_multiple_query({
-                    "projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness__range_min": "53",
-                    "projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness__range_max": "100",
-                })
+                get_simple_multiple_query(
+                    {
+                        "projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness__range_min": "53",
+                        "projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness__range_max": "100",
+                    }
+                )
             )
         )
         response = self.client.get(
@@ -209,7 +219,10 @@ class FilterViewTests(TestCase):
         self.client.login(username="temporary", password="temporary")
         query = urllib.parse.quote(
             json.dumps(
-                get_simple_query("projectionxrayradiationdose__irradeventxraydata__image_view__code_meaning", "lateral")
+                get_simple_query(
+                    "projectionxrayradiationdose__irradeventxraydata__image_view__code_meaning",
+                    "lateral",
+                )
             )
         )
         response = self.client.get(

@@ -209,7 +209,9 @@ def create_paginated_study_list(request, f, user_profile):
 def generate_return_structure(request, f, modality=""):
     user_profile = get_or_create_user(request)
     items_per_page_form = update_items_per_page_form(request, user_profile)
-    user_libraries = FilterLibrary.objects.filter(modality_type=modality, user=user_profile.user_id, shared=False)
+    user_libraries = FilterLibrary.objects.filter(
+        modality_type=modality, user=user_profile.user_id, shared=False
+    )
     shared_libraries = FilterLibrary.objects.filter(modality_type=modality, shared=True)
     admin = create_admin_info(request)
     study_list = create_paginated_study_list(request, f, user_profile)
@@ -1206,7 +1208,8 @@ def add_filter_to_library(request, modality):
     except IntegrityError:
         return HttpResponseBadRequest()
     return HttpResponse(
-        json.dumps({"id": new_entry.pk, "name": new_entry.name}), content_type="application/json"
+        json.dumps({"id": new_entry.pk, "name": new_entry.name}),
+        content_type="application/json",
     )
 
 
@@ -1215,13 +1218,14 @@ def toggle_filter_visibility(request, pk=None):
     """Toggles visibility (shared bool) for the specified filter"""
     if pk is None:
         return HttpResponseBadRequest()
-    
+
     if not request.user.groups.filter(name="admingroup"):
         messages.error(
-            request, "Only members of the admingroup are allowed to share or retain filters"
+            request,
+            "Only members of the admingroup are allowed to share or retain filters",
         )
         return HttpResponseForbidden()
-    
+
     try:
         filter = FilterLibrary.objects.get(pk=pk)
         filter.shared = not filter.shared

@@ -57,7 +57,11 @@ from ..exports.export_common import (
     create_export_task,
     get_patient_study_data,
 )
-from ..interface.mod_filters import rf_acq_filter, get_filtered_studies, RFSummaryListFilter
+from ..interface.mod_filters import (
+    rf_acq_filter,
+    get_filtered_studies,
+    RFSummaryListFilter,
+)
 from ..tools.get_values import return_for_export
 
 logger = logging.getLogger(__name__)
@@ -1072,7 +1076,11 @@ def rf_phe_2019(filterdict, user=None):
         exit()
     sheet = book.add_worksheet("PHE IR-Fluoro")
 
-    exams = get_filtered_studies(filterdict, GeneralStudyModuleAttr.objects.filter(modality_type__exact="RF"), RFSummaryListFilter).qs
+    exams = get_filtered_studies(
+        filterdict,
+        GeneralStudyModuleAttr.objects.filter(modality_type__exact="RF"),
+        RFSummaryListFilter,
+    ).qs
 
     tsk.num_records = exams.count()
     if abort_if_zero_studies(tsk.num_records, tsk):

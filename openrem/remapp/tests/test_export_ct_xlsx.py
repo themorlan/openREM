@@ -51,7 +51,11 @@ class ExportCTxlsx(TestCase):
 
     def test_id_as_text(self):  # See https://bitbucket.org/openrem/openrem/issues/443
         filter_set = {"o": "-study_date"}
-        filter_set = {"filterQuery": urllib.parse.quote(json.dumps(get_simple_multiple_query(filter_set)))}
+        filter_set = {
+            "filterQuery": urllib.parse.quote(
+                json.dumps(get_simple_multiple_query(filter_set))
+            )
+        }
 
         pid = True
         name = False
@@ -144,7 +148,11 @@ class ExportCTxlsx(TestCase):
     def test_zero_filter(self):
         """Test error handled correctly when empty filter."""
         filter_set = {"study_description": "asd"}
-        filter_set = {"filterQuery": urllib.parse.quote(json.dumps(get_simple_multiple_query(filter_set)))}
+        filter_set = {
+            "filterQuery": urllib.parse.quote(
+                json.dumps(get_simple_multiple_query(filter_set))
+            )
+        }
 
         pid = True
         name = False
@@ -164,7 +172,11 @@ class ExportCTxlsx(TestCase):
             "num_spiral_events": "some",
             "o": "-study_date",
         }
-        filter_set = {"filterQuery": urllib.parse.quote(json.dumps(get_simple_multiple_query(filter_set)))}
+        filter_set = {
+            "filterQuery": urllib.parse.quote(
+                json.dumps(get_simple_multiple_query(filter_set))
+            )
+        }
 
         pid = True
         name = False
@@ -187,7 +199,11 @@ class ExportCTxlsx(TestCase):
             "num_axial_events": "some",
             "o": "-study_date",
         }
-        filter_set = {"filterQuery": urllib.parse.quote(json.dumps(get_simple_multiple_query(filter_set)))}
+        filter_set = {
+            "filterQuery": urllib.parse.quote(
+                json.dumps(get_simple_multiple_query(filter_set))
+            )
+        }
 
         pid = True
         name = False
@@ -211,7 +227,11 @@ class ExportCTxlsx(TestCase):
             "num_axial_events": "some",
             "o": "-study_date",
         }
-        filter_set = {"filterQuery": urllib.parse.quote(json.dumps(get_simple_multiple_query(filter_set)))}
+        filter_set = {
+            "filterQuery": urllib.parse.quote(
+                json.dumps(get_simple_multiple_query(filter_set))
+            )
+        }
 
         pid = True
         name = False
@@ -227,7 +247,11 @@ class ExportCTxlsx(TestCase):
 
     def test_export_phe(self):
         filter_set = {"num_spiral_events": "2"}
-        filter_set = {"filterQuery": urllib.parse.quote(json.dumps(get_simple_multiple_query(filter_set)))}
+        filter_set = {
+            "filterQuery": urllib.parse.quote(
+                json.dumps(get_simple_multiple_query(filter_set))
+            )
+        }
 
         ct_phe_2019(filter_set, user=self.user)
 

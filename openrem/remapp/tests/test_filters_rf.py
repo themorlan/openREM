@@ -11,6 +11,7 @@ from .test_filters_data import get_simple_query, get_simple_multiple_query
 import urllib.parse
 import json
 
+
 class FilterViewTests(TestCase):
     """
     Class to test the filter views for fluoroscopy
@@ -47,9 +48,12 @@ class FilterViewTests(TestCase):
         Apply study description filter
         """
         self.client.login(username="temporary", password="temporary")
-        query = urllib.parse.quote(json.dumps(get_simple_query("study_description", "liuotushoidon raajojen")))
+        query = urllib.parse.quote(
+            json.dumps(get_simple_query("study_description", "liuotushoidon raajojen"))
+        )
         response = self.client.get(
-            reverse_lazy("rf_summary_list_filter") + f"?filterQuery={query}", follow=True
+            reverse_lazy("rf_summary_list_filter") + f"?filterQuery={query}",
+            follow=True,
         )
 
         self.assertEqual(response.status_code, 200)
@@ -65,9 +69,17 @@ class FilterViewTests(TestCase):
         Apply acquisition protocol filter
         """
         self.client.login(username="temporary", password="temporary")
-        query = urllib.parse.quote(json.dumps(get_simple_query("projectionxrayradiationdose__irradeventxraydata__acquisition_protocol", "2fps")))
+        query = urllib.parse.quote(
+            json.dumps(
+                get_simple_query(
+                    "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
+                    "2fps",
+                )
+            )
+        )
         response = self.client.get(
-            reverse_lazy("rf_summary_list_filter") + f"?filterQuery={query}", follow=True
+            reverse_lazy("rf_summary_list_filter") + f"?filterQuery={query}",
+            follow=True,
         )
 
         self.assertEqual(response.status_code, 200)
@@ -88,14 +100,21 @@ class FilterViewTests(TestCase):
         # The Siemens test study does not have patient weight data
 
         # Test filtering using min weight of 80 kg and max weight of 90 kg - this should exclude the Siemens study
-        query = urllib.parse.quote(json.dumps(get_simple_multiple_query({
-            "patientstudymoduleattr__patient_weight__gte": "80",
-            "patientstudymoduleattr__patient_weight__lte": "90",
-        })))
-        response = self.client.get(
-            reverse_lazy("rf_summary_list_filter") + f"?filterQuery={query}", follow=True
+        query = urllib.parse.quote(
+            json.dumps(
+                get_simple_multiple_query(
+                    {
+                        "patientstudymoduleattr__patient_weight__gte": "80",
+                        "patientstudymoduleattr__patient_weight__lte": "90",
+                    }
+                )
+            )
         )
-        
+        response = self.client.get(
+            reverse_lazy("rf_summary_list_filter") + f"?filterQuery={query}",
+            follow=True,
+        )
+
         self.assertEqual(response.status_code, 200)
         one_responses_text = "There are 1 studies in this list."
         self.assertContains(response, one_responses_text)
@@ -103,22 +122,28 @@ class FilterViewTests(TestCase):
         self.assertContains(response, accession_number)
 
         # Test filtering using min weight of 90 kg - this should exclude both studies
-        query = urllib.parse.quote(json.dumps(get_simple_query(
-            "patientstudymoduleattr__patient_weight__gte", "90"
-        )))
+        query = urllib.parse.quote(
+            json.dumps(
+                get_simple_query("patientstudymoduleattr__patient_weight__gte", "90")
+            )
+        )
         response = self.client.get(
-            reverse_lazy("rf_summary_list_filter") + f"?filterQuery={query}", follow=True
+            reverse_lazy("rf_summary_list_filter") + f"?filterQuery={query}",
+            follow=True,
         )
         self.assertEqual(response.status_code, 200)
         zero_responses_text = "There are 0 studies in this list."
         self.assertContains(response, zero_responses_text)
 
         # Test filtering using max weight of 80 kg - this should exclude both studies
-        query = urllib.parse.quote(json.dumps(get_simple_query(
-            "patientstudymoduleattr__patient_weight__lte", "80"
-        )))
+        query = urllib.parse.quote(
+            json.dumps(
+                get_simple_query("patientstudymoduleattr__patient_weight__lte", "80")
+            )
+        )
         response = self.client.get(
-            reverse_lazy("rf_summary_list_filter") + f"?filterQuery={query}", follow=True
+            reverse_lazy("rf_summary_list_filter") + f"?filterQuery={query}",
+            follow=True,
         )
         self.assertEqual(response.status_code, 200)
         zero_responses_text = "There are 0 studies in this list."

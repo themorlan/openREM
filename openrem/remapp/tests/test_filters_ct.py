@@ -11,12 +11,11 @@ from .test_filters_data import get_simple_query, get_simple_multiple_query
 import urllib.parse
 import json
 
+
 class FilterViewTests(TestCase):
     """
     Class to test the filter views for CT
     """
-
-
 
     def setUp(self):
         """
@@ -64,7 +63,9 @@ class FilterViewTests(TestCase):
         Apply study description filter
         """
         self.client.login(username="temporary", password="temporary")
-        query = urllib.parse.quote(json.dumps(get_simple_query("study_description", "abdomen")))
+        query = urllib.parse.quote(
+            json.dumps(get_simple_query("study_description", "abdomen"))
+        )
         response = self.client.get(
             f"http://test/openrem/ct/?filterQuery={query}", follow=True
         )
@@ -81,7 +82,9 @@ class FilterViewTests(TestCase):
         Apply procedure filter
         """
         self.client.login(username="temporary", password="temporary")
-        query = urllib.parse.quote(json.dumps(get_simple_query("procedure_code_meaning", "abdomen")))
+        query = urllib.parse.quote(
+            json.dumps(get_simple_query("procedure_code_meaning", "abdomen"))
+        )
         response = self.client.get(
             f"http://test/openrem/ct/?filterQuery={query}", follow=True
         )
@@ -98,7 +101,9 @@ class FilterViewTests(TestCase):
         Apply procedure filter
         """
         self.client.login(username="temporary", password="temporary")
-        query = urllib.parse.quote(json.dumps(get_simple_query("requested_procedure_code_meaning", "bones")))
+        query = urllib.parse.quote(
+            json.dumps(get_simple_query("requested_procedure_code_meaning", "bones"))
+        )
         response = self.client.get(
             f"http://test/openrem/ct/?filterQuery={query}", follow=True
         )
@@ -119,7 +124,7 @@ class FilterViewTests(TestCase):
             json.dumps(
                 get_simple_query(
                     "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
-                    "monitoring"
+                    "monitoring",
                 )
             )
         )
@@ -140,12 +145,14 @@ class FilterViewTests(TestCase):
 
         query = urllib.parse.quote(
             json.dumps(
-                get_simple_multiple_query({
-                    "num_spiral_events": "2",
-                    "num_axial_events": "",
-                    "num_spr_events": "",
-                    "num_stationary_events": ""
-                })
+                get_simple_multiple_query(
+                    {
+                        "num_spiral_events": "2",
+                        "num_axial_events": "",
+                        "num_spr_events": "",
+                        "num_stationary_events": "",
+                    }
+                )
             )
         )
         response = self.client.get(
@@ -166,12 +173,14 @@ class FilterViewTests(TestCase):
 
         query = urllib.parse.quote(
             json.dumps(
-                get_simple_multiple_query({
-                    "num_spiral_events": "2",
-                    "num_axial_events": "0",
-                    "num_spr_events": "",
-                    "num_stationary_events": ""
-                })
+                get_simple_multiple_query(
+                    {
+                        "num_spiral_events": "2",
+                        "num_axial_events": "0",
+                        "num_spr_events": "",
+                        "num_stationary_events": "",
+                    }
+                )
             )
         )
         response = self.client.get(
@@ -190,12 +199,14 @@ class FilterViewTests(TestCase):
 
         query = urllib.parse.quote(
             json.dumps(
-                get_simple_multiple_query({
-                    "num_spiral_events": "2",
-                    "num_axial_events": "5",
-                    "num_spr_events": "",
-                    "num_stationary_events": "4"
-                })
+                get_simple_multiple_query(
+                    {
+                        "num_spiral_events": "2",
+                        "num_axial_events": "5",
+                        "num_spr_events": "",
+                        "num_stationary_events": "4",
+                    }
+                )
             )
         )
         response = self.client.get(
@@ -210,12 +221,14 @@ class FilterViewTests(TestCase):
 
         query = urllib.parse.quote(
             json.dumps(
-                get_simple_multiple_query({
-                    "num_spiral_events": "1",
-                    "num_axial_events": "0",
-                    "num_spr_events": "1",
-                    "num_stationary_events": "2"
-                })
+                get_simple_multiple_query(
+                    {
+                        "num_spiral_events": "1",
+                        "num_axial_events": "0",
+                        "num_spr_events": "1",
+                        "num_stationary_events": "2",
+                    }
+                )
             )
         )
         response = self.client.get(
@@ -229,12 +242,14 @@ class FilterViewTests(TestCase):
 
         query = urllib.parse.quote(
             json.dumps(
-                get_simple_multiple_query({
-                    "num_spiral_events": "",
-                    "num_axial_events": "5",
-                    "num_spr_events": "",
-                    "num_stationary_events": ""
-                })
+                get_simple_multiple_query(
+                    {
+                        "num_spiral_events": "",
+                        "num_axial_events": "5",
+                        "num_spr_events": "",
+                        "num_stationary_events": "",
+                    }
+                )
             )
         )
         response = self.client.get(
@@ -248,12 +263,14 @@ class FilterViewTests(TestCase):
 
         query = urllib.parse.quote(
             json.dumps(
-                get_simple_multiple_query({
-                    "num_spiral_events": "",
-                    "num_axial_events": "",
-                    "num_spr_events": "1",
-                    "num_stationary_events": ""
-                })
+                get_simple_multiple_query(
+                    {
+                        "num_spiral_events": "",
+                        "num_axial_events": "",
+                        "num_spr_events": "1",
+                        "num_stationary_events": "",
+                    }
+                )
             )
         )
         response = self.client.get(
@@ -271,12 +288,14 @@ class FilterViewTests(TestCase):
 
         query = urllib.parse.quote(
             json.dumps(
-                get_simple_multiple_query({
-                    "num_spiral_events": "",
-                    "num_axial_events": "",
-                    "num_spr_events": "",
-                    "num_stationary_events": "2"
-                })
+                get_simple_multiple_query(
+                    {
+                        "num_spiral_events": "",
+                        "num_axial_events": "",
+                        "num_spr_events": "",
+                        "num_stationary_events": "2",
+                    }
+                )
             )
         )
         response = self.client.get(
@@ -290,12 +309,14 @@ class FilterViewTests(TestCase):
 
         query = urllib.parse.quote(
             json.dumps(
-                get_simple_multiple_query({
-                    "num_spiral_events": "",
-                    "num_axial_events": "5",
-                    "num_spr_events": "",
-                    "num_stationary_events": "4"
-                })
+                get_simple_multiple_query(
+                    {
+                        "num_spiral_events": "",
+                        "num_axial_events": "5",
+                        "num_spr_events": "",
+                        "num_stationary_events": "4",
+                    }
+                )
             )
         )
         response = self.client.get(
@@ -309,12 +330,14 @@ class FilterViewTests(TestCase):
 
         query = urllib.parse.quote(
             json.dumps(
-                get_simple_multiple_query({
-                    "num_spiral_events": "1",
-                    "num_axial_events": "",
-                    "num_spr_events": "1",
-                    "num_stationary_events": ""
-                })
+                get_simple_multiple_query(
+                    {
+                        "num_spiral_events": "1",
+                        "num_axial_events": "",
+                        "num_spr_events": "1",
+                        "num_stationary_events": "",
+                    }
+                )
             )
         )
         response = self.client.get(
@@ -328,12 +351,14 @@ class FilterViewTests(TestCase):
 
         query = urllib.parse.quote(
             json.dumps(
-                get_simple_multiple_query({
-                    "num_spiral_events": "2",
-                    "num_axial_events": "",
-                    "num_spr_events": "",
-                    "num_stationary_events": "7"
-                })
+                get_simple_multiple_query(
+                    {
+                        "num_spiral_events": "2",
+                        "num_axial_events": "",
+                        "num_spr_events": "",
+                        "num_stationary_events": "7",
+                    }
+                )
             )
         )
         response = self.client.get(
@@ -347,12 +372,14 @@ class FilterViewTests(TestCase):
 
         query = urllib.parse.quote(
             json.dumps(
-                get_simple_multiple_query({
-                    "num_spiral_events": "1",
-                    "num_axial_events": "",
-                    "num_spr_events": "1",
-                    "num_stationary_events": "2"
-                })
+                get_simple_multiple_query(
+                    {
+                        "num_spiral_events": "1",
+                        "num_axial_events": "",
+                        "num_spr_events": "1",
+                        "num_stationary_events": "2",
+                    }
+                )
             )
         )
         response = self.client.get(
@@ -366,12 +393,14 @@ class FilterViewTests(TestCase):
 
         query = urllib.parse.quote(
             json.dumps(
-                get_simple_multiple_query({
-                    "num_spiral_events": "",
-                    "num_axial_events": "",
-                    "num_spr_events": "some",
-                    "num_stationary_events": ""
-                })
+                get_simple_multiple_query(
+                    {
+                        "num_spiral_events": "",
+                        "num_axial_events": "",
+                        "num_spr_events": "some",
+                        "num_stationary_events": "",
+                    }
+                )
             )
         )
         response = self.client.get(
@@ -397,13 +426,15 @@ class FilterViewTests(TestCase):
 
         # Filter min weight 70 kg, max weight 90 kg
         # This should leave the four studies that have weight data
-        
+
         query = urllib.parse.quote(
             json.dumps(
-                get_simple_multiple_query({
-                    "patientstudymoduleattr__patient_weight__gte": "70",
-                    "patientstudymoduleattr__patient_weight__lte": "90",
-                })
+                get_simple_multiple_query(
+                    {
+                        "patientstudymoduleattr__patient_weight__gte": "70",
+                        "patientstudymoduleattr__patient_weight__lte": "90",
+                    }
+                )
             )
         )
         response = self.client.get(
@@ -425,10 +456,12 @@ class FilterViewTests(TestCase):
         # This should leave two studies
         query = urllib.parse.quote(
             json.dumps(
-                get_simple_multiple_query({
-                    "patientstudymoduleattr__patient_weight__gte": "70",
-                    "patientstudymoduleattr__patient_weight__lte": "76",
-                })
+                get_simple_multiple_query(
+                    {
+                        "patientstudymoduleattr__patient_weight__gte": "70",
+                        "patientstudymoduleattr__patient_weight__lte": "76",
+                    }
+                )
             )
         )
         response = self.client.get(
@@ -446,10 +479,12 @@ class FilterViewTests(TestCase):
         # This should leave two studies
         query = urllib.parse.quote(
             json.dumps(
-                get_simple_multiple_query({
-                    "patientstudymoduleattr__patient_weight__gte": "76",
-                    "patientstudymoduleattr__patient_weight__lte": "90",
-                })
+                get_simple_multiple_query(
+                    {
+                        "patientstudymoduleattr__patient_weight__gte": "76",
+                        "patientstudymoduleattr__patient_weight__lte": "90",
+                    }
+                )
             )
         )
         response = self.client.get(
