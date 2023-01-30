@@ -219,8 +219,8 @@ function addGroup(caller) {
     openFilter(currentFilterId);
 }
 
-function loadFromLibrary(patternId) {
-    let libraryId = $(`#${patternId}Select`).val();
+function loadFromLibrary(libraryPanelId) {
+    let libraryId = $(`#${libraryPanelId}Select`).val();
     if (libraryId === NaN) {
         return;
     }
@@ -234,38 +234,62 @@ function loadFromLibrary(patternId) {
     });
 }
 
-function deleteFromLibrary(patternId) {
-    let libraryId = $(`#${patternId}Select`).val();
+function deleteFromLibrary(libraryPanelId) {
+    let libraryId = $(`#${libraryPanelId}Select`).val();
     if (libraryId === NaN) {
         return;
     }
-    $.get("/openrem/filters/delete/" + libraryId, function (data) {
+    $.get("/openrem/filters/delete/" + libraryId, function (_) {
         renderPattern();
-        $(`#${patternId}Select option:selected`).remove();
-        if ($(`#${patternId}Select option`).length <= 0) {
-            $(`#${patternId}`).remove();
-        }
+        $(`#${libraryPanelId}Select option:selected`).remove();
+        showLibraryAlert(`Pattern has been deleted successfully!`, "success");
+        setLibraryVisibility(libraryPanelId);
     });
 }
 
-function saveToLibrary() {
+function saveToLibrary(libraryPanelId) {
     let libraryName = $('#newFilterLibraryName').val();
     if (libraryName === undefined || libraryName === null) {
         return;
     }
     $.post(`/openrem/filters/add/${modality}/`, { libraryName: libraryName, pattern: JSON.stringify(pattern), csrfmiddlewaretoken: $('#postToken').val() }, function (data) {
         renderPattern();
-        $('#submitQuery').click();
+        $(`#${libraryPanelId}Select`).append($('<option>', {
+            value: data.id,
+            text: data.name
+        }));
+        showLibraryAlert(`Pattern <em>${data.name}</em> has been saved successfully!`, "success");
+        setLibraryVisibility(libraryPanelId);
     });
 }
 
-function toggleSharedPattern(patternId) {
-    let libraryId = $(`#${patternId}Select`).val();
+function toggleSharedPattern(fromLibraryPanelId, toLibraryPanelId) {
+    let libraryId = $(`#${fromLibraryPanelId}Select`).val();
     if (libraryId === NaN) {
         return;
     }
-    $.get("/openrem/filters/toggle/" + libraryId, function (data) {
-        console.log(data);
+    $.get("/openrem/filters/toggle/" + libraryId, function (_) {
+        renderPattern();
+        $(`#${fromLibraryPanelId}Select option:selected`).remove().appendTo(`#${toLibraryPanelId}Select`);
+        showLibraryAlert(`Pattern has been moved successfully!`, "info");
+        setLibraryVisibility(fromLibraryPanelId);
+        setLibraryVisibility(toLibraryPanelId);
+    });
+}
+
+function setLibraryVisibility(libraryId) {
+    if ($(`#${libraryId}Select option`).length <= 0) {
+        $(`#${libraryId}`).hide();
+    } else {
+        $(`#${libraryId}`).show();
+    }
+}
+
+function showLibraryAlert(message, alertType) {
+    let a = $(`<div class="alert alert-${alertType}" role="alert" hidden>${message}</div>`).appendTo($("#libraryAlerts"));
+    a.fadeTo(3000, 500).slideUp(500, function() {
+        a.slideUp(500);
+        a.remove();
     });
 }
 
@@ -301,10 +325,10 @@ function renderGroup(group = ROOT_GROUP_ID, level = 0) {
             content += `
                 <div class="row" id="${currentId}_row">
                     <div class="col-md-2 col-md-offset-${level + 1}">
-                        <select id="${currentId}" class="form-control text-center" onchange="updateOperator('${currentId}')">
-                            <option>${current.operator}</option>
-                            <option>OR</option>
-                            <option>AND</option>
+                        <select id="${currentId}" class="form-control text-center"
+                        onchange="updateOperator('${currentId}')">
+                            <option value="OR" ${(current.operator === "OR")?("selected"):("")}>OR</option>
+                            <option value="AND" ${(current.operator === "AND")?("selected"):("")}>AND</option>
                         </select>
                     </div>
                 </div>

@@ -176,6 +176,9 @@
                         <div id="collapseFilterLibrary" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFilterLibrary">
                             <div class="panel-body">
                                 <input type="hidden" value="{{ csrf_token }}" id="postToken" />
+                                <div id="libraryAlerts"></div>
+                                <div class="alert alert-success" role="alert" id="libraryAlertSuccess" hidden></div>
+                                <div class="alert alert-danger" role="alert" id="libraryAlertDanger" hidden></div>
                                 <div class="panel panel-default">
                                     <div class="panel-heading">
                                         <h4 class="panel-title">
@@ -186,56 +189,52 @@
                                     <div id="savePatternPanel" class="panel-collapse collapse in">
                                         <div class="panel-body form-inline">
                                             <input type="text" maxlength="64" style="min-width: 50%" class="form-control" id="newFilterLibraryName" placeholder="Name">
-                                            <a class="btn btn-default" onclick="saveToLibrary()">Save</a>
+                                            <a class="btn btn-default" onclick="saveToLibrary('userPatterns')">Save</a>
                                         </div>
                                     </div>
                                 </div>
-                                {% if userLibraries|length > 0 %}
-                                    <div class="panel panel-default" id="userPatterns">
-                                        <div class="panel-heading">
-                                            <h4 class="panel-title">
-                                                <a class="no-decoration" data-toggle="collapse" data-target="#userPatternsPanel">Your patterns</a>
-                                            </h4>
-                                        </div>
-                                        <div id="userPatternsPanel" class="panel-collapse collapse in">
-                                            <div class="panel-body form-inline">
-                                                <select style="min-width: 50%" class="form-control" id="userPatternsSelect">
-                                                    {% for field in userLibraries %}
-                                                        <option value="{{ field.id }}">{{ field.name }}</option>
-                                                    {% endfor %}
-                                                </select>
-                                                <a class="btn btn-default" onclick="loadFromLibrary('userPatterns')">Load</a>
-                                                <a class="btn btn-danger" onclick="deleteFromLibrary('userPatterns')">Delete</a>
-                                                {% if admin.admingroup %}
-                                                    <a class="btn btn-info" onclick="toggleSharedPattern('userPatterns')">Share pattern</a>
-                                                {% endif %}
-                                            </div>
+                                <div class="panel panel-default" id="userPatterns" {% if userLibraries|length <= 0 %} hidden {% endif %}>
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title">
+                                            <a class="no-decoration" data-toggle="collapse" data-target="#userPatternsPanel">Your patterns</a>
+                                        </h4>
+                                    </div>
+                                    <div id="userPatternsPanel" class="panel-collapse collapse in">
+                                        <div class="panel-body form-inline">
+                                            <select style="min-width: 50%" class="form-control" id="userPatternsSelect">
+                                                {% for field in userLibraries %}
+                                                    <option value="{{ field.id }}">{{ field.name }}</option>
+                                                {% endfor %}
+                                            </select>
+                                            <a class="btn btn-default" onclick="loadFromLibrary('userPatterns')">Load</a>
+                                            <a class="btn btn-danger" onclick="deleteFromLibrary('userPatterns')">Delete</a>
+                                            {% if admin.admingroup %}
+                                                <a class="btn btn-info" onclick="toggleSharedPattern('userPatterns', 'sharedPatterns')">Share pattern</a>
+                                            {% endif %}
                                         </div>
                                     </div>
-                                {% endif %}
-                                {% if sharedLibraries|length > 0 %}
-                                    <div class="panel panel-default" id="sharedPatterns">
-                                        <div class="panel-heading">
-                                            <h4 class="panel-title">
-                                                <a class="no-decoration" data-toggle="collapse" data-target="#sharedPatternsPanel">Shared patterns</a>
-                                            </h4>
-                                        </div>
-                                        <div id="sharedPatternsPanel" class="panel-collapse collapse in">
-                                            <div class="panel-body form-inline">
-                                                <select style="min-width: 50%" class="form-control" id="sharedPatternsSelect">
-                                                    {% for field in sharedLibraries %}
-                                                        <option value="{{ field.id }}">{{ field.name }}</option>
-                                                    {% endfor %}
-                                                </select>
-                                                <a class="btn btn-default" onclick="loadFromLibrary('sharedPatterns')">Load</a>
-                                                {% if admin.admingroup %}
-                                                    <a class="btn btn-danger" onclick="deleteFromLibrary('sharedPatterns')">Delete</a>
-                                                    <a class="btn btn-warning" onclick="toggleSharedPattern('sharedPatterns')">Retain pattern</a>
-                                                {% endif %}
-                                            </div>
+                                </div>
+                                <div class="panel panel-default" id="sharedPatterns" {% if sharedLibraries|length <= 0 %} hidden {% endif %}>
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title">
+                                            <a class="no-decoration" data-toggle="collapse" data-target="#sharedPatternsPanel">Shared patterns</a>
+                                        </h4>
+                                    </div>
+                                    <div id="sharedPatternsPanel" class="panel-collapse collapse in">
+                                        <div class="panel-body form-inline">
+                                            <select style="min-width: 50%" class="form-control" id="sharedPatternsSelect">
+                                                {% for field in sharedLibraries %}
+                                                    <option value="{{ field.id }}">{{ field.name }}</option>
+                                                {% endfor %}
+                                            </select>
+                                            <a class="btn btn-default" onclick="loadFromLibrary('sharedPatterns')">Load</a>
+                                            {% if admin.admingroup %}
+                                                <a class="btn btn-danger" onclick="deleteFromLibrary('sharedPatterns')">Delete</a>
+                                                <a class="btn btn-warning" onclick="toggleSharedPattern('sharedPatterns', 'userPatterns')">Retain pattern</a>
+                                            {% endif %}
                                         </div>
                                     </div>
-                                {% endif %}
+                                </div>
                             </div>
                         </div>
                     </div>
