@@ -201,6 +201,41 @@ function removeFilter(id) {
     renderPattern();
 }
 
+function moveInto(id) {
+    let newFilterId = getNewId();
+    let currentFilter = pattern[id];
+    let newGroup = createGroup(newFilterId, currentFilter.prev, currentFilter.next, currentFilter.parent);
+
+    pattern[id] = newGroup;
+
+    currentFilter.prev = null;
+    currentFilter.next = null;
+    currentFilter.parent = id;
+
+    pattern[newFilterId] = currentFilter;
+
+    renderPattern();
+}
+
+function moveOutOf(id) {
+    let currentFilter = pattern[id];
+    let groupId = currentFilter.parent;
+    let group = pattern[groupId];
+
+    if (groupId === ROOT_GROUP_ID) {
+        return;
+    }
+
+    currentFilter.prev = group.prev;
+    currentFilter.next = group.next;
+    currentFilter.parent = group.parent;
+
+    delete pattern[id];
+    pattern[groupId] = currentFilter;
+
+    renderPattern();
+}
+
 function addGroup(caller) {
     let newGroupId = getNewId();
     let newGroup = createGroup(null, null, null, null);
@@ -301,23 +336,30 @@ function renderGroup(group = ROOT_GROUP_ID, level = 0) {
         if (current.type === "filter") {
             content += `
                 <div id="${currentId}_row">
-                    ${getButtonTemplate(group, level, current.prev, currentId)}
+                    ${getButtonTemplate(group, level, current.prev, currentId, "up")}
                     <div class="row">
                         <div class="col-md-1 col-md-offset-${level} text-center">
-                            <a class="btn btn-danger" onclick="removeFilter('${currentId}')">
+                            <a class="btn btn-danger btn-sm" onclick="removeFilter('${currentId}')">
                                 <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
                             </a>
                         </div>
-                        <div class="col-md-2 text-center">
-                            <a class="btn btn-primary" onclick="openFilter('${currentId}')"
+                        <div class="col-lg-2 text-center">
+                            <a class="btn btn-info btn-xs ${ (group === ROOT_GROUP_ID || current["prev"] !== null || current["next"] !== null)?("invisible"):("")}"
+                            onclick="moveOutOf('${currentId}')">
+                                <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>
+                            </a>
+                            <a class="btn btn-primary btn-sm" onclick="openFilter('${currentId}')"
                             data-group="${group}" data-previous="${current["prev"]}"
-                            data-next="${current["next"]}">Edit filter</a>
+                            data-next="${current["next"]}">Edit</a>
+                            <a class="btn btn-info btn-xs" onclick="moveInto('${currentId}')">
+                                <span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span>
+                            </a>
                         </div>
                         <div class="col-md-*">
                             <span>${renderFilterContent(current.fields)}</span>
                         </div>
                     </div>
-                    ${getButtonTemplate(group, level, currentId, current.next)}
+                    ${getButtonTemplate(group, level, currentId, current.next, "down")}
                 </div>
             `;
         } else if (current.type === "operator") {
@@ -375,7 +417,17 @@ function renderPattern() {
     $('#filterQuery').val(encodeURIComponent(JSON.stringify(pattern)))
 }
 
-function getButtonTemplate(group, level = 0, prevId, nextId) {
+function getButtonTemplate(group, level = 0, prevId, nextId, navButton=null) {
+    let additional = "";
+
+    if (navButton !== null) {
+        additional = `
+            <a class="btn btn-info btn-xs hidden">
+                <span class="glyphicon glyphicon-arrow-${navButton}" aria-hidden="true"></span>
+            </a>
+        `;
+    }
+    
     return `
         <div class="row" style="margin-top: 1em; margin-bottom: 1em;">
             <div class="col-md-2  col-md-offset-${level + 1} text-center">
@@ -383,6 +435,7 @@ function getButtonTemplate(group, level = 0, prevId, nextId) {
                 data-group="${group}" data-previous="${prevId}" data-next="${nextId}">
                     <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
                 </a>
+                ${additional}
                 <a class="btn btn-success btn-xs" onclick="addGroup(this)"
                 data-group="${group}" data-previous="${prevId}" data-next="${nextId}">
                     <span class="glyphicon glyphicon-menu-hamburger" aria-hidden="true"></span>
