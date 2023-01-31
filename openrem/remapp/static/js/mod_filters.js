@@ -348,19 +348,13 @@ function renderGroup(group = ROOT_GROUP_ID, level = 0) {
 
 function renderFilterContent(fields) {
     let content = "";
-
     for (const [key, value] of Object.entries(fields)) {
         if (value[1] === null) {}
-        let a = $(`#newExamFilter label[for=id_${key}]`).text();
-        console.log(`${key} ${value}`);
-        console.log(`${a}`);
-
-        console.log(`#newExamFilter label[for=id_${key}]`)
+        let fieldName = $(`#newExamFilter label[for=id_${key}]`).text();
         content += `
-            <span class="label label-default">${a} ${value[0]}</span>
+            <span class="label label-default">${fieldName} ${value[0]}</span>
         `;
     }
-    
     return content;
 }
 

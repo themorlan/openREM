@@ -37,6 +37,7 @@ from django import forms
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q, QuerySet
 from django_filters import FilterSet
+from django_filters.fields import RangeWidget
 from typing import Type
 import django_filters
 
@@ -125,6 +126,16 @@ def _dap_filter(queryset, name, value):
         return queryset
     return filtered
 
+class CustomFilterSet(django_filters.FilterSet):
+    def __init__(self, data=None, queryset=None, *, request=None, prefix=None):
+        super().__init__(data=data, queryset=queryset, request=request, prefix=prefix)
+
+        for field in self.form.fields.values():
+            if "class" in field.widget.attrs:
+                field.widget.attrs['class'] += " form-control"
+            else:
+                field.widget.attrs['class'] = "form-control"
+
 
 class DateTimeOrderingFilter(django_filters.OrderingFilter):
 
@@ -154,7 +165,7 @@ class DateTimeOrderingFilter(django_filters.OrderingFilter):
         return super(DateTimeOrderingFilter, self).filter(qs, value)
 
 
-class RFSummaryListFilter(django_filters.FilterSet):
+class RFSummaryListFilter(CustomFilterSet):
 
     """Filter for fluoroscopy studies to display in web interface."""
 
@@ -313,12 +324,6 @@ class RFSummaryListFilter(django_filters.FilterSet):
             ("total_rp_dose_a", "-total_rp_dose_a"),
         ),
     )
-    
-    def __init__(self, data=None, queryset=None, *, request=None, prefix=None):
-        super().__init__(data=data, queryset=queryset, request=request, prefix=prefix)
-
-        for field in self.form.fields.values():
-            field.widget.attrs['class'] = "form-control"
 
 
 class RFFilterPlusStdNames(RFSummaryListFilter):
@@ -455,7 +460,7 @@ def _specify_event_numbers(queryset, name, value):
     return filtered
 
 
-class CTSummaryListFilter(django_filters.FilterSet):
+class CTSummaryListFilter(CustomFilterSet):
 
     """Filter for CT studies to display in web interface."""
 
@@ -646,12 +651,6 @@ class CTSummaryListFilter(django_filters.FilterSet):
         ),
     )
 
-    def __init__(self, data=None, queryset=None, *, request=None, prefix=None):
-        super().__init__(data=data, queryset=queryset, request=request, prefix=prefix)
-
-        for field in self.form.fields.values():
-            field.widget.attrs['class'] = "form-control"
-
 
 class CTFilterPlusStdNames(CTSummaryListFilter):
     """Adding standard name fields"""
@@ -725,7 +724,7 @@ def ct_acq_filter(filters, pid=False):
         return get_filtered_studies(filters, qs, CTSummaryListFilter)
 
 
-class MGSummaryListFilter(django_filters.FilterSet):
+class MGSummaryListFilter(CustomFilterSet):
 
     """Filter for mammography studies to display in web interface."""
 
@@ -760,6 +759,7 @@ class MGSummaryListFilter(django_filters.FilterSet):
         lookup_expr="range",
         label="Breast thickness range (mm)",
         field_name="projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness",
+        widget=RangeWidget(attrs={"static_lookup": True}),
     )
     projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure_control_mode = django_filters.CharFilter(
         lookup_expr="icontains", label="Exposure control mode"
@@ -878,12 +878,6 @@ class MGSummaryListFilter(django_filters.FilterSet):
         ),
     )
 
-    def __init__(self, data=None, queryset=None, *, request=None, prefix=None):
-        super().__init__(data=data, queryset=queryset, request=request, prefix=prefix)
-
-        for field in self.form.fields.values():
-            field.widget.attrs['class'] = "form-control"
-
 
 class MGFilterPlusStdNames(MGSummaryListFilter):
     """Adding standard name fields"""
@@ -954,7 +948,7 @@ def mg_acq_filter(filters, pid=False):
         return get_filtered_studies(filters, qs, MGSummaryListFilter)
 
 
-class DXSummaryListFilter(django_filters.FilterSet):
+class DXSummaryListFilter(CustomFilterSet):
 
     """Filter for DX studies to display in web interface."""
 
@@ -1127,12 +1121,6 @@ class DXSummaryListFilter(django_filters.FilterSet):
         ),
     )
 
-    def __init__(self, data=None, queryset=None, *, request=None, prefix=None):
-        super().__init__(data=data, queryset=queryset, request=request, prefix=prefix)
-
-        for field in self.form.fields.values():
-            field.widget.attrs['class'] = "form-control"
-
 
 class DXFilterPlusStdNames(DXSummaryListFilter):
     """Adding standard name fields"""
@@ -1204,7 +1192,7 @@ def dx_acq_filter(filters, pid=False):
         return get_filtered_studies(filters, qs, DXSummaryListFilter)
 
 
-class NMSummaryListFilter(django_filters.FilterSet):
+class NMSummaryListFilter(CustomFilterSet):
     """
     Filter for NM studies to display in web interface.
     """
@@ -1355,12 +1343,6 @@ class NMSummaryListFilter(django_filters.FilterSet):
         ),
     )
 
-    def __init__(self, data=None, queryset=None, *, request=None, prefix=None):
-        super().__init__(data=data, queryset=queryset, request=request, prefix=prefix)
-
-        for field in self.form.fields.values():
-            field.widget.attrs['class'] = "form-control"
-                
 
 class NMFilterPlusPid(NMSummaryListFilter):
 
