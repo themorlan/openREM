@@ -27,14 +27,6 @@
         }
     </script>
 
-    <style>
-        .row > div {
-            display: inline-block;
-            vertical-align: middle;
-            float: none;
-        }
-    </style>
-
     {% block headscript %}
     {% endblock %}
 {% endblock %}
@@ -91,273 +83,273 @@
             {% endblock %}
 
 
-
-
-        <div class="modal fade" id="newFilterModal" tabindex="-1" role="dialog" aria-labelledby="newFilterModalLabel">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                                aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title" id="newFilterModalLabel">New exam filter</h4>
-                    </div>
-                    <div class="modal-body">
-                        <form id="newExamFilter" class="form-horizontal" role="form">
-                            <div class="panel-body">
-                                <em>Date format yyyy-mm-dd</em>
-                                {% for field in filter.form.visible_fields %}
-                                    {% if field.name != "o" %}
-                                        <div class="form-group">
-                                            <div class="col-xs-4">
-                                                <label>{{ field.label_tag }}</label>
+            <div class="modal fade" id="newFilterModal" tabindex="-1" role="dialog" aria-labelledby="newFilterModalLabel">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                    aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title" id="newFilterModalLabel">New exam filter</h4>
+                        </div>
+                        <div class="modal-body">
+                            <form id="newExamFilter" class="form-horizontal" role="form">
+                                <div class="panel-body">
+                                    <em>Date format yyyy-mm-dd</em>
+                                    {% for field in filter.form.visible_fields %}
+                                        {% if field.name != "o" %}
+                                            <div class="row form-group">
+                                                <div class="col-xs-4">
+                                                    <label for="{{ field.auto_id }}">{{ field.label_tag }}</label>
+                                                </div>
+                                                {% if not field.field.widget.attrs.static_lookup %}
+                                                    <div class="col-xs-1">
+                                                        <button type="button" class="btn btn-default btn-sm" id="{{field.name}}_notToggle"
+                                                        data-toggle="button" aria-pressed="false" autocomplete="off">
+                                                            not
+                                                        </button>
+                                                    </div>
+                                                    <div class="col-xs-3">
+                                                        <select id="{{field.name}}_lookupType" class="form-control input-sm">
+                                                            <option value="icontains">contains</option>
+                                                            <option value="iexact">is</option>
+                                                            <option value="iregex">regex</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-xs-4">
+                                                {% else %}
+                                                    <div class="col-xs-offset-1 col-xs-7">
+                                                {% endif %}
+                                                    {{ field.errors }}
+                                                    {{ field }}
+                                                </div>
                                             </div>
-                                            {% if not field.field.widget.attrs.static_lookup %}
-                                                <div class="col-xs-1">
-                                                    <button type="button" class="btn btn-default btn-xs" id="{{field.name}}_notToggle"
-                                                    data-toggle="button" aria-pressed="false" autocomplete="off">
-                                                        not
-                                                    </button>
+                                        {% endif %}
+                                    {% endfor %}
+                                    {% for field in filter.form.hidden_fields %}
+                                        <div style="display:none">{{ field }}</div>
+                                    {% endfor %}
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Discard changes</button>
+                            <button type="button" class="btn btn-primary" id="saveFilter">Save exam filter</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <form>
+                <div class="panel panel-info" style="display: block;">
+                    <div class="panel-heading" role="tab" id="headingSearch">
+                        <table style="width: 100%;">
+                            <tr>
+                                <td>
+                                    <h3 class="panel-title">
+                                        <span class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion"
+                                            href="#collapseSearch" aria-expanded="false" aria-controls="collapseSearch">
+                                            Filter
+                                        </span>
+                                    </h3>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div style="margin-left: 1em; margin-right: 1em;">
+                        <div id="collapseSearch" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingSearch">
+                            <container id="advFilters" class="container"></container>
+                            <div>    
+                                <input type="hidden" id="filterQuery" name="filterQuery" value="" />
+                            </div>
+                            <div class="panel panel-info" style="display: block;">
+                                <div class="panel-heading" role="tab" id="headingFilterLibrary">
+                                    <table style="width: 100%;">
+                                        <tr>
+                                            <td>
+                                                <h3 class="panel-title">
+                                                    <span class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion"
+                                                        href="#collapseFilterLibrary" aria-expanded="false" aria-controls="collapseFilterLibrary">
+                                                        Library
+                                                    </span>
+                                                </h3>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <div id="collapseFilterLibrary" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFilterLibrary">
+                                    <div class="panel-body">
+                                        <input type="hidden" value="{{ csrf_token }}" id="postToken" />
+                                        <div id="libraryAlerts"></div>
+                                        <div class="panel panel-default">
+                                            <div class="panel-heading">
+                                                <h4 class="panel-title">
+                                                    <a class="no-decoration" data-toggle="collapse" data-target="#savePatternPanel">Save current pattern</a>
+                                                </h4>
+                                            </div>
+                
+                                            <div id="savePatternPanel" class="panel-collapse collapse in">
+                                                <div class="panel-body form-inline">
+                                                    <input type="text" maxlength="64" style="min-width: 50%" class="form-control" id="newFilterLibraryName" placeholder="Name">
+                                                    <a class="btn btn-default" onclick="saveToLibrary('userPatterns')">Save</a>
                                                 </div>
-                                                <div class="col-xs-2">
-                                                    <select id="{{field.name}}_lookupType">
-                                                        <option value="icontains">contains</option>
-                                                        <option value="iexact">is</option>
-                                                        <option value="iregex">regex</option>
-                                                    </select>
-                                                </div>
-                                            {% endif %}
-                                            <div class="col-xs-5">
-                                                {{ field.errors }}
-                                                {{ field }}
                                             </div>
                                         </div>
+                                        <div class="panel panel-default" id="userPatterns" {% if userLibraries|length <= 0 %} hidden {% endif %}>
+                                            <div class="panel-heading">
+                                                <h4 class="panel-title">
+                                                    <a class="no-decoration" data-toggle="collapse" data-target="#userPatternsPanel">Your patterns</a>
+                                                </h4>
+                                            </div>
+                                            <div id="userPatternsPanel" class="panel-collapse collapse in">
+                                                <div class="panel-body form-inline">
+                                                    <select style="min-width: 50%" class="form-control" id="userPatternsSelect">
+                                                        {% for field in userLibraries %}
+                                                            <option value="{{ field.id }}">{{ field.name }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                    <a class="btn btn-default" onclick="loadFromLibrary('userPatterns')">Load</a>
+                                                    <a class="btn btn-danger" onclick="deleteFromLibrary('userPatterns')">Delete</a>
+                                                    {% if admin.admingroup %}
+                                                        <a class="btn btn-info" onclick="toggleSharedPattern('userPatterns', 'sharedPatterns')">Share pattern</a>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="panel panel-default" id="sharedPatterns" {% if sharedLibraries|length <= 0 %} hidden {% endif %}>
+                                            <div class="panel-heading">
+                                                <h4 class="panel-title">
+                                                    <a class="no-decoration" data-toggle="collapse" data-target="#sharedPatternsPanel">Shared patterns</a>
+                                                </h4>
+                                            </div>
+                                            <div id="sharedPatternsPanel" class="panel-collapse collapse in">
+                                                <div class="panel-body form-inline">
+                                                    <select style="min-width: 50%" class="form-control" id="sharedPatternsSelect">
+                                                        {% for field in sharedLibraries %}
+                                                            <option value="{{ field.id }}">{{ field.name }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                    <a class="btn btn-default" onclick="loadFromLibrary('sharedPatterns')">Load</a>
+                                                    {% if admin.admingroup %}
+                                                        <a class="btn btn-danger" onclick="deleteFromLibrary('sharedPatterns')">Delete</a>
+                                                        <a class="btn btn-warning" onclick="toggleSharedPattern('sharedPatterns', 'userPatterns')">Retain pattern</a>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel panel-info" style="display: block;">
+                    <div class="panel-heading" role="tab" id="headingChartOptions">
+                        <table style="width: 100%;">
+                            <tr>
+                                <td>
+                                    <h3 class="panel-title">
+                                        <span class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion"
+                                            href="#collapseChartOptions" aria-expanded="false" aria-controls="collapseChartOptions">
+                                            Chart options
+                                        </span>
+                                    </h3>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div id="collapseChartOptions" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingChartOptions">
+                        <div class="panel-body">
+                            {% csrf_token %}
+                            {% regroup chartOptionsForm by field.group as field_groups %}
+            
+                            {% for field_group in field_groups %}
+            
+                                {% if field_group.grouper == 'PlotCharts' %}
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                <label style="font-weight: normal" for="{{ field_group.list.0.auto_id }}">{{ field_group.list.0.label }}</label>&nbsp;{{ field_group.list.0 }}
+                                            </h4>
+                                        </div>
+                                    </div>
+                                {% else %}
+                                    <div class="panel panel-default">
+            
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                <a class="no-decoration" data-toggle="collapse" data-target="#{{ field_group.grouper|cut:" " }}">{{ field_group.grouper }}</a>
+                                            </h4>
+                                        </div>
+            
+                                        <div id="{{ field_group.grouper|cut:" " }}" class="panel-collapse collapse in">
+                                            <div class="panel-body">
+            
+                                                <table class="table table-condensed">
+                                                {% for field in field_group.list %}
+                                                    <tr>
+                                                    {% if field.field.widget.attrs.class == 'CheckboxSelectMultiple' %}
+                                                        <td class="shaded_top_bottom_border"><label for="{{ field.auto_id }}">{{ field.label }}</label></td>
+                                                        <td class="shaded_top_bottom_border">{{ field }}</td>
+                                                    {% elif field.label == 'Acquisition frequency' or field.label == 'Standard study frequency' or field.label == 'Requested procedure frequency' or field.label == 'Time period' %}
+                                                        <td class="top_border"><label for="{{ field.auto_id }}">{{ field.label }}</label></td>
+                                                        <td class="top_border">{{ field }}</td>
+                                                    {% else %}
+                                                        <td><label for="{{ field.auto_id }}">{{ field.label }}</label></td>
+                                                        <td>{{ field }}</td>
+                                                    {% endif %}
+                                                    </tr>
+                                                {% endfor %}
+                                                </table>
+            
+                                            </div>
+                                        </div>
+            
+                                    </div>
+                                {% endif %}
+            
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel panel-info" style="display: block;">
+                    <div class="panel-heading" role="tab" id="headingTableOptions">
+                        <table style="width: 100%;">
+                            <tr>
+                                <td>
+                                    <h3 class="panel-title">
+                                        <span class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion"
+                                            href="#collapseTableOptions" aria-expanded="false" aria-controls="collapseTableOptions">
+                                            Table options
+                                        </span>
+                                    </h3>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div id="collapseTableOptions" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTableOptions">
+                        <div class="panel-body">
+                            <table class="table table-condensed">
+                                {% for field in filter.form.visible_fields %}
+                                    {% if field.name == "o" %}
+                                        <tr>
+                                            <th>{{ field.label_tag }}</th>
+                                            <td>{{ field }}</td>
+                                        </tr>
                                     {% endif %}
                                 {% endfor %}
-                                {% for field in filter.form.hidden_fields %}
-                                    <div style="display:none">{{ field }}</div>
-                                {% endfor %}
-                            </div>
-                        </form>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Discard changes</button>
-                        <button type="button" class="btn btn-primary" id="saveFilter">Save exam filter</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <form>
-        <div class="panel panel-info" style="display: block;">
-            <div class="panel-heading" role="tab" id="headingSearch">
-                <table style="width: 100%;">
-                    <tr>
-                        <td>
-                            <h3 class="panel-title">
-                                <span class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion"
-                                    href="#collapseSearch" aria-expanded="false" aria-controls="collapseSearch">
-                                    Filter
-                                </span>
-                            </h3>
-                        </td>
-                    </tr>
-                </table>
-            </div>
-            <div style="margin-left: 1em; margin-right: 1em;">
-                <div id="collapseSearch" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingSearch">
-                    <container id="advFilters" class="container"></container>
-                    <div>    
-                        <input type="hidden" id="filterQuery" name="filterQuery" value="" />
-                    </div>
-                    <div class="panel panel-info" style="display: block;">
-                        <div class="panel-heading" role="tab" id="headingFilterLibrary">
-                            <table style="width: 100%;">
-                                <tr>
-                                    <td>
-                                        <h3 class="panel-title">
-                                            <span class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion"
-                                                href="#collapseFilterLibrary" aria-expanded="false" aria-controls="collapseFilterLibrary">
-                                                Library
-                                            </span>
-                                        </h3>
-                                    </td>
-                                </tr>
+                                {{ itemsPerPageForm }}
                             </table>
                         </div>
-                        <div id="collapseFilterLibrary" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFilterLibrary">
-                            <div class="panel-body">
-                                <input type="hidden" value="{{ csrf_token }}" id="postToken" />
-                                <div id="libraryAlerts"></div>
-                                <div class="panel panel-default">
-                                    <div class="panel-heading">
-                                        <h4 class="panel-title">
-                                            <a class="no-decoration" data-toggle="collapse" data-target="#savePatternPanel">Save current pattern</a>
-                                        </h4>
-                                    </div>
-        
-                                    <div id="savePatternPanel" class="panel-collapse collapse in">
-                                        <div class="panel-body form-inline">
-                                            <input type="text" maxlength="64" style="min-width: 50%" class="form-control" id="newFilterLibraryName" placeholder="Name">
-                                            <a class="btn btn-default" onclick="saveToLibrary('userPatterns')">Save</a>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="panel panel-default" id="userPatterns" {% if userLibraries|length <= 0 %} hidden {% endif %}>
-                                    <div class="panel-heading">
-                                        <h4 class="panel-title">
-                                            <a class="no-decoration" data-toggle="collapse" data-target="#userPatternsPanel">Your patterns</a>
-                                        </h4>
-                                    </div>
-                                    <div id="userPatternsPanel" class="panel-collapse collapse in">
-                                        <div class="panel-body form-inline">
-                                            <select style="min-width: 50%" class="form-control" id="userPatternsSelect">
-                                                {% for field in userLibraries %}
-                                                    <option value="{{ field.id }}">{{ field.name }}</option>
-                                                {% endfor %}
-                                            </select>
-                                            <a class="btn btn-default" onclick="loadFromLibrary('userPatterns')">Load</a>
-                                            <a class="btn btn-danger" onclick="deleteFromLibrary('userPatterns')">Delete</a>
-                                            {% if admin.admingroup %}
-                                                <a class="btn btn-info" onclick="toggleSharedPattern('userPatterns', 'sharedPatterns')">Share pattern</a>
-                                            {% endif %}
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="panel panel-default" id="sharedPatterns" {% if sharedLibraries|length <= 0 %} hidden {% endif %}>
-                                    <div class="panel-heading">
-                                        <h4 class="panel-title">
-                                            <a class="no-decoration" data-toggle="collapse" data-target="#sharedPatternsPanel">Shared patterns</a>
-                                        </h4>
-                                    </div>
-                                    <div id="sharedPatternsPanel" class="panel-collapse collapse in">
-                                        <div class="panel-body form-inline">
-                                            <select style="min-width: 50%" class="form-control" id="sharedPatternsSelect">
-                                                {% for field in sharedLibraries %}
-                                                    <option value="{{ field.id }}">{{ field.name }}</option>
-                                                {% endfor %}
-                                            </select>
-                                            <a class="btn btn-default" onclick="loadFromLibrary('sharedPatterns')">Load</a>
-                                            {% if admin.admingroup %}
-                                                <a class="btn btn-danger" onclick="deleteFromLibrary('sharedPatterns')">Delete</a>
-                                                <a class="btn btn-warning" onclick="toggleSharedPattern('sharedPatterns', 'userPatterns')">Retain pattern</a>
-                                            {% endif %}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
-
-        <div class="panel panel-info" style="display: block;">
-            <div class="panel-heading" role="tab" id="headingChartOptions">
-                <table style="width: 100%;">
-                    <tr>
-                        <td>
-                            <h3 class="panel-title">
-                                <span class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion"
-                                    href="#collapseChartOptions" aria-expanded="false" aria-controls="collapseChartOptions">
-                                    Chart options
-                                </span>
-                            </h3>
-                        </td>
-                    </tr>
-                </table>
-            </div>
-            <div id="collapseChartOptions" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingChartOptions">
-                <div class="panel-body">
-                    {% csrf_token %}
-                    {% regroup chartOptionsForm by field.group as field_groups %}
-    
-                    {% for field_group in field_groups %}
-    
-                        {% if field_group.grouper == 'PlotCharts' %}
-                            <div class="panel panel-default">
-                                <div class="panel-heading">
-                                    <h4 class="panel-title">
-                                        <label style="font-weight: normal" for="{{ field_group.list.0.auto_id }}">{{ field_group.list.0.label }}</label>&nbsp;{{ field_group.list.0 }}
-                                    </h4>
-                                </div>
-                            </div>
-                        {% else %}
-                            <div class="panel panel-default">
-    
-                                <div class="panel-heading">
-                                    <h4 class="panel-title">
-                                        <a class="no-decoration" data-toggle="collapse" data-target="#{{ field_group.grouper|cut:" " }}">{{ field_group.grouper }}</a>
-                                    </h4>
-                                </div>
-    
-                                <div id="{{ field_group.grouper|cut:" " }}" class="panel-collapse collapse in">
-                                    <div class="panel-body">
-    
-                                        <table class="table table-condensed">
-                                        {% for field in field_group.list %}
-                                            <tr>
-                                            {% if field.field.widget.attrs.class == 'CheckboxSelectMultiple' %}
-                                                <td class="shaded_top_bottom_border"><label for="{{ field.auto_id }}">{{ field.label }}</label></td>
-                                                <td class="shaded_top_bottom_border">{{ field }}</td>
-                                            {% elif field.label == 'Acquisition frequency' or field.label == 'Standard study frequency' or field.label == 'Requested procedure frequency' or field.label == 'Time period' %}
-                                                <td class="top_border"><label for="{{ field.auto_id }}">{{ field.label }}</label></td>
-                                                <td class="top_border">{{ field }}</td>
-                                            {% else %}
-                                                <td><label for="{{ field.auto_id }}">{{ field.label }}</label></td>
-                                                <td>{{ field }}</td>
-                                            {% endif %}
-                                            </tr>
-                                        {% endfor %}
-                                        </table>
-    
-                                    </div>
-                                </div>
-    
-                            </div>
-                        {% endif %}
-    
-                    {% endfor %}
+                <div style="margin-bottom: 1em;">
+                    <input class="btn btn-default" id="submitQuery" name="submit" type="submit" />
                 </div>
-            </div>
-        </div>
+            </form>
 
-        <div class="panel panel-info" style="display: block;">
-            <div class="panel-heading" role="tab" id="headingTableOptions">
-                <table style="width: 100%;">
-                    <tr>
-                        <td>
-                            <h3 class="panel-title">
-                                <span class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion"
-                                    href="#collapseTableOptions" aria-expanded="false" aria-controls="collapseTableOptions">
-                                    Table options
-                                </span>
-                            </h3>
-                        </td>
-                    </tr>
-                </table>
-            </div>
-            <div id="collapseTableOptions" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTableOptions">
-                <div class="panel-body">
-                    <table class="table table-condensed">
-                        {% for field in filter.form.visible_fields %}
-                            {% if field.name == "o" %}
-                                <tr>
-                                    <th>{{ field.label_tag }}</th>
-                                    <td>{{ field }}</td>
-                                </tr>
-                            {% endif %}
-                        {% endfor %}
-                        {{ itemsPerPageForm }}
-                    </table>
-                </div>
-            </div>
-        </div>
-        <div style="margin-bottom: 1em;">
-            <input class="btn btn-default" id="submitQuery" name="submit" type="submit" />
-        </div>
-        </form>
-
-        <script src="{{ STATIC_URL }}js/datepicker.js"></script>
-        <script src="{{ STATIC_URL }}js/formatDate.js"></script>
+            <script src="{{ STATIC_URL }}js/datepicker.js"></script>
+            <script src="{{ STATIC_URL }}js/formatDate.js"></script>
 
             {% block col1 %}
             {% endblock %}
@@ -400,7 +392,7 @@
             {% endblock %}
         </div>
 
-        <div class="col-md-3">
+        <div class="col-md-3">            
             {% block col2 %}
             {% endblock %}
         </div>

@@ -110,6 +110,7 @@ class itemsPerPageForm(forms.Form):
         label=_("Items per page"),
         choices=CommonVariables.ITEMS_PER_PAGE,
         required=False,
+        widget=forms.Select(attrs={"class": "form-control"})
     )
 
 

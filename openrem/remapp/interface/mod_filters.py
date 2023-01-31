@@ -313,6 +313,12 @@ class RFSummaryListFilter(django_filters.FilterSet):
             ("total_rp_dose_a", "-total_rp_dose_a"),
         ),
     )
+    
+    def __init__(self, data=None, queryset=None, *, request=None, prefix=None):
+        super().__init__(data=data, queryset=queryset, request=request, prefix=prefix)
+
+        for field in self.form.fields.values():
+            field.widget.attrs['class'] = "form-control"
 
 
 class RFFilterPlusStdNames(RFSummaryListFilter):
@@ -640,6 +646,12 @@ class CTSummaryListFilter(django_filters.FilterSet):
         ),
     )
 
+    def __init__(self, data=None, queryset=None, *, request=None, prefix=None):
+        super().__init__(data=data, queryset=queryset, request=request, prefix=prefix)
+
+        for field in self.form.fields.values():
+            field.widget.attrs['class'] = "form-control"
+
 
 class CTFilterPlusStdNames(CTSummaryListFilter):
     """Adding standard name fields"""
@@ -865,6 +877,12 @@ class MGSummaryListFilter(django_filters.FilterSet):
             ("total_agd_right", "-total_agd_right"),
         ),
     )
+
+    def __init__(self, data=None, queryset=None, *, request=None, prefix=None):
+        super().__init__(data=data, queryset=queryset, request=request, prefix=prefix)
+
+        for field in self.form.fields.values():
+            field.widget.attrs['class'] = "form-control"
 
 
 class MGFilterPlusStdNames(MGSummaryListFilter):
@@ -1109,6 +1127,12 @@ class DXSummaryListFilter(django_filters.FilterSet):
         ),
     )
 
+    def __init__(self, data=None, queryset=None, *, request=None, prefix=None):
+        super().__init__(data=data, queryset=queryset, request=request, prefix=prefix)
+
+        for field in self.form.fields.values():
+            field.widget.attrs['class'] = "form-control"
+
 
 class DXFilterPlusStdNames(DXSummaryListFilter):
     """Adding standard name fields"""
@@ -1331,6 +1355,12 @@ class NMSummaryListFilter(django_filters.FilterSet):
         ),
     )
 
+    def __init__(self, data=None, queryset=None, *, request=None, prefix=None):
+        super().__init__(data=data, queryset=queryset, request=request, prefix=prefix)
+
+        for field in self.form.fields.values():
+            field.widget.attrs['class'] = "form-control"
+                
 
 class NMFilterPlusPid(NMSummaryListFilter):
 
