@@ -43,7 +43,6 @@ from time import sleep
 
 import django
 from django.core.exceptions import ObjectDoesNotExist
-from django.db import transaction, IntegrityError
 import pydicom
 from pydicom.valuerep import MultiValue
 
@@ -798,44 +797,62 @@ def _dx2db(dataset):
             return
 
     if not study_in_db:
-
-        try:
-
-            with transaction.atomic(durable=True):
-
-                # study doesn't exist, start from scratch
-                g = GeneralStudyModuleAttr.objects.create()
-                g.study_instance_uid = get_value_kw("StudyInstanceUID", dataset)
-                g.save()
-                logger.debug(
-                    "Started importing DX with Study Instance UID of {0}".format(
-                        g.study_instance_uid
-                    )
-                )
-                event_uid = get_value_kw("SOPInstanceUID", dataset)
-                check_uid.record_sop_instance_uid(g, event_uid)
-                # check study again
+        # study doesn't exist, start from scratch
+        g = GeneralStudyModuleAttr.objects.create()
+        g.study_instance_uid = get_value_kw("StudyInstanceUID", dataset)
+        g.save()
+        logger.debug(
+            "Started importing DX with Study Instance UID of {0}".format(
+                g.study_instance_uid
+            )
+        )
+        event_uid = get_value_kw("SOPInstanceUID", dataset)
+        check_uid.record_sop_instance_uid(g, event_uid)
+        # check study again
+        study_in_db = check_uid.check_uid(study_uid)
+        if study_in_db == 1:
+            _generalstudymoduleattributes(dataset, g)
+        elif not study_in_db:
+            error = "Something went wrong, GeneralStudyModuleAttr wasn't created"
+            record_task_error_exit(error)
+            logger.error(error)
+            return
+        elif study_in_db > 1:
+            sleep(random())  # nosec - not being used for cryptography
+            # Check if other instance(s) has deleted the study yet
+            study_in_db = check_uid.check_uid(study_uid)
+            if study_in_db == 1:
+                _generalstudymoduleattributes(dataset, g)
+            elif study_in_db > 1:
+                g.delete()
                 study_in_db = check_uid.check_uid(study_uid)
-                if study_in_db == 1:
-                    _generalstudymoduleattributes(dataset, g)
-                elif not study_in_db:
-                    error = "Something went wrong, GeneralStudyModuleAttr wasn't created"
-                    record_task_error_exit(error)
-                    logger.error(error)
-                    return
-                elif study_in_db > 1:
+                if not study_in_db:
+                    # both must have been deleted simultaneously!
                     sleep(random())  # nosec - not being used for cryptography
-                    # Check if other instance(s) has deleted the study yet
+                    # Check if other instance has created the study again yet
                     study_in_db = check_uid.check_uid(study_uid)
                     if study_in_db == 1:
-                        _generalstudymoduleattributes(dataset, g)
-                    elif study_in_db > 1:
-                        g.delete()
+                        sleep(
+                            2.0
+                        )  # Give initial event a chance to get to save on _projectionxrayradiationdose
+                        this_study = get_study_check_dup(dataset, modality="DX")
+                        if this_study:
+                            _irradiationeventxraydata(
+                                dataset,
+                                this_study.projectionxrayradiationdose_set.get(),
+                            )
+                    while not study_in_db:
+                        g = GeneralStudyModuleAttr.objects.create()
+                        g.study_instance_uid = get_value_kw("StudyInstanceUID", dataset)
+                        g.save()
+                        check_uid.record_sop_instance_uid(g, event_uid)
+                        # check again
                         study_in_db = check_uid.check_uid(study_uid)
-                        if not study_in_db:
-                            # both must have been deleted simultaneously!
+                        if study_in_db == 1:
+                            _generalstudymoduleattributes(dataset, g)
+                        elif study_in_db > 1:
+                            g.delete()
                             sleep(random())  # nosec - not being used for cryptography
-                            # Check if other instance has created the study again yet
                             study_in_db = check_uid.check_uid(study_uid)
                             if study_in_db == 1:
                                 sleep(
@@ -847,41 +864,16 @@ def _dx2db(dataset):
                                         dataset,
                                         this_study.projectionxrayradiationdose_set.get(),
                                     )
-                            while not study_in_db:
-                                g = GeneralStudyModuleAttr.objects.create()
-                                g.study_instance_uid = get_value_kw("StudyInstanceUID", dataset)
-                                g.save()
-                                check_uid.record_sop_instance_uid(g, event_uid)
-                                # check again
-                                study_in_db = check_uid.check_uid(study_uid)
-                                if study_in_db == 1:
-                                    _generalstudymoduleattributes(dataset, g)
-                                elif study_in_db > 1:
-                                    g.delete()
-                                    sleep(random())  # nosec - not being used for cryptography
-                                    study_in_db = check_uid.check_uid(study_uid)
-                                    if study_in_db == 1:
-                                        sleep(
-                                            2.0
-                                        )  # Give initial event a chance to get to save on _projectionxrayradiationdose
-                                        this_study = get_study_check_dup(dataset, modality="DX")
-                                        if this_study:
-                                            _irradiationeventxraydata(
-                                                dataset,
-                                                this_study.projectionxrayradiationdose_set.get(),
-                                            )
-                        elif study_in_db == 1:
-                            sleep(
-                                2.0
-                            )  # Give initial event a chance to get to save on _projectionxrayradiationdose
-                            this_study = get_study_check_dup(dataset, modality="DX")
-                            if this_study:
-                                _irradiationeventxraydata(
-                                    dataset,
-                                    this_study.projectionxrayradiationdose_set.get(),
-                                )
-        except IntegrityError:
-            raise
+                elif study_in_db == 1:
+                    sleep(
+                        2.0
+                    )  # Give initial event a chance to get to save on _projectionxrayradiationdose
+                    this_study = get_study_check_dup(dataset, modality="DX")
+                    if this_study:
+                        _irradiationeventxraydata(
+                            dataset,
+                            this_study.projectionxrayradiationdose_set.get(),
+                        )
 
 
 def _fix_kodak_filters(dataset):
