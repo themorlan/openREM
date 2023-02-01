@@ -64,6 +64,7 @@ from .models import (
     GeneralStudyModuleAttr,
     CtIrradiationEventData,
     IrradEventXRayData,
+    BackgroundTaskMaximumRows,
 )
 
 logger = logging.getLogger()
@@ -2258,3 +2259,20 @@ class SkinSafeListForm(forms.ModelForm):
     class Meta(object):
         model = OpenSkinSafeList
         fields = ["manufacturer", "manufacturer_model_name", "software_version"]
+
+
+class BackgroundTaskMaximumRowsForm(forms.ModelForm):
+    """Form for configuring the maximum number of rows in the BackgroundTask table"""
+
+    def __init__(self, *args, **kwargs):
+        super(BackgroundTaskMaximumRowsForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper(self)
+        self.helper.form_class = "form-horizontal"
+        self.helper.layout = Layout(
+            Div("max_background_task_rows"),
+            FormActions(Submit("submit", "Submit")),
+        )
+
+    class Meta(object):
+        model = BackgroundTaskMaximumRows
+        fields = ["max_background_task_rows"]
