@@ -66,9 +66,6 @@ function saveFilter(id) {
         let invert = $('#' + kv.name + INVERT_TOGGLE_ID_EXT).hasClass("active");
         filterFields[kv.name] = [kv.value, lookupType, invert];
     })
-    if (Object.keys(filterFields).length <= 0) {
-        return;
-    }
     pattern[id].fields = filterFields;
 }
 
@@ -338,12 +335,12 @@ function renderGroup(group = ROOT_GROUP_ID, level = 0) {
                 <div id="${currentId}_row">
                     ${getButtonTemplate(group, level, current.prev, currentId, "up")}
                     <div class="row">
-                        <div class="col-md-1 col-md-offset-${level} text-center">
+                        <div class="col-xs-1 col-xs-offset-${level} text-center">
                             <a class="btn btn-danger btn-sm" onclick="removeFilter('${currentId}')">
                                 <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
                             </a>
                         </div>
-                        <div class="col-lg-2 text-center">
+                        <div class="col-xs-2 text-center">
                             <a class="btn btn-info btn-xs ${ (group === ROOT_GROUP_ID || current["prev"] !== null || current["next"] !== null)?("invisible"):("")}"
                             onclick="moveOutOf('${currentId}')">
                                 <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>
@@ -355,7 +352,7 @@ function renderGroup(group = ROOT_GROUP_ID, level = 0) {
                                 <span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span>
                             </a>
                         </div>
-                        <div class="col-md-*">
+                        <div class="col-xs-*">
                             <span>${renderFilterContent(current.fields)}</span>
                         </div>
                     </div>
@@ -365,7 +362,7 @@ function renderGroup(group = ROOT_GROUP_ID, level = 0) {
         } else if (current.type === "operator") {
             content += `
                 <div class="row" id="${currentId}_row">
-                    <div class="col-md-2 col-md-offset-${level + 1}">
+                    <div class="col-xs-2 col-xs-offset-${level + 1}">
                         <select id="${currentId}" class="form-control text-center"
                         onchange="updateOperator('${currentId}')">
                             <option value="OR" ${(current.operator === "OR")?("selected"):("")}>OR</option>
@@ -407,7 +404,7 @@ function renderPattern() {
     } else {
         $('#advFilters').html(`
             <div class="row">
-                <div class="col-md-2 text-center">
+                <div class="col-xs-2 text-center">
                     <a class="btn btn-primary" onclick="addFilter(this)"
                     data-group="${ROOT_GROUP_ID}" data-previous="null" data-next="null">Add filter</a>
                 </div>
@@ -430,7 +427,7 @@ function getButtonTemplate(group, level = 0, prevId, nextId, navButton=null) {
     
     return `
         <div class="row" style="margin-top: 1em; margin-bottom: 1em;">
-            <div class="col-md-2  col-md-offset-${level + 1} text-center">
+            <div class="col-xs-2  col-xs-offset-${level + 1} text-center">
                 <a class="btn btn-success btn-xs" onclick="addFilter(this)"
                 data-group="${group}" data-previous="${prevId}" data-next="${nextId}">
                     <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
