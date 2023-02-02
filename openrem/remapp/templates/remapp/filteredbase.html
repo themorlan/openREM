@@ -1,5 +1,5 @@
 {% extends "remapp/base.html" %}
-
+{% load i18n %}
 
 {% block headextras %}
     <!-- Bootstrap-datepicker CSS -->
@@ -89,7 +89,7 @@
                             <div class="modal-header">
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                                         aria-hidden="true">&times;</span></button>
-                                <h4 class="modal-title" id="newFilterModalLabel">New exam filter</h4>
+                                <h4 class="modal-title" id="newFilterModalLabel">{% trans "New exam filter" %}</h4>
                             </div>
                             <div class="modal-body">
                                 <form id="newExamFilter" class="form-horizontal" role="form">
@@ -105,14 +105,14 @@
                                                         <div class="col-xs-1">
                                                             <button type="button" class="btn btn-default btn-sm" id="{{field.name}}_notToggle"
                                                             data-toggle="button" aria-pressed="false" autocomplete="off">
-                                                                not
+                                                                {% trans "not" %}
                                                             </button>
                                                         </div>
                                                         <div class="col-xs-3">
                                                             <select id="{{field.name}}_lookupType" class="form-control input-sm">
-                                                                <option value="icontains">contains</option>
-                                                                <option value="iexact">is</option>
-                                                                <option value="iregex">regex</option>
+                                                                <option value="icontains">{% trans "contains" %}</option>
+                                                                <option value="iexact">{% trans "is" %}</option>
+                                                                <option value="iregex">{% trans "regex" %}</option>
                                                             </select>
                                                         </div>
                                                         <div class="col-xs-4">
@@ -132,8 +132,8 @@
                                 </form>
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn btn-default" data-dismiss="modal">Discard changes</button>
-                                <button type="button" class="btn btn-primary" id="saveFilter">Save exam filter</button>
+                                <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Discard changes" %}</button>
+                                <button type="button" class="btn btn-primary" id="saveFilter">{% trans "Save exam filter" %}</button>
                             </div>
                         </div>
                     </div>
@@ -147,7 +147,7 @@
                                         <h3 class="panel-title">
                                             <span class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion"
                                                 href="#collapseSearch" aria-expanded="false" aria-controls="collapseSearch">
-                                                Filter
+                                                {% trans "Filter" %}
                                             </span>
                                         </h3>
                                     </td>
@@ -155,7 +155,7 @@
                             </table>
                         </div>
                         <div style="margin-left: 1em; margin-right: 1em;">
-                            <div id="collapseSearch" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingSearch">
+                            <div id="collapseSearch" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingSearch">
                                 <container id="advFilters" class="container"></container>
                                 <div>    
                                     <input type="hidden" id="filterQuery" name="filterQuery" value="" />
@@ -168,7 +168,7 @@
                                                     <h3 class="panel-title">
                                                         <span class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion"
                                                             href="#collapseFilterLibrary" aria-expanded="false" aria-controls="collapseFilterLibrary">
-                                                            Library
+                                                            {% trans "Filter library" %}
                                                         </span>
                                                     </h3>
                                                 </td>
@@ -182,21 +182,21 @@
                                             <div class="panel panel-default">
                                                 <div class="panel-heading">
                                                     <h4 class="panel-title">
-                                                        <a class="no-decoration" data-toggle="collapse" data-target="#savePatternPanel">Save current pattern</a>
+                                                        <a class="no-decoration" data-toggle="collapse" data-target="#savePatternPanel">{% trans "Save current filter" %}</a>
                                                     </h4>
                                                 </div>
                     
                                                 <div id="savePatternPanel" class="panel-collapse collapse in">
                                                     <div class="panel-body form-inline">
                                                         <input type="text" maxlength="64" style="min-width: 50%" class="form-control" id="newFilterLibraryName" placeholder="Name">
-                                                        <a class="btn btn-default" onclick="saveToLibrary('userPatterns')">Save</a>
+                                                        <a class="btn btn-default" onclick="saveToLibrary('userPatterns')">{% trans "Save" %}</a>
                                                     </div>
                                                 </div>
                                             </div>
                                             <div class="panel panel-default" id="userPatterns" {% if userLibraries|length <= 0 %} hidden {% endif %}>
                                                 <div class="panel-heading">
                                                     <h4 class="panel-title">
-                                                        <a class="no-decoration" data-toggle="collapse" data-target="#userPatternsPanel">Your patterns</a>
+                                                        <a class="no-decoration" data-toggle="collapse" data-target="#userPatternsPanel">{% trans "Your filters" %}</a>
                                                     </h4>
                                                 </div>
                                                 <div id="userPatternsPanel" class="panel-collapse collapse in">
@@ -206,10 +206,10 @@
                                                                 <option value="{{ field.id }}">{{ field.name }}</option>
                                                             {% endfor %}
                                                         </select>
-                                                        <a class="btn btn-default" onclick="loadFromLibrary('userPatterns')">Load</a>
-                                                        <a class="btn btn-danger" onclick="deleteFromLibrary('userPatterns')">Delete</a>
+                                                        <a class="btn btn-default" onclick="loadFromLibrary('userPatterns')">{% trans "Load" %}</a>
+                                                        <a class="btn btn-danger" onclick="deleteFromLibrary('userPatterns')">{% trans "Delete" %}</a>
                                                         {% if admin.admingroup %}
-                                                            <a class="btn btn-info" onclick="toggleSharedPattern('userPatterns', 'sharedPatterns')">Share pattern</a>
+                                                            <a class="btn btn-info" onclick="toggleSharedPattern('userPatterns', 'sharedPatterns')">{% trans "Make available for all users" %}</a>
                                                         {% endif %}
                                                     </div>
                                                 </div>
@@ -217,7 +217,7 @@
                                             <div class="panel panel-default" id="sharedPatterns" {% if sharedLibraries|length <= 0 %} hidden {% endif %}>
                                                 <div class="panel-heading">
                                                     <h4 class="panel-title">
-                                                        <a class="no-decoration" data-toggle="collapse" data-target="#sharedPatternsPanel">Shared patterns</a>
+                                                        <a class="no-decoration" data-toggle="collapse" data-target="#sharedPatternsPanel">{% trans "Filters shared with all users" %}</a>
                                                     </h4>
                                                 </div>
                                                 <div id="sharedPatternsPanel" class="panel-collapse collapse in">
@@ -227,10 +227,10 @@
                                                                 <option value="{{ field.id }}">{{ field.name }}</option>
                                                             {% endfor %}
                                                         </select>
-                                                        <a class="btn btn-default" onclick="loadFromLibrary('sharedPatterns')">Load</a>
+                                                        <a class="btn btn-default" onclick="loadFromLibrary('sharedPatterns')">{% trans "Load" %}</a>
                                                         {% if admin.admingroup %}
-                                                            <a class="btn btn-danger" onclick="deleteFromLibrary('sharedPatterns')">Delete</a>
-                                                            <a class="btn btn-warning" onclick="toggleSharedPattern('sharedPatterns', 'userPatterns')">Retain pattern</a>
+                                                            <a class="btn btn-danger" onclick="deleteFromLibrary('sharedPatterns')">{% trans "Delete" %}</a>
+                                                            <a class="btn btn-warning" onclick="toggleSharedPattern('sharedPatterns', 'userPatterns')">{% trans "Remove from all users" %}</a>
                                                         {% endif %}
                                                     </div>
                                                 </div>
@@ -250,7 +250,7 @@
                                         <h3 class="panel-title">
                                             <span class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion"
                                                 href="#collapseChartOptions" aria-expanded="false" aria-controls="collapseChartOptions">
-                                                Chart options
+                                                {% trans "Chart options" %}
                                             </span>
                                         </h3>
                                     </td>
@@ -320,7 +320,7 @@
                                         <h3 class="panel-title">
                                             <span class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion"
                                                 href="#collapseTableOptions" aria-expanded="false" aria-controls="collapseTableOptions">
-                                                Table options
+                                                {% trans "Table options" %}
                                             </span>
                                         </h3>
                                     </td>

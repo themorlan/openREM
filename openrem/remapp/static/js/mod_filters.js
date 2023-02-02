@@ -472,7 +472,7 @@ function createGroup(first = null, prev = null, next = null, parent = null) {
     return res;
 }
 
-function makeid(length) {
+function generateId(length) {
     var result = '';
     var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     var charactersLength = characters.length;
@@ -483,10 +483,10 @@ function makeid(length) {
 }
 
 function getNewId() {
-    let newId = makeid(16);
+    let newId = generateId(16);
     while (newId in pattern) {
         // prevent using an existing id
-        newId = makeid(16);
+        newId = generateId(16);
     }
     return newId;
 }
