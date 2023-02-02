@@ -6,14 +6,6 @@ Standard name mapping
 Introduction
 ************
 
-The same type of examination can appear in OpenREM under a range of different ``requested procedure names``,
-``study descriptions`` or ``procedure names``. Individual acquistions of the same type may appear under a range of
-different ``acquisition protocol names``. The standard name mapping feature allows a number of differently named exams
-or acquisitions to be grouped into a single standard name, allowing easier analysis of data for audits and DRL creation.
-
-Selecting the ``standard name mapping`` option within the ``Config`` drop down menu (figure 1) will take the user to
-the standard name mapping summary page.
-
 .. figure:: img/ConfigMenu.png
    :figwidth: 30%
    :align: right
@@ -21,6 +13,14 @@ the standard name mapping summary page.
    :target: _images/ConfigMenu.png
 
    Figure 1: The config menu
+
+The same type of examination can appear in OpenREM under a range of different ``requested procedure names``,
+``study descriptions`` or ``procedure names``. Individual acquistions of the same type may appear under a range of
+different ``acquisition protocol names``. The standard name mapping feature allows a number of differently named exams
+or acquisitions to be grouped into a single standard name, allowing easier analysis of data for audits and DRL creation.
+
+Selecting the ``standard name mapping`` option within the ``Config`` drop down menu (figure 1) will take the user to
+the standard name mapping summary page.
 
 The standard name mapping summary page (figure 2) shows any existing standard name mappings, which the user is able to
 ``Modify`` or ``Delete`` using the buttons on the right hand side of each entry.
