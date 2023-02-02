@@ -46,7 +46,7 @@ then clicking on the arrow pointing to the right.
 
 .. figure:: img/standard_name_mapping_add.png
    :figwidth: 100%
-   :align: right
+   :align: center
    :alt: Adding or modifying a standard name
    :target: _images/standard_name_mapping_add.png
 
@@ -63,7 +63,7 @@ entries.
 
 .. figure:: img/standard_name_mapping_adding.png
    :figwidth: 100%
-   :align: right
+   :align: center
    :alt: Mapping a new standard name
    :target: _images/standard_name_mapping_adding.png
 
@@ -84,7 +84,7 @@ clearer visual comparison of the data per study for each hospital and piece of e
 
 .. figure:: img/ChartCTStudyDescriptionDLPMedian.png
    :figwidth: 100%
-   :align: right
+   :align: center
    :alt: Chart of median DLP for each study description
    :target: _images/ChartCTStudyDescriptionDLPMedian.png
 
@@ -93,7 +93,7 @@ clearer visual comparison of the data per study for each hospital and piece of e
 
 .. figure:: img/ChartCTStudyDescriptionDLPMedianStdName.png
    :figwidth: 100%
-   :align: right
+   :align: center
    :alt: Chart of median DLP for each standard study name
    :target: _images/ChartCTStudyDescriptionDLPMedianStdName.png
 
