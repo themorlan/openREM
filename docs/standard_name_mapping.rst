@@ -38,11 +38,11 @@ Creating a new standard name mapping
 ************************************
 
 A new standard name mapping can be created by clicking on an ``Add new XX entry``, where ``XX`` corresponds to a
-particular modality. This takes the user to a screen (figure 3) where the user must set the name of the new standard
-name is defined, and select the ``study descriptions``, ``requested procedure names``, ``procedure names`` and
-``acquaition protocol names`` the user wants to be included in the new standard name definition. The available items are
-listed in the left-hand tables. The user can move a required item into the right-hand table by double-clicking on an
-entry, or selecting an entry and then clicking on the arrow pointing to the right.
+particular modality. This takes the user to a screen (figure 3) where the new standard name must be set, and select the
+``study descriptions``, ``requested procedure names``, ``procedure names`` and ``acquaition protocol names`` the user
+wants to be included in the new standard name definition. The available items are listed in the left-hand tables. The
+user can move a required item into the right-hand table by double-clicking on an entry, or selecting an entry and then
+clicking on the arrow pointing to the right.
 
 .. figure:: img/standard_name_mapping_add.png
    :figwidth: 100%
