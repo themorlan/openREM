@@ -117,7 +117,7 @@ Find the ``uid`` of your user and the ``gid`` of the ``openrem`` group:
 
 .. code-block:: console
 
-    $ id
+    $ id $USER -u
     $ getent group openrem
 
 Take note of the ``uid`` number and the ``gid`` in the third field of the group information and use it in the next
