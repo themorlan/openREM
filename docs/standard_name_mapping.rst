@@ -8,8 +8,8 @@ Introduction
 
 The same type of examination can appear in OpenREM under a range of different ``requested procedure names``,
 ``study descriptions`` or ``procedure names``. Individual acquistions of the same type may appear under a range of
-different ``acquisition protocol names``. The standard name mapping feature allows a number of different named exams or
-acquisitions to be grouped into a single standard name, allowing easier analysis of data for audits and DRL creation.
+different ``acquisition protocol names``. The standard name mapping feature allows a number of differently named exams
+or acquisitions to be grouped into a single standard name, allowing easier analysis of data for audits and DRL creation.
 
 Selecting the ``standard name mapping`` option within the ``Config`` drop down menu (figure 1) will take the user to
 the standard name mapping summary page.
@@ -37,12 +37,12 @@ The standard name mapping summary page (figure 2) shows any existing standard na
 Creating a new standard name mapping
 ************************************
 
-A new standard name mapping can be created by clicking on an ``Add new XX entry``, where ``XX`` corresponds to a
+A new standard name mapping can be created by clicking on the ``Add new XX entry`` button, where ``XX`` corresponds to a
 particular modality. This takes the user to a screen (figure 3) where the new standard name must be set, and select the
-``study descriptions``, ``requested procedure names``, ``procedure names`` and ``acquaition protocol names`` the user
-wants to be included in the new standard name definition. The available items are listed in the left-hand tables. The
-user can move a required item into the right-hand table by double-clicking on an entry, or selecting an entry and then
-clicking on the arrow pointing to the right.
+``study descriptions``, ``requested procedure names``, ``procedure names`` and ``acquaition protocol names`` that the
+user wants to be included in the new standard name definition. The available items are listed in the left-hand tables.
+The user can move a required item into the right-hand table by double-clicking on an entry, or selecting an entry and
+then clicking on the arrow pointing to the right.
 
 .. figure:: img/standard_name_mapping_add.png
    :figwidth: 100%
