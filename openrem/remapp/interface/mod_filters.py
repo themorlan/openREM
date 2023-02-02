@@ -755,7 +755,7 @@ class MGSummaryListFilter(CustomFilterSet):
     projectionxrayradiationdose__irradeventxraydata__image_view__code_meaning = (
         django_filters.CharFilter(lookup_expr="icontains", label="View code")
     )
-    projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness__range = django_filters.NumericRangeFilter(
+    projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness__range = django_filters.RangeFilter(
         lookup_expr="range",
         label="Breast thickness range (mm)",
         field_name="projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness",
