@@ -58,10 +58,9 @@ database refresh links. Note that the use of these links is not expected to be n
 
 
 Selecting the ``standard name mapping`` option within the ``Config`` drop down menu (figure 1) will take the user to
-the standard name mapping summary page.
-
-The standard name mapping summary page (figure 5) shows any existing standard name mappings, which an OpenREM
-administrator is able to ``Modify`` or ``Delete`` using the buttons on the right hand side of each entry.
+the standard name mapping summary page(figure 5). This page shows any existing standard name mappings, which an OpenREM
+administrator is able to ``Modify`` or ``Delete`` using the buttons on the right hand side of each entry. A normal
+OpenREM user can only view standard name mappings.
 
 .. figure:: img/standard_name_mapping_summary.png
    :figwidth: 100%
@@ -95,10 +94,10 @@ right.
 The example in figure 7 shows that head-related ``study descriptions`` and ``requested procedure names`` have been
 chosen for a new standard name of ``Head``.
 
-Once all relevant options have been transferred to the right-hand box, the ``Submit`` button at the bottom of the page
-must be clicked to confirm the new entry. Once a description or name is assigned to a standard name, it cannot be added
-to any other standard name and disappears as an option in the left-hand tables to transfer for future new standard name
-entries.
+Once all relevant items have been transferred to the right-hand tables the ``Submit`` button at the bottom of the page
+must be clicked to confirm the new entry. Once a ``study description``, ``requested procedure name``,
+``procedure name`` or ``acquisition protocol name`` has been assigned to a standard name it cannot be added to another
+standard name, and disappears as an option in the left-hand tables when configuring future new standard name entries.
 
 .. figure:: img/standard_name_mapping_adding.png
    :figwidth: 100%
