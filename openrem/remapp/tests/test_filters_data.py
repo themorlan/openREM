@@ -72,6 +72,14 @@ class DummyModClass(FilterSet):
     generalequipmentmoduleattr__manufacturer = django_filters.CharFilter(
         lookup_expr="icontains", label="Make"
     )
+    total_dlp__range = django_filters.RangeFilter(
+        lookup_expr="range",
+        field_name="total_dlp",
+    )
+    event_dlp__range = django_filters.RangeFilter(
+        lookup_expr="range",
+        field_name="ctradiationdose__ctirradiationeventdata__dlp",
+    )
 
     class Meta:
         model = GeneralStudyModuleAttr
@@ -83,4 +91,6 @@ class DummyModClass(FilterSet):
             "patientstudymoduleattr__patient_age_decimal__gte",
             "patientstudymoduleattr__patient_age_decimal__lte",
             "generalequipmentmoduleattr__manufacturer",
+            "total_dlp__range",
+            "event_dlp__range",
         ]
