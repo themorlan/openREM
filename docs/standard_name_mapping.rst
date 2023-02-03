@@ -107,6 +107,16 @@ standard name, and disappears as an option in the left-hand tables when configur
 
    Figure 7: Adding or modifying a standard name mapping
 
+*******************************************
+Modifying an existing standard name mapping
+*******************************************
+
+An existing standard name mapping can be modified by clicking the ``Modify`` button on the right-hand side of an entry
+in the standard name mapping summary page (figure 5). This takes the administrator to the same screen as shown in figure
+7, where the chosen ``study descriptions``, ``requested procedure names``, ``procedure names`` and
+``acquisition protocol names`` can be amended. Clicking ``Submit`` confirms the changes.
+
+
 ******
 Charts
 ******
