@@ -132,9 +132,9 @@
                                     </li>
                                 {% endwith %}
                             {% endwith %}
-                        </ul>
 
-                        <table class="table table-condensed table-bordered small table-indent" aria-describedby="Summary of examinations on this patient over the specified time period">
+                            <li style="list-style-type: none;">
+                        <table class="table table-condensed table-bordered small" aria-describedby="Summary of examinations on this patient over the specified time period">
                             <tr>
                                 <th scope="col">Date</th>
                                 <th scope="col">Time</th>
@@ -183,6 +183,9 @@
                                 </tr>
                             {% endfor %}
                         </table>
+                            </li>
+                        </ul>
+
                     {% else %}
                         <h4>Summary of studies (including this one) matching this patient ID over the {{ alert_levels.accum_dose_delta_weeks }} week{{ alert_levels.accum_dose_delta_weeks|pluralize }} previous to this study</h4>
                         <p>Data unavailable: no patient ID for this study.</p>
@@ -355,9 +358,20 @@
                 </table>
             </div>
 
-            <div class="openskin_info" id="openskin_info">Skin dose maps are calculated using openSkin, and are for indication only: openSkin calculations have not
-            been validated. Contributions are welcome, see <a href="http://bitbucket.org/openskin/openskin">openSkin website</a> for details. Create
-            <a href="{% url 'rfopenskin' pk=generalstudymoduleattr.id %}">openSkin export</a>. (Not available if you don't have export permissions.)</div>
+            <div class="openskin_info" id="openskin_info">
+                Skin dose maps are calculated using openSkin. Monte Carlo validation has been carried out for a Siemens
+                Artis zee system for the body section of the phantom: openSkin results were within &pm; 20&percnt; of
+                the Monte Carlo results. Skin dose values depend on the accuracy of the x-ray system's dose at reference
+                point and DAP values. For other types of x-ray system the results are for indication only as they have
+                not been validated.
+
+                Contributions are welcome, see <a href="http://bitbucket.org/openskin/openskin">openSkin website</a> for
+                details.
+
+                {% if admin.exportgroup %}
+                    Create an <a href="{% url 'rfopenskin' pk=generalstudymoduleattr.id %}">openSkin export</a>.
+                {% endif %}
+            </div>
 
             <script src="{{ STATIC_URL }}js/skin-dose-maps/rfSkinDoseMapColourScaleObject.js"></script>
             <script src="{{ STATIC_URL }}js/skin-dose-maps/rfSkinDoseMapObject.js"></script>

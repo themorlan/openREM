@@ -88,15 +88,17 @@ def intersect(a_ray, a_triangle):
     return output
 
 
-def collimate(a_ray, area, d_ref):
+def collimate(a_ray, area, d_ref, lr_angle, cc_angle):  # pylint: disable=too-many-locals
     """This function produces a pair of triangles representing a square field
     of a collimated x-ray beam. These are then used for intersection checks to
     see if the phantom cell sees radiation.
 
     Args:
-        a_ray: the x-ray beam from focus to isoncentre as a Segment_3
+        a_ray: the x-ray beam from focus to isocentre as a Segment3
         area: an area of the beam in square centimetres at any arbitrary distance
         d_ref: the reference distance the area is defined at
+        lr_angle: the left-right angle. +90 is detector to the patient's left
+        cc_angle: the cranial-caudal angle in degrees. +90 is detector to the head
 
     Returns:
         A tuple of two touching triangles making a square field oriented
@@ -104,35 +106,72 @@ def collimate(a_ray, area, d_ref):
     """
     side_length = math.sqrt(area) * 10 / d_ref  # Side at 10 cm
 
-    centre_point = (
-        a_ray.source + a_ray.vector / a_ray.length * 10
-    )  # point at 10 cm up on the midline of the ray
+    # Get the angles in radians and correct the sign on LR to account for our patient coordinate system
+    lr_rads = math.radians(-lr_angle)
+    cc_rads = math.radians(cc_angle)
 
-    xvector = np.array([np.sin(a_ray.xangle), 0, -np.cos(a_ray.xangle)])
-    yvector = np.array([0, np.sin(a_ray.yangle), np.cos(a_ray.yangle)])
-    point_a = (
-        centre_point + ((side_length / 2) * xvector) + ((side_length / 2) * yvector)
-    )
-    point_b = (
-        centre_point + ((side_length / 2) * xvector) - ((side_length / 2) * yvector)
-    )
-    point_c = (
-        centre_point - ((side_length / 2) * xvector) + ((side_length / 2) * yvector)
-    )
-    point_d = (
-        centre_point - ((side_length / 2) * xvector) - ((side_length / 2) * yvector)
-    )
+    # Set up a default vecotr pointing up Z
+    up_point = np.array([0,0,10])
 
+    # Get the rotation matrix for LR (rotation around Y)
+    rot_mat_lr = rotation_matrix(np.array([0,1,0]), lr_rads)
+
+    # Rotate our default vector for LR
+    rot_vector = np.dot(up_point,rot_mat_lr)
+
+    # Create a new axis of rotation 90 degrees from the current vector to do CC rotation
+    new_up_point = np.array([-rot_vector[2], 0, rot_vector[0]])
+
+    # Get the rotation matrix for CC
+    rot_mat_cc = rotation_matrix(new_up_point, cc_rads)
+
+    # Set up a series of vectors for each corner of the square field
+    vec1 = np.array([(side_length / 2), (side_length / 2), 10])
+    vec2 = np.array([-(side_length / 2), (side_length / 2), 10])
+    vec3 = np.array([(side_length / 2), -(side_length / 2), 10])
+    vec4 = np.array([-(side_length / 2), -(side_length / 2), 10])
+
+    # Rotate each corner vector by LR and then by CC rotation matrices
+    point_a = a_ray.source + np.dot(np.dot(vec1, rot_mat_lr), rot_mat_cc)
+    point_b = a_ray.source + np.dot(np.dot(vec2, rot_mat_lr), rot_mat_cc)
+    point_c = a_ray.source + np.dot(np.dot(vec3, rot_mat_lr), rot_mat_cc)
+    point_d = a_ray.source + np.dot(np.dot(vec4, rot_mat_lr), rot_mat_cc)
+
+    # Build two triangles representing the square field
     triangle_1 = Triangle3(point_d, point_b, point_c)
     triangle_2 = Triangle3(point_a, point_b, point_c)
+
     return triangle_1, triangle_2
+
+
+def rotation_matrix(axis, theta):  # pylint: disable=too-many-locals
+    """
+    Return the rotation matrix for a rotation theta radians about an arbitrary axis.
+
+    Args:
+        axis: a vector representing the axis of rotation
+        theta: the angle of rotation in radians
+
+    Returns:
+        A numpy array containing the rotation matrix which can then be applied to a point or vector
+    """
+    axis = np.asarray(axis)
+    axis = axis / math.sqrt(np.dot(axis, axis))
+    a = math.cos(theta / 2.0)
+    b, c, d = -axis * math.sin(theta / 2.0)
+    aa, bb, cc, dd = a * a, b * b, c * c, d * d
+    bc, ad, ac, ab, bd, cd = b * c, a * d, a * c, a * b, b * d, c * d
+
+    return np.array([[aa + bb - cc - dd, 2 * (bc + ad), 2 * (bd - ac)],
+                     [2 * (bc - ad), aa + cc - bb - dd, 2 * (cd + ab)],
+                     [2 * (bd + ac), 2 * (cd - ab), aa + dd - bb - cc]])
 
 
 def build_ray(
     table_longitudinal, table_lateral, table_height, lr_angle, cc_angle, d_ref
 ):
     """This function takes RDSR geometry information and uses it to build
-    an x-ray (Segment_3) taking into account translation and rotation.
+    an x-ray (Segment3) taking into account translation and rotation.
 
     Args:
         table_longitudinal: the table longitudinal offset as defined in the DICOM statement
@@ -143,39 +182,31 @@ def build_ray(
         d_ref: the reference distance to the isocentre
 
     Returns:
-        A ray (Segment_3) representing the x-ray beam.
+        A ray (Segment3) representing the x-ray beam.
     """
+    # Co-ordinate system: pat L is +ve x, pat feet is + y, ceiling is + z (HFS)
     x = 0
     y = 0
     z = -d_ref
 
-    lr_rads = (lr_angle / 360.0) * 2.0 * math.pi
-    cc_rads = (cc_angle / 360.0) * 2.0 * math.pi
+    lr_rads = math.radians(-lr_angle)
+    cc_rads = math.radians(cc_angle)
+    up_point = np.array([0, 0, 10])
+    rot_mat_lr = rotation_matrix(np.array([0, 1, 0]), lr_rads)
+    rot_vector = np.dot(up_point, rot_mat_lr)
 
-    sin_lr = math.sin(lr_rads)
-    cos_lr = math.cos(lr_rads)
-    sin_cc = math.sin(cc_rads)
-    cos_cc = math.cos(cc_rads)
+    new_up_point = np.array([-rot_vector[2], 0, rot_vector[0]])
+    rot_mat_cc = rotation_matrix(new_up_point, cc_rads)
 
-    # Full maths: x_new = z*sin_lr + x*cos_lr
-    x_new = z * sin_lr
+    source = np.array([x, y, z])
+    rotated_source = np.dot(np.dot(source, rot_mat_lr), rot_mat_cc)
 
-    # Full maths: z_step = z*cos_lr - x*sin_lr
-    z_step = z * cos_lr
-
-    # Full maths: y_new = y*cos_cc - z_step*sin_cc
-    y_new = -z_step * sin_cc
-
-    # Full maths: z_new = y*sin_cc + z_step*cos_cc
-    z_new = z_step * cos_cc
-
-    z_translated = z_new + table_height
-
-    x_translated = x_new - table_longitudinal
-
-    y_translated = y_new + table_lateral
+    z_translated = rotated_source[2] + table_height
+    x_translated = rotated_source[0] - table_longitudinal
+    y_translated = rotated_source[1] + table_lateral
 
     focus = np.array([x_translated, y_translated, z_translated])
+
     isocentre = np.array([x - table_longitudinal, y + table_lateral, 0 + table_height])
 
     my_ray = Segment3(focus, isocentre)
@@ -187,8 +218,8 @@ def check_orthogonal(segment1, segment2):
     """This function checks whether two segments are within 90 degrees
 
     Args:
-        segment1: A Segment_3 line segment
-        segment2: Another Segment_3 line segment
+        segment1: A Segment3 line segment
+        segment2: Another Segment3 line segment
 
     Returns:
         A boolean: true if the segments are within 90 degrees,

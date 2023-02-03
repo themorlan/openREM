@@ -5,10 +5,13 @@ OpenREM version history
 
 1.0.0b1 (2022-xx-xx)
 --------------------
+* :issue:`965`  SkinDose: fixed bug where a zero study dap causes a divide by zero error
+* :issue:`964`  Tasks: restricted default task history to 2000 stored entries; enabled admin users to configure this value
 * :issue:`962`  Documentation: updated packages to make bullet points work again
 * :issue:`960`  SkinDose: fixed bug where multiple entries in the openskin safelist table with different software versions caused an error
 * :issue:`959`  Installation: upgraded packages to latest versions
 * :issue:`958`  Interface: fixed task table sorting for Started column
+* :issue:`957`  Imports: fixed DX extractor total_number_of_radiographic_frames is NoneType error
 * :issue:`956`  Interface: enable updating of standard name database links
 * :issue:`955`  Imports: fixed error when importing RDSR with empty DAP measured value sequence
 * :issue:`953`  Interface: updated "DX and CR" to "Radiography", and "Radiographic" to "Radiography"
@@ -23,6 +26,7 @@ OpenREM version history
 * :issue:`936`  Tasks: added make_skin_map to background tasks on RF RDSR import
 * :issue:`935`  SkinDose: fixed bug which applied 5x5 cm backscatter factor regardless of field size at skin
 * :issue:`934`  DICOM Networking: QR queries are now logged and can be analysed through the web interface
+* :issue:`933`  SkinDose: bug fixed that caused incorrect field size at skin for exposures with a non-zero secondary angle (caudocranial)
 * :issue:`931`  Exports: export RF DAP as float instead of text
 * :issue:`928`  Documentation: added restriction in postgres version for earlier OpenREM releases
 * :issue:`925`  Docker: docs and config file for enabling bind mounts with SELinux

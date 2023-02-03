@@ -36,7 +36,8 @@ import django
 from django.core.exceptions import ObjectDoesNotExist
 import numpy as np
 
-# setup django/OpenREM
+# Setup django. This is required on windows, because process is created via spawn and
+# django will not be initialized anymore then (On Linux this will only be executed once)
 basepath = os.path.dirname(__file__)
 projectpath = os.path.abspath(os.path.join(basepath, "..", ".."))
 if projectpath not in sys.path:
@@ -44,17 +45,25 @@ if projectpath not in sys.path:
 os.environ["DJANGO_SETTINGS_MODULE"] = "openremproject.settings"
 django.setup()
 
-from remapp.models import GeneralStudyModuleAttr, SkinDoseMapResults, OpenSkinSafeList
-from .background import record_task_info
-from .save_skin_map_structure import save_openskin_structure
-from .openskin.calc_exp_map import CalcExpMap
-from ..version import __skin_map_version__
+from ..models import (  # pylint: disable=wrong-import-position
+    GeneralStudyModuleAttr,
+    SkinDoseMapResults,
+    OpenSkinSafeList
+)
+from .background import record_task_info  # pylint: disable=wrong-import-position
+from .save_skin_map_structure import save_openskin_structure  # pylint: disable=wrong-import-position
+from .openskin.calc_exp_map import CalcExpMap  # pylint: disable=wrong-import-position
+from ..version import __skin_map_version__  # pylint: disable=wrong-import-position
 
 # Explicitly name logger so that it is still handled when using __main__
 logger = logging.getLogger("remapp.tools.make_skin_map")
 
 
 def make_skin_map(study_pk=None):
+    # pylint: disable=too-many-branches
+    # pylint: disable=too-many-statements
+    # pylint: disable=too-many-locals
+    # noqa: C901
 
     if study_pk:
         study = GeneralStudyModuleAttr.objects.get(pk=study_pk)
@@ -83,13 +92,11 @@ def make_skin_map(study_pk=None):
         if entry is None:
             # There is no match, so return a blank dummy openSkin structure without trying
             # to calculate a skin dose map
-            save_openskin_structure(
-                study,
-                {
-                    "skin_map": [0, 0],
-                    "skin_map_version": __skin_map_version__,
-                },
-            )
+            return_structure = {
+                "skin_map": [0, 0],
+                "skin_map_version": __skin_map_version__,
+            }
+            save_openskin_structure(study, return_structure)
             return
 
         pat_mass_source = "assumed"
@@ -185,7 +192,7 @@ def make_skin_map(study_pk=None):
             pat_mass=pat_mass,
             pat_height=pat_height,
             table_thick=0.5,
-            table_width=40.0,
+            table_width=45.0,
             table_length=150.0,
             matt_thick=4.0,
         )
@@ -349,6 +356,10 @@ def make_skin_map(study_pk=None):
         # assume that calculation failed if max(peak_skin_dose) == 0 ==> set peak_skin_dose to None
         max_skin_dose = np.max(my_exp_map.my_dose.total_dose, initial=0)
         max_skin_dose = max_skin_dose if max_skin_dose > 0 else None
+        try:
+            dap_fraction = my_exp_map.my_dose.dap_count / float(study.total_dap)
+        except ZeroDivisionError:
+            dap_fraction = 1.0
         SkinDoseMapResults(
             general_study_module_attributes=study,
             patient_orientation=pat_pos,
@@ -362,7 +373,7 @@ def make_skin_map(study_pk=None):
             patient_size=pat_height,
             skin_map_version=__skin_map_version__,
             peak_skin_dose=max_skin_dose,
-            dap_fraction=my_exp_map.my_dose.dap_count / float(study.total_dap),
+            dap_fraction=dap_fraction,
         ).save()
         return_structure = {
             "skin_map": my_exp_map.my_dose.total_dose.flatten().tolist(),
