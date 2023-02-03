@@ -431,8 +431,8 @@ class FilterViewTests(TestCase):
             json.dumps(
                 get_simple_multiple_query(
                     {
-                        "patientstudymoduleattr__patient_weight__gte": "70",
-                        "patientstudymoduleattr__patient_weight__lte": "90",
+                        "patientstudymoduleattr__patient_weight__range_min": "70",
+                        "patientstudymoduleattr__patient_weight__range_max": "90",
                     }
                 )
             )
@@ -458,8 +458,8 @@ class FilterViewTests(TestCase):
             json.dumps(
                 get_simple_multiple_query(
                     {
-                        "patientstudymoduleattr__patient_weight__gte": "70",
-                        "patientstudymoduleattr__patient_weight__lte": "76",
+                        "patientstudymoduleattr__patient_weight__range_min": "70",
+                        "patientstudymoduleattr__patient_weight__range_max": "76",
                     }
                 )
             )
@@ -481,8 +481,8 @@ class FilterViewTests(TestCase):
             json.dumps(
                 get_simple_multiple_query(
                     {
-                        "patientstudymoduleattr__patient_weight__gte": "76",
-                        "patientstudymoduleattr__patient_weight__lte": "90",
+                        "patientstudymoduleattr__patient_weight__range_min": "76",
+                        "patientstudymoduleattr__patient_weight__range_max": "90",
                     }
                 )
             )

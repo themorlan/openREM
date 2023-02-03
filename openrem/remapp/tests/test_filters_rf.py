@@ -104,8 +104,8 @@ class FilterViewTests(TestCase):
             json.dumps(
                 get_simple_multiple_query(
                     {
-                        "patientstudymoduleattr__patient_weight__gte": "80",
-                        "patientstudymoduleattr__patient_weight__lte": "90",
+                        "patientstudymoduleattr__patient_weight__range_min": "80",
+                        "patientstudymoduleattr__patient_weight__range_max": "90",
                     }
                 )
             )
@@ -124,7 +124,7 @@ class FilterViewTests(TestCase):
         # Test filtering using min weight of 90 kg - this should exclude both studies
         query = urllib.parse.quote(
             json.dumps(
-                get_simple_query("patientstudymoduleattr__patient_weight__gte", "90")
+                get_simple_query("patientstudymoduleattr__patient_weight__range_min", "90")
             )
         )
         response = self.client.get(
@@ -138,7 +138,7 @@ class FilterViewTests(TestCase):
         # Test filtering using max weight of 80 kg - this should exclude both studies
         query = urllib.parse.quote(
             json.dumps(
-                get_simple_query("patientstudymoduleattr__patient_weight__lte", "80")
+                get_simple_query("patientstudymoduleattr__patient_weight__range_max", "80")
             )
         )
         response = self.client.get(
