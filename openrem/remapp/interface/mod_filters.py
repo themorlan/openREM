@@ -106,25 +106,31 @@ def _dap_filter(queryset, name, value):
     """Modify DAP to Gy.m2 before filtering"""
     if not value or not name:
         return queryset
+    
+    lookup_expr = "exact"
+
     try:
-        value_gy_m2 = Decimal(value) / Decimal(1000000)
+        if value.start is not None and value.stop is not None:
+            lookup_expr = "range"
+            value = (Decimal(value.start) / Decimal(1000000), Decimal(value.stop) / Decimal(1000000))
+        elif value.start is not None:
+            lookup_expr = "gte"
+            value = Decimal(value.start) / Decimal(1000000)
+        elif value.stop is not None:
+            lookup_expr = "lte"
+            value = Decimal(value.stop) / Decimal(1000000)
     except InvalidOperation:
         return queryset
-    if "study_dap_min" in name:
-        filtered = queryset.filter(total_dap__gte=value_gy_m2)
-    elif "study_dap_max" in name:
-        filtered = queryset.filter(total_dap__lte=value_gy_m2)
-    elif "event_dap_min" in name:
-        filtered = queryset.filter(
-            projectionxrayradiationdose__irradeventxraydata__dose_area_product__gte=value_gy_m2
-        )
-    elif "event_dap_max" in name:
-        filtered = queryset.filter(
-            projectionxrayradiationdose__irradeventxraydata__dose_area_product__lte=value_gy_m2
-        )
+
+    if "study_dap" in name:
+        print(lookup_expr)
+        print(value)
+        queryset = queryset.filter(**{"total_dap__" + lookup_expr: value})
+    elif "event_dap" in name:
+        queryset = queryset.filter(**{"projectionxrayradiationdose__irradeventxraydata__dose_area_product__" + lookup_expr: value})
     else:
         return queryset
-    return filtered
+    return queryset
 
 class CustomFilterSet(django_filters.FilterSet):
     def __init__(self, data=None, queryset=None, *, request=None, prefix=None):
@@ -169,17 +175,11 @@ class RFSummaryListFilter(CustomFilterSet):
 
     """Filter for fluoroscopy studies to display in web interface."""
 
-    study_date__gt = django_filters.DateFilter(
-        lookup_expr="gte",
-        label="Date from",
+    study_date__range = django_filters.DateFromToRangeFilter(
+        lookup_expr="range",
+        label="Study date",
         field_name="study_date",
-        widget=forms.TextInput(attrs={"class": "datepicker", "static_lookup": True}),
-    )
-    study_date__lt = django_filters.DateFilter(
-        lookup_expr="lte",
-        label="Date until",
-        field_name="study_date",
-        widget=forms.TextInput(attrs={"class": "datepicker", "static_lookup": True}),
+        widget=RangeWidget(attrs={"class": "datepicker", "static_lookup": True}),
     )
     study_description = django_filters.CharFilter(
         lookup_expr="icontains", label="Study description"
@@ -193,29 +193,17 @@ class RFSummaryListFilter(CustomFilterSet):
     projectionxrayradiationdose__irradeventxraydata__acquisition_protocol = (
         django_filters.CharFilter(lookup_expr="icontains", label="Acquisition protocol")
     )
-    patientstudymoduleattr__patient_age_decimal__gte = django_filters.NumberFilter(
-        lookup_expr="gte",
-        label="Min age (yrs)",
+    patientstudymoduleattr__patient_age_decimal__range = django_filters.RangeFilter(
+        lookup_expr="range",
+        label="Age (yrs)",
         field_name="patientstudymoduleattr__patient_age_decimal",
-        widget=forms.NumberInput(attrs={"static_lookup": True}),
+        widget=RangeWidget(attrs={"static_lookup": True}),
     )
-    patientstudymoduleattr__patient_age_decimal__lte = django_filters.NumberFilter(
-        lookup_expr="lte",
-        label="Max age (yrs)",
-        field_name="patientstudymoduleattr__patient_age_decimal",
-        widget=forms.NumberInput(attrs={"static_lookup": True}),
-    )
-    patientstudymoduleattr__patient_weight__gte = django_filters.NumberFilter(
-        lookup_expr="gte",
-        label="Min weight (kg)",
+    patientstudymoduleattr__patient_weight__range = django_filters.RangeFilter(
+        lookup_expr="range",
+        label="Weight (kg)",
         field_name="patientstudymoduleattr__patient_weight",
-        widget=forms.NumberInput(attrs={"static_lookup": True}),
-    )
-    patientstudymoduleattr__patient_weight__lte = django_filters.NumberFilter(
-        lookup_expr="lte",
-        label="Max weight (kg)",
-        field_name="patientstudymoduleattr__patient_weight",
-        widget=forms.NumberInput(attrs={"static_lookup": True}),
+        widget=RangeWidget(attrs={"static_lookup": True}),
     )
     generalequipmentmoduleattr__institution_name = django_filters.CharFilter(
         lookup_expr="icontains", label="Hospital"
@@ -237,15 +225,10 @@ class RFSummaryListFilter(CustomFilterSet):
         label="Accession number",
         widget=forms.TextInput(attrs={"static_lookup": True}),
     )
-    study_dap_min = django_filters.NumberFilter(
+    study_dap__range = django_filters.RangeFilter(
         method=_dap_filter,
-        label="Min study DAP (cGy·cm²)",
-        widget=forms.NumberInput(attrs={"static_lookup": True}),
-    )
-    study_dap_max = django_filters.NumberFilter(
-        method=_dap_filter,
-        label="Max study DAP (cGy·cm²)",
-        widget=forms.NumberInput(attrs={"static_lookup": True}),
+        label="Study DAP (cGy·cm²)",
+        widget=RangeWidget(attrs={"static_lookup": True}),
     )
     generalequipmentmoduleattr__unique_equipment_name__display_name = (
         django_filters.CharFilter(lookup_expr="icontains", label="Display name")
@@ -265,8 +248,7 @@ class RFSummaryListFilter(CustomFilterSet):
 
         model = GeneralStudyModuleAttr
         fields = [
-            "study_date__gt",
-            "study_date__lt",
+            "study_date__range",
             "study_description",
             "procedure_code_meaning",
             "requested_procedure_code_meaning",
@@ -275,14 +257,11 @@ class RFSummaryListFilter(CustomFilterSet):
             "generalequipmentmoduleattr__manufacturer",
             "generalequipmentmoduleattr__manufacturer_model_name",
             "generalequipmentmoduleattr__station_name",
-            "patientstudymoduleattr__patient_age_decimal__gte",
-            "patientstudymoduleattr__patient_age_decimal__lte",
-            "patientstudymoduleattr__patient_weight__gte",
-            "patientstudymoduleattr__patient_weight__lte",
+            "patientstudymoduleattr__patient_age_decimal__range",
+            "patientstudymoduleattr__patient_weight__range",
             "performing_physician_name",
             "accession_number",
-            "study_dap_min",
-            "study_dap_max",
+            "study_dap__range",
             "generalequipmentmoduleattr__unique_equipment_name__display_name",
             "test_data",
         ]
@@ -464,17 +443,11 @@ class CTSummaryListFilter(CustomFilterSet):
 
     """Filter for CT studies to display in web interface."""
 
-    study_date__gt = django_filters.DateFilter(
-        lookup_expr="gte",
-        label="Date from",
+    study_date__range = django_filters.DateFromToRangeFilter(
+        lookup_expr="range",
+        label="Study date",
         field_name="study_date",
-        widget=forms.TextInput(attrs={"class": "datepicker", "static_lookup": True}),
-    )
-    study_date__lt = django_filters.DateFilter(
-        lookup_expr="lte",
-        label="Date until",
-        field_name="study_date",
-        widget=forms.TextInput(attrs={"class": "datepicker", "static_lookup": True}),
+        widget=RangeWidget(attrs={"class": "datepicker", "static_lookup": True}),
     )
     study_description = django_filters.CharFilter(
         lookup_expr="icontains", label="Study description"
@@ -488,29 +461,17 @@ class CTSummaryListFilter(CustomFilterSet):
     ctradiationdose__ctirradiationeventdata__acquisition_protocol = (
         django_filters.CharFilter(lookup_expr="icontains", label="Acquisition protocol")
     )
-    patientstudymoduleattr__patient_age_decimal__gte = django_filters.NumberFilter(
-        lookup_expr="gte",
-        label="Min age (yrs)",
+    patientstudymoduleattr__patient_age_decimal__range = django_filters.RangeFilter(
+        lookup_expr="range",
+        label="Age (yrs)",
         field_name="patientstudymoduleattr__patient_age_decimal",
-        widget=forms.NumberInput(attrs={"static_lookup": True}),
+        widget=RangeWidget(attrs={"static_lookup": True}),
     )
-    patientstudymoduleattr__patient_age_decimal__lte = django_filters.NumberFilter(
-        lookup_expr="lte",
-        label="Max age (yrs)",
-        field_name="patientstudymoduleattr__patient_age_decimal",
-        widget=forms.NumberInput(attrs={"static_lookup": True}),
-    )
-    patientstudymoduleattr__patient_weight__gte = django_filters.NumberFilter(
-        lookup_expr="gte",
-        label="Min weight (kg)",
+    patientstudymoduleattr__patient_weight__range = django_filters.RangeFilter(
+        lookup_expr="range",
+        label="Weight (kg)",
         field_name="patientstudymoduleattr__patient_weight",
-        widget=forms.NumberInput(attrs={"static_lookup": True}),
-    )
-    patientstudymoduleattr__patient_weight__lte = django_filters.NumberFilter(
-        lookup_expr="lte",
-        label="Max weight (kg)",
-        field_name="patientstudymoduleattr__patient_weight",
-        widget=forms.NumberInput(attrs={"static_lookup": True}),
+        widget=RangeWidget(attrs={"static_lookup": True}),
     )
     generalequipmentmoduleattr__institution_name = django_filters.CharFilter(
         lookup_expr="icontains", label="Hospital"
@@ -529,17 +490,11 @@ class CTSummaryListFilter(CustomFilterSet):
         label="Accession number",
         widget=forms.TextInput(attrs={"static_lookup": True}),
     )
-    total_dlp__gte = django_filters.NumberFilter(
-        lookup_expr="gte",
+    total_dlp__range = django_filters.RangeFilter(
+        lookup_expr="range",
+        label="Study DLP",
         field_name="total_dlp",
-        label="Min study DLP",
-        widget=forms.NumberInput(attrs={"static_lookup": True}),
-    )
-    total_dlp__lte = django_filters.NumberFilter(
-        lookup_expr="lte",
-        field_name="total_dlp",
-        label="Max study DLP",
-        widget=forms.NumberInput(attrs={"static_lookup": True}),
+        widget=RangeWidget(attrs={"static_lookup": True}),
     )
     generalequipmentmoduleattr__unique_equipment_name__display_name = (
         django_filters.CharFilter(lookup_expr="icontains", label="Display name")
@@ -589,8 +544,7 @@ class CTSummaryListFilter(CustomFilterSet):
 
         model = GeneralStudyModuleAttr
         fields = [
-            "study_date__gt",
-            "study_date__lt",
+            "study_date__range",
             "study_description",
             "procedure_code_meaning",
             "requested_procedure_code_meaning",
@@ -599,13 +553,10 @@ class CTSummaryListFilter(CustomFilterSet):
             "generalequipmentmoduleattr__manufacturer",
             "generalequipmentmoduleattr__manufacturer_model_name",
             "generalequipmentmoduleattr__station_name",
-            "patientstudymoduleattr__patient_age_decimal__gte",
-            "patientstudymoduleattr__patient_age_decimal__lte",
-            "patientstudymoduleattr__patient_weight__gte",
-            "patientstudymoduleattr__patient_weight__lte",
+            "patientstudymoduleattr__patient_age_decimal__range",
+            "patientstudymoduleattr__patient_weight__range",
             "accession_number",
-            "total_dlp__gte",
-            "total_dlp__lte",
+            "total_dlp__range",
             "generalequipmentmoduleattr__unique_equipment_name__display_name",
             "test_data",
             "num_events",
@@ -728,17 +679,11 @@ class MGSummaryListFilter(CustomFilterSet):
 
     """Filter for mammography studies to display in web interface."""
 
-    study_date__gt = django_filters.DateFilter(
-        lookup_expr="gte",
-        label="Date from",
+    study_date__range = django_filters.DateFromToRangeFilter(
+        lookup_expr="range",
+        label="Study date",
         field_name="study_date",
-        widget=forms.TextInput(attrs={"class": "datepicker", "static_lookup": True}),
-    )
-    study_date__lt = django_filters.DateFilter(
-        lookup_expr="lte",
-        label="Date until",
-        field_name="study_date",
-        widget=forms.TextInput(attrs={"class": "datepicker", "static_lookup": True}),
+        widget=RangeWidget(attrs={"class": "datepicker", "static_lookup": True}),
     )
     study_description = django_filters.CharFilter(
         lookup_expr="icontains", label="Study description"
@@ -764,17 +709,11 @@ class MGSummaryListFilter(CustomFilterSet):
     projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure_control_mode = django_filters.CharFilter(
         lookup_expr="icontains", label="Exposure control mode"
     )
-    patientstudymoduleattr__patient_age_decimal__gte = django_filters.NumberFilter(
-        lookup_expr="gte",
-        label="Min age (yrs)",
+    patientstudymoduleattr__patient_age_decimal__range = django_filters.RangeFilter(
+        lookup_expr="range",
+        label="Age (yrs)",
         field_name="patientstudymoduleattr__patient_age_decimal",
-        widget=forms.NumberInput(attrs={"static_lookup": True}),
-    )
-    patientstudymoduleattr__patient_age_decimal__lte = django_filters.NumberFilter(
-        lookup_expr="lte",
-        label="Max age (yrs)",
-        field_name="patientstudymoduleattr__patient_age_decimal",
-        widget=forms.NumberInput(attrs={"static_lookup": True}),
+        widget=RangeWidget(attrs={"static_lookup": True}),
     )
     generalequipmentmoduleattr__institution_name = django_filters.CharFilter(
         lookup_expr="icontains", label="Hospital"
@@ -817,8 +756,7 @@ class MGSummaryListFilter(CustomFilterSet):
 
         model = GeneralStudyModuleAttr
         fields = [
-            "study_date__gt",
-            "study_date__lt",
+            "study_date__range",
             "study_description",
             "procedure_code_meaning",
             "requested_procedure_code_meaning",
@@ -830,8 +768,7 @@ class MGSummaryListFilter(CustomFilterSet):
             "generalequipmentmoduleattr__manufacturer",
             "generalequipmentmoduleattr__manufacturer_model_name",
             "generalequipmentmoduleattr__station_name",
-            "patientstudymoduleattr__patient_age_decimal__gte",
-            "patientstudymoduleattr__patient_age_decimal__lte",
+            "patientstudymoduleattr__patient_age_decimal__range",
             "accession_number",
             "generalequipmentmoduleattr__unique_equipment_name__display_name",
             "num_events",
@@ -952,17 +889,11 @@ class DXSummaryListFilter(CustomFilterSet):
 
     """Filter for DX studies to display in web interface."""
 
-    study_date__gt = django_filters.DateFilter(
-        lookup_expr="gte",
-        label="Date from",
+    study_date__range = django_filters.DateFromToRangeFilter(
+        lookup_expr="range",
+        label="Study date",
         field_name="study_date",
-        widget=forms.TextInput(attrs={"class": "datepicker", "static_lookup": True}),
-    )
-    study_date__lt = django_filters.DateFilter(
-        lookup_expr="lte",
-        label="Date until",
-        field_name="study_date",
-        widget=forms.TextInput(attrs={"class": "datepicker", "static_lookup": True}),
+        widget=RangeWidget(attrs={"class": "datepicker", "static_lookup": True}),
     )
     study_description = django_filters.CharFilter(
         lookup_expr="icontains", label="Study description"
@@ -976,29 +907,17 @@ class DXSummaryListFilter(CustomFilterSet):
     projectionxrayradiationdose__irradeventxraydata__acquisition_protocol = (
         django_filters.CharFilter(lookup_expr="icontains", label="Acquisition protocol")
     )
-    patientstudymoduleattr__patient_age_decimal__gte = django_filters.NumberFilter(
-        lookup_expr="gte",
-        label="Min age (yrs)",
+    patientstudymoduleattr__patient_age_decimal__range = django_filters.RangeFilter(
+        lookup_expr="range",
+        label="Age (yrs)",
         field_name="patientstudymoduleattr__patient_age_decimal",
-        widget=forms.NumberInput(attrs={"static_lookup": True}),
+        widget=RangeWidget(attrs={"static_lookup": True}),
     )
-    patientstudymoduleattr__patient_age_decimal__lte = django_filters.NumberFilter(
-        lookup_expr="lte",
-        label="Max age (yrs)",
-        field_name="patientstudymoduleattr__patient_age_decimal",
-        widget=forms.NumberInput(attrs={"static_lookup": True}),
-    )
-    patientstudymoduleattr__patient_weight__gte = django_filters.NumberFilter(
-        lookup_expr="gte",
-        label="Min weight (kg)",
+    patientstudymoduleattr__patient_weight__range = django_filters.RangeFilter(
+        lookup_expr="range",
+        label="Weight (kg)",
         field_name="patientstudymoduleattr__patient_weight",
-        widget=forms.NumberInput(attrs={"static_lookup": True}),
-    )
-    patientstudymoduleattr__patient_weight__lte = django_filters.NumberFilter(
-        lookup_expr="lte",
-        label="Max weight (kg)",
-        field_name="patientstudymoduleattr__patient_weight",
-        widget=forms.NumberInput(attrs={"static_lookup": True}),
+        widget=RangeWidget(attrs={"static_lookup": True}),
     )
     generalequipmentmoduleattr__institution_name = django_filters.CharFilter(
         lookup_expr="icontains", label="Hospital"
@@ -1017,25 +936,15 @@ class DXSummaryListFilter(CustomFilterSet):
         label="Accession number",
         widget=forms.TextInput(attrs={"static_lookup": True}),
     )
-    study_dap_min = django_filters.NumberFilter(
+    study_dap__range = django_filters.RangeFilter(
         method=_dap_filter,
-        label="Min study DAP (cGy·cm²)",
-        widget=forms.NumberInput(attrs={"static_lookup": True}),
+        label="Study DAP (cGy·cm²)",
+        widget=RangeWidget(attrs={"static_lookup": True}),
     )
-    study_dap_max = django_filters.NumberFilter(
+    event_dap__range = django_filters.RangeFilter(
         method=_dap_filter,
-        label="Max study DAP (cGy·cm²)",
-        widget=forms.NumberInput(attrs={"static_lookup": True}),
-    )
-    event_dap_min = django_filters.NumberFilter(
-        method=_dap_filter,
-        label="Min acquisition DAP (cGy·cm²)",
-        widget=forms.NumberInput(attrs={"static_lookup": True}),
-    )
-    event_dap_max = django_filters.NumberFilter(
-        method=_dap_filter,
-        label="Max acquisition DAP (cGy·cm²)",
-        widget=forms.NumberInput(attrs={"static_lookup": True}),
+        label="Acquisition DAP (cGy·cm²)",
+        widget=RangeWidget(attrs={"static_lookup": True}),
     )
     generalequipmentmoduleattr__unique_equipment_name__display_name = (
         django_filters.CharFilter(lookup_expr="icontains", label="Display name")
@@ -1061,8 +970,7 @@ class DXSummaryListFilter(CustomFilterSet):
 
         model = GeneralStudyModuleAttr
         fields = [
-            "study_date__gt",
-            "study_date__lt",
+            "study_date__range",
             "study_description",
             "procedure_code_meaning",
             "requested_procedure_code_meaning",
@@ -1071,15 +979,11 @@ class DXSummaryListFilter(CustomFilterSet):
             "generalequipmentmoduleattr__manufacturer",
             "generalequipmentmoduleattr__manufacturer_model_name",
             "generalequipmentmoduleattr__station_name",
-            "patientstudymoduleattr__patient_age_decimal__gte",
-            "patientstudymoduleattr__patient_age_decimal__lte",
-            "patientstudymoduleattr__patient_weight__gte",
-            "patientstudymoduleattr__patient_weight__lte",
+            "patientstudymoduleattr__patient_age_decimal__range",
+            "patientstudymoduleattr__patient_weight__range",
             "accession_number",
-            "study_dap_min",
-            "study_dap_max",
-            "event_dap_min",
-            "event_dap_max",
+            "study_dap__range",
+            "event_dap__range",
             "generalequipmentmoduleattr__unique_equipment_name__display_name",
             "num_events",
             "test_data",
@@ -1197,17 +1101,11 @@ class NMSummaryListFilter(CustomFilterSet):
     Filter for NM studies to display in web interface.
     """
 
-    study_date__gt = django_filters.DateFilter(
-        lookup_expr="gte",
-        label="Date from",
+    study_date__range = django_filters.DateFromToRangeFilter(
+        lookup_expr="range",
+        label="Study date",
         field_name="study_date",
-        widget=forms.TextInput(attrs={"class": "datepicker", "static_lookup": True}),
-    )
-    study_date__lt = django_filters.DateFilter(
-        lookup_expr="lte",
-        label="Date until",
-        field_name="study_date",
-        widget=forms.TextInput(attrs={"class": "datepicker", "static_lookup": True}),
+        widget=RangeWidget(attrs={"class": "datepicker", "static_lookup": True}),
     )
     study_description = django_filters.CharFilter(
         lookup_expr="icontains", label="Study description"
@@ -1218,29 +1116,17 @@ class NMSummaryListFilter(CustomFilterSet):
     requested_procedure_code_meaning = django_filters.CharFilter(
         lookup_expr="icontains", label="Requested procedure"
     )
-    patientstudymoduleattr__patient_age_decimal__gte = django_filters.NumberFilter(
-        lookup_expr="gte",
-        label="Min age (yrs)",
+    patientstudymoduleattr__patient_age_decimal__range = django_filters.RangeFilter(
+        lookup_expr="range",
+        label="Age (yrs)",
         field_name="patientstudymoduleattr__patient_age_decimal",
-        widget=forms.NumberInput(attrs={"static_lookup": True}),
+        widget=RangeWidget(attrs={"static_lookup": True}),
     )
-    patientstudymoduleattr__patient_age_decimal__lte = django_filters.NumberFilter(
-        lookup_expr="lte",
-        label="Max age (yrs)",
-        field_name="patientstudymoduleattr__patient_age_decimal",
-        widget=forms.NumberInput(attrs={"static_lookup": True}),
-    )
-    patientstudymoduleattr__patient_weight__gte = django_filters.NumberFilter(
-        lookup_expr="gte",
-        label="Min weight (kg)",
+    patientstudymoduleattr__patient_weight__range = django_filters.RangeFilter(
+        lookup_expr="range",
+        label="Weight (kg)",
         field_name="patientstudymoduleattr__patient_weight",
-        widget=forms.NumberInput(attrs={"static_lookup": True}),
-    )
-    patientstudymoduleattr__patient_weight__lte = django_filters.NumberFilter(
-        lookup_expr="lte",
-        label="Max weight (kg)",
-        field_name="patientstudymoduleattr__patient_weight",
-        widget=forms.NumberInput(attrs={"static_lookup": True}),
+        widget=RangeWidget(attrs={"static_lookup": True}),
     )
     generalequipmentmoduleattr__institution_name = django_filters.CharFilter(
         lookup_expr="icontains", label="Hospital"
@@ -1259,17 +1145,11 @@ class NMSummaryListFilter(CustomFilterSet):
         label="Accession number",
         widget=forms.TextInput(attrs={"static_lookup": True}),
     )
-    radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__administered_activity_gte = django_filters.NumberFilter(
-        lookup_expr="gte",
-        label="Min administered dose (MBq)",
+    radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__administered_activity__range = django_filters.RangeFilter(
+        lookup_expr="range",
+        label="Administered dose (MBq)",
         field_name="radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__administered_activity",
-        widget=forms.NumberInput(attrs={"static_lookup": True}),
-    )
-    radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__administered_activity_lte = django_filters.NumberFilter(
-        lookup_expr="lte",
-        label="Max administered dose (MBq)",
-        field_name="radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__administered_activity",
-        widget=forms.NumberInput(attrs={"static_lookup": True}),
+        widget=RangeWidget(attrs={"static_lookup": True}),
     )
     generalequipmentmoduleattr__unique_equipment_name__display_name = (
         django_filters.CharFilter(lookup_expr="icontains", label="Display name")
@@ -1289,8 +1169,7 @@ class NMSummaryListFilter(CustomFilterSet):
 
         model = GeneralStudyModuleAttr
         fields = [
-            "study_date__gt",
-            "study_date__lt",
+            "study_date__range",
             "study_description",
             "procedure_code_meaning",
             "requested_procedure_code_meaning",
@@ -1298,13 +1177,10 @@ class NMSummaryListFilter(CustomFilterSet):
             "generalequipmentmoduleattr__manufacturer",
             "generalequipmentmoduleattr__manufacturer_model_name",
             "generalequipmentmoduleattr__station_name",
-            "patientstudymoduleattr__patient_age_decimal__gte",
-            "patientstudymoduleattr__patient_age_decimal__lte",
-            "patientstudymoduleattr__patient_weight__gte",
-            "patientstudymoduleattr__patient_weight__lte",
+            "patientstudymoduleattr__patient_age_decimal__range",
+            "patientstudymoduleattr__patient_weight__range",
             "accession_number",
-            "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__administered_activity_gte",
-            "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__administered_activity_lte",
+            "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__administered_activity__range",
             "generalequipmentmoduleattr__unique_equipment_name__display_name",
             "test_data",
         ]

@@ -150,7 +150,7 @@ function openFilter(id) {
         if (invert) {
             $('#' + kv.name + INVERT_TOGGLE_ID_EXT).addClass("active");
         }
-        $('#id_' + kv.name).val(value);
+        $(`#newExamFilter *[name="${kv.name}"]`).val(value);
     });
     currentFilterId = id;
     previousId = filter.prev;
@@ -388,10 +388,20 @@ function renderGroup(group = ROOT_GROUP_ID, level = 0) {
 function renderFilterContent(fields) {
     let content = "";
     for (const [key, value] of Object.entries(fields)) {
+        let fieldName = "";        
         if (value[1] === null) {}
-        let fieldName = $(`#newExamFilter label[for=id_${key}]`).text();
+        if (key.includes("__range")) {
+            fieldName = $(`#newExamFilter label[for=id_${key.replace(/(__range).*/, "__range_0")}]`).text();
+        } else {
+            fieldName = $(`#newExamFilter label[for=id_${key}]`).text();
+        }
+        let extras = `
+            ${(value[2])?("[NOT]"):("")}
+            ${(key.includes("_max"))?("[MAX]"):("")}
+            ${(key.includes("_min"))?("[MIN]"):("")}
+        `;
         content += `
-            <span class="label label-${(value[2])?("danger"):("success")}">${fieldName} ${(value[2])?("[NOT]"):("")} ${value[0]}</span>
+            <span class="label label-${(value[2])?("danger"):("success")}">${fieldName} ${extras} ${value[0]}</span>
         `;
     }
     return content;
