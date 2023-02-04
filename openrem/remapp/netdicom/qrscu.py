@@ -1,4 +1,3 @@
-# This Python file uses the following encoding: utf-8
 #!/usr/bin/python
 
 """
@@ -37,6 +36,7 @@ from pynetdicom.sop_class import (
     StudyRootQueryRetrieveInformationModelFind,
     StudyRootQueryRetrieveInformationModelMove,
 )
+from pynetdicom.status import QR_FIND_SERVICE_CLASS_STATUS, QR_MOVE_SERVICE_CLASS_STATUS
 
 from ..templatetags.remappduration import naturalduration
 from ..tools.dcmdatetime import get_time, make_dcm_date_range, make_dcm_time_range
@@ -946,6 +946,16 @@ def _get_responses(ae, remote, assoc, query, query_details):
     sys.exit()
 
 
+def _failure_statuses(status, query_id_8, level_query_id):
+    try:
+        result_type = QR_FIND_SERVICE_CLASS_STATUS[status][0]
+        result_status = QR_FIND_SERVICE_CLASS_STATUS[status][1]
+    except KeyError:
+        result_type = "Unknown"
+        result_status = "Unknown status"
+    logger.error(f"{query_id_8}/{level_query_id} Result: {result_type} (0x{status:04x}) - {result_status} ")
+
+
 def _query_images(
     ae,
     remote,
@@ -1279,11 +1289,15 @@ def _query_study(ae, remote, assoc, d, query, study_query_id):
 
                 rsp.modality = None  # Used later
                 rsp.save()
-
+            else:
+                _failure_statuses(status.Status, query_id_8, study_query_id.hex[:8])
         else:
-            logger.info(
-                f"{query_id_8}/{study_query_id.hex[:8]} Connection timed out, was aborted or received "
-                f"invalid response"
+            if assoc.is_aborted():
+                status_msg = 'Connection was aborted - check remote server logs.'
+            else:
+                status_msg = 'Connection timed out or received an invalid response. Check remote server logs'
+            logger.error(
+                f"{query_id_8}/{study_query_id.hex[:8]} {status_msg} "
             )
             query.stage = _(
                 "Connection timed out, was aborted or received invalid response"
