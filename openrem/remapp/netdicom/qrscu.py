@@ -2047,43 +2047,15 @@ def _move_req(my_ae, assoc, d, study_no, series_no, query):
                 status_msg = "All matches returned."
             else:
                 if status.Status == 0xFE00:
-                    status.msg = "Sub-operations terminated due to Cancel indication."
-                elif status.Status == 0x0122:
-                    status_msg = "SOP class not supported."
-                elif status.Status == 0x0124:
-                    status_msg = "Not authorised."
-                elif status.Status == 0x0210:
-                    status_msg = "Duplicate invocation."
-                elif status.Status == 0x0211:
-                    status_msg = "Unrecognised operation."
-                elif status.Status == 0x0212:
-                    status_msg = "Mistyped argument."
-                elif status.Status == 0xA701:
-                    status_msg = (
-                        "Out of resources: unable to calculate number of matches."
-                    )
-                elif status.Status == 0xA702:
-                    status_msg = "Out of resources: unable to perform sub-operations."
-                elif status.Status == 0xA801:
-                    status_msg = "Move destination unknown."
-                elif status.Status == 0xA900:
-                    status_msg = "Identifier does not match SOP class."
-                elif status.Status == 0xAA00:
-                    status_msg = (
-                        "None of the frames requested were found in the SOP instance."
-                    )
-                elif status.Status == 0xAA01:
-                    status_msg = "Unable to create new object for this SOP class."
-                elif status.Status == 0xAA02:
-                    status_msg = "Unable to extract frames."
-                elif status.Status == 0xAA03:
-                    status_msg = "Time-based request received for a non-time-based original SOP Instance."
-                elif status.Status == 0xAA04:
-                    status_msg = "Invalid request."
-                elif 0xC000 <= status.Status <= 0xCFFF:
-                    status_msg = f"Unable to process, code 0x{status.Status:04x}."
+                    status.msg = "Failure 0xFE00 - Sub-operations terminated due to Cancel indication."
                 else:
-                    status_msg = f"0x{status.Status:04x}"
+                    try:
+                        status_type = QR_MOVE_SERVICE_CLASS_STATUS[status.Status][0]
+                        status_message = QR_MOVE_SERVICE_CLASS_STATUS[status.Status][1]
+                    except KeyError:
+                        status_type = "Unknown"
+                        status_message = "Unknown status"
+                    status_msg = f"{status_type} (0x{status.Status:04x}) - {status_message}."
                 msg = (
                     f"Move of study {study_no}, series {series_no}: {status_msg} "
                     f"Sub-ops completed: {completed_sub_ops}, failed: {failed_sub_ops}, "
