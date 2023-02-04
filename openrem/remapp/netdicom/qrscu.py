@@ -954,7 +954,7 @@ def _failure_statuses(query, status, query_id_8, level_query_id):
         result_type = "Unknown"
         result_status = "Unknown status"
     logger.error(f"{query_id_8}/{level_query_id} Result: {result_type} (0x{status:04x}) - {result_status} ")
-    query.stage = _(f"{result_type} (0x{status:04x}) - {result_status}. See logs for details.")
+    query.errors = _(f"{result_type} (0x{status:04x}) - {result_status}. See logs for details.")
     query.save()
 
 
@@ -1981,6 +1981,10 @@ def qrscu(
                 "<br>Removing duplicates of previous objects removed {duplicates_removed} studies.".format(
                     duplicates_removed=study_numbers["duplicates_removed"]
                 )
+            )
+        if query.errors:
+            query.stage += _(
+                "<br>The following errors were received: {errors}".format(errors=query.errors)
             )
         query.save()
         stage_text = query.stage.replace("<br>", "\n -- ")
