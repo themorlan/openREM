@@ -946,7 +946,7 @@ def _get_responses(ae, remote, assoc, query, query_details):
     sys.exit()
 
 
-def _failure_statuses(status, query_id_8, level_query_id):
+def _failure_statuses(query, status, query_id_8, level_query_id):
     try:
         result_type = QR_FIND_SERVICE_CLASS_STATUS[status][0]
         result_status = QR_FIND_SERVICE_CLASS_STATUS[status][1]
@@ -954,6 +954,8 @@ def _failure_statuses(status, query_id_8, level_query_id):
         result_type = "Unknown"
         result_status = "Unknown status"
     logger.error(f"{query_id_8}/{level_query_id} Result: {result_type} (0x{status:04x}) - {result_status} ")
+    query.stage = _(f"{result_type} (0x{status:04x}) - {result_status}. See logs for details.")
+    query.save()
 
 
 def _query_images(
@@ -1063,6 +1065,8 @@ def _query_images(
                     )
                     imagesrsp.instance_number = None  # integer so can't be ''
                 imagesrsp.save()
+            else:
+                _failure_statuses(query, status.Status, query_id_8, image_query_id.hex[:8])
         else:
             logger.info(
                 f"{query_id_8}/{image_query_id.hex[:8]} Connection timed out, was aborted or received invalid"
@@ -1177,6 +1181,8 @@ def _query_series(ae, remote, assoc, d2, studyrsp, query):
                     f"Series description {seriesrsp.series_description}"
                 )
                 seriesrsp.save()
+            else:
+                _failure_statuses(query, status.Status, query_id_8, series_query_id.hex[:8])
         else:
             logger.info(
                 f"{query_id_8}/{series_query_id.hex[:8]} Connection timed out, was aborted or received "
@@ -1290,7 +1296,7 @@ def _query_study(ae, remote, assoc, d, query, study_query_id):
                 rsp.modality = None  # Used later
                 rsp.save()
             else:
-                _failure_statuses(status.Status, query_id_8, study_query_id.hex[:8])
+                _failure_statuses(query, status.Status, query_id_8, study_query_id.hex[:8])
         else:
             if assoc.is_aborted():
                 status_msg = 'Connection was aborted - check remote server logs.'
