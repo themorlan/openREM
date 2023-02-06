@@ -161,9 +161,12 @@ def _ctaccumulateddosedata(dataset, ct):  # TID 10012
     ctacc.total_number_of_irradiation_events = get_value_kw(
         "TotalNumberOfExposures", dataset
     )
-    ctacc.ct_dose_length_product_total = Decimal(
-        get_value_num(0x00E11021, dataset)
-    )  # Philips private tag
+    try:
+        ctacc.ct_dose_length_product_total = Decimal(
+            get_value_num(0x00E11021, dataset)
+        )  # Philips private tag
+    except TypeError:
+        pass
     ctacc.comment = get_value_kw("CommentsOnRadiationDose", dataset)
     ctacc.save()
 
