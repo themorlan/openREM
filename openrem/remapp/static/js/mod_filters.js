@@ -260,8 +260,10 @@ function loadFromLibrary(libraryPanelId) {
         if (data.pattern !== undefined && data.pattern !== null) {
             pattern = data.pattern;
             renderPattern();
-            showLibraryAlert(`Pattern has been loaded successfully!`, "success");
+            showLibraryAlert(`Filter has been loaded successfully!`, "success");
         }
+    }).fail(function() {
+        showLibraryAlert(`Error while loading filter! Please refresh the page.`, "danger");        
     });
 }
 
@@ -273,7 +275,7 @@ function deleteFromLibrary(libraryPanelId) {
     $.get("/openrem/filters/delete/" + libraryId, function (_) {
         renderPattern();
         $(`#${libraryPanelId}Select option:selected`).remove();
-        showLibraryAlert(`Pattern has been deleted successfully!`, "success");
+        showLibraryAlert(`Filter has been deleted successfully!`, "success");
         setLibraryVisibility(libraryPanelId);
     });
 }
@@ -289,7 +291,7 @@ function saveToLibrary(libraryPanelId) {
             value: data.id,
             text: data.name
         }));
-        showLibraryAlert(`Pattern <em>${data.name}</em> has been saved successfully!`, "success");
+        showLibraryAlert(`Filter <em>${data.name}</em> has been saved successfully!`, "success");
         setLibraryVisibility(libraryPanelId);
     });
 }
@@ -302,7 +304,7 @@ function toggleSharedPattern(fromLibraryPanelId, toLibraryPanelId) {
     $.get("/openrem/filters/toggle/" + libraryId, function (_) {
         renderPattern();
         $(`#${fromLibraryPanelId}Select option:selected`).remove().appendTo(`#${toLibraryPanelId}Select`);
-        showLibraryAlert(`Pattern has been moved successfully!`, "info");
+        showLibraryAlert(`Filter has been moved successfully!`, "info");
         setLibraryVisibility(fromLibraryPanelId);
         setLibraryVisibility(toLibraryPanelId);
     });

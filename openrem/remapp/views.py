@@ -1163,21 +1163,30 @@ def update_study_workload(request):
 
 @login_required
 def get_filter_from_library(request, pk=None):
-    """Returns the filter pattern for the given pk"""
+    """
+    Returns the filter from the library for the given pk.
+    When the filter is being shared, then every user has access to this filter
+    Otherwise, only the owner can access the filter
+    """
     if pk is None:
         return HttpResponseBadRequest()
     try:
-        pattern = FilterLibrary.objects.get(pk=pk).pattern
+        filter = FilterLibrary.objects.get(pk=pk)
+        if not filter.shared and request.user != filter.user:
+            return HttpResponseForbidden()
+
     except ObjectDoesNotExist:
         return HttpResponseNotFound()
     return HttpResponse(
-        json.dumps({"pattern": pattern}), content_type="application/json"
+        json.dumps({"pattern": filter.pattern}), content_type="application/json"
     )
 
 
 @login_required
 def delete_filter_from_library(request, pk=None):
-    """Deletes the specified filter from the library"""
+    """
+    Deletes the specified filter from the library
+    """
     if pk is None:
         return HttpResponseBadRequest()
     try:
