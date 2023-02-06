@@ -45,7 +45,7 @@ if projectpath not in sys.path:
 os.environ["DJANGO_SETTINGS_MODULE"] = "openremproject.settings"
 django.setup()
 
-from ..models import (  # pylint: disable=wrong-import-position
+from remap.models import (  # pylint: disable=wrong-import-position
     GeneralStudyModuleAttr,
     SkinDoseMapResults,
     OpenSkinSafeList
