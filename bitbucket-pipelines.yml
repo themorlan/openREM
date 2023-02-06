@@ -71,8 +71,9 @@ definitions:
           - pip install coverage
           - pip install coveralls
           - pip install tblib
-          - python openrem/manage.py makemigrations remapp
-          - coverage run openrem/manage.py test remapp --parallel --exclude-tag=slow
+          - cd openrem
+          - python manage.py makemigrations remapp
+          - coverage run manage.py test remapp --parallel --exclude-tag=slow
           - coverage combine
           - coveralls
           - coverage xml
