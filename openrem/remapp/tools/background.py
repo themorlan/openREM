@@ -36,14 +36,14 @@ import signal
 import sys
 import uuid
 import random
-from multiprocessing import Process
-
 import django
 from django import db
 from django.db.models import Q
 from django.db import transaction
 from django.db.utils import OperationalError
 from django.utils import timezone
+
+from huey.contrib.djhuey import db_task
 
 # Setup django. This is required on windows, because process is created via spawn and
 # django will not be initialized anymore then (On Linux this will only be executed once)
@@ -64,6 +64,7 @@ def _sleep_for_linear_increasing_time(x):
     time.sleep(sleep_time)
 
 
+@db_task()
 def run_as_task(func, task_type, num_proc, num_of_task_type, taskuuid, *args, **kwargs):
     """
     Runs func as a task. (Which means it runs normally, but a BackgroundTask
@@ -185,30 +186,8 @@ def run_in_background_with_limits(
     """
     taskuuid = str(uuid.uuid4())
 
-    # On linux connection gets copied which leads to problems.
-    # Close them so a new one is created for each process
-    db.connections.close_all()
-
-    p = Process(
-        target=run_as_task,
-        args=(func, task_type, num_proc, num_of_task_type, taskuuid, *args),
-        kwargs=kwargs,
-    )
-
-    p.start()
-    while True:  # Wait until the Task object exists or process returns
-        if (
-            p.exitcode is None
-            and BackgroundTask.objects.filter(
-                Q(proc_id__exact=p.pid) & Q(complete__exact=False)
-            ).count()
-            < 1
-        ):
-            time.sleep(0.2)
-        else:
-            break
-    return _get_task_via_uuid(taskuuid)
-
+    return run_as_task(func, task_type, num_proc, num_of_task_type, taskuuid, *args, **kwargs)
+    
 
 def run_in_background(func, task_type, *args, **kwargs):
     """

@@ -112,7 +112,7 @@ def ctcsv1(request, name=None, pat_id=None):
             pid["include_pat_id"],
             request.user.id,
         )
-        logger.debug(f"Export CT to CSV job is {job}")
+        logger.debug(f"Export CT to CSV job is {job.id}")
     return redirect(reverse_lazy("export"))
 
 
@@ -150,7 +150,7 @@ def ctxlsx1(request, name=None, pat_id=None):
             pid["include_pat_id"],
             request.user.id,
         )
-        logger.debug("Export CT to XLSX job is {0}".format(job.uuid))
+        logger.debug("Export CT to XLSX job is {0}".format(job.id))
 
     return redirect(reverse_lazy("export"))
 
@@ -168,7 +168,7 @@ def ct_xlsx_phe2019(request):
 
     if request.user.groups.filter(name="exportgroup"):
         job = run_in_background(ct_phe_2019, "export_ct", request.GET, request.user.id)
-        logger.debug("Export CT to XLSX job is {0}".format(job.uuid))
+        logger.debug("Export CT to XLSX job is {0}".format(job.id))
     return redirect(reverse_lazy("export"))
 
 
@@ -198,7 +198,7 @@ def nmcsv1(request, name=None, pat_id=None):
             pid["include_pat_id"],
             request.user.id,
         )
-        logger.debug(f"Export NM to CSV job is {job.uuid}")
+        logger.debug(f"Export NM to CSV job is {job.id}")
 
     return redirect(reverse_lazy("export"))
 
@@ -229,7 +229,7 @@ def nmxlsx1(request, name=None, pat_id=None):
             pid["include_pat_id"],
             request.user.id,
         )
-        logger.debug(f"Exprt NM to Excel job is {job.uuid}")
+        logger.debug(f"Exprt NM to Excel job is {job.id}")
 
     return redirect(reverse_lazy("export"))
 
@@ -291,7 +291,7 @@ def dxxlsx1(request, name=None, pat_id=None):
             pid["include_pat_id"],
             request.user.id,
         )
-        logger.debug("Export DX to XLSX job is {0}".format(job.uuid))
+        logger.debug("Export DX to XLSX job is {0}".format(job.id))
 
     return redirect(reverse_lazy("export"))
 
@@ -345,7 +345,7 @@ def dx_xlsx_phe2019(request, export_type=None):
                     projection=True,
                 )
                 logger.debug(
-                    "Export PHE 2019 DX survey format job is {0}".format(job.uuid)
+                    "Export PHE 2019 DX survey format job is {0}".format(job.id)
                 )
                 return redirect(reverse_lazy("export"))
             elif "exam" in export_type:
@@ -380,7 +380,7 @@ def dx_xlsx_phe2019(request, export_type=None):
                     bespoke=bespoke,
                 )
                 logger.debug(
-                    "Export PHE 2019 DX survey format job is {0}".format(job.uuid)
+                    "Export PHE 2019 DX survey format job is {0}".format(job.id)
                 )
                 return redirect(reverse_lazy("export"))
         else:
@@ -426,7 +426,7 @@ def flcsv1(request, name=None, pat_id=None):
             pid["include_pat_id"],
             request.user.id,
         )
-        logger.debug("Export Fluoro to CSV job is {0}".format(job.uuid))
+        logger.debug("Export Fluoro to CSV job is {0}".format(job.id))
 
     return redirect(reverse_lazy("export"))
 
@@ -457,7 +457,7 @@ def rfxlsx1(request, name=None, pat_id=None):
             pid["include_pat_id"],
             request.user.id,
         )
-        logger.debug("Export Fluoro to XLSX job is {0}".format(job.uuid))
+        logger.debug("Export Fluoro to XLSX job is {0}".format(job.id))
 
     return redirect(reverse_lazy("export"))
 
@@ -478,7 +478,7 @@ def rfopenskin(request, pk):
 
     if request.user.groups.filter(name="exportgroup"):
         job = run_in_background(rfopenskin, "export_rf", export.pk)
-        logger.debug("Export Fluoro to openSkin CSV job is {0}".format(job.uuid))
+        logger.debug("Export Fluoro to openSkin CSV job is {0}".format(job.id))
 
     return redirect(reverse_lazy("export"))
 
@@ -498,7 +498,7 @@ def rf_xlsx_phe2019(request):
     if request.user.groups.filter(name="exportgroup"):
         job = run_in_background(rf_phe_2019, "export_rf", request.GET, request.user.id)
         logger.debug(
-            "Export PHE 2019 IR/fluoro survey format job is {0}.".format(job.uuid)
+            "Export PHE 2019 IR/fluoro survey format job is {0}.".format(job.id)
         )
         return redirect(reverse_lazy("export"))
     else:
@@ -535,7 +535,7 @@ def mgcsv1(request, name=None, pat_id=None):
             pid["include_pat_id"],
             request.user.id,
         )
-        logger.debug("Export MG to CSV job is {0}".format(job.uuid))
+        logger.debug("Export MG to CSV job is {0}".format(job.id))
 
     return redirect(reverse_lazy("export"))
 
@@ -566,7 +566,7 @@ def mgxlsx1(request, name=None, pat_id=None):
             user=request.user.id,
             xlsx=True,
         )
-        logger.debug("Export MG to xlsx job is {0}".format(job.uuid))
+        logger.debug("Export MG to xlsx job is {0}".format(job.id))
 
     return redirect(reverse_lazy("export"))
 
@@ -587,7 +587,7 @@ def mgnhsbsp(request):
         job = run_in_background(
             mg_csv_nhsbsp, "export_mg", request.GET, request.user.id
         )
-        logger.debug("Export MG to CSV NHSBSP job is {0}".format(job.uuid))
+        logger.debug("Export MG to CSV NHSBSP job is {0}".format(job.id))
 
     return redirect(reverse_lazy("export"))
 
