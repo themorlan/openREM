@@ -43,8 +43,6 @@ from django.db import transaction
 from django.db.utils import OperationalError
 from django.utils import timezone
 
-from huey.contrib.djhuey import db_task
-
 # Setup django. This is required on windows, because process is created via spawn and
 # django will not be initialized anymore then (On Linux this will only be executed once)
 basepath = os.path.dirname(__file__)
@@ -56,6 +54,8 @@ django.setup()
 
 from remapp.models import BackgroundTask, DicomQuery
 
+from huey.contrib.djhuey import db_task
+from huey.api import Result
 
 def _sleep_for_linear_increasing_time(x):
     sleep_time = (
@@ -224,13 +224,12 @@ def terminate_background(task: BackgroundTask):
             pass
 
 
-def wait_task(task: BackgroundTask):
+def wait_task(task: Result):
     """
     Wait until the task has completed
     """
     while True:
-        task.refresh_from_db()
-        if task.complete:
+        if task.get():
             return
         qs = BackgroundTask.objects.filter(complete__exact=False).count()
         _sleep_for_linear_increasing_time(qs)

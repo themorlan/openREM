@@ -135,7 +135,8 @@ HUEY = {
     "immediate": False,
     "consumer": {
         "workers": multiprocessing.cpu_count()
-    }
+    },
+    "filename": os.path.join(BASE_DIR, "queue.db")
 }
 
 on_rtd = os.environ.get("READTHEDOCS") == "True"
