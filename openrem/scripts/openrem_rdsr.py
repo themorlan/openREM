@@ -12,9 +12,20 @@
         * Fluoro: Siemens Artis Zee RDSR
 """
 
+import os
+import sys
+import django
+
 if __name__ == "__main__":
-    from openrem.remapp.extractors.rdsr import rdsr
-    import openrem.remapp.tools.default_import as default_import
+    basepath = os.path.dirname(__file__)
+    projectpath = os.path.abspath(os.path.join(basepath, ".."))
+    if projectpath not in sys.path:
+        sys.path.insert(1, projectpath)
+    os.environ["DJANGO_SETTINGS_MODULE"] = "openremproject.settings"
+    django.setup()
+    
+    from remapp.extractors.rdsr import rdsr
+    import remapp.tools.default_import as default_import
 
     default_import.default_import(
         rdsr,
