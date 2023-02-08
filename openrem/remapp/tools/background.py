@@ -221,11 +221,7 @@ def wait_task(task: Result):
     """
     Wait until the task has completed
     """
-    while True:
-        if task.get():
-            return
-        qs = BackgroundTask.objects.filter(complete__exact=False).count()
-        _sleep_for_linear_increasing_time(qs)
+    return task(blocking=True)
 
 
 def _get_task_via_uuid(task_uuid):
