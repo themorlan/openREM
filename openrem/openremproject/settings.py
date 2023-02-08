@@ -134,7 +134,8 @@ HUEY = {
     "huey_class": "huey.SqliteHuey",
     "immediate": False,
     "consumer": {
-        "workers": multiprocessing.cpu_count()
+        "workers": multiprocessing.cpu_count(),
+        "worker_type": "process",
     },
     "filename": os.path.join(BASE_DIR, "queue.db")
 }
