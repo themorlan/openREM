@@ -146,7 +146,7 @@ def run_as_task(func, task_type, num_proc, num_of_task_type, taskuuid, *args, **
 
 def run_in_background_with_limits(
     func, task_type, num_proc, num_of_task_type, *args, **kwargs
-):
+) -> Result:
     """
     Runs func as background Process.
 
@@ -182,7 +182,7 @@ def run_in_background_with_limits(
     )
 
 
-def run_in_background(func, task_type, *args, **kwargs):
+def run_in_background(func, task_type, *args, **kwargs) -> Result:
     """
     Syntactic sugar around run_in_background_with_limits.
 
