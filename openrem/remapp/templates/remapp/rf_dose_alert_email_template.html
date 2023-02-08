@@ -140,7 +140,7 @@
                 {% for record in accumxraydose_set_all_planes %}
                     {% with accumprojection=record.accumintegratedprojradiogdose_set.get %}
                         <tr>
-                            <td>Total DAP, {{ record.acquisition_plane }} (cGy.cm<sup>2</sup>):</td>
+                            <td>Total DAP, {{ record.acquisition_plane.code_meaning }} (cGy.cm<sup>2</sup>):</td>
                             <td>{% if accumprojection.convert_gym2_to_cgycm2 >= alert_levels.alert_total_dap_rf %}
                                 <strong style="color: red;">{{ accumprojection.convert_gym2_to_cgycm2|floatformat:1 }}</strong>
                                 (This is above the alert level of
@@ -151,7 +151,7 @@
                             </td>
                         </tr>
                         <tr>
-                            <td>Total dose at RP, {{ record.acquisition_plane }} (Gy):</td>
+                            <td>Total dose at RP, {{ record.acquisition_plane.code_meaning }} (Gy):</td>
                             <td>{% if accumprojection.dose_rp_total >= alert_levels.alert_total_rp_dose_rf %}
                                 <strong style="color: red;">{{ accumprojection.dose_rp_total|floatformat:1 }}</strong>
                                 (This is above the alert level of
@@ -181,8 +181,8 @@
 
             {% if alert_levels.show_accum_dose_over_delta_weeks %}
                 <br>
-                <h2>Studies from the past {{ week_delta }} weeks for this patient ID</h2>
-                <table class="table table-condensed table-bordered" aria-describedby="Total DAP and dose at reference point for studies from the past {{ week_delta }} weeks for this patient ID">
+                <h2>Studies from the past {{ alert_levels.accum_dose_delta_weeks }} weeks for this patient ID</h2>
+                <table class="table table-condensed table-bordered" aria-describedby="Total DAP and dose at reference point for studies from the past {{ alert_levels.accum_dose_delta_weeks }} weeks for this patient ID">
                     <th scope="col">Item</th>
                     <th scope="col">Value</th>
                     <tr>
@@ -224,7 +224,7 @@
                     {% endwith %}
                 </table>
                 <br>
-                <table class="table table-condensed table-bordered" aria-describedby="Summary of studies from the past {{ week_delta }} weeks for this patient ID">
+                <table class="table table-condensed table-bordered" aria-describedby="Summary of studies from the past {{ alert_levels.accum_dose_delta_weeks }} weeks for this patient ID">
                     <tr>
                         <th scope="col">Date</th>
                         <th scope="col">Time</th>
@@ -242,7 +242,7 @@
                             <td>
                                 {% for accumxraydoseset_allplanes in each_study.projectionxrayradiationdose_set.get.accumxraydose_set.all %}
                                     {% with accumprojection=accumxraydoseset_allplanes.accumintegratedprojradiogdose_set.get %}
-                                        {{ accumxraydoseset_allplanes.acquisition_plane }}:
+                                        {{ accumxraydoseset_allplanes.acquisition_plane.code_meaning }}:
                                         {% if accumprojection.convert_gym2_to_cgycm2 >= alert_levels.alert_total_dap_rf %}
                                             <strong style="color: red;">{{ accumprojection.convert_gym2_to_cgycm2|floatformat:1 }}</strong>
                                         {% else %}
@@ -256,7 +256,7 @@
                             <td>
                                 {% for accumxraydoseset_allplanes in each_study.projectionxrayradiationdose_set.get.accumxraydose_set.all %}
                                     {% with accumprojection=accumxraydoseset_allplanes.accumintegratedprojradiogdose_set.get %}
-                                        {{ accumxraydoseset_allplanes.acquisition_plane }}:
+                                        {{ accumxraydoseset_allplanes.acquisition_plane.code_meaning }}:
                                         {% if accumprojection.dose_rp_total >= alert_levels.alert_total_rp_dose_rf %}
                                             <strong style="color: red;">{{ accumprojection.dose_rp_total|floatformat:1 }}</strong>
                                         {% else %}
