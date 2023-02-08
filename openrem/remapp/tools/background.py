@@ -57,6 +57,7 @@ from remapp.models import BackgroundTask, DicomQuery
 from huey.contrib.djhuey import db_task
 from huey.api import Result
 
+
 def _sleep_for_linear_increasing_time(x):
     sleep_time = (
         0.4 + 2.0 * x * random.random()  # nosec - not being used for cryptography
@@ -157,7 +158,7 @@ def run_in_background_with_limits(
     via get_current_task() inside the calling process.
     Note that BackgroundTask objects will not be deleted onto completion - instead the
     complete flag will be set to True.
-    
+
     num_proc and num_of_task_type can be used to give conditions on the start.
 
     :param func: The function to run. Note that you should set the status of the task yourself
@@ -176,8 +177,10 @@ def run_in_background_with_limits(
     :returns: The BackgroundTask object.
     """
     taskuuid = str(uuid.uuid4())
-    return run_as_task(func, task_type, num_proc, num_of_task_type, taskuuid, *args, **kwargs)
-    
+    return run_as_task(
+        func, task_type, num_proc, num_of_task_type, taskuuid, *args, **kwargs
+    )
+
 
 def run_in_background(func, task_type, *args, **kwargs):
     """

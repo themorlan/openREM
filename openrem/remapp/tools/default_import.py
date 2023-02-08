@@ -39,7 +39,7 @@ def default_import(
                 max_other_prcocesses,
                 max_other_processes_of_type,
                 filename,
-                **{"priority": 10}
+                **{"priority": 10},
             )
             tasks.append(b)
 
