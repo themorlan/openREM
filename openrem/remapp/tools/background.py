@@ -76,16 +76,6 @@ def run_as_task(func, task_type, num_proc, num_of_task_type, taskuuid, *args, **
     for which we would like to document that it was executed. (Has some not so nice
     parts, especially that user can terminate a bunch of sequentially running tasks)
 
-    Note that waiting here if it is ok to start is actually quite ugly, since running a lot
-    of processes with conditions will use a lot of RAM without any use. This however is the
-    simplest possible fix for making the run_in_background_with_limits non-blocking, which
-    is a requirement for the docker import. A nice update would be to either have 1 process
-    managing the execution of the other processes, or at least do this based on signalling
-    from the exiting processes instead of polling.
-
-    This can sometimes lead to errors with sqlite, see (tasks keep hanging then)
-    https://stackoverflow.com/questions/28958580/django-sqlite-database-is-locked
-
     :param func: The function to run
     :param task_type: A string documenting what kind of task this is
     :param num_proc: The maximum number of processes that should be executing
@@ -157,16 +147,17 @@ def run_in_background_with_limits(
     func, task_type, num_proc, num_of_task_type, *args, **kwargs
 ):
     """
-    Runs fun as background Process.
+    Runs func as background Process.
 
-    This method will create a BackgroundTask object, which can be obtained
+    This method will create a new task which will be scheduled to be run by the Huey consumer
+    with the specified priority (defaults to 0). The priority can be passed via a keyword argument
+
+    Internally the Huey consumer spawns a new process, which then creates
+    a BackgroundTask object. This can be obtained
     via get_current_task() inside the calling process.
-    This function will not return until the BackgroundTask object exists in the database.
-    Potentially it may only return after the process has already exited.
     Note that BackgroundTask objects will not be deleted onto completion - instead the
     complete flag will be set to True.
-    This function cannot be used with Django Tests, unless they use TransactionTestCase
-    instead of TestCase (which is far slower, so use with caution).
+    
     num_proc and num_of_task_type can be used to give conditions on the start.
 
     :param func: The function to run. Note that you should set the status of the task yourself
@@ -185,7 +176,6 @@ def run_in_background_with_limits(
     :returns: The BackgroundTask object.
     """
     taskuuid = str(uuid.uuid4())
-
     return run_as_task(func, task_type, num_proc, num_of_task_type, taskuuid, *args, **kwargs)
     
 
