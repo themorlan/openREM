@@ -953,8 +953,12 @@ def _failure_statuses(query, status, query_id_8, level_query_id):
     except KeyError:
         result_type = "Unknown"
         result_status = "Unknown status"
-    logger.error(f"{query_id_8}/{level_query_id} Result: {result_type} (0x{status:04x}) - {result_status} ")
-    query.errors = _(f"{result_type} (0x{status:04x}) - {result_status}. See logs for details.")
+    logger.error(
+        f"{query_id_8}/{level_query_id} Result: {result_type} (0x{status:04x}) - {result_status} "
+    )
+    query.errors = _(
+        f"{result_type} (0x{status:04x}) - {result_status}. See logs for details."
+    )
     query.save()
 
 
@@ -1066,7 +1070,9 @@ def _query_images(
                     imagesrsp.instance_number = None  # integer so can't be ''
                 imagesrsp.save()
             else:
-                _failure_statuses(query, status.Status, query_id_8, image_query_id.hex[:8])
+                _failure_statuses(
+                    query, status.Status, query_id_8, image_query_id.hex[:8]
+                )
         else:
             logger.info(
                 f"{query_id_8}/{image_query_id.hex[:8]} Connection timed out, was aborted or received invalid"
@@ -1182,7 +1188,9 @@ def _query_series(ae, remote, assoc, d2, studyrsp, query):
                 )
                 seriesrsp.save()
             else:
-                _failure_statuses(query, status.Status, query_id_8, series_query_id.hex[:8])
+                _failure_statuses(
+                    query, status.Status, query_id_8, series_query_id.hex[:8]
+                )
         else:
             logger.info(
                 f"{query_id_8}/{series_query_id.hex[:8]} Connection timed out, was aborted or received "
@@ -1296,15 +1304,15 @@ def _query_study(ae, remote, assoc, d, query, study_query_id):
                 rsp.modality = None  # Used later
                 rsp.save()
             else:
-                _failure_statuses(query, status.Status, query_id_8, study_query_id.hex[:8])
+                _failure_statuses(
+                    query, status.Status, query_id_8, study_query_id.hex[:8]
+                )
         else:
             if assoc.is_aborted():
-                status_msg = 'Connection was aborted - check remote server logs.'
+                status_msg = "Connection was aborted - check remote server logs."
             else:
-                status_msg = 'Connection timed out or received an invalid response. Check remote server logs'
-            logger.error(
-                f"{query_id_8}/{study_query_id.hex[:8]} {status_msg} "
-            )
+                status_msg = "Connection timed out or received an invalid response. Check remote server logs"
+            logger.error(f"{query_id_8}/{study_query_id.hex[:8]} {status_msg} ")
             query.stage = _(
                 "Connection timed out, was aborted or received invalid response"
             )
@@ -1984,7 +1992,9 @@ def qrscu(
             )
         if query.errors:
             query.stage += _(
-                "<br>The following errors were received: {errors}".format(errors=query.errors)
+                "<br>The following errors were received: {errors}".format(
+                    errors=query.errors
+                )
             )
         query.save()
         stage_text = query.stage.replace("<br>", "\n -- ")
@@ -2055,7 +2065,9 @@ def _move_req(my_ae, assoc, d, study_no, series_no, query):
                     except KeyError:
                         status_type = "Unknown"
                         status_message = "Unknown status"
-                    status_msg = f"{status_type} (0x{status.Status:04x}) - {status_message}."
+                    status_msg = (
+                        f"{status_type} (0x{status.Status:04x}) - {status_message}."
+                    )
                 msg = (
                     f"Move of study {study_no}, series {series_no}: {status_msg} "
                     f"Sub-ops completed: {completed_sub_ops}, failed: {failed_sub_ops}, "
@@ -2074,9 +2086,9 @@ def _move_req(my_ae, assoc, d, study_no, series_no, query):
             query.save()
         else:
             if assoc.acse.is_aborted():
-                status_msg = 'Connection was aborted - check remote server logs.'
+                status_msg = "Connection was aborted - check remote server logs."
             else:
-                status_msg = 'Connection timed out or received an invalid response. Check remote server logs'
+                status_msg = "Connection timed out or received an invalid response. Check remote server logs"
             msg = (
                 f"Move of study {study_no}, series {series_no}: {status_msg} "
                 f"Cumulative sub-ops completed: {query.move_completed_sub_ops}, "
