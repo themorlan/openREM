@@ -95,6 +95,7 @@ def run_as_task(func, task_type, num_proc, num_of_task_type, *args, **kwargs):
 
     if "task" in kwargs:
         taskuuid = kwargs["task"].id
+        del kwargs["task"]
 
     b = BackgroundTask.objects.create(
         uuid=taskuuid,
