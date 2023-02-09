@@ -65,8 +65,8 @@ def _sleep_for_linear_increasing_time(x):
     time.sleep(sleep_time)
 
 
-@db_task()
-def run_as_task(func, task_type, num_proc, num_of_task_type, taskuuid, *args, **kwargs):
+@db_task(context=True)
+def run_as_task(func, task_type, num_proc, num_of_task_type, *args, **kwargs):
     """
     Runs func as a task. (Which means it runs normally, but a BackgroundTask
     object is created and hence the execution as well as occurred errors are
@@ -77,18 +77,24 @@ def run_as_task(func, task_type, num_proc, num_of_task_type, taskuuid, *args, **
     for which we would like to document that it was executed. (Has some not so nice
     parts, especially that user can terminate a bunch of sequentially running tasks)
 
+    Because this method is wrapped as a Huey task, with context set to True,
+    there will be a keyword argument with key "task" where the value is the `Task` instance itself.
+    This is used to have the same UUID inside the task but also from outside the task to
+    get e.g. its progress via the `BackgroundTask`
+
     :param func: The function to run
     :param task_type: A string documenting what kind of task this is
     :param num_proc: The maximum number of processes that should be executing
     :param num_of_task_type: The maximum number of processes for multiple tasks type which are allowed to
         run at the same time
-    :param taskuuid: An uuid which will be used as uuid of the BackgroundTask object. If None, will generate one itself
     :args: Args to func
     :kwargs: Args to func
     :return: The created BackgroundTask object
     """
-    if taskuuid is None:
-        taskuuid = str(uuid.uuid4())
+    taskuuid = str(uuid.uuid4())
+
+    if "task" in kwargs:
+        taskuuid = kwargs["task"].id
 
     b = BackgroundTask.objects.create(
         uuid=taskuuid,
@@ -176,9 +182,8 @@ def run_in_background_with_limits(
     :param kwargs:  Keywords arguments. Passed to func.
     :returns: The BackgroundTask object.
     """
-    taskuuid = str(uuid.uuid4())
     return run_as_task(
-        func, task_type, num_proc, num_of_task_type, taskuuid, *args, **kwargs
+        func, task_type, num_proc, num_of_task_type, *args, **kwargs
     )
 
 

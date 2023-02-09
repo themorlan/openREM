@@ -260,7 +260,7 @@ def dxcsv1(request, name=None, pat_id=None):
             pid["include_pat_id"],
             request.user.id,
         )
-        logger.debug("Export DX to CSV job is {0}".format(job))
+        logger.debug("Export DX to CSV job is {0}".format(job.id))
 
     return redirect(reverse_lazy("export"))
 
