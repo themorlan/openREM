@@ -5,6 +5,7 @@ OpenREM version history
 
 1.0.0b1 (2022-xx-xx)
 --------------------
+* :issue:`971`  Imports: fixing NM image index error
 * :issue:`967`  Imports: made total DLP optional for Philips CT imports
 * :issue:`965`  SkinDose: fixed bug where a zero study dap causes a divide by zero error
 * :issue:`964`  Tasks: restricted default task history to 2000 stored entries; enabled admin users to configure this value
