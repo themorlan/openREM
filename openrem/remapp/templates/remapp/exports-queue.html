@@ -8,9 +8,9 @@
     <th></th>
     {% for tsk in queued %}
       <tr>
-        <td>{{ tsk.id }}</td>
-        <td>{{ tsk.args.1 }}</td>
-        <td>{{ forloop.counter }}</td>
+        <td>{{ tsk.uuid }}</td>
+        <td>{{ tsk.task_type }}</td>
+        <td>{{ tsk.queue_position }}</td>
         <td>Remove</td>
       </tr>
     {% endfor %}

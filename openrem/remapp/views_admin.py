@@ -120,7 +120,7 @@ from .tools.populate_summary import (
     populate_summary_dx,
     populate_summary_rf,
 )
-from openrem.remapp.tools.background import run_in_background, terminate_background
+from openrem.remapp.tools.background import run_in_background, terminate_background, get_queued_tasks
 from .tools.send_high_dose_alert_emails import send_rf_high_dose_alert_email
 from .version import __version__, __docs_version__
 
@@ -2286,15 +2286,7 @@ def tasks(request, stage: str | None = None):
         if stage == None:
             pass
         elif "queued" in stage:
-            try:
-                queued_tasks_raw = huey.pending()
-            except (AttributeError, IndexError):
-                queued_tasks_raw = []
-            queued_tasks = []
-            for i, t in enumerate(queued_tasks_raw):
-                queued_tasks.append(
-                    {"uuid": t.id, "task_type": t.args[1], "queue_position": f"{i+1}"}
-                )
+            queued_tasks = get_queued_tasks()
             tinfo = {"tasks": queued_tasks, "type": "queued"}
         elif "active" in stage:
             tinfo = {"tasks": active_tasks, "type": "active"}

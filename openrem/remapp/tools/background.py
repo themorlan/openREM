@@ -56,7 +56,18 @@ from remapp.models import BackgroundTask, DicomQuery
 
 from huey.contrib.djhuey import db_task
 from huey.api import Result
+from huey.contrib.djhuey import HUEY as huey
 
+
+class QueuedTask:
+    uuid: str
+    task_type: str
+    queue_position: int
+
+    def __init__(self, uuid, task_type, queue_position):
+        self.uuid = uuid
+        self.task_type = task_type
+        self.queue_position = queue_position
 
 def _sleep_for_linear_increasing_time(x):
     sleep_time = (
@@ -313,3 +324,21 @@ def record_task_related_query(study_instance_uid):
 
             for query in queries:
                 query.related_imports.add(b)
+
+
+def get_queued_tasks(task_type=None) -> list[QueuedTask]:
+    queued_tasks = []
+    for idx, task in enumerate(huey.pending()):
+        try:
+            current_task_type=task.args[1]
+            
+            if task_type != None and task_type not in current_task_type:
+                continue
+
+            queued_tasks.append(QueuedTask(
+                task.id, current_task_type, idx + 1
+            ))
+        except (AttributeError, IndexError):
+            pass
+
+    return queued_tasks

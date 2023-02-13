@@ -41,7 +41,7 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from django.urls import reverse_lazy
 import remapp
-from openrem.remapp.tools.background import run_in_background, terminate_background
+from openrem.remapp.tools.background import run_in_background, terminate_background, get_queued_tasks
 
 logger = logging.getLogger(__name__)
 
@@ -762,15 +762,9 @@ def update_queue(request):
     :param request: Request object
     :return: HTML table of active exports
     """
-    from huey.contrib.djhuey import HUEY as huey
-
     if request.is_ajax():
-        try:
-            queued_export_tasks = [t for t in huey.pending() if "export" in t.args[1]]
-        except (AttributeError, IndexError):
-            queued_export_tasks = []
+        queued_export_tasks = get_queued_tasks(task_type="export")
         template = "remapp/exports-queue.html"
-
         return render(request, template, {"queued": queued_export_tasks})
 
 
