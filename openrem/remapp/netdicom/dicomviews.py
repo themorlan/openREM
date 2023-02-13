@@ -57,6 +57,8 @@ from ..views_admin import _create_admin_dict
 
 from openrem.remapp.tools.background import run_in_background
 
+from huey.contrib.djhuey import HUEY as huey
+
 os.environ["DJANGO_SETTINGS_MODULE"] = "openremproject.settings"
 
 
@@ -201,8 +203,12 @@ def q_update(request):
     try:
         query = DicomQuery.objects.get(query_id=query_id)
     except ObjectDoesNotExist:
+        try:
+            queued_export_tasks =  [t for t in huey.pending() if t.id == query_id][0].args[1]
+        except (AttributeError, IndexError):
+            queued_export_tasks = None
         resp["status"] = "not complete"
-        resp["message"] = "<h4>Query {0} not yet started</h4>".format(query_id)
+        resp["message"] = "<h4>Query {0} with task type <b>{1}</b> has not yet started</h4>".format(query_id, queued_export_tasks)
         resp["subops"] = ""
         return HttpResponse(json.dumps(resp), content_type="application/json")
 
