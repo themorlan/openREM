@@ -183,9 +183,7 @@ def run_in_background_with_limits(
     :param kwargs:  Keywords arguments. Passed to func.
     :returns: The BackgroundTask object.
     """
-    return run_as_task(
-        func, task_type, num_proc, num_of_task_type, *args, **kwargs
-    )
+    return run_as_task(func, task_type, num_proc, num_of_task_type, *args, **kwargs)
 
 
 def run_in_background(func, task_type, *args, **kwargs) -> Result:
@@ -203,7 +201,7 @@ def terminate_background(task: BackgroundTask):
     """
     Terminate a background task by force. Sets complete=True on the task object.
     """
-    
+
     # Task may have already been completed
     if task.complete == True:
         return

@@ -204,11 +204,17 @@ def q_update(request):
         query = DicomQuery.objects.get(query_id=query_id)
     except ObjectDoesNotExist:
         try:
-            queued_export_tasks =  [t for t in huey.pending() if t.id == query_id][0].args[1]
+            queued_export_tasks = [t for t in huey.pending() if t.id == query_id][
+                0
+            ].args[1]
         except (AttributeError, IndexError):
             queued_export_tasks = None
         resp["status"] = "not complete"
-        resp["message"] = "<h4>Query {0} with task type <b>{1}</b> has not yet started</h4>".format(query_id, queued_export_tasks)
+        resp[
+            "message"
+        ] = "<h4>Query {0} with task type <b>{1}</b> has not yet started</h4>".format(
+            query_id, queued_export_tasks
+        )
         resp["subops"] = ""
         return HttpResponse(json.dumps(resp), content_type="application/json")
 
@@ -496,11 +502,17 @@ def r_update(request):
 
     if not has_started:
         try:
-            queued_export_tasks =  [t for t in huey.pending() if t.id == query_id][0].args[1]
+            queued_export_tasks = [t for t in huey.pending() if t.id == query_id][
+                0
+            ].args[1]
         except (AttributeError, IndexError):
             queued_export_tasks = None
         resp["status"] = "not started"
-        resp["message"] = "<h4>Move request {0} with task type <b>{1}</b> has not yet started</h4>".format(query_id, queued_export_tasks)
+        resp[
+            "message"
+        ] = "<h4>Move request {0} with task type <b>{1}</b> has not yet started</h4>".format(
+            query_id, queued_export_tasks
+        )
         resp["subops"] = ""
         return HttpResponse(json.dumps(resp), content_type="application/json")
 

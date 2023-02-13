@@ -766,7 +766,7 @@ def update_queue(request):
 
     if request.is_ajax():
         try:
-            queued_export_tasks =  [t for t in huey.pending() if "export" in t.args[1]]
+            queued_export_tasks = [t for t in huey.pending() if "export" in t.args[1]]
         except (AttributeError, IndexError):
             queued_export_tasks = []
         template = "remapp/exports-queue.html"
