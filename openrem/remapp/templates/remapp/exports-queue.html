@@ -1,0 +1,18 @@
+{% load humanize %}
+{% if queued %}
+  <h4>Export tasks waiting for execution</h4>
+  <table class="table table-striped">
+    <th>Task ID</th>
+    <th>Export type</th>
+    <th>Queue position</th>
+    <th></th>
+    {% for tsk in queued %}
+      <tr>
+        <td>{{ tsk.id }}</td>
+        <td>{{ tsk.args.1 }}</td>
+        <td>{{ forloop.counter }}</td>
+        <td>Remove</td>
+      </tr>
+    {% endfor %}
+  </table>
+{% endif %}

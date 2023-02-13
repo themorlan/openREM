@@ -324,6 +324,7 @@ export_patterns = [
     path("download/<uuid:task_id>/", exportviews.download, name="download"),
     path("deletefile/", exportviews.deletefile, name="deletefile"),
     path("abort/<str:pk>/", exportviews.export_abort, name="export_abort"),
+    path("updatequeue/", exportviews.update_queue, name="update_queue"),
     path("updateactive/", exportviews.update_active, name="update_active"),
     path("updateerror/", exportviews.update_error, name="update_error"),
     path("updatecomplete/", exportviews.update_complete, name="update_complete"),

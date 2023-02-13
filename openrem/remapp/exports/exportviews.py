@@ -755,6 +755,27 @@ def export_abort(request, pk):
 
 @csrf_exempt
 @login_required
+def update_queue(request):
+    """
+    AJAX function to return queued exports
+
+    :param request: Request object
+    :return: HTML table of active exports
+    """
+    from huey.contrib.djhuey import HUEY as huey
+
+    if request.is_ajax():
+        try:
+            queued_export_tasks =  [t for t in huey.pending() if "export" in t.args[1]]
+        except (AttributeError, IndexError):
+            queued_export_tasks = []
+        template = "remapp/exports-queue.html"
+
+        return render(request, template, {"queued": queued_export_tasks})
+
+
+@csrf_exempt
+@login_required
 def update_active(request):
     """
     AJAX function to return active exports

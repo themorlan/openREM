@@ -2,10 +2,14 @@
   <tr>
     <th id="uuid_{{ type }}" onclick="updateSort(this.id, 'user_click');">UUID</th>
     <th id="task_{{ type }}" onclick="updateSort(this.id, 'user_click');">Task type</th>
-    <th id="info_{{ type }}" onclick="updateSort(this.id, 'user_click');">Info</th>
-    <th id="error_{{ type }}" onclick="updateSort(this.id, 'user_click');">Error</th>
-    <th id="started_{{ type }}" onclick="updateSort(this.id, 'user_click');">Started</th>
-    <th id="state_{{ type }}" onclick="updateSort(this.id, 'user_click');">State</th>
+    {% if type == "queued" %}
+      <th id="queue_position_{{ type }}" onclick="updateSort(this.id, 'user_click');">Queue position</th>
+    {% else %}
+      <th id="info_{{ type }}" onclick="updateSort(this.id, 'user_click');">Info</th>
+      <th id="error_{{ type }}" onclick="updateSort(this.id, 'user_click');">Error</th>
+      <th id="started_{{ type }}" onclick="updateSort(this.id, 'user_click');">Started</th>
+    {% endif %}
+      <th id="state_{{ type }}" onclick="updateSort(this.id, 'user_click');">State</th>
     {% if type == 'active' %} 
       <th id="abort">Abort Task</th>
     {% endif %}
@@ -14,13 +18,17 @@
     <tr>
       <td>{{ task.uuid }}</td>
       <td>{{ task.task_type|safe }}</td>
-      <td>{{ task.info|safe }}</td>
-      <td>{{  task.error|safe }}</td>
-      <td sorttable_customkey="{{ task.started_at|date:'Y-m-d H:i' }}">
-        {% if task.started_at is not None %}
-          {{ task.started_at }}
-        {% endif %}
-      </td>
+      {% if type == "queued" %} 
+        <td>{{ task.queue_position }}</td>
+      {% else %}
+        <td>{{ task.info|safe }}</td>
+        <td>{{  task.error|safe }}</td>
+        <td sorttable_customkey="{{ task.started_at|date:'Y-m-d H:i' }}">
+          {% if task.started_at is not None %}
+            {{ task.started_at }}
+          {% endif %}
+        </td>
+      {% endif %}
       {% if task.complete %} 
         {% if task.completed_successfully %} 
           <td>Success</td>
