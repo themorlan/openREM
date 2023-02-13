@@ -107,6 +107,7 @@ OpenREM version history
 * :issue:`816`  Interface: fixed password change error
 * :issue:`815`  Interface: fixed patient name filtering
 * :issue:`814`  Deployment: automated deployment to dev.openrem.org and testing.openrem.org reintroduced
+* :issue:`812`  DICOM Networking: separated abort from timeout in move request failure message
 * :issue:`808`  Imports: caters for illegal use of mGy units in RDSR for dose at RP values
 * :issue:`807`  Exports: fixed errors in PHE fluoro export when values are None
 * :issue:`805`  DICOM Networking: fix errors on "association release" and "move complete"
