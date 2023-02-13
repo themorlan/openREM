@@ -120,11 +120,13 @@ from .tools.populate_summary import (
     populate_summary_dx,
     populate_summary_rf,
 )
-from openrem.remapp.tools.background import run_in_background, terminate_background, get_queued_tasks
+from openrem.remapp.tools.background import (
+    run_in_background,
+    terminate_background,
+    get_queued_tasks,
+)
 from .tools.send_high_dose_alert_emails import send_rf_high_dose_alert_email
 from .version import __version__, __docs_version__
-
-from huey.contrib.djhuey import HUEY as huey
 
 
 os.environ["DJANGO_SETTINGS_MODULE"] = "openremproject.settings"

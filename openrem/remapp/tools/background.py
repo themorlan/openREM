@@ -69,6 +69,7 @@ class QueuedTask:
         self.task_type = task_type
         self.queue_position = queue_position
 
+
 def _sleep_for_linear_increasing_time(x):
     sleep_time = (
         0.4 + 2.0 * x * random.random()  # nosec - not being used for cryptography
@@ -330,14 +331,12 @@ def get_queued_tasks(task_type=None) -> list[QueuedTask]:
     queued_tasks = []
     for idx, task in enumerate(huey.pending()):
         try:
-            current_task_type=task.args[1]
-            
+            current_task_type = task.args[1]
+
             if task_type != None and task_type not in current_task_type:
                 continue
 
-            queued_tasks.append(QueuedTask(
-                task.id, current_task_type, idx + 1
-            ))
+            queued_tasks.append(QueuedTask(task.id, current_task_type, idx + 1))
         except (AttributeError, IndexError):
             pass
 

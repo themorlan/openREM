@@ -57,7 +57,6 @@ from ..views_admin import _create_admin_dict
 
 from openrem.remapp.tools.background import run_in_background
 
-from huey.contrib.djhuey import HUEY as huey
 
 os.environ["DJANGO_SETTINGS_MODULE"] = "openremproject.settings"
 
