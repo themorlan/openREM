@@ -495,8 +495,12 @@ def r_update(request):
         has_started = task is not None
 
     if not has_started:
+        try:
+            queued_export_tasks =  [t for t in huey.pending() if t.id == query_id][0].args[1]
+        except (AttributeError, IndexError):
+            queued_export_tasks = None
         resp["status"] = "not started"
-        resp["message"] = f"<h4>Move request {query_id} not yet started</h4>"
+        resp["message"] = "<h4>Move request {0} with task type <b>{1}</b> has not yet started</h4>".format(query_id, queued_export_tasks)
         resp["subops"] = ""
         return HttpResponse(json.dumps(resp), content_type="application/json")
 
