@@ -203,6 +203,11 @@ def terminate_background(task: BackgroundTask):
     """
     Terminate a background task by force. Sets complete=True on the task object.
     """
+    
+    # Task may have already been completed
+    if task.complete == True:
+        return
+
     task.completed_successfully = False
     task.complete = True
     task.error = "Forcefully aborted"
