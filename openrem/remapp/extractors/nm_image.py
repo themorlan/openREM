@@ -148,7 +148,10 @@ def _isotope(study, dataset):
     (such that SOPClassUID can be read)
     """
     is_nm_img = dataset.SOPClassUID == "1.2.840.10008.5.1.4.1.1.20"
-    dataset = dataset[0x54, 0x16].value[0]  # Radio​pharmaceutical​Information​Sequence
+    try:
+        dataset = dataset[0x54, 0x16].value[0]  # RadiopharmaceuticalInformationSequence
+    except IndexError:
+        return
 
     float_not_equal = lambda x, y: abs(x - y) > 10e-5
 
