@@ -27,8 +27,8 @@ for /l %%x in (1, 1, %workers%) do (
     COPY WinSW.exe huey_worker_%%x.exe >nul
     start /W "" huey_worker_%%x.exe stopwait
     start /W "" huey_worker_%%x.exe uninstall
-::    start /W "" huey_worker_%%x.exe install
-::    start /W "" huey_worker_%%x.exe start
+    start /W "" huey_worker_%%x.exe install
+    start /W "" huey_worker_%%x.exe start
 )
 
 pause
