@@ -130,14 +130,19 @@ INSTALLED_APPS = (
 
 CRISPY_TEMPLATE_PACK = "bootstrap3"
 
+TASK_QUEUE_ROOT = BASE_DIR
+
+HUEY_WORKER_TYPE = "process"
+HUEY_NUMBER_OF_WORKERS = multiprocessing.cpu_count()
+
 HUEY = {
     "huey_class": "huey.SqliteHuey",
     "immediate": False,
     "consumer": {
-        "workers": multiprocessing.cpu_count(),
-        "worker_type": "process",
+        "workers": HUEY_NUMBER_OF_WORKERS,
+        "worker_type": HUEY_WORKER_TYPE,
     },
-    "filename": os.path.join(BASE_DIR, "queue.db"),
+    "filename": os.path.join(TASK_QUEUE_ROOT, "queue.db"),
 }
 
 on_rtd = os.environ.get("READTHEDOCS") == "True"

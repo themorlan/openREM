@@ -52,6 +52,12 @@ ALLOWED_HOSTS = [
 # LOGIN_URL (always) should be overridden to include the VIRTUAL_DIRECTORY
 VIRTUAL_DIRECTORY = ''
 
+TASK_QUEUE_ROOT = 'E:/task_queue/'
+
+# DO NOT CHANGE THESE TWO CONFIGS
+HUEY_WORKER_TYPE = "thread"
+HUEY_NUMBER_OF_WORKERS = 1
+
 # Logging configuration
 # Set the log file location. The example places the log file in the media directory. Change as required - on linux
 # systems you might put these in a subdirectory of /var/log/. If you want all the logs in one file, set the filename

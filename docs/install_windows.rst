@@ -68,7 +68,7 @@ instead:
     C:\Users\openrem>D:
     D:\>mkdir database
     D:\>E:
-    E:\>mkdir log media pixelmed dcmtk 7-zip static venv orthanc\dicom orthanc\physics orthanc\storage
+    E:\>mkdir log media pixelmed dcmtk 7-zip static task_queue venv orthanc\dicom orthanc\physics orthanc\storage winsw
 
 Set permissions
 ---------------
@@ -92,7 +92,7 @@ Set permissions
 * Tick the ``Modify`` ``Allow`` to enable read and write permissions
 * Click ``OK`` twice to close the dialogues
 
-* Repeat for the ``E:\media`` folder
+* Repeat for the ``E:\media``, ``E:\task_queue`` and ``E:\winsw`` folders
 
 .. _windows_install_packages:
 
@@ -223,6 +223,15 @@ Download the 64-bit x64 exe file from https://www.7-zip.org/
 * Type, or click on the ``...`` to browse to ``E:\7-zip\``
 * ``Install``
 * ``Close``
+
+WinSW
+-----
+
+Download the 64-bit x64 exe file from https://github.com/winsw/winsw/releases/tag/v2.12.0
+
+* Open a new file browser at ``E:\winsw``
+* Drag the exe file to the ``winsw`` folder
+
 
 Notepad++
 ---------
@@ -359,7 +368,7 @@ in the settings file or elsewhere in the docs. For details on the final variable
     :ref:`ignore-device-obs-uid`.
 
 .. code-block:: python
-    :emphasize-lines: 4-6, 17-18,26-29,41,46,49,60-67,69
+    :emphasize-lines: 4-6, 19-20,28-31,43,48,51,62-69,71
 
     DATABASES = {
         'default': {
@@ -371,6 +380,8 @@ in the settings file or elsewhere in the docs. For details on the final variable
             'PORT': '',                              # Set to empty string for default. Not used with sqlite3.
         }
     }
+
+    TASK_QUEUE_ROOT = 'E:/task_queue/'
 
     MEDIA_ROOT = 'E:/media/'
 
@@ -603,6 +614,76 @@ Test the webserver
 
 Browse to http://localhost/ on the server, or browse to the servername in a browser on another machine, and you should
 be able to see the new OpenREM web service.
+
+Task Queue
+==========
+
+OpenREM uses a task queue to run its background tasks. Thus we need a seperate process, which allows us to run those tasks
+seperately from the web app.
+
+To accomplish that we need to do the following:
+
+Create local service account
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+First we need to create an account which allows us that the IIS worker can control the task workers. Foremost to terminate a task if needed.
+
+There is a difference whether you are connected to an Active Directory or not. Whatever suits your setup follow the guide
+``A`` if your are not in an Active Directory or ``B`` if you are.
+
+A
+-
+
+For a Windows instance which is not associated to an Active Directory, it is enough to create a local user account:
+
+* Open the ``Search Tab``
+* Search for ``Add, edit, or remove other users``
+* In the menu, click ``Add someone else to this PC``
+* In the left pane right click on ``Users``
+* Click ``New User...``
+* Fill in all fields with the data of a new user account (see image)
+* Untick ``User must change password at next login``
+* Click ``Create``
+* In the left pane click on ``Groups``
+* Right click on ``IIS_IUSRS``
+* Click ``Add to Group...``
+* Click on the ``Add`` button
+* In the textfield, enter the username of the previously created account
+* Click ``Ok`` twice
+
+B
+-
+
+For a Windows instance which is associated to an Active Directory or is even a controller of such then follow this guide:
+
+* Open the ``Server Manager``
+* In the navigation bar, click on ``Tools``
+* Click ``Active Directory Users and Computers``
+* In the left pane, expand your domain
+* Right click on ``Users``
+* Hove over ``New``
+* Click on ``User``
+* Fill in all required fields with the data of a new user account
+* Click ``Next``
+* Enter the new user password twice and untick ``User must change password at next login``
+* Click ``Next`` and then ``Finish`` to create the service account
+
+Creating worker services
+^^^^^^^^^^^^^^^^^^^^^^^^
+TODO!
+
+Adjusting IIS Application Pool Identity
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+* Open ``Internet Information Services (IIS) Manager`` from the Start menu or the Administrative Tools.
+* Click on the name of your server in the ``Connections`` pane on the left
+* Double click on ``Application Pools``
+* Right click on ``OpenREM``
+* Click ``Advanced Settings...``
+* Under ``Process Model`` click on ``Identity`` and then on the grey ``…`` box
+* Select the ``Custom account:`` radio button
+* Click on ``Set...``
+* Enter the credentials of the preivously created account. If you are in an Active Directory prefix ther usernmae with ``<YOUR-DOMAIN>\``
+* Click ``OK`` twice
 
 DICOM Store SCP
 ===============
