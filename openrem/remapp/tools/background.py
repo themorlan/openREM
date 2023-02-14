@@ -42,6 +42,7 @@ from django.db.models import Q
 from django.db import transaction
 from django.db.utils import OperationalError
 from django.utils import timezone
+from typing import List
 
 # Setup django. This is required on windows, because process is created via spawn and
 # django will not be initialized anymore then (On Linux this will only be executed once)
@@ -327,7 +328,7 @@ def record_task_related_query(study_instance_uid):
                 query.related_imports.add(b)
 
 
-def get_queued_tasks(task_type=None):
+def get_queued_tasks(task_type=None) -> List[QueuedTask]:
     """
     Returns all task which are currently waiting for execution
     
