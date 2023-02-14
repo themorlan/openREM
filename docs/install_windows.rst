@@ -670,7 +670,21 @@ For a Windows instance which is associated to an Active Directory or is even a c
 
 Creating worker services
 ^^^^^^^^^^^^^^^^^^^^^^^^
-TODO!
+
+Copy the file from
+
+* ``E:\venv\Lib\site-packages\openrem\sample-config\queue-init.bat`` to
+* ``E:\winsw\``
+
+Make sure in the same folder (``E:\winsw\``) is the previously downloaded ``WinSW.exe`` file.
+
+* Double click the ``queue-init.bat`` file
+* Enter your Domain name or leave empty if not applicable
+* Enter the username of the previously created account
+* Enter the associated password
+* Enter the number of workers you would like to spawn, this number should no exceed the number of CPU cores available to your system
+* Wait for the services o get registered and started up
+* That's it
 
 Adjusting IIS Application Pool Identity
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
