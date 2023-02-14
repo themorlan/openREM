@@ -327,7 +327,7 @@ def record_task_related_query(study_instance_uid):
                 query.related_imports.add(b)
 
 
-def get_queued_tasks(task_type=None) -> list[QueuedTask]:
+def get_queued_tasks(task_type=None):
     """
     Returns all task which are currently waiting for execution
     
