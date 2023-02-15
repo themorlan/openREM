@@ -445,23 +445,51 @@ Copy the Gunicorn systemd service file into place:
         [Install]
         WantedBy=multi-user.target
 
+Copy the task queue consumer systemd service file into place:
+
+.. code-block:: console
+
+    $ cd /var/dose/veopenrem3/lib/python3.10/site-packages/openrem/
+    $ sudo cp sample-config/openrem-consumer.service /etc/systemd/system/openrem-consumer.service
+
+.. note::
+
+    Content of systemd file:
+
+    .. code-block:: bash
+
+        [Unit]
+        Description=Huey consumer for OpenREM
+
+        [Service]
+        Restart=on-failure
+        User=www-data
+        WorkingDirectory=/var/dose/veopenrem3/lib/python3.10/site-packages/openrem
+
+        ExecStart=/var/dose/veopenrem3/bin/python \
+            manage.py run_huey
+
+        [Install]
+        WantedBy=multi-user.target
+
 Load the new systemd configurations:
 
 .. code-block:: console
 
     $ sudo systemctl daemon-reload
 
-Set the new Gunicorn service to start on boot:
+Set the new Gunicorn and consumer services to start on boot:
 
 .. code-block:: console
 
     $ sudo systemctl enable openrem-gunicorn.service
+    $ sudo systemctl enable openrem-consumer.service
 
-Start the Gunicorn service, and restart the NGINX service:
+Start the Gunicorn and consumer services, and restart the NGINX service:
 
 .. code-block:: console
 
-    $ sudo -- sh -c 'systemctl start openrem-gunicorn.service && systemctl restart nginx.service'
+    $ sudo -- sh -c 'systemctl start openrem-gunicorn.service && systemctl start openrem-consumer.service && systemctl restart nginx.service'
 
 Test the webserver
 ------------------
