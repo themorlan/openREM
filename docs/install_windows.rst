@@ -10,6 +10,7 @@ This install is based on Windows Server 2022 using:
 * Database: PostgreSQL
 * DICOM Store SCP: Orthanc running on port 104
 * Webserver: Microsoft IIS running on port 80
+* WinSW to run background tasks as services
 * Notepad++ for editing files
 * Database files stored on D:
 * OpenREM files stored on E:
@@ -92,7 +93,7 @@ Set permissions
 * Tick the ``Modify`` ``Allow`` to enable read and write permissions
 * Click ``OK`` twice to close the dialogues
 
-* Repeat for the ``E:\media``, ``E:\task_queue`` and ``E:\winsw`` folders
+* Repeat for the ``E:\media`` and ``E:\task_queue`` folders
 
 .. _windows_install_packages:
 
@@ -231,7 +232,7 @@ Download the 64-bit x64 exe file from https://github.com/winsw/winsw/releases/ta
 
 * Open a new file browser at ``E:\winsw``
 * Drag the exe file to the ``winsw`` folder
-
+* Rename the exe file from ``WinSW-x64`` to ``WinSW``
 
 Notepad++
 ---------
@@ -634,7 +635,7 @@ There is a difference whether you are connected to an Active Directory or not. W
 A
 -
 
-For a Windows instance which is not associated to an Active Directory, it is enough to create a local user account:
+For a Windows instance which is not associated to an Active Directory, it suffices to create a local user account:
 
 * Open the ``Search Tab``
 * Search for ``Add, edit, or remove other users``
@@ -683,21 +684,20 @@ Make sure in the same folder (``E:\winsw\``) is the previously downloaded ``WinS
 * Enter the username of the previously created account
 * Enter the associated password
 * Enter the number of workers you would like to spawn, this number should no exceed the number of CPU cores available to your system
-* Wait for the services o get registered and started up
-* That's it
+* Wait for the services to get registered and started up (Notice: many windows may appear and disappear quickly)
 
 Adjusting IIS Application Pool Identity
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 * Open ``Internet Information Services (IIS) Manager`` from the Start menu or the Administrative Tools.
-* Click on the name of your server in the ``Connections`` pane on the left
-* Double click on ``Application Pools``
-* Right click on ``OpenREM``
+* In the ``Connections`` pane expand the tree under server name
+* Click on ``Application Pools``
+* Right click on ``OpenREM`` in the middle pane
 * Click ``Advanced Settings...``
 * Under ``Process Model`` click on ``Identity`` and then on the grey ``…`` box
 * Select the ``Custom account:`` radio button
 * Click on ``Set...``
 * Enter the credentials of the preivously created account. If you are in an Active Directory prefix ther usernmae with ``<YOUR-DOMAIN>\``
-* Click ``OK`` twice
+* Click ``OK`` three times
 
 DICOM Store SCP
 ===============
