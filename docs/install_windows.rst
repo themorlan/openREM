@@ -619,21 +619,21 @@ be able to see the new OpenREM web service.
 Task Queue
 ==========
 
-OpenREM uses a task queue to run its background tasks. Thus we need a seperate process, which allows us to run those tasks
-seperately from the web app.
+OpenREM uses a task queue to run its background tasks.
+Therefore, we need additional Windows services that allow us to run these tasks separately from the web application.
 
 To accomplish that we need to do the following:
 
 Create local service account
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-First we need to create an account which allows us that the IIS worker can control the task workers. Foremost to terminate a task if needed.
+First we need to create an account that will allow the IIS worker to control the task workers. Most importantly, to kill a task if necessary.
 
-There is a difference whether you are connected to an Active Directory or not. Whatever suits your setup follow the guide
-``A`` if your are not in an Active Directory or ``B`` if you are.
+There is a difference if you are connected to an Active Directory or not. Whatever suits your setup, follow the guide
+``A`` if you are not in an Active Directory or ``B`` if you are.
 
-A
--
+Guide A
+-------
 
 For a Windows instance which is not associated to an Active Directory, it suffices to create a local user account:
 
@@ -652,10 +652,10 @@ For a Windows instance which is not associated to an Active Directory, it suffic
 * In the textfield, enter the username of the previously created account
 * Click ``Ok`` twice
 
-B
--
+Guide B
+-------
 
-For a Windows instance which is associated to an Active Directory or is even a controller of such then follow this guide:
+For a Windows instance that is connected to an Active Directory, or even a controller of one, follow this guide:
 
 * Open the ``Server Manager``
 * In the navigation bar, click on ``Tools``
@@ -677,7 +677,7 @@ Copy the file from
 * ``E:\venv\Lib\site-packages\openrem\sample-config\queue-init.bat`` to
 * ``E:\winsw\``
 
-Make sure in the same folder (``E:\winsw\``) is the previously downloaded ``WinSW.exe`` file.
+Make sure that the previously downloaded and renamed ``WinSW.exe`` file is in the same folder (``E:\winsw\``).
 
 * Double click the ``queue-init.bat`` file
 * Enter your Domain name or leave empty if not applicable
