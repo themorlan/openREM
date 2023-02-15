@@ -124,6 +124,7 @@ from openrem.remapp.tools.background import (
     run_in_background,
     terminate_background,
     get_queued_tasks,
+    remove_task_from_queue,
 )
 from .tools.send_high_dose_alert_emails import send_rf_high_dose_alert_email
 from .version import __version__, __docs_version__
@@ -2334,6 +2335,17 @@ def task_abort(request, task_id=None):
             "Task {0} terminated".format(task_id),
         )
 
+    return redirect(reverse_lazy("task_admin"))
+
+
+def task_remove(request, task_id=None):
+    """Function to remove task from queue"""
+    if task_id and request.user.groups.filter(name="admingroup"):
+        remove_task_from_queue(task_id)
+        messages.success(
+            request,
+            "Task {0} removed from queue".format(task_id),
+        )
     return redirect(reverse_lazy("task_admin"))
 
 

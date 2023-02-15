@@ -343,8 +343,20 @@ def get_queued_tasks(task_type=None) -> List[QueuedTask]:
             if task_type != None and task_type not in current_task_type:
                 continue
 
+            if huey.is_revoked(task):
+                continue
+
             queued_tasks.append(QueuedTask(task.id, current_task_type, idx + 1))
         except (AttributeError, IndexError):
             pass
 
     return queued_tasks
+
+
+def remove_task_from_queue(task_id: str):
+    """
+    Removes task from queue.
+
+    :param task_id: task id of the task in question
+    """
+    huey.revoke_by_id(task_id)

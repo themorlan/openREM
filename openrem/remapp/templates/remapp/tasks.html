@@ -10,8 +10,8 @@
       <th id="started_{{ type }}" onclick="updateSort(this.id, 'user_click');">Started</th>
     {% endif %}
       <th id="state_{{ type }}" onclick="updateSort(this.id, 'user_click');">State</th>
-    {% if type == 'active' %} 
-      <th id="abort">Abort Task</th>
+    {% if type == 'active' or type == 'queued' %} 
+      <th id="abort">Action</th>
     {% endif %}
   </tr>
   {% for task in tasks %}
@@ -50,6 +50,12 @@
             Terminate task
           </a>
         </td>
+      {% elif type == 'queued' %} 
+      <td>
+        <a class="btn btn-danger" href="/tasks/tasks/remove_task/{{ task.uuid }}/" role="button">
+          Remove task
+        </a>
+      </td>
       {% endif %}
     </tr>
   {% endfor %}

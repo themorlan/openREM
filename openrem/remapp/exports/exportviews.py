@@ -45,6 +45,7 @@ from openrem.remapp.tools.background import (
     run_in_background,
     terminate_background,
     get_queued_tasks,
+    remove_task_from_queue,
 )
 
 logger = logging.getLogger(__name__)
@@ -751,6 +752,28 @@ def export_abort(request, pk):
         logger.info(
             "Export task {0} terminated from the Exports interface".format(
                 export_task.task_id
+            )
+        )
+
+    return HttpResponseRedirect(reverse_lazy("export"))
+
+
+@login_required
+def export_remove(request, task_id=None):
+    """
+    Function to remove export task from queue
+
+    :param request: Contains the task primary key
+    :param task_id: UUID of task in question
+    :type request: POST
+    """
+    from django.http import HttpResponseRedirect
+
+    if task_id and request.user.groups.filter(name="exportgroup"):
+        remove_task_from_queue(task_id)
+        logger.info(
+            "Export task {0} removed from queue".format(
+                task_id
             )
         )
 
