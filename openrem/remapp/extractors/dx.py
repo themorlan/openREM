@@ -547,7 +547,9 @@ def _accumulatedxraydose_update(event):
         event.projection_xray_radiation_dose.accumxraydose_set.get().accumintegratedprojradiogdose_set.get()
     )
     if accumint.total_number_of_radiographic_frames is not None:
-        accumint.total_number_of_radiographic_frames = accumint.total_number_of_radiographic_frames + 1
+        accumint.total_number_of_radiographic_frames = (
+            accumint.total_number_of_radiographic_frames + 1
+        )
     else:
         accumint.total_number_of_radiographic_frames = 1
 
