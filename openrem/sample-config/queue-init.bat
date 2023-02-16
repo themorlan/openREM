@@ -4,23 +4,23 @@ echo ##############################
 echo # OpenREM Task Queue Starter #
 echo ##############################
 echo.
-echo ~~~~~~~~~~~~~~~~~~~~~~~~~
-echo ~ Removing old services ~
-echo ~~~~~~~~~~~~~~~~~~~~~~~~~
+echo ~~~~~~~~~~~~~~~~~~~~~~~~~~
+echo ~ Removing old consumers ~
+echo ~~~~~~~~~~~~~~~~~~~~~~~~~~
 echo.
 set test=
 for /f "tokens=1*" %%a in ('
     sc query state^= all ^| findstr /r /c:"SERVICE_NAME: huey-consumer-.*"
 ') do (
     echo - Stopping %%b
-    net stop %%b >nul
+    net stop %%b >nul 2>&1
     echo - Deleting %%b service
     sc delete %%b >nul
     echo - Deleting %%b files
     del consumer-files\%%b* >nul
     set test=y
 )
-if [%test%]==[] echo "Nothing to do!"
+if [%test%]==[] echo Nothing to do!
 echo.
 echo ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 echo ~ Configuring new consumers ~
@@ -48,7 +48,7 @@ for /l %%x in (1, 1, %workers%) do (
         echo   ^<onfailure action="restart" /^>
         echo   ^<startmode^>Automatic^</startmode^>
         echo   ^<serviceaccount^>
-	echo     ^<domain^>%domain%^</domain^>
+	    echo     ^<domain^>%domain%^</domain^>
         echo     ^<user^>%username%^</user^>
         echo     ^<password^>%password%^</password^>
         echo     ^<allowservicelogon^>true^</allowservicelogon^>
