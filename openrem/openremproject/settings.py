@@ -132,17 +132,21 @@ CRISPY_TEMPLATE_PACK = "bootstrap3"
 
 TASK_QUEUE_ROOT = BASE_DIR
 
+HUEY_CLASS = "huey.PriorityRedisHuey"
 HUEY_WORKER_TYPE = "process"
 HUEY_NUMBER_OF_WORKERS = multiprocessing.cpu_count()
 
 HUEY = {
-    "huey_class": "huey.SqliteHuey",
+    "huey_class": HUEY_CLASS,
     "immediate": False,
+    "connection": {
+        "host": os.environ.get("REDIS_HOST", "localhost"),
+        "port": int(os.environ.get("REDIS_PORT", 6379)),
+    },
     "consumer": {
         "workers": HUEY_NUMBER_OF_WORKERS,
         "worker_type": HUEY_WORKER_TYPE,
     },
-    "filename": os.path.join(TASK_QUEUE_ROOT, "queue.db"),
 }
 
 on_rtd = os.environ.get("READTHEDOCS") == "True"
