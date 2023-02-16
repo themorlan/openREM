@@ -131,10 +131,11 @@ IGNORE_DEVICE_OBSERVER_UID_FOR_THESE_MODELS = ['GE OEC Fluorostar']
 # python -m smtpd -n -c DebuggingServer localhost:25
 
 # DO NOT CHANGE THE FOLLOWING CONFIGS
+HUEY_CLASS = "huey.SqliteHuey"
 HUEY_WORKER_TYPE = "thread"
 HUEY_NUMBER_OF_WORKERS = 1
 HUEY = {
-    "huey_class": "huey.SqliteHuey",
+    "huey_class": HUEY_CLASS,
     "immediate": False,
     "consumer": {
         "workers": HUEY_NUMBER_OF_WORKERS,

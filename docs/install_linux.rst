@@ -56,6 +56,22 @@ If these two lines are not there or are commented out (line starts with a ``#``)
     $ sudo apt install acl python3.10 python3.10-dev python3.10-distutils python3.10-venv python3-pip \
     postgresql nginx orthanc dcmtk default-jre zip gettext
 
+**Redis**
+
+Redis is used to temporarily store the background tasks.
+
+.. code-block:: console
+
+    $ sudo apt install lsb-release
+
+.. code-block:: console
+
+    $ curl -fsSL https://packages.redis.io/gpg | sudo gpg --dearmor -o /usr/share/keyrings/redis-archive-keyring.gpg
+    $ echo "deb [signed-by=/usr/share/keyrings/redis-archive-keyring.gpg] https://packages.redis.io/deb $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/redis.list
+    $ sudo apt-get update
+    $ sudo apt-get install redis
+
+
 Folders and permissions
 -----------------------
 
@@ -483,13 +499,14 @@ Set the new Gunicorn and consumer services to start on boot:
 .. code-block:: console
 
     $ sudo systemctl enable openrem-gunicorn.service
+    $ sudo systemctl enable redis-server.service
     $ sudo systemctl enable openrem-consumer.service
 
 Start the Gunicorn and consumer services, and restart the NGINX service:
 
 .. code-block:: console
 
-    $ sudo -- sh -c 'systemctl start openrem-gunicorn.service && systemctl start openrem-consumer.service && systemctl restart nginx.service'
+    $ sudo -- sh -c 'systemctl start openrem-gunicorn.service && systemctl start redis-server.service && systemctl start openrem-consumer.service && systemctl restart nginx.service'
 
 Test the webserver
 ------------------
