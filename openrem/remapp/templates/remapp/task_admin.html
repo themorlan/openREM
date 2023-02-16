@@ -37,6 +37,9 @@
                 if(heading.indexOf("active") !== -1) {
                   return;
                 }
+                if(heading.indexOf("queued") !== -1) {
+                  return;
+                }
 
                 if (heading.indexOf("recent") !== -1) sort_info_recent.heading = heading;
                 else sort_info_older.heading = heading;
@@ -83,6 +86,10 @@
             sort_info_active = {
                 heading: "started_active",
                 direction: "descending"
+            };
+            sort_info_queued = {
+                heading: "queue_position_queued",
+                direction: "ascending"
             };
 
             function tasks_update_queued() {
