@@ -771,11 +771,7 @@ def export_remove(request, task_id=None):
 
     if task_id and request.user.groups.filter(name="exportgroup"):
         remove_task_from_queue(task_id)
-        logger.info(
-            "Export task {0} removed from queue".format(
-                task_id
-            )
-        )
+        logger.info("Export task {0} removed from queue".format(task_id))
 
     return HttpResponseRedirect(reverse_lazy("export"))
 

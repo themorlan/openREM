@@ -141,7 +141,9 @@ tasks_patterns = [
         views_admin.task_abort,
         name="abort_task",
     ),
-    path("tasks/remove_task/<uuid:task_id>/", views_admin.task_remove, name="remove_task")
+    path(
+        "tasks/remove_task/<uuid:task_id>/", views_admin.task_remove, name="remove_task"
+    ),
 ]
 
 

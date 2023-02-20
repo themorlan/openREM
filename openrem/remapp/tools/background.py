@@ -331,7 +331,7 @@ def record_task_related_query(study_instance_uid):
 def get_queued_tasks(task_type=None) -> List[QueuedTask]:
     """
     Returns all task which are currently waiting for execution
-    
+
     :param task_type: Optionally filter by task type
     :return: List of queued tasks
     """
