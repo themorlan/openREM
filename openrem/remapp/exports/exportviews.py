@@ -41,7 +41,7 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from django.urls import reverse_lazy
 import remapp
-from openrem.remapp.tools.background import (
+from openrem.remapp.tools.background import ( # pylint: disable=wrong-import-position
     run_in_background,
     terminate_background,
     get_queued_tasks,
