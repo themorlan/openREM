@@ -38,7 +38,6 @@ import uuid
 import random
 from typing import List
 import django
-from django import db
 from django.db.models import Q
 from django.db import transaction
 from django.db.utils import OperationalError
@@ -61,12 +60,12 @@ from huey.contrib.djhuey import HUEY as huey
 
 
 class QueuedTask:
-    id: str
+    task_id: str
     task_type: str
     queue_position: int
 
-    def __init__(self, id, task_type, queue_position):
-        self.id = id
+    def __init__(self, task_id, task_type, queue_position):
+        self.task_id = task_id
         self.task_type = task_type
         self.queue_position = queue_position
 
