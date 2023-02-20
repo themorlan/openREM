@@ -36,13 +36,13 @@ import signal
 import sys
 import uuid
 import random
+from typing import List
 import django
 from django import db
 from django.db.models import Q
 from django.db import transaction
 from django.db.utils import OperationalError
 from django.utils import timezone
-from typing import List
 
 # Setup django. This is required on windows, because process is created via spawn and
 # django will not be initialized anymore then (On Linux this will only be executed once)
@@ -61,12 +61,12 @@ from huey.contrib.djhuey import HUEY as huey
 
 
 class QueuedTask:
-    uuid: str
+    id: str
     task_type: str
     queue_position: int
 
-    def __init__(self, uuid, task_type, queue_position):
-        self.uuid = uuid
+    def __init__(self, id, task_type, queue_position):
+        self.id = id
         self.task_type = task_type
         self.queue_position = queue_position
 
@@ -216,7 +216,7 @@ def terminate_background(task: BackgroundTask):
     """
 
     # Task may have already been completed
-    if task.complete == True:
+    if task.complete:
         return
 
     task.completed_successfully = False

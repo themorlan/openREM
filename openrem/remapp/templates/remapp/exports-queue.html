@@ -9,10 +9,10 @@
     <th></th>
     {% for tsk in queued %}
       <tr>
-        <td>{{ tsk.uuid }}</td>
+        <td>{{ tsk.id }}</td>
         <td>{{ tsk.task_type }}</td>
         <td>{{ tsk.queue_position }}</td>
-        <td><a href="/export/remove/{{ tsk.uuid }}/" class="btn btn-danger">Remove</a></td>
+        <td><a href="/export/remove/{{ tsk.id }}/" class="btn btn-danger">Remove</a></td>
       </tr>
     {% endfor %}
   </table>

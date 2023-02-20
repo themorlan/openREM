@@ -16,7 +16,7 @@
   </tr>
   {% for task in tasks %}
     <tr>
-      <td>{{ task.uuid }}</td>
+      <td>{{ task.id }}</td>
       <td>{{ task.task_type|safe }}</td>
       {% if type == "queued" %} 
         <td>{{ task.queue_position }}</td>
@@ -52,7 +52,7 @@
         </td>
       {% elif type == 'queued' %} 
       <td>
-        <a class="btn btn-danger" href="/tasks/tasks/remove_task/{{ task.uuid }}/" role="button">
+        <a class="btn btn-danger" href="/tasks/tasks/remove_task/{{ task.id }}/" role="button">
           Remove task
         </a>
       </td>

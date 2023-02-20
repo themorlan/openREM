@@ -785,10 +785,12 @@ def update_queue(request):
     :param request: Request object
     :return: HTML table of active exports
     """
+    template = "remapp/exports-queue.html"
     if request.is_ajax():
         queued_export_tasks = get_queued_tasks(task_type="export")
-        template = "remapp/exports-queue.html"
         return render(request, template, {"queued": queued_export_tasks})
+
+    return render(request, template)
 
 
 @csrf_exempt
