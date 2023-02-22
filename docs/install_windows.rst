@@ -627,12 +627,15 @@ Therefore, we need additional Windows services that allow us to run these tasks 
 
     For non-server environments, where task executors don't need to be persistent across system restarts,
     there is a shortcut for starting workers. You can start a single worker in a new console as follows:
+    
+
     .. code-block:: console
 
     C:\Users\openrem>E:
     E:\>cd venv\Lib\site-packages\openrem
     E:\venv\Lib\site-packages\openrem>e:\venv\Scripts\activate
     (venv) E:\venv\Lib\site-packages\openrem>python manage.py run_huey
+
 
     If you want more than one worker to run tasks in parallel,
     you will need to repeat the previous steps for each additional worker in a new console.
