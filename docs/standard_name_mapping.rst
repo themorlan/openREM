@@ -24,7 +24,7 @@ If the logged in user is an OpenREM adminstrator the ``standard name settings`` 
 ``Config`` drop down menu (figure 1). Clicking on this will take the administrator to the standard name mapping settings
 page (figure 2). From this page the administrator can enable or disable standard name mapping for the OpenREM
 installation. Enabling standard name mapping causes an additional column to be displayed in each modality summary page
-where any standard study-level names associated with each entry in the exam table are displayed (figure 3); when viewing
+where any standard study-level names associated with each entry in the exam table are displayed (figure 3), and when viewing
 the details of an individual study any matching standard acquisition names are displayed in the appropriate table row
 (figure 4). Enabling standard name mapping also makes the standard study name and standard acquisition name charts
 available. The administrator can also use the ``standard name settings`` page to access the standard name internal
