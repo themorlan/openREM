@@ -30,7 +30,7 @@ Sudies from the past {{ alert_levels.accum_dose_delta_weeks }} weeks for this pa
 {% endwith %}{% endwith %}
 
 All studies for this patient ID from the past {{ alert_levels.accum_dose_delta_weeks }} weeks
-	Date		Time	Accession number	OpenREM link{% for each_study in studies_in_week_delta %}
-	{{ each_study.study_date|date:"d/m/y" }}	{{ each_study.study_time|date:"H:i" }}	{{ each_study.accession_number }}			{{ server_url }}/openrem/rf/{{ each_study.pk }}/{% if each_study.pk == study.pk %} (This study){% endif %}{% endfor %}
+	Date		Time	Accession number	PSD (Gy)	OpenREM link{% for each_study in studies_in_week_delta %}{% with psd_data=each_study.skindosemapresults_set.get %}
+	{{ each_study.study_date|date:"d/m/y" }}	{{ each_study.study_time|date:"H:i" }}	{{ each_study.accession_number }}			{{ psd_data.peak_skin_dose|floatformat:1 }}	{{ server_url }}/openrem/rf/{{ each_study.pk }}/{% if each_study.pk == study.pk %} (This study){% endif %}{% endwith %}{% endfor %}
 {% endif %}
 {% endwith %}{% endwith %}

@@ -166,7 +166,7 @@
                     <td>Peak skin dose</td>
                     <td>{% if peak_skin_dose == None %}
                             Not calculated
-                        {%  else %}
+                        {% else %}
                             {% if peak_skin_dose >= alert_levels.alert_skindose %}
                                 <strong style="color: red;">{{ peak_skin_dose|floatformat:1 }}</strong>
                                 (This is above the alert level of
@@ -231,6 +231,7 @@
                         <th scope="col">Accession number</th>
                         <th scope="col">Total DAP (cGy.cm<sup>2</sup>)</th>
                         <th scope="col">Total dose at RP (Gy)</th>
+                        <th scope="col">Peak skin dose (Gy)</th>
                         <th scope="col">OpenREM link</th>
                     </tr>
                     {% for each_study in studies_in_week_delta %}
@@ -265,6 +266,20 @@
                                         <br>
                                     {% endwith %}
                                 {% endfor %}
+                            </td>
+
+                            <td>
+                                {% with psd_data=each_study.skindosemapresults_set.get %}
+                                    {% if psd_data.peak_skin_dose == None %}
+                                        Not calculated
+                                    {% else %}
+                                        {% if psd_data.peak_skin_dose >= alert_levels.alert_skindose %}
+                                            <strong style="color: red;">{{ psd_data.peak_skin_dose|floatformat:1 }}</strong>
+                                        {% else %}
+                                            {{ psd_data.peak_skin_dose|floatformat:1 }}
+                                        {% endif %}
+                                    {% endif %}
+                                {% endwith %}
                             </td>
 
                             <td><a href="{{ server_url }}/openrem/rf/{{ each_study.pk }}">{% if each_study.pk == study.pk %}This study{% else %}Study {{ each_study.pk }}{% endif %}</a></td>
