@@ -622,6 +622,27 @@ Task Queue
 OpenREM uses a task queue to run its background tasks.
 Therefore, we need additional Windows services that allow us to run these tasks separately from the web application.
 
+
+.. admonition:: Running OpenREM on Windows 10 or Windows 11?
+
+    For non-server environments, where task executors don't need to be persistent across system restarts,
+    there is a shortcut for starting workers. You can start a single worker in a new console as follows:
+    .. code-block:: console
+
+    C:\Users\openrem>E:
+    E:\>cd venv\Lib\site-packages\openrem
+    E:\venv\Lib\site-packages\openrem>e:\venv\Scripts\activate
+    (venv) E:\venv\Lib\site-packages\openrem>python manage.py run_huey
+
+    If you want more than one worker to run tasks in parallel,
+    you will need to repeat the previous steps for each additional worker in a new console.
+
+    You can stop a worker by pressing `Ctrl` + `C` in the appropriate console
+
+    If you cannot start a worker or you are getting error messages, please make sure that your current user
+    has read and write permissions in the `E:\task_queue` directory.
+
+
 To accomplish that we need to do the following:
 
 Create local service account
