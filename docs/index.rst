@@ -35,6 +35,7 @@ Contents:
     import
     i_navigate
     charts
+    standard_name_mapping
     skindosemap
     i_exporting
     troubleshooting
