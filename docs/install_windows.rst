@@ -616,12 +616,8 @@ Test the webserver
 Browse to http://localhost/ on the server, or browse to the servername in a browser on another machine, and you should
 be able to see the new OpenREM web service.
 
-Task Queue
+Task queue
 ==========
-
-OpenREM uses a task queue to run its background tasks.
-Therefore, we need additional Windows services that allow us to run these tasks separately from the web application.
-
 
 .. admonition:: Running OpenREM on Windows 10 or Windows 11?
 
@@ -643,6 +639,9 @@ Therefore, we need additional Windows services that allow us to run these tasks 
     If you cannot start a worker or you are getting error messages, please make sure that your current user
     has read and write permissions in the ``E:\task_queue`` directory.
 
+
+OpenREM uses a task queue to run its background tasks.
+Therefore, we need additional Windows services that allow us to run these tasks separately from the web application.
 
 To accomplish that we need to do the following:
 
