@@ -1,4 +1,4 @@
-{% with patientstudy=study.patientstudymoduleattr_set.get %}{% with equipment=study.generalequipmentmoduleattr_set.get %}
+{% with patientstudy=study.patientstudymoduleattr_set.get %}{% with equipment=study.generalequipmentmoduleattr_set.get %}{% with psd_data=study.skindosemapresults_set.get %}
 **OpenREM high dose fluoroscopy alert**
 
 A fluoroscopy study has triggered a high dose alert. See below for details. This message has been
@@ -16,9 +16,9 @@ This study
 	Institution:		{{ equipment.institution_name }}
 	Display name:		{{ study.generalequipmentmoduleattr_set.get.unique_equipment_name.display_name }}
 	Accession number:	{{ study.accession_number }}
-	peak skin dose:		{{ peak_skin_dose }}
+	Peak skin dose:		{{ psd_data.peak_skin_dose|floatformat:1 }}
 	OpenREM link:		{{ server_url }}/openrem/rf/{{ study.pk }}/
-{% for record in accumxraydose_set_all_planes %}{% with accumprojection=record.accumintegratedprojradiogdose_set.get %}
+{% endwith %}{% for record in accumxraydose_set_all_planes %}{% with accumprojection=record.accumintegratedprojradiogdose_set.get %}
 	Total DAP, {{ record.acquisition_plane.code_meaning }} (cGy.cm2):	{{ accumprojection.convert_gym2_to_cgycm2|floatformat:1 }}{% if accumprojection.convert_gym2_to_cgycm2 >= alert_levels.alert_total_dap_rf %}	(This is above the alert level of {{ alert_levels.alert_total_dap_rf|floatformat:1 }}){% endif %}
 	Total dose at RP, {{ record.acquisition_plane.code_meaning }} (Gy):	{{ accumprojection.dose_rp_total|floatformat:1 }}{% if accumprojection.dose_rp_total >= alert_levels.alert_total_rp_dose_rf %}	(This is above the alert level of {{ alert_levels.alert_total_rp_dose_rf|floatformat:1 }}){% endif %}
 {% endwith %}{% endfor %}

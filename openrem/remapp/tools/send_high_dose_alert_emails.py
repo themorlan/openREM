@@ -182,7 +182,6 @@ def send_rf_high_dose_alert_email(study_pk=None, test_message=None, test_user=No
             "alert_levels": alert_levels,
             "studies_in_week_delta": included_studies,
             "server_url": settings.EMAIL_OPENREM_URL,
-            "peak_skin_dose": peak_skin_dose,
         }
 
         text_msg_content = render_to_string(

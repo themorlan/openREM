@@ -163,19 +163,21 @@
                         </tr>
                     {% endwith %}{% endfor %}
                 <tr>
+                    {% with psd_data=study.skindosemapresults_set.get %}
                     <td>Peak skin dose (Gy):</td>
-                    <td>{% if peak_skin_dose == None %}
+                    <td>{% if psd_data.peak_skin_dose == None %}
                             Not calculated
                         {% else %}
-                            {% if peak_skin_dose >= alert_levels.alert_skindose %}
-                                <strong style="color: red;">{{ peak_skin_dose|floatformat:1 }}</strong>
+                            {% if psd_data.peak_skin_dose >= alert_levels.alert_skindose %}
+                                <strong style="color: red;">{{ psd_data.peak_skin_dose|floatformat:1 }}</strong>
                                 (This is above the alert level of
                                 {{ alert_levels.alert_skindose|floatformat:1 }})
                             {% else %}
-                                {{ peak_skin_dose|floatformat:1 }}
+                                {{ psd_data.peak_skin_dose|floatformat:1 }}
                             {% endif %}
                         {% endif %}
                     </td>
+                    {% endwith %}
                 </tr>
             </table>
 
