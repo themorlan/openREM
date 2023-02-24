@@ -16,7 +16,7 @@ This study
 	Institution:		{{ equipment.institution_name }}
 	Display name:		{{ study.generalequipmentmoduleattr_set.get.unique_equipment_name.display_name }}
 	Accession number:	{{ study.accession_number }}
-	Peak skin dose:		{{ psd_data.peak_skin_dose|floatformat:1 }}
+	Calculated peak skin dose to openSkin phantom (Gy):	{{ psd_data.peak_skin_dose|floatformat:1 }}
 	OpenREM link:		{{ server_url }}/openrem/rf/{{ study.pk }}/
 {% endwith %}{% for record in accumxraydose_set_all_planes %}{% with accumprojection=record.accumintegratedprojradiogdose_set.get %}
 	Total DAP, {{ record.acquisition_plane.code_meaning }} (cGy.cm2):	{{ accumprojection.convert_gym2_to_cgycm2|floatformat:1 }}{% if accumprojection.convert_gym2_to_cgycm2 >= alert_levels.alert_total_dap_rf %}	(This is above the alert level of {{ alert_levels.alert_total_dap_rf|floatformat:1 }}){% endif %}
@@ -30,7 +30,7 @@ Studies from the past {{ alert_levels.accum_dose_delta_weeks }} weeks for this p
 {% endwith %}{% endwith %}
 
 All studies for this patient ID from the past {{ alert_levels.accum_dose_delta_weeks }} weeks
-	Date		Time	Accession number	PSD (Gy)	OpenREM link{% for each_study in studies_in_week_delta %}{% with psd_data=each_study.skindosemapresults_set.get %}
+	Date		Time	Accession number	openSkin PSD (Gy)	OpenREM link{% for each_study in studies_in_week_delta %}{% with psd_data=each_study.skindosemapresults_set.get %}
 	{{ each_study.study_date|date:"d/m/y" }}	{{ each_study.study_time|date:"H:i" }}	{{ each_study.accession_number }}			{{ psd_data.peak_skin_dose|floatformat:1 }}	{{ server_url }}/openrem/rf/{{ each_study.pk }}/{% if each_study.pk == study.pk %} (This study){% endif %}{% endwith %}{% endfor %}
 {% endif %}
 {% endwith %}{% endwith %}
