@@ -5,6 +5,8 @@ OpenREM version history
 
 1.0.0b1 (2022-xx-xx)
 --------------------
+* :issue:`971`  Imports: fixing NM image index error
+* :issue:`970`  Emails: fixed formatting of high fluoro dose alert emails and included peak skin dose for each study in time delta
 * :issue:`967`  Imports: made total DLP optional for Philips CT imports
 * :issue:`965`  SkinDose: fixed bug where a zero study dap causes a divide by zero error
 * :issue:`964`  Tasks: restricted default task history to 2000 stored entries; enabled admin users to configure this value
@@ -106,6 +108,7 @@ OpenREM version history
 * :issue:`816`  Interface: fixed password change error
 * :issue:`815`  Interface: fixed patient name filtering
 * :issue:`814`  Deployment: automated deployment to dev.openrem.org and testing.openrem.org reintroduced
+* :issue:`812`  DICOM Networking: separated abort from timeout in move request failure message
 * :issue:`808`  Imports: caters for illegal use of mGy units in RDSR for dose at RP values
 * :issue:`807`  Exports: fixed errors in PHE fluoro export when values are None
 * :issue:`805`  DICOM Networking: fix errors on "association release" and "move complete"

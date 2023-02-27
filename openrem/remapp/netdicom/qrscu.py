@@ -1,4 +1,3 @@
-# This Python file uses the following encoding: utf-8
 #!/usr/bin/python
 
 """
@@ -37,6 +36,7 @@ from pynetdicom.sop_class import (
     StudyRootQueryRetrieveInformationModelFind,
     StudyRootQueryRetrieveInformationModelMove,
 )
+from pynetdicom.status import QR_FIND_SERVICE_CLASS_STATUS, QR_MOVE_SERVICE_CLASS_STATUS
 
 from ..templatetags.remappduration import naturalduration
 from ..tools.dcmdatetime import get_time, make_dcm_date_range, make_dcm_time_range
@@ -946,6 +946,22 @@ def _get_responses(ae, remote, assoc, query, query_details):
     sys.exit()
 
 
+def _failure_statuses(query, status, query_id_8, level_query_id):
+    try:
+        result_type = QR_FIND_SERVICE_CLASS_STATUS[status][0]
+        result_status = QR_FIND_SERVICE_CLASS_STATUS[status][1]
+    except KeyError:
+        result_type = "Unknown"
+        result_status = "Unknown status"
+    logger.error(
+        f"{query_id_8}/{level_query_id} Result: {result_type} (0x{status:04x}) - {result_status} "
+    )
+    query.errors = _(
+        f"{result_type} (0x{status:04x}) - {result_status}. See logs for details."
+    )
+    query.save()
+
+
 def _query_images(
     ae,
     remote,
@@ -1053,6 +1069,10 @@ def _query_images(
                     )
                     imagesrsp.instance_number = None  # integer so can't be ''
                 imagesrsp.save()
+            else:
+                _failure_statuses(
+                    query, status.Status, query_id_8, image_query_id.hex[:8]
+                )
         else:
             logger.info(
                 f"{query_id_8}/{image_query_id.hex[:8]} Connection timed out, was aborted or received invalid"
@@ -1167,6 +1187,10 @@ def _query_series(ae, remote, assoc, d2, studyrsp, query):
                     f"Series description {seriesrsp.series_description}"
                 )
                 seriesrsp.save()
+            else:
+                _failure_statuses(
+                    query, status.Status, query_id_8, series_query_id.hex[:8]
+                )
         else:
             logger.info(
                 f"{query_id_8}/{series_query_id.hex[:8]} Connection timed out, was aborted or received "
@@ -1279,12 +1303,16 @@ def _query_study(ae, remote, assoc, d, query, study_query_id):
 
                 rsp.modality = None  # Used later
                 rsp.save()
-
+            else:
+                _failure_statuses(
+                    query, status.Status, query_id_8, study_query_id.hex[:8]
+                )
         else:
-            logger.info(
-                f"{query_id_8}/{study_query_id.hex[:8]} Connection timed out, was aborted or received "
-                f"invalid response"
-            )
+            if assoc.is_aborted():
+                status_msg = "Connection was aborted - check remote server logs."
+            else:
+                status_msg = "Connection timed out or received an invalid response. Check remote server logs"
+            logger.error(f"{query_id_8}/{study_query_id.hex[:8]} {status_msg} ")
             query.stage = _(
                 "Connection timed out, was aborted or received invalid response"
             )
@@ -1962,6 +1990,12 @@ def qrscu(
                     duplicates_removed=study_numbers["duplicates_removed"]
                 )
             )
+        if query.errors:
+            query.stage += _(
+                "<br>The following errors were received: {errors}".format(
+                    errors=query.errors
+                )
+            )
         query.save()
         stage_text = query.stage.replace("<br>", "\n -- ")
         logger.info(f"{query_id_8} {stage_text}")
@@ -2023,43 +2057,17 @@ def _move_req(my_ae, assoc, d, study_no, series_no, query):
                 status_msg = "All matches returned."
             else:
                 if status.Status == 0xFE00:
-                    status.msg = "Sub-operations terminated due to Cancel indication."
-                elif status.Status == 0x0122:
-                    status_msg = "SOP class not supported."
-                elif status.Status == 0x0124:
-                    status_msg = "Not authorised."
-                elif status.Status == 0x0210:
-                    status_msg = "Duplicate invocation."
-                elif status.Status == 0x0211:
-                    status_msg = "Unrecognised operation."
-                elif status.Status == 0x0212:
-                    status_msg = "Mistyped argument."
-                elif status.Status == 0xA701:
-                    status_msg = (
-                        "Out of resources: unable to calculate number of matches."
-                    )
-                elif status.Status == 0xA702:
-                    status_msg = "Out of resources: unable to perform sub-operations."
-                elif status.Status == 0xA801:
-                    status_msg = "Move destination unknown."
-                elif status.Status == 0xA900:
-                    status_msg = "Identifier does not match SOP class."
-                elif status.Status == 0xAA00:
-                    status_msg = (
-                        "None of the frames requested were found in the SOP instance."
-                    )
-                elif status.Status == 0xAA01:
-                    status_msg = "Unable to create new object for this SOP class."
-                elif status.Status == 0xAA02:
-                    status_msg = "Unable to extract frames."
-                elif status.Status == 0xAA03:
-                    status_msg = "Time-based request received for a non-time-based original SOP Instance."
-                elif status.Status == 0xAA04:
-                    status_msg = "Invalid request."
-                elif 0xC000 <= status.Status <= 0xCFFF:
-                    status_msg = f"Unable to process, code 0x{status.Status:04x}."
+                    status.msg = "Failure 0xFE00 - Sub-operations terminated due to Cancel indication."
                 else:
-                    status_msg = f"0x{status.Status:04x}"
+                    try:
+                        status_type = QR_MOVE_SERVICE_CLASS_STATUS[status.Status][0]
+                        status_message = QR_MOVE_SERVICE_CLASS_STATUS[status.Status][1]
+                    except KeyError:
+                        status_type = "Unknown"
+                        status_message = "Unknown status"
+                    status_msg = (
+                        f"{status_type} (0x{status.Status:04x}) - {status_message}."
+                    )
                 msg = (
                     f"Move of study {study_no}, series {series_no}: {status_msg} "
                     f"Sub-ops completed: {completed_sub_ops}, failed: {failed_sub_ops}, "
@@ -2077,10 +2085,10 @@ def _move_req(my_ae, assoc, d, study_no, series_no, query):
             query.move_summary = msg
             query.save()
         else:
-            status_msg = (
-                "Connection timed out, was aborted without reason given or received an invalid response. "
-                "Check remote server logs"
-            )
+            if assoc.acse.is_aborted():
+                status_msg = "Connection was aborted - check remote server logs."
+            else:
+                status_msg = "Connection timed out or received an invalid response. Check remote server logs"
             msg = (
                 f"Move of study {study_no}, series {series_no}: {status_msg} "
                 f"Cumulative sub-ops completed: {query.move_completed_sub_ops}, "

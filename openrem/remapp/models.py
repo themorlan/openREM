@@ -407,6 +407,7 @@ class DicomQuery(models.Model):
     failed = models.BooleanField(default=False)
     message = models.TextField(blank=True, null=True)
     stage = models.TextField(blank=True, null=True)
+    errors = models.TextField(blank=True, null=True)
     qr_scp_fk = models.ForeignKey(
         DicomRemoteQR, blank=True, null=True, on_delete=models.CASCADE
     )
