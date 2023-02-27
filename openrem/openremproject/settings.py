@@ -134,7 +134,7 @@ TASK_QUEUE_ROOT = BASE_DIR
 
 HUEY_CLASS = "huey.PriorityRedisHuey"
 HUEY_WORKER_TYPE = "process"
-HUEY_NUMBER_OF_WORKERS = multiprocessing.cpu_count()
+HUEY_NUMBER_OF_WORKERS = int(os.environ.get("HUEY_NUMBER_OF_WORKERS", multiprocessing.cpu_count()))
 
 HUEY = {
     "huey_class": HUEY_CLASS,
