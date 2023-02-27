@@ -44,5 +44,5 @@ RUN pip install -e .
 WORKDIR $APP_HOME
 
 # run entrypoint.sh
-ENTRYPOINT ["/home/app/openrem/entrypoint.prod.sh"]
-CMD ["/usr/bin/supervisord", "-c", "/home/app/openrem/supervisord.conf"]
+ENTRYPOINT ["/home/app/openrem/docker/entrypoint.prod.sh"]
+CMD ["/usr/bin/supervisord", "-c", "/home/app/openrem/docker/supervisord.conf"]
