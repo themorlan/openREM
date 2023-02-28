@@ -38,6 +38,7 @@ import operator
 from datetime import timedelta
 import numpy as np
 from builtins import map  # pylint: disable=redefined-builtin
+from decimal import Decimal
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -64,6 +65,7 @@ from .forms import (
     CTChartOptionsDisplayFormIncStandard,
     DXChartOptionsDisplayForm,
     DXChartOptionsDisplayFormIncStandard,
+    DiagnosticReferenceLevelsFormSet,
     DicomDeleteSettingsForm,
     GeneralChartOptionsDisplayForm,
     HomepageOptionsForm,
@@ -3339,6 +3341,21 @@ class StandardNameUpdateCore(UpdateView):
             # All StandardNames entries for the required modality
             std_names = StandardNames.objects.filter(modality=self.object.modality)
 
+            formset = DiagnosticReferenceLevelsFormSet(self.request.POST, prefix="drl_formset")
+
+            if formset.is_valid():
+                drls = formset.save(commit=False)
+
+                for drl in drls:
+                    drl.standard_name = self.object
+                    drl.save()
+
+                for drl in formset.deleted_objects:
+                    drl.delete()
+            else:
+                print("non-valid")
+                print(formset.errors)
+
             # Obtain a list of relevant studies
             studies = GeneralStudyModuleAttr.objects
             if self.object.modality == "CT":
@@ -3576,6 +3593,8 @@ class StandardNameUpdateCT(StandardNameUpdateCore):  # pylint: disable=unused-va
         for group in self.request.user.groups.all():
             admin[group.name] = True
         context["admin"] = admin
+        drl_formset = DiagnosticReferenceLevelsFormSet(prefix="drl_formset")
+        context["drl_formset"] = drl_formset
         return context
 
 

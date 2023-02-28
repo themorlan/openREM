@@ -49,6 +49,31 @@
                                             <script type="text/javascript" src="{% url 'jsi18n' %}"></script>
                                         </table>
 
+                                        <div id="drl-forms" class="text-center">
+                                            {{ drl_formset.management_form }}
+                                            <table class="table table-responsive text-center">
+                                                <thead>
+                                                    <th class="text-center">Range</th>
+                                                    <th class="text-center">DRL</th>
+                                                    <th class="text-center">Delete?</th>
+                                                </thead>
+                                                <tbody>
+                                                    {% for drl_form in drl_formset %}
+                                                        <tr class="drl-form">
+                                                            {{ drl_form.id }}
+                                                            <td>{{ drl_form.lower_bound }} <span class="glyphicon glyphicon-minus" aria-hidden="true"></span> {{ drl_form.upper_bound }}</td>
+                                                            <td>{{ drl_form.diagnostic_reference_level }}</td>
+                                                            {% if drl_formset.can_delete %}
+                                                                <td>{{ drl_form.DELETE }}</td>
+                                                            {% endif %}
+                                                        </tr>
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
+                                            
+                                            <button class="btn btn-primary" id="add-form" type="button">Add DRL</button>
+                                        </div>
+
                                         <input class="btn btn-primary" name="submit" type="submit" id="submit-button" />
                                         <input type="button" class="btn btn-danger" value="Cancel" id="cancel-button"
                                                onclick="window.location = '{% url 'standard_names_view' %}';"/>
@@ -75,6 +100,31 @@
                 return;
             })
         });
+
+
+        let drlForm = document.querySelectorAll(".drl-form")
+        let container = document.querySelector("#drl-forms")
+        let addButton = document.querySelector("#add-form")
+        let totalForms = document.querySelector("#id_drl_formset-TOTAL_FORMS")
+
+        let formNum = drlForm.length-1
+        addButton.addEventListener('click', addForm)
+
+        function addForm(e){
+            e.preventDefault()
+
+            let referenceForm = drlForm[drlForm.length - 1];
+            let newForm = referenceForm.cloneNode(true)
+            let formRegex = RegExp(`drl_formset-(\\d){1}-`,'g')
+
+            formNum++
+            newForm.innerHTML = newForm.innerHTML.replace(formRegex, `drl_formset-${formNum}-`)
+            newForm.querySelectorAll("input").forEach((formInput) => formInput.setAttribute("value", ""));
+            referenceForm.after(newForm)
+            
+            totalForms.setAttribute('value', `${formNum+1}`)
+        }
+    
     </script>
 
 {% endblock %}
