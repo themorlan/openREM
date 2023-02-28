@@ -494,7 +494,7 @@ Edit the Orthanc Lua configuration options:
 
 .. code-block:: console
 
-    $ nano /var/dose/orthanc/openrem_orthanc_config.lua
+    $ nano /var/dose/orthanc/openrem_orthanc_config_linux.lua
 
 Set ``use_physics_filtering`` to true if you want Orthanc to keep physics test studies, and have it put them in the
 ``/var/dose/orthanc/physics/`` folder. Set it to ``false`` to disable this feature. Add names or IDs to
