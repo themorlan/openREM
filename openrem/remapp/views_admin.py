@@ -128,6 +128,7 @@ from openrem.remapp.tools.background import (
 )
 from .tools.send_high_dose_alert_emails import send_rf_high_dose_alert_email
 from .version import __version__, __docs_version__
+from typing import Union
 
 
 os.environ["DJANGO_SETTINGS_MODULE"] = "openremproject.settings"
@@ -2263,7 +2264,7 @@ def display_tasks(request):
     return render(request, template, {"admin": admin})
 
 
-def tasks(request, stage: str | None = None):
+def tasks(request, stage: Union[str, None] = None):
     """AJAX function to get current task details."""
     if request.is_ajax() and request.user.groups.filter(name="admingroup"):
         active_tasks = []
