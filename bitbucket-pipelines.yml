@@ -66,6 +66,8 @@ definitions:
             sed -i "/'PORT':/c\        'PORT': '5432'," openrem/openremproject/local_settings.py
           - >-
             sed -i "/^MEDIA_ROOT/c\MEDIA_ROOT = ''" openrem/openremproject/local_settings.py
+          - >-
+            sed -i "/^LOG_ROOT/c\LOG_ROOT = ''" openrem/openremproject/local_settings.py
           - mv openrem/openremproject/wsgi.py{.example,}
           - pip install -e .
           - pip install coverage
@@ -102,6 +104,8 @@ definitions:
             sed -i "/'PORT':/c\        'PORT': '5432'," openrem/openremproject/local_settings.py
           - >-
             sed -i "/^MEDIA_ROOT/c\MEDIA_ROOT = ''" openrem/openremproject/local_settings.py
+          - >-
+            sed -i "/^LOG_ROOT/c\LOG_ROOT = ''" openrem/openremproject/local_settings.py
           - mv openrem/openremproject/wsgi.py{.example,}
           - pip install -e .
           - pip install coverage
@@ -137,6 +141,8 @@ definitions:
             sed -i "/'PORT':/c\        'PORT': '5432'," openrem/openremproject/local_settings.py
           - >-
             sed -i "/^MEDIA_ROOT/c\MEDIA_ROOT = ''" openrem/openremproject/local_settings.py
+          - >-
+            sed -i "/^LOG_ROOT/c\LOG_ROOT = ''" openrem/openremproject/local_settings.py
           - mv openrem/openremproject/wsgi.py{.example,}
           - pip install -e .
           - pip install coverage
@@ -174,6 +180,8 @@ definitions:
             sed -i "/'PORT':/c\        'PORT': '5432'," openrem/openremproject/local_settings.py
           - >-
             sed -i "/^MEDIA_ROOT/c\MEDIA_ROOT = ''" openrem/openremproject/local_settings.py
+          - >-
+            sed -i "/^LOG_ROOT/c\LOG_ROOT = ''" openrem/openremproject/local_settings.py
           - mv openrem/openremproject/wsgi.py{.example,}
           - pip install -e .
           - pip install coverage
@@ -210,6 +218,8 @@ definitions:
             sed -i "/'PORT':/c\        'PORT': '5432'," openrem/openremproject/local_settings.py
           - >-
             sed -i "/^MEDIA_ROOT/c\MEDIA_ROOT = ''" openrem/openremproject/local_settings.py
+          - >-
+            sed -i "/^LOG_ROOT/c\LOG_ROOT = ''" openrem/openremproject/local_settings.py
           - mv openrem/openremproject/wsgi.py{.example,}
           - pip install -e .
           - pip install coverage

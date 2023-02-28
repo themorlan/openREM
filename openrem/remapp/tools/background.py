@@ -36,10 +36,8 @@ import signal
 import sys
 import uuid
 import random
-from multiprocessing import Process
-
+from typing import List
 import django
-from django import db
 from django.db.models import Q
 from django.db import transaction
 from django.db.utils import OperationalError
@@ -56,6 +54,21 @@ django.setup()
 
 from remapp.models import BackgroundTask, DicomQuery
 
+from huey.contrib.djhuey import db_task # pylint: disable=wrong-import-position
+from huey.api import Result # pylint: disable=wrong-import-position
+from huey.contrib.djhuey import HUEY as huey # pylint: disable=wrong-import-position
+
+
+class QueuedTask:
+    task_id: str
+    task_type: str
+    queue_position: int
+
+    def __init__(self, task_id, task_type, queue_position):
+        self.task_id = task_id
+        self.task_type = task_type
+        self.queue_position = queue_position
+
 
 def _sleep_for_linear_increasing_time(x):
     sleep_time = (
@@ -64,7 +77,8 @@ def _sleep_for_linear_increasing_time(x):
     time.sleep(sleep_time)
 
 
-def run_as_task(func, task_type, num_proc, num_of_task_type, taskuuid, *args, **kwargs):
+@db_task(context=True)
+def run_as_task(func, task_type, num_proc, num_of_task_type, *args, **kwargs):
     """
     Runs func as a task. (Which means it runs normally, but a BackgroundTask
     object is created and hence the execution as well as occurred errors are
@@ -75,28 +89,25 @@ def run_as_task(func, task_type, num_proc, num_of_task_type, taskuuid, *args, **
     for which we would like to document that it was executed. (Has some not so nice
     parts, especially that user can terminate a bunch of sequentially running tasks)
 
-    Note that waiting here if it is ok to start is actually quite ugly, since running a lot
-    of processes with conditions will use a lot of RAM without any use. This however is the
-    simplest possible fix for making the run_in_background_with_limits non-blocking, which
-    is a requirement for the docker import. A nice update would be to either have 1 process
-    managing the execution of the other processes, or at least do this based on signalling
-    from the exiting processes instead of polling.
-
-    This can sometimes lead to errors with sqlite, see (tasks keep hanging then)
-    https://stackoverflow.com/questions/28958580/django-sqlite-database-is-locked
+    Because this method is wrapped as a Huey task, with context set to True,
+    there will be a keyword argument with key "task" where the value is the `Task` instance itself.
+    This is used to have the same UUID inside the task but also from outside the task to
+    get e.g. its progress via the `BackgroundTask`
 
     :param func: The function to run
     :param task_type: A string documenting what kind of task this is
     :param num_proc: The maximum number of processes that should be executing
     :param num_of_task_type: The maximum number of processes for multiple tasks type which are allowed to
         run at the same time
-    :param taskuuid: An uuid which will be used as uuid of the BackgroundTask object. If None, will generate one itself
     :args: Args to func
     :kwargs: Args to func
     :return: The created BackgroundTask object
     """
-    if taskuuid is None:
-        taskuuid = str(uuid.uuid4())
+    taskuuid = str(uuid.uuid4())
+
+    if "task" in kwargs:
+        taskuuid = kwargs["task"].id
+        del kwargs["task"]
 
     b = BackgroundTask.objects.create(
         uuid=taskuuid,
@@ -154,18 +165,19 @@ def run_as_task(func, task_type, num_proc, num_of_task_type, taskuuid, *args, **
 
 def run_in_background_with_limits(
     func, task_type, num_proc, num_of_task_type, *args, **kwargs
-):
+) -> Result:
     """
-    Runs fun as background Process.
+    Runs func as background Process.
 
-    This method will create a BackgroundTask object, which can be obtained
+    This method will create a new task which will be scheduled to be run by the Huey consumer
+    with the specified priority (defaults to 0). The priority can be passed via a keyword argument
+
+    Internally the Huey consumer spawns a new process, which then creates
+    a BackgroundTask object. This can be obtained
     via get_current_task() inside the calling process.
-    This function will not return until the BackgroundTask object exists in the database.
-    Potentially it may only return after the process has already exited.
     Note that BackgroundTask objects will not be deleted onto completion - instead the
     complete flag will be set to True.
-    This function cannot be used with Django Tests, unless they use TransactionTestCase
-    instead of TestCase (which is far slower, so use with caution).
+
     num_proc and num_of_task_type can be used to give conditions on the start.
 
     :param func: The function to run. Note that you should set the status of the task yourself
@@ -183,34 +195,10 @@ def run_in_background_with_limits(
     :param kwargs:  Keywords arguments. Passed to func.
     :returns: The BackgroundTask object.
     """
-    taskuuid = str(uuid.uuid4())
-
-    # On linux connection gets copied which leads to problems.
-    # Close them so a new one is created for each process
-    db.connections.close_all()
-
-    p = Process(
-        target=run_as_task,
-        args=(func, task_type, num_proc, num_of_task_type, taskuuid, *args),
-        kwargs=kwargs,
-    )
-
-    p.start()
-    while True:  # Wait until the Task object exists or process returns
-        if (
-            p.exitcode is None
-            and BackgroundTask.objects.filter(
-                Q(proc_id__exact=p.pid) & Q(complete__exact=False)
-            ).count()
-            < 1
-        ):
-            time.sleep(0.2)
-        else:
-            break
-    return _get_task_via_uuid(taskuuid)
+    return run_as_task(func, task_type, num_proc, num_of_task_type, *args, **kwargs)
 
 
-def run_in_background(func, task_type, *args, **kwargs):
+def run_in_background(func, task_type, *args, **kwargs) -> Result:
     """
     Syntactic sugar around run_in_background_with_limits.
 
@@ -225,6 +213,11 @@ def terminate_background(task: BackgroundTask):
     """
     Terminate a background task by force. Sets complete=True on the task object.
     """
+
+    # Task may have already been completed
+    if task.complete:
+        return
+
     task.completed_successfully = False
     task.complete = True
     task.error = "Forcefully aborted"
@@ -245,16 +238,11 @@ def terminate_background(task: BackgroundTask):
             pass
 
 
-def wait_task(task: BackgroundTask):
+def wait_task(task: Result):
     """
     Wait until the task has completed
     """
-    while True:
-        task.refresh_from_db()
-        if task.complete:
-            return
-        qs = BackgroundTask.objects.filter(complete__exact=False).count()
-        _sleep_for_linear_increasing_time(qs)
+    return task(blocking=True)
 
 
 def _get_task_via_uuid(task_uuid):
@@ -337,3 +325,37 @@ def record_task_related_query(study_instance_uid):
 
             for query in queries:
                 query.related_imports.add(b)
+
+
+def get_queued_tasks(task_type=None) -> List[QueuedTask]:
+    """
+    Returns all task which are currently waiting for execution
+
+    :param task_type: Optionally filter by task type
+    :return: List of queued tasks
+    """
+    queued_tasks = []
+    for idx, task in enumerate(huey.pending()):
+        try:
+            current_task_type = task.args[1]
+
+            if task_type != None and task_type not in current_task_type:
+                continue
+
+            if huey.is_revoked(task):
+                continue
+
+            queued_tasks.append(QueuedTask(task.id, current_task_type, idx + 1))
+        except (AttributeError, IndexError):
+            pass
+
+    return queued_tasks
+
+
+def remove_task_from_queue(task_id: str):
+    """
+    Removes task from queue.
+
+    :param task_id: task id of the task in question
+    """
+    huey.revoke_by_id(task_id)

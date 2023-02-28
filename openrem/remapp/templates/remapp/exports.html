@@ -26,6 +26,26 @@
             function get_current_exports(json) {
                 $.ajax(
                     {
+                        url: "updatequeue/",
+                        type: "POST",
+                        success: function (data) {
+                            $('#queued').html(data);
+                            setTimeout(function () {
+                                get_current_exports();
+                            }, 1500)
+                        }
+                    }
+                )
+            }
+        )
+    </script>
+    <div id="queued"></div>
+
+    <script>
+        $(document).ready(
+            function get_current_exports(json) {
+                $.ajax(
+                    {
                         url: "{%  url 'update_active' %}",
                         type: "POST",
                         success: function (data) {

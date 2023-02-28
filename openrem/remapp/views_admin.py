@@ -120,9 +120,15 @@ from .tools.populate_summary import (
     populate_summary_dx,
     populate_summary_rf,
 )
-from openrem.remapp.tools.background import run_in_background, terminate_background
+from openrem.remapp.tools.background import (
+    run_in_background,
+    terminate_background,
+    get_queued_tasks,
+    remove_task_from_queue,
+)
 from .tools.send_high_dose_alert_emails import send_rf_high_dose_alert_email
 from .version import __version__, __docs_version__
+from typing import Union
 
 
 os.environ["DJANGO_SETTINGS_MODULE"] = "openremproject.settings"
@@ -2258,7 +2264,7 @@ def display_tasks(request):
     return render(request, template, {"admin": admin})
 
 
-def tasks(request, stage=None):
+def tasks(request, stage: Union[str, None] = None):
     """AJAX function to get current task details."""
     if request.is_ajax() and request.user.groups.filter(name="admingroup"):
         active_tasks = []
@@ -2279,7 +2285,14 @@ def tasks(request, stage=None):
             else:
                 older_tasks.append(task)
 
-        if "active" in stage:
+        tinfo = {}
+
+        if stage == None:
+            pass
+        elif "queued" in stage:
+            queued_tasks = get_queued_tasks()
+            tinfo = {"tasks": queued_tasks, "type": "queued"}
+        elif "active" in stage:
             tinfo = {"tasks": active_tasks, "type": "active"}
         elif "recent" in stage:
             tinfo = {"tasks": recent_tasks, "type": "recent"}
@@ -2323,6 +2336,17 @@ def task_abort(request, task_id=None):
             "Task {0} terminated".format(task_id),
         )
 
+    return redirect(reverse_lazy("task_admin"))
+
+
+def task_remove(request, task_id=None):
+    """Function to remove task from queue"""
+    if task_id and request.user.groups.filter(name="admingroup"):
+        remove_task_from_queue(task_id)
+        messages.success(
+            request,
+            "Task {0} removed from queue".format(task_id),
+        )
     return redirect(reverse_lazy("task_admin"))
 
 

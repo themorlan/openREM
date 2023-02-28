@@ -41,7 +41,12 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from django.urls import reverse_lazy
 import remapp
-from openrem.remapp.tools.background import run_in_background, terminate_background
+from openrem.remapp.tools.background import ( # pylint: disable=wrong-import-position
+    run_in_background,
+    terminate_background,
+    get_queued_tasks,
+    remove_task_from_queue,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -112,7 +117,7 @@ def ctcsv1(request, name=None, pat_id=None):
             pid["include_pat_id"],
             request.user.id,
         )
-        logger.debug(f"Export CT to CSV job is {job}")
+        logger.debug(f"Export CT to CSV job is {job.id}")
     return redirect(reverse_lazy("export"))
 
 
@@ -150,7 +155,7 @@ def ctxlsx1(request, name=None, pat_id=None):
             pid["include_pat_id"],
             request.user.id,
         )
-        logger.debug("Export CT to XLSX job is {0}".format(job.uuid))
+        logger.debug("Export CT to XLSX job is {0}".format(job.id))
 
     return redirect(reverse_lazy("export"))
 
@@ -168,7 +173,7 @@ def ct_xlsx_phe2019(request):
 
     if request.user.groups.filter(name="exportgroup"):
         job = run_in_background(ct_phe_2019, "export_ct", request.GET, request.user.id)
-        logger.debug("Export CT to XLSX job is {0}".format(job.uuid))
+        logger.debug("Export CT to XLSX job is {0}".format(job.id))
     return redirect(reverse_lazy("export"))
 
 
@@ -198,7 +203,7 @@ def nmcsv1(request, name=None, pat_id=None):
             pid["include_pat_id"],
             request.user.id,
         )
-        logger.debug(f"Export NM to CSV job is {job.uuid}")
+        logger.debug(f"Export NM to CSV job is {job.id}")
 
     return redirect(reverse_lazy("export"))
 
@@ -229,7 +234,7 @@ def nmxlsx1(request, name=None, pat_id=None):
             pid["include_pat_id"],
             request.user.id,
         )
-        logger.debug(f"Exprt NM to Excel job is {job.uuid}")
+        logger.debug(f"Exprt NM to Excel job is {job.id}")
 
     return redirect(reverse_lazy("export"))
 
@@ -260,7 +265,7 @@ def dxcsv1(request, name=None, pat_id=None):
             pid["include_pat_id"],
             request.user.id,
         )
-        logger.debug("Export DX to CSV job is {0}".format(job))
+        logger.debug("Export DX to CSV job is {0}".format(job.id))
 
     return redirect(reverse_lazy("export"))
 
@@ -291,7 +296,7 @@ def dxxlsx1(request, name=None, pat_id=None):
             pid["include_pat_id"],
             request.user.id,
         )
-        logger.debug("Export DX to XLSX job is {0}".format(job.uuid))
+        logger.debug("Export DX to XLSX job is {0}".format(job.id))
 
     return redirect(reverse_lazy("export"))
 
@@ -345,7 +350,7 @@ def dx_xlsx_phe2019(request, export_type=None):
                     projection=True,
                 )
                 logger.debug(
-                    "Export PHE 2019 DX survey format job is {0}".format(job.uuid)
+                    "Export PHE 2019 DX survey format job is {0}".format(job.id)
                 )
                 return redirect(reverse_lazy("export"))
             elif "exam" in export_type:
@@ -380,7 +385,7 @@ def dx_xlsx_phe2019(request, export_type=None):
                     bespoke=bespoke,
                 )
                 logger.debug(
-                    "Export PHE 2019 DX survey format job is {0}".format(job.uuid)
+                    "Export PHE 2019 DX survey format job is {0}".format(job.id)
                 )
                 return redirect(reverse_lazy("export"))
         else:
@@ -426,7 +431,7 @@ def flcsv1(request, name=None, pat_id=None):
             pid["include_pat_id"],
             request.user.id,
         )
-        logger.debug("Export Fluoro to CSV job is {0}".format(job.uuid))
+        logger.debug("Export Fluoro to CSV job is {0}".format(job.id))
 
     return redirect(reverse_lazy("export"))
 
@@ -457,7 +462,7 @@ def rfxlsx1(request, name=None, pat_id=None):
             pid["include_pat_id"],
             request.user.id,
         )
-        logger.debug("Export Fluoro to XLSX job is {0}".format(job.uuid))
+        logger.debug("Export Fluoro to XLSX job is {0}".format(job.id))
 
     return redirect(reverse_lazy("export"))
 
@@ -478,7 +483,7 @@ def rfopenskin(request, pk):
 
     if request.user.groups.filter(name="exportgroup"):
         job = run_in_background(rfopenskin, "export_rf", export.pk)
-        logger.debug("Export Fluoro to openSkin CSV job is {0}".format(job.uuid))
+        logger.debug("Export Fluoro to openSkin CSV job is {0}".format(job.id))
 
     return redirect(reverse_lazy("export"))
 
@@ -498,7 +503,7 @@ def rf_xlsx_phe2019(request):
     if request.user.groups.filter(name="exportgroup"):
         job = run_in_background(rf_phe_2019, "export_rf", request.GET, request.user.id)
         logger.debug(
-            "Export PHE 2019 IR/fluoro survey format job is {0}.".format(job.uuid)
+            "Export PHE 2019 IR/fluoro survey format job is {0}.".format(job.id)
         )
         return redirect(reverse_lazy("export"))
     else:
@@ -535,7 +540,7 @@ def mgcsv1(request, name=None, pat_id=None):
             pid["include_pat_id"],
             request.user.id,
         )
-        logger.debug("Export MG to CSV job is {0}".format(job.uuid))
+        logger.debug("Export MG to CSV job is {0}".format(job.id))
 
     return redirect(reverse_lazy("export"))
 
@@ -566,7 +571,7 @@ def mgxlsx1(request, name=None, pat_id=None):
             user=request.user.id,
             xlsx=True,
         )
-        logger.debug("Export MG to xlsx job is {0}".format(job.uuid))
+        logger.debug("Export MG to xlsx job is {0}".format(job.id))
 
     return redirect(reverse_lazy("export"))
 
@@ -587,7 +592,7 @@ def mgnhsbsp(request):
         job = run_in_background(
             mg_csv_nhsbsp, "export_mg", request.GET, request.user.id
         )
-        logger.debug("Export MG to CSV NHSBSP job is {0}".format(job.uuid))
+        logger.debug("Export MG to CSV NHSBSP job is {0}".format(job.id))
 
     return redirect(reverse_lazy("export"))
 
@@ -751,6 +756,41 @@ def export_abort(request, pk):
         )
 
     return HttpResponseRedirect(reverse_lazy("export"))
+
+
+@login_required
+def export_remove(request, task_id=None):
+    """
+    Function to remove export task from queue
+
+    :param request: Contains the task primary key
+    :param task_id: UUID of task in question
+    :type request: POST
+    """
+    from django.http import HttpResponseRedirect
+
+    if task_id and request.user.groups.filter(name="exportgroup"):
+        remove_task_from_queue(task_id)
+        logger.info("Export task {0} removed from queue".format(task_id))
+
+    return HttpResponseRedirect(reverse_lazy("export"))
+
+
+@csrf_exempt
+@login_required
+def update_queue(request):
+    """
+    AJAX function to return queued exports
+
+    :param request: Request object
+    :return: HTML table of active exports
+    """
+    template = "remapp/exports-queue.html"
+    if request.is_ajax():
+        queued_export_tasks = get_queued_tasks(task_type="export")
+        return render(request, template, {"queued": queued_export_tasks})
+
+    return render(request, template)
 
 
 @csrf_exempt

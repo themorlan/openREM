@@ -30,3 +30,6 @@ docs/_build/html/*
 docs/_build/gettext/.doctrees/*
 docs/_static/*
 #openrem/locale/en/*
+
+# Task queue files
+*.db*

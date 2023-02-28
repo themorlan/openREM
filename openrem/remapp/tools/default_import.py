@@ -19,6 +19,7 @@ def default_import(
          should be allowed to run concurrently with this
     """
     import sys
+    import os
     from glob import glob
     from openrem.remapp.tools.background import (
         run_in_background_with_limits,
@@ -31,12 +32,14 @@ def default_import(
     tasks = []
     for arg in sys.argv[1:]:
         for filename in glob(arg):
+            filename = os.path.abspath(filename)
             b = run_in_background_with_limits(
                 func,
                 import_type,
                 max_other_prcocesses,
                 max_other_processes_of_type,
                 filename,
+                **{"priority": 10},
             )
             tasks.append(b)
 

@@ -19,7 +19,7 @@ ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
 RUN mkdir -p /usr/share/man/man1
-RUN apt-get update && apt-get -y dist-upgrade && apt install -y netcat dcmtk default-jre gettext \
+RUN apt-get update && apt-get -y dist-upgrade && apt install -y netcat dcmtk default-jre gettext supervisor \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/*
 
@@ -44,4 +44,5 @@ RUN pip install -e .
 WORKDIR $APP_HOME
 
 # run entrypoint.sh
-ENTRYPOINT ["/home/app/openrem/entrypoint.prod.sh"]
+ENTRYPOINT ["/home/app/openrem/docker/entrypoint.prod.sh"]
+CMD ["/usr/bin/supervisord", "-c", "/home/app/openrem/docker/supervisord.conf"]

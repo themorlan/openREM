@@ -27,3 +27,4 @@ logs
 .readthedocs.yml
 .git
 .idea
+*.db*

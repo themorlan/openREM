@@ -56,6 +56,22 @@ If these two lines are not there or are commented out (line starts with a ``#``)
     $ sudo apt install acl python3.10 python3.10-dev python3.10-distutils python3.10-venv python3-pip \
     postgresql nginx orthanc dcmtk default-jre zip gettext
 
+**Redis**
+
+Redis is used to temporarily store the background tasks.
+
+.. code-block:: console
+
+    $ sudo apt install lsb-release
+
+.. code-block:: console
+
+    $ curl -fsSL https://packages.redis.io/gpg | sudo gpg --dearmor -o /usr/share/keyrings/redis-archive-keyring.gpg
+    $ echo "deb [signed-by=/usr/share/keyrings/redis-archive-keyring.gpg] https://packages.redis.io/deb $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/redis.list
+    $ sudo apt-get update
+    $ sudo apt-get install redis
+
+
 Folders and permissions
 -----------------------
 
@@ -445,23 +461,52 @@ Copy the Gunicorn systemd service file into place:
         [Install]
         WantedBy=multi-user.target
 
+Copy the task queue consumer systemd service file into place:
+
+.. code-block:: console
+
+    $ cd /var/dose/veopenrem3/lib/python3.10/site-packages/openrem/
+    $ sudo cp sample-config/openrem-consumer.service /etc/systemd/system/openrem-consumer.service
+
+.. note::
+
+    Content of systemd file:
+
+    .. code-block:: bash
+
+        [Unit]
+        Description=Huey consumer for OpenREM
+
+        [Service]
+        Restart=on-failure
+        User=www-data
+        WorkingDirectory=/var/dose/veopenrem3/lib/python3.10/site-packages/openrem
+
+        ExecStart=/var/dose/veopenrem3/bin/python \
+            manage.py run_huey
+
+        [Install]
+        WantedBy=multi-user.target
+
 Load the new systemd configurations:
 
 .. code-block:: console
 
     $ sudo systemctl daemon-reload
 
-Set the new Gunicorn service to start on boot:
+Set the new Gunicorn and consumer services to start on boot:
 
 .. code-block:: console
 
     $ sudo systemctl enable openrem-gunicorn.service
+    $ sudo systemctl enable redis-server.service
+    $ sudo systemctl enable openrem-consumer.service
 
-Start the Gunicorn service, and restart the NGINX service:
+Start the Gunicorn and consumer services, and restart the NGINX service:
 
 .. code-block:: console
 
-    $ sudo -- sh -c 'systemctl start openrem-gunicorn.service && systemctl restart nginx.service'
+    $ sudo -- sh -c 'systemctl start openrem-gunicorn.service && systemctl start redis-server.service && systemctl start openrem-consumer.service && systemctl restart nginx.service'
 
 Test the webserver
 ------------------
@@ -494,7 +539,7 @@ Edit the Orthanc Lua configuration options:
 
 .. code-block:: console
 
-    $ nano /var/dose/orthanc/openrem_orthanc_config.lua
+    $ nano /var/dose/orthanc/openrem_orthanc_config_linux.lua
 
 Set ``use_physics_filtering`` to true if you want Orthanc to keep physics test studies, and have it put them in the
 ``/var/dose/orthanc/physics/`` folder. Set it to ``false`` to disable this feature. Add names or IDs to
