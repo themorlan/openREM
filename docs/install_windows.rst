@@ -10,6 +10,7 @@ This install is based on Windows Server 2022 using:
 * Database: PostgreSQL
 * DICOM Store SCP: Orthanc running on port 104
 * Webserver: Microsoft IIS running on port 80
+* WinSW to run background tasks as services
 * Notepad++ for editing files
 * Database files stored on D:
 * OpenREM files stored on E:
@@ -68,7 +69,7 @@ instead:
     C:\Users\openrem>D:
     D:\>mkdir database
     D:\>E:
-    E:\>mkdir log media pixelmed dcmtk 7-zip static venv orthanc\dicom orthanc\physics orthanc\storage
+    E:\>mkdir log media pixelmed dcmtk 7-zip static task_queue venv orthanc\dicom orthanc\physics orthanc\storage winsw
 
 Set permissions
 ---------------
@@ -92,7 +93,7 @@ Set permissions
 * Tick the ``Modify`` ``Allow`` to enable read and write permissions
 * Click ``OK`` twice to close the dialogues
 
-* Repeat for the ``E:\media`` folder
+* Repeat for the ``E:\media`` and ``E:\task_queue`` folders
 
 .. _windows_install_packages:
 
@@ -223,6 +224,15 @@ Download the 64-bit x64 exe file from https://www.7-zip.org/
 * Type, or click on the ``...`` to browse to ``E:\7-zip\``
 * ``Install``
 * ``Close``
+
+WinSW
+-----
+
+Download the 64-bit x64 exe file from https://github.com/winsw/winsw/releases/tag/v2.12.0
+
+* Open a new file browser at ``E:\winsw``
+* Drag the exe file to the ``winsw`` folder
+* Rename the exe file from ``WinSW-x64`` to ``WinSW``
 
 Notepad++
 ---------
@@ -359,7 +369,7 @@ in the settings file or elsewhere in the docs. For details on the final variable
     :ref:`ignore-device-obs-uid`.
 
 .. code-block:: python
-    :emphasize-lines: 4-6, 17-18,26-29,41,46,49,60-67,69
+    :emphasize-lines: 4-6, 19-20,28-31,43,48,51,62-69,71
 
     DATABASES = {
         'default': {
@@ -371,6 +381,8 @@ in the settings file or elsewhere in the docs. For details on the final variable
             'PORT': '',                              # Set to empty string for default. Not used with sqlite3.
         }
     }
+
+    TASK_QUEUE_ROOT = 'E:/task_queue/'
 
     MEDIA_ROOT = 'E:/media/'
 
@@ -603,6 +615,110 @@ Test the webserver
 
 Browse to http://localhost/ on the server, or browse to the servername in a browser on another machine, and you should
 be able to see the new OpenREM web service.
+
+Task queue
+==========
+
+.. admonition:: Running OpenREM on Windows 10 or Windows 11?
+
+    For non-server environments, where task executors don't need to be persistent across system restarts,
+    there is a shortcut for starting workers. You can start a single worker in a new console as follows:
+    
+    .. code-block:: console
+
+        C:\Users\openrem>E:
+        E:\>cd venv\Lib\site-packages\openrem
+        E:\venv\Lib\site-packages\openrem>e:\venv\Scripts\activate
+        (venv) E:\venv\Lib\site-packages\openrem>python manage.py run_huey
+
+    If you want more than one worker to run tasks in parallel,
+    you will need to repeat the previous steps for each additional worker in a new console.
+
+    You can stop a worker by pressing ``Ctrl`` + ``C`` in the appropriate console
+
+    If you cannot start a worker or you are getting error messages, please make sure that your current user
+    has read and write permissions in the ``E:\task_queue`` directory.
+
+
+OpenREM uses a task queue to run its background tasks.
+Therefore, we need additional Windows services that allow us to run these tasks separately from the web application.
+
+To accomplish that we need to do the following:
+
+Create local service account
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+First we need to create an account that will allow the IIS worker to control the task workers. Most importantly, to kill a task if necessary.
+
+There is a difference if you are connected to an Active Directory or not. Whatever suits your setup, follow the guide
+``A`` if you are not in an Active Directory or ``B`` if you are.
+
+Guide A
+-------
+
+For a Windows instance which is not associated to an Active Directory, it suffices to create a local user account:
+
+* Open the ``Search Tab``
+* Search for ``Add, edit, or remove other users``
+* In the menu, click ``Add someone else to this PC``
+* In the left pane right click on ``Users``
+* Click ``New User...``
+* Fill in all fields with the data of a new user account (see image)
+* Untick ``User must change password at next login``
+* Click ``Create``
+* In the left pane click on ``Groups``
+* Right click on ``IIS_IUSRS``
+* Click ``Add to Group...``
+* Click on the ``Add`` button
+* In the textfield, enter the username of the previously created account
+* Click ``Ok`` twice
+
+Guide B
+-------
+
+For a Windows instance that is connected to an Active Directory, or even a controller of one, follow this guide:
+
+* Open the ``Server Manager``
+* In the navigation bar, click on ``Tools``
+* Click ``Active Directory Users and Computers``
+* In the left pane, expand your domain
+* Right click on ``Users``
+* Hove over ``New``
+* Click on ``User``
+* Fill in all required fields with the data of a new user account
+* Click ``Next``
+* Enter the new user password twice and untick ``User must change password at next login``
+* Click ``Next`` and then ``Finish`` to create the service account
+
+Creating worker services
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+Copy the file from
+
+* ``E:\venv\Lib\site-packages\openrem\sample-config\queue-init.bat`` to
+* ``E:\winsw\``
+
+Make sure that the previously downloaded and renamed ``WinSW.exe`` file is in the same folder (``E:\winsw\``).
+
+* Double click the ``queue-init.bat`` file
+* Enter your Domain name or leave empty if not applicable
+* Enter the username of the previously created account
+* Enter the associated password
+* Enter the number of workers you would like to spawn, this number should no exceed the number of CPU cores available to your system
+* Wait for the services to get registered and started up (Notice: many windows may appear and disappear quickly)
+
+Adjusting IIS Application Pool Identity
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+* Open ``Internet Information Services (IIS) Manager`` from the Start menu or the Administrative Tools.
+* In the ``Connections`` pane expand the tree under server name
+* Click on ``Application Pools``
+* Right click on ``OpenREM`` in the middle pane
+* Click ``Advanced Settings...``
+* Under ``Process Model`` click on ``Identity`` and then on the grey ``…`` box
+* Select the ``Custom account:`` radio button
+* Click on ``Set...``
+* Enter the credentials of the preivously created account. If you are in an Active Directory prefix ther usernmae with ``<YOUR-DOMAIN>\``
+* Click ``OK`` three times
 
 DICOM Store SCP
 ===============

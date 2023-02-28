@@ -394,7 +394,7 @@ def q_process(request, *args, **kwargs):
             resp = {}
             resp["message"] = "Request created"
             resp["status"] = "not complete"
-            resp["queryID"] = b.uuid
+            resp["queryID"] = b.id
 
             return HttpResponse(json.dumps(resp), content_type="application/json")
         else:

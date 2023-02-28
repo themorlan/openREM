@@ -2,6 +2,7 @@
 
 {% block headextras %}
   <script src="{{ STATIC_URL }}js/sorttable.js"></script>
+  <script src="{{ STATIC_URL }}js/django_reverse/reverse.js"></script>
 {% endblock %}
 
 {% block confnav %}
@@ -34,6 +35,9 @@
                     source = null;
                 }
                 if(heading.indexOf("active") !== -1) {
+                  return;
+                }
+                if(heading.indexOf("queued") !== -1) {
                   return;
                 }
 
@@ -83,6 +87,23 @@
                 heading: "started_active",
                 direction: "descending"
             };
+            sort_info_queued = {
+                heading: "queue_position_queued",
+                direction: "ascending"
+            };
+
+            function tasks_update_queued() {
+                $.ajax({
+                    url: "{% url 'get_tasks' stage='queued' %}",
+                    data: {
+                        csrfmiddlewaretoken: '{{ csrf_token }}'
+                    },
+                    type: "POST",
+                    success: function (data) {
+                        $('#queuedtasks').html(data);
+                    }
+                })
+            }
 
             function tasks_update_active() {
                 $.ajax({
@@ -125,9 +146,11 @@
             
             $(document).ready(
                 function startUp() {
+                  tasks_update_queued()
                   tasks_update_active()
                   tasks_update_recent()
                   tasks_update_older()
+                  setInterval(tasks_update_queued, 2000);
                   setInterval(tasks_update_active, 2000);
                   setInterval(tasks_update_recent, 5000);
                   setInterval(tasks_update_older, 11000);
@@ -139,15 +162,43 @@
     <div class="row">
       <div class="col-md-8 col-md-offset-2">
 
-        <h3>Active tasks</h3>
-
-
-        <p id="activetasks">
-          The list of tasks should appear here...
-        </p>
-
-
         <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+          <div class="panel panel-default">
+            <div class="panel-heading" role="tab" id="queuedTasksHeading">
+              <h4 class="panel-title">
+                <a role="button" data-toggle="collapse" href="#queuedTasks" aria-expanded="true"
+                   aria-controls="queuedTasks">
+                  Queued tasks
+                </a>
+              </h4>
+            </div>
+            <div id="queuedTasks" class="panel-collapse collapse" role="tabpanel"
+                 aria-labelledby="queuedTasksHeading">
+              <div class="panel-body">
+
+                <span id="queuedtasks"></span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="panel panel-default">
+            <div class="panel-heading" role="tab" id="activeTasksHeading">
+              <h4 class="panel-title">
+                <a role="button" data-toggle="collapse" href="#activeTasks" aria-expanded="true"
+                   aria-controls="activeTasks">
+                  Active tasks
+                </a>
+              </h4>
+            </div>
+            <div id="activeTasks" class="panel-collapse collapse in" role="tabpanel"
+                 aria-labelledby="activeTasksHeading">
+              <div class="panel-body">
+
+                <span id="activetasks"></span>
+              </div>
+            </div>
+          </div>
+
           <div class="panel panel-default">
             <div class="panel-heading" role="tab" id="recentTasksHeading">
               <h4 class="panel-title">
@@ -157,7 +208,7 @@
                 </a>
               </h4>
             </div>
-            <div id="recentTasks" class="panel-collapse collapse in" role="tabpanel"
+            <div id="recentTasks" class="panel-collapse collapse" role="tabpanel"
                  aria-labelledby="recentTasksHeading">
               <div class="panel-body">
 

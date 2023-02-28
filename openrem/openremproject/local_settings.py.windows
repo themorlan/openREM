@@ -52,6 +52,8 @@ ALLOWED_HOSTS = [
 # LOGIN_URL (always) should be overridden to include the VIRTUAL_DIRECTORY
 VIRTUAL_DIRECTORY = ''
 
+TASK_QUEUE_ROOT = 'E:/task_queue/'
+
 # Logging configuration
 # Set the log file location. The example places the log file in the media directory. Change as required - on linux
 # systems you might put these in a subdirectory of /var/log/. If you want all the logs in one file, set the filename
@@ -127,3 +129,17 @@ IGNORE_DEVICE_OBSERVER_UID_FOR_THESE_MODELS = ['GE OEC Fluorostar']
 
 # The following line can run on your OpenREM server to set up a dummy smtp server for testing:
 # python -m smtpd -n -c DebuggingServer localhost:25
+
+# DO NOT CHANGE THE FOLLOWING CONFIGS
+HUEY_CLASS = "huey.SqliteHuey"
+HUEY_WORKER_TYPE = "thread"
+HUEY_NUMBER_OF_WORKERS = 1
+HUEY = {
+    "huey_class": HUEY_CLASS,
+    "immediate": False,
+    "consumer": {
+        "workers": HUEY_NUMBER_OF_WORKERS,
+        "worker_type": HUEY_WORKER_TYPE,
+    },
+    "filename": os.path.join(TASK_QUEUE_ROOT, "queue.db"),
+}

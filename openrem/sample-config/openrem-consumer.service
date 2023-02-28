@@ -1,0 +1,13 @@
+[Unit]
+Description=Huey consumer for OpenREM
+
+[Service]
+Restart=on-failure
+User=www-data
+WorkingDirectory=/var/dose/veopenrem3/lib/python3.10/site-packages/openrem
+
+ExecStart=/var/dose/veopenrem3/bin/python \
+    manage.py run_huey
+
+[Install]
+WantedBy=multi-user.target

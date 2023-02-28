@@ -1,0 +1,19 @@
+{% load humanize %}
+{% if queued %}
+  <h4>Export tasks waiting for execution</h4>
+  <table class="table table-striped">
+    <th>Task ID</th>
+    <th>Export type</th>
+    <th>Queue position</th>
+    <th>Action</th>
+    <th></th>
+    {% for tsk in queued %}
+      <tr>
+        <td>{{ tsk.task_id }}</td>
+        <td>{{ tsk.task_type }}</td>
+        <td>{{ tsk.queue_position }}</td>
+        <td><a href="/export/remove/{{ tsk.task_id }}/" class="btn btn-danger">Remove</a></td>
+      </tr>
+    {% endfor %}
+  </table>
+{% endif %}
