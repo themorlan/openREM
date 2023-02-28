@@ -71,7 +71,32 @@
                                                 </tbody>
                                             </table>
                                             
-                                            <button class="btn btn-primary" id="add-form" type="button">Add DRL</button>
+                                            <button class="btn btn-primary" id="add-drl" type="button">Add DRL</button>
+                                        </div>
+
+                                        <div id="kfactor-forms" class="text-center">
+                                            {{ kfactor_formset.management_form }}
+                                            <table class="table table-responsive text-center">
+                                                <thead>
+                                                    <th class="text-center">Range</th>
+                                                    <th class="text-center">k-factor</th>
+                                                    <th class="text-center">Delete?</th>
+                                                </thead>
+                                                <tbody>
+                                                    {% for kfactor_form in kfactor_formset %}
+                                                        <tr class="kfactor-form">
+                                                            {{ kfactor_form.id }}
+                                                            <td>{{ kfactor_form.lower_bound }} <span class="glyphicon glyphicon-minus" aria-hidden="true"></span> {{ kfactor_form.upper_bound }}</td>
+                                                            <td>{{ kfactor_form.k_factor }}</td>
+                                                            {% if kfactor_formset.can_delete %}
+                                                                <td>{{ kfactor_form.DELETE }}</td>
+                                                            {% endif %}
+                                                        </tr>
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
+                                            
+                                            <button class="btn btn-primary" id="add-kfactor" type="button">Add k factor</button>
                                         </div>
 
                                         <input class="btn btn-primary" name="submit" type="submit" id="submit-button" />
@@ -102,27 +127,30 @@
         });
 
 
-        let drlForm = document.querySelectorAll(".drl-form")
-        let container = document.querySelector("#drl-forms")
-        let addButton = document.querySelector("#add-form")
-        let totalForms = document.querySelector("#id_drl_formset-TOTAL_FORMS")
+        let drlForms = document.querySelectorAll(".drl-form")
+        let addDRLButton = document.querySelector("#add-drl")
+        let totalDRLForms = document.querySelector("#id_drl_formset-TOTAL_FORMS")
 
-        let formNum = drlForm.length-1
-        addButton.addEventListener('click', addForm)
+        let kFactorForms = document.querySelectorAll(".kfactor-form")
+        let addKFactorButton = document.querySelector("#add-kfactor")
+        let totalKFactorForms = document.querySelector("#id_kfactor_formset-TOTAL_FORMS")
+        
+        addDRLButton.addEventListener('click', function(e) {addForm(e, drlForms, totalDRLForms)})
+        addKFactorButton.addEventListener('click', function(e) {addForm(e, kFactorForms, totalKFactorForms)})
 
-        function addForm(e){
+        function addForm(e, forms, total){
             e.preventDefault()
+            let formNum = forms.length;
 
-            let referenceForm = drlForm[drlForm.length - 1];
+            let referenceForm = forms[formNum - 1];
             let newForm = referenceForm.cloneNode(true)
             let formRegex = RegExp(`drl_formset-(\\d){1}-`,'g')
 
-            formNum++
             newForm.innerHTML = newForm.innerHTML.replace(formRegex, `drl_formset-${formNum}-`)
             newForm.querySelectorAll("input").forEach((formInput) => formInput.setAttribute("value", ""));
             referenceForm.after(newForm)
             
-            totalForms.setAttribute('value', `${formNum+1}`)
+            total.setAttribute('value', `${formNum+1}`)
         }
     
     </script>

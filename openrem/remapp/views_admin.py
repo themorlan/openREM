@@ -69,6 +69,7 @@ from .forms import (
     DicomDeleteSettingsForm,
     GeneralChartOptionsDisplayForm,
     HomepageOptionsForm,
+    KFactorsFormSet,
     MGChartOptionsDisplayForm,
     MGChartOptionsDisplayFormIncStandard,
     MergeOnDeviceObserverUIDForm,
@@ -3341,20 +3342,28 @@ class StandardNameUpdateCore(UpdateView):
             # All StandardNames entries for the required modality
             std_names = StandardNames.objects.filter(modality=self.object.modality)
 
-            formset = DiagnosticReferenceLevelsFormSet(self.request.POST, prefix="drl_formset")
+            drl_formset = DiagnosticReferenceLevelsFormSet(self.request.POST, prefix="drl_formset")
+            kfactor_formset = KFactorsFormSet(self.request.POST, prefix="kfactor_formset")
 
-            if formset.is_valid():
-                drls = formset.save(commit=False)
+            if drl_formset.is_valid():
+                drls = drl_formset.save(commit=False)
 
                 for drl in drls:
                     drl.standard_name = self.object
                     drl.save()
 
-                for drl in formset.deleted_objects:
+                for drl in drl_formset.deleted_objects:
                     drl.delete()
-            else:
-                print("non-valid")
-                print(formset.errors)
+
+            if kfactor_formset.is_valid():
+                k_factors = kfactor_formset.save(commit=False)
+
+                for k_factor in k_factors:
+                    k_factor.standard_name = self.object
+                    k_factor.save()
+
+                for k_factor in kfactor_formset.deleted_objects:
+                    k_factor.delete()
 
             # Obtain a list of relevant studies
             studies = GeneralStudyModuleAttr.objects
@@ -3595,6 +3604,8 @@ class StandardNameUpdateCT(StandardNameUpdateCore):  # pylint: disable=unused-va
         context["admin"] = admin
         drl_formset = DiagnosticReferenceLevelsFormSet(prefix="drl_formset")
         context["drl_formset"] = drl_formset
+        kfactor_formset = KFactorsFormSet(prefix="kfactor_formset")
+        context["kfactor_formset"] = kfactor_formset
         return context
 
 

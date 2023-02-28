@@ -1701,6 +1701,10 @@ DiagnosticReferenceLevelsFormSet = modelformset_factory(
     DiagnosticReferenceLevels, fields=("lower_bound", "upper_bound", "diagnostic_reference_level"), can_delete=True, can_delete_extra=False,
 )
 
+KFactorsFormSet = modelformset_factory(
+    KFactors, fields=("lower_bound", "upper_bound", "k_factor"), can_delete=True, can_delete_extra=False,
+)
+
 DRL_CRITERIA_CHOICES = (("age", "age"), ("bmi", "bmi"))
 DRL_CRITERIA_DEFAULT_IDX = 0
 K_FACTOR_CRITERIA_CHOICES = (("age", "age"), ("bmi", "bmi"))
