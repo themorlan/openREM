@@ -821,9 +821,15 @@ def _get_series_sop_class(ae, remote, assoc, study, query, get_empty_sr, modalit
         f"{query_id_8} Check {modality} type: Number of series with {modality} {series_selected.count()}"
     )
 
+    if modality == "SR":
+        initial_image_only = False
+    else:
+        initial_image_only = True
     sop_classes = set()
     for sr in series_selected:
-        _query_images(ae, remote, assoc, sr, query, initial_image_only=False)
+        _query_images(
+            ae, remote, assoc, sr, query, initial_image_only=initial_image_only
+        )
         images = sr.dicomqrrspimage_set.all()
         if images.count() == 0:
             if get_empty_sr and modality == "SR":
