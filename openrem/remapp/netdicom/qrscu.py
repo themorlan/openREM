@@ -855,7 +855,7 @@ def _get_series_sop_class(ae, remote, assoc, study, query, get_empty_sr, modalit
     return sop_classes
 
 
-def _remove_sr_objects(series_sr, sop_classes, target_sop_class, query_id_8):
+def _remove_sr_objects(series_sr, target_sop_class, query_id_8):
     if target_sop_class == "1.2.840.10008.5.1.4.1.1.88.67":
         debug_string = f"{query_id_8} Check SR type: Have RDSR, deleting non-RDSR SR"
         deleted_reason = "RDSR present, ignoring all non-RDSR SR"
@@ -914,12 +914,12 @@ def _check_sr_type_in_study(ae, remote, assoc, study, query, get_empty_sr):
 
     if "1.2.840.10008.5.1.4.1.1.88.67" in sop_classes:
         _remove_sr_objects(
-            series_sr, sop_classes, "1.2.840.10008.5.1.4.1.1.88.67", query_id_8
+            series_sr, "1.2.840.10008.5.1.4.1.1.88.67", query_id_8
         )
         return "RDSR"
     elif "1.2.840.10008.5.1.4.1.1.88.22" in sop_classes:
         _remove_sr_objects(
-            series_sr, sop_classes, "1.2.840.10008.5.1.4.1.1.88.22", query_id_8
+            series_sr, "1.2.840.10008.5.1.4.1.1.88.22", query_id_8
         )
         return "ESR"
     elif "null_response" in sop_classes:
