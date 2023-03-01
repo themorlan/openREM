@@ -5,6 +5,7 @@ OpenREM version history
 
 1.0.0b1 (2022-xx-xx)
 --------------------
+* :issue:`972`  DICOM Networking: better analysis of SR series with multiple SOP Class UIDs
 * :issue:`971`  Imports: fixing NM image index error
 * :issue:`970`  Emails: fixed formatting of high fluoro dose alert emails and included peak skin dose for each study in time delta
 * :issue:`967`  Imports: made total DLP optional for Philips CT imports
