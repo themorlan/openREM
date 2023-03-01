@@ -941,7 +941,7 @@ class DiagnosticReferenceLevels(models.Model):
     Table to store DRL values corresponding to a certain range for a specific standard name
     """
 
-    standard_name = models.ForeignKey(StandardNames, on_delete=models.CASCADE)
+    standard_name = models.ManyToManyField(StandardNames)
     lower_bound = models.DecimalField(
         max_digits=16, decimal_places=8, blank=True, null=True
     )
@@ -960,7 +960,7 @@ class KFactors(models.Model):
     The k factor allows to convert a given value (e.g. DLP) into an effective dose
     """
 
-    standard_name = models.ForeignKey(StandardNames, on_delete=models.CASCADE)
+    standard_name = models.ManyToManyField(StandardNames)
     lower_bound = models.DecimalField(
         max_digits=16, decimal_places=8, blank=True, null=True
     )
