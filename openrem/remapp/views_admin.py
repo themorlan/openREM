@@ -125,7 +125,7 @@ from .tools.populate_summary import (
     populate_summary_dx,
     populate_summary_rf,
 )
-from openrem.remapp.tools.standard_names import add_standard_name, update_standard_name
+from openrem.remapp.tools.standard_names import add_standard_name, delete_standard_name, update_standard_name
 from openrem.remapp.tools.background import (
     run_in_background,
     terminate_background,
@@ -2956,7 +2956,6 @@ def populate_summary_progress(request):
 
 
 class StandardNameAddCore(CreateView):
-
     success_url = reverse_lazy("standard_names_view")
 
     def form_valid(self, form):
@@ -2966,6 +2965,14 @@ class StandardNameAddCore(CreateView):
         else:
             messages.info(self.request, "No changes made")
             return redirect(self.success_url)
+        
+    def get_context_data(self, **context):
+        context = super().get_context_data(**context)
+        drl_formset = DiagnosticReferenceLevelsFormSet(prefix="drl_formset", queryset=DiagnosticReferenceLevels.objects.none())
+        kfactor_formset = KFactorsFormSet(prefix="kfactor_formset", queryset=KFactors.objects.none())
+        context["drl_formset"] = drl_formset
+        context["kfactor_formset"] = kfactor_formset
+        return context
 
 
 class StandardNameAddCT(StandardNameAddCore):  # pylint: disable=unused-variable
@@ -2975,7 +2982,6 @@ class StandardNameAddCT(StandardNameAddCore):  # pylint: disable=unused-variable
     form_class = StandardNameFormCT
 
     def get_context_data(self, **context):
-
         # The user has navigated to this page
         context = super(StandardNameAddCT, self).get_context_data(**context)
         admin = {"openremversion": __version__, "docsversion": __docs_version__}
@@ -2983,6 +2989,8 @@ class StandardNameAddCT(StandardNameAddCore):  # pylint: disable=unused-variable
             admin[group.name] = True
         context["admin"] = admin
         context["modality_name"] = "CT"
+        context["drl_unit"] = "mGy.cm"
+        context["kfactor_unit"] = "mSv/(mGy.cm)"
         return context
 
 
@@ -3001,6 +3009,8 @@ class StandardNameAddDX(StandardNameAddCore):  # pylint: disable=unused-variable
             admin[group.name] = True
         context["admin"] = admin
         context["modality_name"] = "radiographic"
+        context["drl_unit"] = "cGy.cm^2"
+        context["kfactor_unit"] = "mSv/(cGy.cm^2)"
         return context
 
 
@@ -3019,6 +3029,8 @@ class StandardNameAddMG(StandardNameAddCore):  # pylint: disable=unused-variable
             admin[group.name] = True
         context["admin"] = admin
         context["modality_name"] = "mammographic"
+        context["drl_unit"] = "mGy"
+        context["kfactor_unit"] = "mSv/mGy"
         return context
 
 
@@ -3037,6 +3049,8 @@ class StandardNameAddRF(StandardNameAddCore):  # pylint: disable=unused-variable
             admin[group.name] = True
         context["admin"] = admin
         context["modality_name"] = "fluoroscopic"
+        context["drl_unit"] = "cGy.cm"
+        context["kfactor_unit"] = "mSv/(cGy.cm)"
         return context
 
 
@@ -3117,69 +3131,7 @@ class StandardNameDelete(DeleteView):  # pylint: disable=unused-variable
 
     def delete(self, *args, **kwargs):
         self.object = self.get_object()
-
-        # Obtain a list of relevant studies
-        studies = GeneralStudyModuleAttr.objects
-        if self.object.modality == "CT":
-            studies = studies.filter(modality_type="CT")
-        elif self.object.modality == "MG":
-            studies = studies.filter(modality_type="MG")
-        elif self.object.modality == "RF":
-            studies = studies.filter(modality_type="RF")
-        else:
-            studies = studies.filter(
-                Q(modality_type__exact="DX")
-                | Q(modality_type__exact="CR")
-                | Q(modality_type__exact="PX")
-            )
-
-        # Remove this standard_name reference to these studies as the standard name may have changed
-        self.object.generalstudymoduleattr_set.remove(
-            *studies.filter(
-                standard_names__standard_name=self.object.standard_name
-            ).values_list("pk", flat=True)
-        )
-
-        # Remove the standard_names entries from acquisitions
-        acquisitions = None
-        if self.object.modality == "CT":
-            acquisitions = CtIrradiationEventData.objects
-            self.object.ctirradiationeventdata_set.remove(
-                *acquisitions.filter(
-                    standard_protocols__standard_name=self.object.standard_name
-                ).values_list("pk", flat=True)
-            )
-        else:
-            # Filter the IrradEventXRayData.objects to just contain the required modality
-            q = ["DX", "CR", "PX"]
-            if self.object.modality == "MG":
-                q = ["MG"]
-            elif self.object.modality == "RF":
-                q = ["RF"]
-
-            q_criteria = reduce(
-                operator.or_,
-                (
-                    Q(
-                        projection_xray_radiation_dose__general_study_module_attributes__modality_type__icontains=item
-                    )
-                    for item in q
-                ),
-            )
-            acquisitions = IrradEventXRayData.objects.filter(q_criteria)
-
-            # Remove the standard names from the acquisitions
-            self.object.irradeventxraydata_set.remove(
-                *acquisitions.filter(
-                    standard_protocols__standard_name=self.object.standard_name
-                ).values_list("pk", flat=True)
-            )
-
-        # Remove entries with standard_name = self.object.standard_name from the StandardNames table
-        StandardNames.objects.filter(modality=self.object.modality).filter(
-            standard_name=self.object.standard_name
-        ).delete()
-
+        delete_standard_name(self.object)
         return HttpResponseRedirect(self.get_success_url())
 
 
@@ -3195,6 +3147,14 @@ class StandardNameUpdateCore(UpdateView):
         else:
             messages.info(self.request, "No changes made")
             return redirect(self.success_url)
+
+    def get_context_data(self, **context):
+        context = super().get_context_data(**context)
+        drl_formset = DiagnosticReferenceLevelsFormSet(prefix="drl_formset", queryset=DiagnosticReferenceLevels.objects.filter(standard_name__in=[self.object]))
+        kfactor_formset = KFactorsFormSet(prefix="kfactor_formset", queryset=KFactors.objects.filter(standard_name__in=[self.object]))
+        context["drl_formset"] = drl_formset
+        context["kfactor_formset"] = kfactor_formset
+        return context
 
 
 class StandardNameUpdateCT(StandardNameUpdateCore):  # pylint: disable=unused-variable
@@ -3212,10 +3172,6 @@ class StandardNameUpdateCT(StandardNameUpdateCore):  # pylint: disable=unused-va
         for group in self.request.user.groups.all():
             admin[group.name] = True
         context["admin"] = admin
-        drl_formset = DiagnosticReferenceLevelsFormSet(prefix="drl_formset", queryset=DiagnosticReferenceLevels.objects.filter(standard_name__in=[self.object]))
-        context["drl_formset"] = drl_formset
-        kfactor_formset = KFactorsFormSet(prefix="kfactor_formset", queryset=KFactors.objects.filter(standard_name__in=[self.object]))
-        context["kfactor_formset"] = kfactor_formset
         context["drl_unit"] = "mGy.cm"
         context["kfactor_unit"] = "mSv/(mGy.cm)"
         return context
@@ -3236,6 +3192,8 @@ class StandardNameUpdateDX(StandardNameUpdateCore):  # pylint: disable=unused-va
         for group in self.request.user.groups.all():
             admin[group.name] = True
         context["admin"] = admin
+        context["drl_unit"] = "cGy.cm"
+        context["kfactor_unit"] = "mSv/(cGy.cm)"
         return context
 
 
@@ -3254,6 +3212,8 @@ class StandardNameUpdateRF(StandardNameUpdateCore):  # pylint: disable=unused-va
         for group in self.request.user.groups.all():
             admin[group.name] = True
         context["admin"] = admin
+        context["drl_unit"] = "cGy.cm"
+        context["kfactor_unit"] = "mSv/(cGy.cm)"
         return context
 
 
@@ -3272,6 +3232,8 @@ class StandardNameUpdateMG(StandardNameUpdateCore):  # pylint: disable=unused-va
         for group in self.request.user.groups.all():
             admin[group.name] = True
         context["admin"] = admin
+        context["drl_unit"] = "mGy"
+        context["kfactor_unit"] = "mSv/mGy"
         return context
 
 

@@ -33,14 +33,16 @@ from django.db import IntegrityError
 from django.db.models import Q
 import numpy as np
 from remapp.forms import DiagnosticReferenceLevelsFormSet, KFactorsFormSet
-from remapp.models import StandardNames, GeneralStudyModuleAttr, CtIrradiationEventData, IrradEventXRayData
+from remapp.models import StandardNames, GeneralStudyModuleAttr, CtIrradiationEventData, IrradEventXRayData, KFactors, DiagnosticReferenceLevels
 import operator
 from functools import reduce
 
 def add_standard_name(request, form):
     data = form.cleaned_data
 
-    if not data["standard_name"]:
+    std_name = data["standard_name"]
+
+    if not std_name:
         pass
         # messages.warning(self.request, "Blank standard name - no update made")
         # return redirect(self.success_url)
@@ -56,7 +58,7 @@ def add_standard_name(request, form):
 
     for (field, new_ids) in field_names.items():
         # Add new entries to the StandardNames table
-        _add_names(data[field], field, modality, data["standard_name"], new_ids)
+        _add_names(data[field], field, modality, std_name, new_ids)
 
     # Obtain a list of the required studies
     studies = _get_studies(modality)
@@ -80,9 +82,11 @@ def add_standard_name(request, form):
     # Add the standard names to the acquisitions
     _add_multiple_standard_acquisitions(acquisitions, field_names["acquisition_protocol"], modality)
 
-    #drl_formset = DiagnosticReferenceLevelsFormSet(request.POST, prefix="drl_formset")
-    #kfactor_formset = KFactorsFormSet(request.POST, prefix="kfactor_formset")
-    #_save_reference_values(std_name_obj, drl_formset, kfactor_formset)
+    std_names = StandardNames.objects.filter(modality=modality).filter(standard_name__exact=std_name)
+
+    drl_formset = DiagnosticReferenceLevelsFormSet(request.POST, prefix="drl_formset")
+    kfactor_formset = KFactorsFormSet(request.POST, prefix="kfactor_formset")
+    _save_reference_values(std_names, drl_formset, kfactor_formset)
 
 
 def update_standard_name(request, form, std_name_obj: StandardNames):
@@ -191,6 +195,48 @@ def update_standard_name(request, form, std_name_obj: StandardNames):
     drl_formset = DiagnosticReferenceLevelsFormSet(request.POST, prefix="drl_formset")
     kfactor_formset = KFactorsFormSet(request.POST, prefix="kfactor_formset")
     _save_reference_values(std_names, drl_formset, kfactor_formset)
+
+
+def delete_standard_name(std_name_obj: StandardNames):
+    # Obtain a list of relevant studies
+    studies = _get_studies(std_name_obj.modality)
+
+    # Remove this standard_name reference to these studies as the standard name may have changed
+    std_name_obj.generalstudymoduleattr_set.remove(
+        *studies.filter(
+            standard_names__standard_name=std_name_obj.standard_name
+        ).values_list("pk", flat=True)
+    )
+
+    # Remove the standard_names entries from acquisitions
+    acquisitions = None
+    if std_name_obj.modality == "CT":
+        acquisitions = CtIrradiationEventData.objects
+        std_name_obj.ctirradiationeventdata_set.remove(
+            *acquisitions.filter(
+                standard_protocols__standard_name=std_name_obj.standard_name
+            ).values_list("pk", flat=True)
+        )
+    else:
+        # Filter the IrradEventXRayData.objects to just contain the required modality
+        acquisitions = _filter_irrad_event_x_ray_data(std_name_obj.modality)
+
+        # Remove the standard names from the acquisitions
+        std_name_obj.irradeventxraydata_set.remove(
+            *acquisitions.filter(
+                standard_protocols__standard_name=std_name_obj.standard_name
+            ).values_list("pk", flat=True)
+        )
+
+    # Remove entries with standard_name = self.object.standard_name from the StandardNames table
+    std_names = StandardNames.objects.filter(modality=std_name_obj.modality).filter(
+        standard_name=std_name_obj.standard_name
+    )
+
+    DiagnosticReferenceLevels.objects.filter(standard_name__in=std_names).delete()
+    KFactors.objects.filter(standard_name__in=std_names).delete()
+
+    std_names.delete()
 
 
 def _add_multiple_standard_studies(
