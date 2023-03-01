@@ -3606,6 +3606,8 @@ class StandardNameUpdateCT(StandardNameUpdateCore):  # pylint: disable=unused-va
         context["drl_formset"] = drl_formset
         kfactor_formset = KFactorsFormSet(prefix="kfactor_formset")
         context["kfactor_formset"] = kfactor_formset
+        context["drl_unit"] = "mGy.cm"
+        context["kfactor_unit"] = "mSv/(mGy.cm)"
         return context
 
 

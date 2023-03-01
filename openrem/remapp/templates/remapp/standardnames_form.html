@@ -49,12 +49,13 @@
                                             <script type="text/javascript" src="{% url 'jsi18n' %}"></script>
                                         </table>
 
+                                        {% if drl_formset %}
                                         <div id="drl-forms" class="text-center">
                                             {{ drl_formset.management_form }}
                                             <table class="table table-responsive text-center">
                                                 <thead>
                                                     <th class="text-center">Range</th>
-                                                    <th class="text-center">DRL</th>
+                                                    <th class="text-center">DRL <span style="text-transform: none;">[{{ drl_unit }}]</span></th>
                                                     <th class="text-center">Delete?</th>
                                                 </thead>
                                                 <tbody>
@@ -73,13 +74,15 @@
                                             
                                             <button class="btn btn-primary" id="add-drl" type="button">Add DRL</button>
                                         </div>
+                                        {% endif %}
 
+                                        {% if kfactor_formset %}
                                         <div id="kfactor-forms" class="text-center">
                                             {{ kfactor_formset.management_form }}
                                             <table class="table table-responsive text-center">
                                                 <thead>
                                                     <th class="text-center">Range</th>
-                                                    <th class="text-center">k-factor</th>
+                                                    <th class="text-center">k-factor <span style="text-transform: none;">[{{ kfactor_unit }}]</span></th>
                                                     <th class="text-center">Delete?</th>
                                                 </thead>
                                                 <tbody>
@@ -96,8 +99,9 @@
                                                 </tbody>
                                             </table>
                                             
-                                            <button class="btn btn-primary" id="add-kfactor" type="button">Add k factor</button>
+                                            <button class="btn btn-primary" id="add-kfactor" type="button">Add k-factor</button>
                                         </div>
+                                        {% endif %}
 
                                         <input class="btn btn-primary" name="submit" type="submit" id="submit-button" />
                                         <input type="button" class="btn btn-danger" value="Cancel" id="cancel-button"
@@ -126,31 +130,34 @@
             })
         });
 
+        let drlForms = document.querySelectorAll(".drl-form");
+        let addDRLButton = document.querySelector("#add-drl");
+        let totalDRLForms = document.querySelector("#id_drl_formset-TOTAL_FORMS");
 
-        let drlForms = document.querySelectorAll(".drl-form")
-        let addDRLButton = document.querySelector("#add-drl")
-        let totalDRLForms = document.querySelector("#id_drl_formset-TOTAL_FORMS")
-
-        let kFactorForms = document.querySelectorAll(".kfactor-form")
-        let addKFactorButton = document.querySelector("#add-kfactor")
-        let totalKFactorForms = document.querySelector("#id_kfactor_formset-TOTAL_FORMS")
+        let kFactorForms = document.querySelectorAll(".kfactor-form");
+        let addKFactorButton = document.querySelector("#add-kfactor");
+        let totalKFactorForms = document.querySelector("#id_kfactor_formset-TOTAL_FORMS");
         
-        addDRLButton.addEventListener('click', function(e) {addForm(e, drlForms, totalDRLForms)})
-        addKFactorButton.addEventListener('click', function(e) {addForm(e, kFactorForms, totalKFactorForms)})
-
+        if (addDRLButton !== undefined && addDRLButton !== null) {
+            addDRLButton.addEventListener('click', function(e) {addForm(e, drlForms, totalDRLForms)});
+        }
+        if (addKFactorButton !== undefined && addKFactorButton !== null) {
+            addKFactorButton.addEventListener('click', function(e) {addForm(e, kFactorForms, totalKFactorForms)});
+        }
+        
         function addForm(e, forms, total){
-            e.preventDefault()
+            e.preventDefault();
             let formNum = forms.length;
 
             let referenceForm = forms[formNum - 1];
-            let newForm = referenceForm.cloneNode(true)
-            let formRegex = RegExp(`drl_formset-(\\d){1}-`,'g')
+            let newForm = referenceForm.cloneNode(true);
+            let formRegex = RegExp(`drl_formset-(\\d){1}-`,'g');
 
-            newForm.innerHTML = newForm.innerHTML.replace(formRegex, `drl_formset-${formNum}-`)
+            newForm.innerHTML = newForm.innerHTML.replace(formRegex, `drl_formset-${formNum}-`);
             newForm.querySelectorAll("input").forEach((formInput) => formInput.setAttribute("value", ""));
-            referenceForm.after(newForm)
+            referenceForm.after(newForm);
             
-            total.setAttribute('value', `${formNum+1}`)
+            total.setAttribute('value', `${formNum+1}`);
         }
     
     </script>
