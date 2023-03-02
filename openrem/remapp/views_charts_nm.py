@@ -380,7 +380,8 @@ def _generate_nm_dose_per_study(user_profile, return_as_dict, df, average_choice
 
     if user_profile.plotMean or user_profile.plotMedian:
         t = list(average_choices)
-        t.remove("boxplot")
+        if "boxplot" in t:
+            t.remove("boxplot")
         df_aggregated = create_dataframe_aggregates(
             df,
             [name_field],
