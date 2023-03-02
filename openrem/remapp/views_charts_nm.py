@@ -230,6 +230,12 @@ def nm_plot_calculations(f, user_profile: UserProfile, return_as_dict=False):
     if any(charts_of_interest):
         value_fields.append("patientstudymoduleattr__patient_weight")
 
+    system_field = []
+    if user_profile.plotSeriesPerSystem:
+        system_field.append(
+            "generalequipmentmoduleattr__unique_equipment_name_id__display_name"
+        )
+
     fields = {
         "names": name_fields,
         "values": value_fields,
