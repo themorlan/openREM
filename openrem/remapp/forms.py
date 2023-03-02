@@ -457,13 +457,13 @@ class NMChartOptionsForm(forms.Form):
         label=_("Study workload"), required=False
     )
     plotNMInjectedDosePerStudy = forms.BooleanField(
-        label=_("Injected Dose per Study"), required=False
+        label=_("Injected dose per study"), required=False
     )
     plotNMInjectedDoseOverTime = forms.BooleanField(
-        label=_("Injected Dose over Time"), required=False
+        label=_("Injected dose over time"), required=False
     )
     plotNMInjectedDoseOverWeight = forms.BooleanField(
-        label=_("Injected Dose over Weight"), required=False
+        label=_("Injected dose vs mass"), required=False
     )
     plotNMOverTimePeriod = forms.ChoiceField(
         label=_("Time period"), choices=CommonVariables.TIME_PERIOD, required=False
