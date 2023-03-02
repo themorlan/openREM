@@ -67,6 +67,10 @@
                   {% block navnm %}
                     <li>{% endblock %}<a href="{% url 'nm_summary_list_filter' %}">{% trans "NM/PET" %}</a></li>
                 {% endif %}
+                {% if request.user.userprofile.displayAlerts %}
+                  {% block navalert %}
+                    <li>{% endblock %}<a href="{% url 'alert_summary' %}">{% trans "Alerts" %}</a></li>
+                {% endif %}
             {% endblock %}
           </ul>
           {% block loginlink %}

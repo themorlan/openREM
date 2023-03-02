@@ -107,6 +107,7 @@ from .models import (
     UpgradeStatus,
     StandardNameSettings,
     StandardNames,
+    Alerts
 )
 from .version import __version__, __docs_version__, __skin_map_version__
 
@@ -822,6 +823,21 @@ def mg_detail_view(request, pk=None):
             "showStandardNames": enable_standard_names,
         },
     )
+
+
+@login_required
+def alert_summary(request):
+    """Obtain data for alert summary view."""
+    
+    admin = create_admin_info(request)
+    alerts = Alerts.objects.all()
+
+    context = {
+        "admin": admin,
+        "alerts": alerts,
+    }
+
+    return render(request, "remapp/alerts.html", context)
 
 
 def openrem_home(request):

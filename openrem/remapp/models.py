@@ -813,6 +813,7 @@ class UserProfile(models.Model, CommonVariables):
     displayMG = models.BooleanField(default=True)
     displayDX = models.BooleanField(default=True)
     displayNM = models.BooleanField(default=True)
+    displayAlerts = models.BooleanField(default=True)
 
     plotSeriesPerSystem = models.BooleanField(default=False)
 
@@ -3426,3 +3427,31 @@ class UpgradeStatus(SingletonModel):
     """
 
     from_0_9_1_summary_fields = models.BooleanField(default=False)
+
+
+class Alerts(models.Model):
+    """
+    Table to store all issued alerts
+    """
+
+    date_of_issue = models.DateTimeField(blank=True, null=True)
+    patient_module_attr = models.ForeignKey(PatientModuleAttr, on_delete=models.CASCADE)
+
+
+class DiagnosticReferenceLevelAlerts(Alerts):
+    """
+    Table to store issued alerts triggered by surpassing a specific DRL by a certain factor
+    """
+    
+    diagnostic_reference_level = models.ForeignKey(DiagnosticReferenceLevels, on_delete=models.CASCADE)
+
+
+class EffectiveDoseAlerts(Alerts):
+    """
+    Table to store issued alerts triggered by surpassing the effective dose in a globally
+    defined period by a globally specified value
+    """
+    
+    cumulaive_effective_dose = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
