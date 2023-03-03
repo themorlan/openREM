@@ -821,9 +821,15 @@ def _get_series_sop_class(ae, remote, assoc, study, query, get_empty_sr, modalit
         f"{query_id_8} Check {modality} type: Number of series with {modality} {series_selected.count()}"
     )
 
+    if modality == "SR":
+        initial_image_only = False
+    else:
+        initial_image_only = True
     sop_classes = set()
     for sr in series_selected:
-        _query_images(ae, remote, assoc, sr, query, initial_image_only=True)
+        _query_images(
+            ae, remote, assoc, sr, query, initial_image_only=initial_image_only
+        )
         images = sr.dicomqrrspimage_set.all()
         if images.count() == 0:
             if get_empty_sr and modality == "SR":
@@ -838,7 +844,8 @@ def _get_series_sop_class(ae, remote, assoc, study, query, get_empty_sr, modalit
                 f"UID {study.study_instance_uid} returned null at image level query. Try '-emptysr' option?"
             )
             continue
-        sop_classes.add(images[0].sop_class_uid)
+        for image in images:
+            sop_classes.add(image.sop_class_uid)
         sr.sop_class_in_series = images[0].sop_class_uid
         sr.save()
         logger.debug(
@@ -846,6 +853,39 @@ def _get_series_sop_class(ae, remote, assoc, study, query, get_empty_sr, modalit
             f"seriesuid: {sr.series_instance_uid}  sop_classes: {sop_classes}"
         )
     return sop_classes
+
+
+def _remove_sr_objects(series_sr, target_sop_class, query_id_8):
+    if target_sop_class == "1.2.840.10008.5.1.4.1.1.88.67":
+        debug_string = f"{query_id_8} Check SR type: Have RDSR, deleting non-RDSR SR"
+        deleted_reason = "RDSR present, ignoring all non-RDSR SR"
+    else:
+        debug_string = (
+            f"{query_id_8} Check SR type: Have ESR, deleting non-RDSR, non-ESR SR"
+        )
+        deleted_reason = "ESR present, no RDSR found, all other SR series ignored"
+
+    for series_rsp in series_sr:
+        # create Set of SOP classes for all objects in series
+        sop_classes_in_series = {
+            image.sop_class_uid for image in series_rsp.dicomqrrspimage_set.all()
+        }
+        if target_sop_class not in sop_classes_in_series:
+            logger.debug(debug_string)
+            series_rsp.deleted_flag = True
+            series_rsp.deleted_reason = deleted_reason
+            series_rsp.save()
+        else:
+            if len(sop_classes_in_series) > 1:
+                series_rsp.image_level_move = True
+                series_rsp.save()
+                other_sop_class_objects = series_rsp.dicomqrrspimage_set.exclude(
+                    sop_class_uid__exact=target_sop_class
+                )
+                for image_rsp in other_sop_class_objects:
+                    image_rsp.deleted_flag = True
+                    image_rsp.deleted_reason = deleted_reason
+                    image_rsp.save()
 
 
 # returns SR-type: RDSR or ESR; otherwise returns 'no_dose_report'
@@ -871,27 +911,16 @@ def _check_sr_type_in_study(ae, remote, assoc, study, query, get_empty_sr):
     )
 
     logger.debug(f"{query_id_8} Check SR type: sop_classes: {sop_classes}")
+
     if "1.2.840.10008.5.1.4.1.1.88.67" in sop_classes:
-        for sr in series_sr:
-            if sr.sop_class_in_series != "1.2.840.10008.5.1.4.1.1.88.67":
-                logger.debug(
-                    f"{query_id_8} Chesk SR type: Have RDSR, deleting non-RDSR SR"
-                )
-                sr.deleted_flag = True
-                sr.deleted_reason = "RDSR present, ignoring all non-RDSR SR"
-                sr.save()
+        _remove_sr_objects(
+            series_sr, "1.2.840.10008.5.1.4.1.1.88.67", query_id_8
+        )
         return "RDSR"
     elif "1.2.840.10008.5.1.4.1.1.88.22" in sop_classes:
-        for sr in series_sr:
-            if sr.sop_class_in_series != "1.2.840.10008.5.1.4.1.1.88.22":
-                logger.debug(
-                    f"{query_id_8} Check SR type: Have ESR, deleting non-RDSR, non-ESR SR"
-                )
-                sr.deleted_flag = True
-                sr.deleted_reason = (
-                    "ESR present, no RDSR found, all other SR series ignored"
-                )
-                sr.save()
+        _remove_sr_objects(
+            series_sr, "1.2.840.10008.5.1.4.1.1.88.22", query_id_8
+        )
         return "ESR"
     elif "null_response" in sop_classes:
         logger.debug(
