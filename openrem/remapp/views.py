@@ -97,6 +97,7 @@ from .views_charts_rf import (
 from .views_charts_nm import nm_chart_form_processing, generate_required_nm_charts_list
 from .models import (
     GeneralStudyModuleAttr,
+    PatientModuleAttr,
     create_user_profile,
     HighDoseMetricAlertSettings,
     SkinDoseMapCalcSettings,
@@ -838,6 +839,57 @@ def alert_summary(request):
     }
 
     return render(request, "remapp/alerts.html", context)
+
+
+@login_required
+def patients_summary(request):
+    """Obtain data for patients summary view."""
+    
+    admin = create_admin_info(request)
+    patients = PatientModuleAttr.objects.all().exclude(patient_id__isnull=True)
+    grouped_patients = {}
+
+    for patient in patients:
+        if patient.patient_id not in grouped_patients:
+            grouped_patients[patient.patient_id] = patient
+        
+        if patient.patient_name is not None:
+            grouped_patients[patient.patient_id].patient_name = patient.patient_name
+        if patient.patient_birth_date is not None:
+            grouped_patients[patient.patient_id].patient_birth_date = patient.patient_birth_date
+        if patient.patient_sex is not None:
+            grouped_patients[patient.patient_id].patient_sex = patient.patient_sex
+
+    context = {
+        "admin": admin,
+        "patients": grouped_patients.values(),
+    }
+
+    return render(request, "remapp/patients.html", context)
+
+
+@login_required
+def patient_details(request, patient_id):
+    """Show details for specifified patient."""
+    
+    admin = create_admin_info(request)
+    patients = PatientModuleAttr.objects.all().filter(patient_id__exact=patient_id)
+    patient_details = PatientModuleAttr()
+
+    for patient in patients:        
+        if patient.patient_name is not None:
+            patient_details.patient_name = patient.patient_name
+        if patient.patient_birth_date is not None:
+            patient_details.patient_birth_date = patient.patient_birth_date
+        if patient.patient_sex is not None:
+            patient_details.patient_sex = patient.patient_sex
+
+    context = {
+        "admin": admin,
+        "patient_details": patient_details,
+    }
+
+    return render(request, "remapp/patient_details.html", context)
 
 
 def openrem_home(request):

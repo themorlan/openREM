@@ -71,6 +71,10 @@
                   {% block navalert %}
                     <li>{% endblock %}<a href="{% url 'alert_summary' %}">{% trans "Alerts" %}</a></li>
                 {% endif %}
+                {% if request.user.userprofile.displayPatients %}
+                  {% block navpatients %}
+                    <li>{% endblock %}<a href="{% url 'patients_summary' %}">{% trans "Patients" %}</a></li>
+                {% endif %}
             {% endblock %}
           </ul>
           {% block loginlink %}
