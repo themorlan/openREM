@@ -8,14 +8,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-01 18:30+0100\n"
+"POT-Creation-Date: 2023-03-05 17:21+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.8.0\n"
+"Generated-By: Babel 2.12.1\n"
 
 #: ../../i_displaynames.rst:2
 msgid "Display names and user-defined modalities"
@@ -111,6 +111,10 @@ msgid "Viewing X-ray system display names and user defined modality"
 msgstr ""
 
 #: ../../i_displaynames.rst:54
+msgid "User options menu"
+msgstr ""
+
+#: ../../i_displaynames.rst:54
 msgid "The ``Config`` menu (user)"
 msgstr ""
 
@@ -128,6 +132,10 @@ msgid ""
 "the user defined modality is not set, the value contains ``None``. The "
 "X-ray systems are grouped into modalities and displayed in five tables: "
 "CT; mammography; DX and CR; fluoroscopy; and other."
+msgstr ""
+
+#: ../../i_displaynames.rst:71
+msgid "List of current display names"
 msgstr ""
 
 #: ../../i_displaynames.rst:71
@@ -156,6 +164,10 @@ msgid "Changing X-ray system display names and user defined modality"
 msgstr ""
 
 #: ../../i_displaynames.rst:96
+msgid "Admin menu"
+msgstr ""
+
+#: ../../i_displaynames.rst:96
 msgid "The ``Config`` menu (admin)"
 msgstr ""
 
@@ -174,6 +186,10 @@ msgid ""
 "defined modality then click on the corresponding row. The resulting page "
 "will allow you to edit these parameters. Click on the ``Update`` button "
 "to confirm your changes:"
+msgstr ""
+
+#: ../../i_displaynames.rst:117
+msgid "Update a display name"
 msgstr ""
 
 #: ../../i_displaynames.rst:117
@@ -221,6 +237,10 @@ msgid ""
 msgstr ""
 
 #: ../../i_displaynames.rst:146
+msgid "Reprocess Dual link"
+msgstr ""
+
+#: ../../i_displaynames.rst:146
 msgid "Re-sort studies into planar X-ray and fluoroscopy"
 msgstr ""
 
@@ -235,5 +255,35 @@ msgid ""
 "appear in any of the other tables on this page. The table at the end "
 "allows the user to review these studies and delete them. See "
 ":ref:`failed_import_studies` for more details."
+msgstr ""
+
+#: ../../i_displaynames.rst:158
+msgid "Systems where Device Observer UID is not static"
+msgstr ""
+
+#: ../../i_displaynames.rst:160
+msgid ""
+"OpenREM users have found one x-ray system which incorrectly sets the "
+"Device Observer UID to be equal to the Study Instance UID. In this "
+"situation a new entry is created in the display name settings for every "
+"new exam that arrives in OpenREM, making the display name table fill with"
+" many duplicate entries for the same system. To avoid this problem a list"
+" of models can be specified using the variable below - OpenREM will "
+"ignore the Device Observer UID value when creating new display names for "
+"any model in this list. The model name text must exactly match what is "
+"contained in the system's Manufacturer's Model Name DICOM tag "
+"(0008,1090)."
+msgstr ""
+
+#: ../../i_displaynames.rst:171
+msgid "For Docker installations, this setting is in the :doc:`env_variables`."
+msgstr ""
+
+#: ../../i_displaynames.rst:172
+msgid "For Linux installations, see the :ref:`updatelinuxconfig` docs."
+msgstr ""
+
+#: ../../i_displaynames.rst:173
+msgid "For Windows installations, see the :ref:`updatewindowsconfig` docs."
 msgstr ""
 

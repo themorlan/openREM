@@ -8,14 +8,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-01 18:30+0100\n"
+"POT-Creation-Date: 2023-03-05 17:21+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.8.0\n"
+"Generated-By: Babel 2.12.1\n"
 
 #: ../../release-0.5.0.rst:2
 msgid "OpenREM Release Notes version 0.5.0"
@@ -49,81 +49,78 @@ msgstr ""
 
 #: ../../release-0.5.0.rst:16
 msgid ""
-"**Always make sure you have converted your database to South before "
-"attempting an upgrade**"
+"For the original upgrade instructions, the last docs release to include "
+"them was `0.10.0-docs "
+"<https://docs.openrem.org/en/0.10.0-docs/release-0.5.0.html>`_"
 msgstr ""
 
-#: ../../release-0.5.0.rst:18
-msgid "Quick reminder of how, if you haven't done it already:"
-msgstr ""
+#~ msgid ""
+#~ "**Always make sure you have converted"
+#~ " your database to South before "
+#~ "attempting an upgrade**"
+#~ msgstr ""
 
-#: ../../release-0.5.0.rst:20 ../../release-0.5.0.rst:53
-#: ../../release-0.5.0.rst:76
-msgid "Linux::"
-msgstr ""
+#~ msgid "Quick reminder of how, if you haven't done it already:"
+#~ msgstr ""
 
-#: ../../release-0.5.0.rst:24 ../../release-0.5.0.rst:58
-#: ../../release-0.5.0.rst:81
-msgid "Windows::"
-msgstr ""
+#~ msgid "Linux::"
+#~ msgstr ""
 
-#: ../../release-0.5.0.rst:30
-msgid "Upgrading from versions before 0.4.3"
-msgstr ""
+#~ msgid "Windows::"
+#~ msgstr ""
 
-#: ../../release-0.5.0.rst:32
-msgid ""
-"If you are upgrading from 0.3.9 or earlier, you will need to upgrade to "
-"version 0.4.2 first. See the :doc:`release-0.4.3`."
-msgstr ""
+#~ msgid "Upgrading from versions before 0.4.3"
+#~ msgstr ""
 
-#: ../../release-0.5.0.rst:35
-msgid ""
-"If you are upgrading from 0.4.0 or later, the instructions in "
-":doc:`release-0.4.3` still need to be followed to install/setup RabbitMQ "
-"and Celery and to update the configuration files, but you can go straight"
-" to 0.5.0 rather than installing 0.4.3."
-msgstr ""
+#~ msgid ""
+#~ "If you are upgrading from 0.3.9 or"
+#~ " earlier, you will need to upgrade"
+#~ " to version 0.4.2 first. See the "
+#~ ":doc:`release-0.4.3`."
+#~ msgstr ""
 
-#: ../../release-0.5.0.rst:41
-msgid "Upgrading from version 0.4.3"
-msgstr ""
+#~ msgid ""
+#~ "If you are upgrading from 0.4.0 or"
+#~ " later, the instructions in "
+#~ ":doc:`release-0.4.3` still need to be "
+#~ "followed to install/setup RabbitMQ and "
+#~ "Celery and to update the configuration"
+#~ " files, but you can go straight "
+#~ "to 0.5.0 rather than installing 0.4.3."
+#~ msgstr ""
 
-#: ../../release-0.5.0.rst:46
-msgid "(Will need ``sudo`` or equivalent if using linux without a virtualenv)"
-msgstr ""
+#~ msgid "Upgrading from version 0.4.3"
+#~ msgstr ""
 
-#: ../../release-0.5.0.rst:50
-msgid "Database migration"
-msgstr ""
+#~ msgid "(Will need ``sudo`` or equivalent if using linux without a virtualenv)"
+#~ msgstr ""
 
-#: ../../release-0.5.0.rst:51
-msgid "*Assuming no virtualenv*"
-msgstr ""
+#~ msgid "Database migration"
+#~ msgstr ""
 
-#: ../../release-0.5.0.rst:64
-msgid "Restart the web server"
-msgstr ""
+#~ msgid "*Assuming no virtualenv*"
+#~ msgstr ""
 
-#: ../../release-0.5.0.rst:65
-msgid "If you are using the built-in test web server (`not for production use`)::"
-msgstr ""
+#~ msgid "Restart the web server"
+#~ msgstr ""
 
-#: ../../release-0.5.0.rst:69
-msgid "Otherwise restart using the command for your web server"
-msgstr ""
+#~ msgid ""
+#~ "If you are using the built-in "
+#~ "test web server (`not for production "
+#~ "use`)::"
+#~ msgstr ""
 
-#: ../../release-0.5.0.rst:72
-msgid "Restart the Celery task queue"
-msgstr ""
+#~ msgid "Otherwise restart using the command for your web server"
+#~ msgstr ""
 
-#: ../../release-0.5.0.rst:74
-msgid "For testing, in a new shell: *(assuming no virtualenv)*"
-msgstr ""
+#~ msgid "Restart the Celery task queue"
+#~ msgstr ""
 
-#: ../../release-0.5.0.rst:86
-msgid ""
-"For production use, see "
-"http://celery.readthedocs.org/en/latest/tutorials/daemonizing.html"
-msgstr ""
+#~ msgid "For testing, in a new shell: *(assuming no virtualenv)*"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "For production use, see "
+#~ "http://celery.readthedocs.org/en/latest/tutorials/daemonizing.html"
+#~ msgstr ""
 

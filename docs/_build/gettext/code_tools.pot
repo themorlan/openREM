@@ -1,5 +1,5 @@
 # SOME DESCRIPTIVE TITLE.
-# Copyright (C) 2013-2020, The Royal Marsden NHS Foundation Trust
+# Copyright (C) 2013-2022, The Royal Marsden NHS Foundation Trust
 # This file is distributed under the same license as the OpenREM package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-12-05 21:10+0000\n"
+"POT-Creation-Date: 2023-03-05 17:21+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -36,11 +36,6 @@ msgstr ""
 msgid "Create a code_value code_meaning pair entry in the ContextID table if it doesn't already exist."
 msgstr ""
 
-#: ../../../openrem/remapp/tools/get_values.py:docstring of openrem.remapp.tools.get_values.get_or_create_cid:0
-#: ../../../openrem/remapp/tools/get_values.py:docstring of openrem.remapp.tools.get_values.get_seq_code_meaning:0
-#: ../../../openrem/remapp/tools/get_values.py:docstring of openrem.remapp.tools.get_values.get_seq_code_value:0
-#: ../../../openrem/remapp/tools/get_values.py:docstring of openrem.remapp.tools.get_values.get_value_kw:0
-#: ../../../openrem/remapp/tools/get_values.py:docstring of openrem.remapp.tools.get_values.get_value_num:0
 #: ../../../openrem/remapp/tools/check_uid.py:docstring of openrem.remapp.tools.check_uid.check_uid:0
 #: ../../../openrem/remapp/tools/check_uid.py:docstring of openrem.remapp.tools.check_uid.record_sop_instance_uid:0
 #: ../../../openrem/remapp/tools/dcmdatetime.py:docstring of openrem.remapp.tools.dcmdatetime.get_date:0
@@ -52,6 +47,11 @@ msgstr ""
 #: ../../../openrem/remapp/tools/dcmdatetime.py:docstring of openrem.remapp.tools.dcmdatetime.make_dcm_time:0
 #: ../../../openrem/remapp/tools/dcmdatetime.py:docstring of openrem.remapp.tools.dcmdatetime.make_dcm_time_range:0
 #: ../../../openrem/remapp/tools/dcmdatetime.py:docstring of openrem.remapp.tools.dcmdatetime.make_time:0
+#: ../../../openrem/remapp/tools/get_values.py:docstring of openrem.remapp.tools.get_values.get_or_create_cid:0
+#: ../../../openrem/remapp/tools/get_values.py:docstring of openrem.remapp.tools.get_values.get_seq_code_meaning:0
+#: ../../../openrem/remapp/tools/get_values.py:docstring of openrem.remapp.tools.get_values.get_seq_code_value:0
+#: ../../../openrem/remapp/tools/get_values.py:docstring of openrem.remapp.tools.get_values.get_value_kw:0
+#: ../../../openrem/remapp/tools/get_values.py:docstring of openrem.remapp.tools.get_values.get_value_num:0
 #: ../../../openrem/remapp/tools/not_patient_indicators.py:docstring of openrem.remapp.tools.not_patient_indicators.get_not_pt:0
 msgid "Parameters"
 msgstr ""
@@ -64,11 +64,6 @@ msgstr ""
 msgid "Code meaning as defined in the DICOM standard part 16"
 msgstr ""
 
-#: ../../../openrem/remapp/tools/get_values.py:docstring of openrem.remapp.tools.get_values.get_or_create_cid:0
-#: ../../../openrem/remapp/tools/get_values.py:docstring of openrem.remapp.tools.get_values.get_seq_code_meaning:0
-#: ../../../openrem/remapp/tools/get_values.py:docstring of openrem.remapp.tools.get_values.get_seq_code_value:0
-#: ../../../openrem/remapp/tools/get_values.py:docstring of openrem.remapp.tools.get_values.get_value_kw:0
-#: ../../../openrem/remapp/tools/get_values.py:docstring of openrem.remapp.tools.get_values.get_value_num:0
 #: ../../../openrem/remapp/tools/check_uid.py:docstring of openrem.remapp.tools.check_uid.check_uid:0
 #: ../../../openrem/remapp/tools/check_uid.py:docstring of openrem.remapp.tools.check_uid.record_sop_instance_uid:0
 #: ../../../openrem/remapp/tools/dcmdatetime.py:docstring of openrem.remapp.tools.dcmdatetime.get_date:0
@@ -80,6 +75,11 @@ msgstr ""
 #: ../../../openrem/remapp/tools/dcmdatetime.py:docstring of openrem.remapp.tools.dcmdatetime.make_dcm_time:0
 #: ../../../openrem/remapp/tools/dcmdatetime.py:docstring of openrem.remapp.tools.dcmdatetime.make_dcm_time_range:0
 #: ../../../openrem/remapp/tools/dcmdatetime.py:docstring of openrem.remapp.tools.dcmdatetime.make_time:0
+#: ../../../openrem/remapp/tools/get_values.py:docstring of openrem.remapp.tools.get_values.get_or_create_cid:0
+#: ../../../openrem/remapp/tools/get_values.py:docstring of openrem.remapp.tools.get_values.get_seq_code_meaning:0
+#: ../../../openrem/remapp/tools/get_values.py:docstring of openrem.remapp.tools.get_values.get_seq_code_value:0
+#: ../../../openrem/remapp/tools/get_values.py:docstring of openrem.remapp.tools.get_values.get_value_kw:0
+#: ../../../openrem/remapp/tools/get_values.py:docstring of openrem.remapp.tools.get_values.get_value_num:0
 #: ../../../openrem/remapp/tools/not_patient_indicators.py:docstring of openrem.remapp.tools.not_patient_indicators.get_not_pt:0
 msgid "Returns"
 msgstr ""
@@ -118,18 +118,18 @@ msgstr ""
 msgid "Get DICOM value by keyword reference."
 msgstr ""
 
-#: ../../../openrem/remapp/tools/get_values.py:docstring of openrem.remapp.tools.get_values.get_value_kw:3
 #: ../../../openrem/remapp/tools/dcmdatetime.py:docstring of openrem.remapp.tools.dcmdatetime.get_date:3
 #: ../../../openrem/remapp/tools/dcmdatetime.py:docstring of openrem.remapp.tools.dcmdatetime.get_date_time:3
 #: ../../../openrem/remapp/tools/dcmdatetime.py:docstring of openrem.remapp.tools.dcmdatetime.get_time:3
+#: ../../../openrem/remapp/tools/get_values.py:docstring of openrem.remapp.tools.get_values.get_value_kw:3
 msgid "DICOM keyword, no spaces or plural as per dictionary."
 msgstr ""
 
-#: ../../../openrem/remapp/tools/get_values.py:docstring of openrem.remapp.tools.get_values.get_value_kw:5
-#: ../../../openrem/remapp/tools/get_values.py:docstring of openrem.remapp.tools.get_values.get_value_num:8
 #: ../../../openrem/remapp/tools/dcmdatetime.py:docstring of openrem.remapp.tools.dcmdatetime.get_date:5
 #: ../../../openrem/remapp/tools/dcmdatetime.py:docstring of openrem.remapp.tools.dcmdatetime.get_date_time:5
 #: ../../../openrem/remapp/tools/dcmdatetime.py:docstring of openrem.remapp.tools.dcmdatetime.get_time:5
+#: ../../../openrem/remapp/tools/get_values.py:docstring of openrem.remapp.tools.get_values.get_value_kw:5
+#: ../../../openrem/remapp/tools/get_values.py:docstring of openrem.remapp.tools.get_values.get_value_num:8
 msgid "The DICOM dataset containing the tag."
 msgstr ""
 
@@ -160,6 +160,10 @@ msgstr ""
 
 #: ../../../openrem/remapp/tools/get_values.py:docstring of openrem.remapp.tools.get_values.test_numeric_value:1
 msgid "Tests if string can be converted to a float. If it can, return it :param string_number: string to test if is a number :return: string if number, nothing otherwise"
+msgstr ""
+
+#: ../../../openrem/remapp/tools/get_values.py:docstring of openrem.remapp.tools.get_values.to_decimal_value:1
+msgid "Tests if string can be converted to a float. If yes returns it as decimal. :param string_number: string to test if a number :return: Decimal if convertable, None otherwise"
 msgstr ""
 
 #: ../../code_tools.rst:14

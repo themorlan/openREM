@@ -1,0 +1,214 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2013-2022, The Royal Marsden NHS Foundation Trust
+# This file is distributed under the same license as the OpenREM package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2023.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: OpenREM 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-03-05 17:21+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: es_MX\n"
+"Language-Team: es_MX <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.12.1\n"
+
+#: ../../standard_name_mapping.rst:3
+msgid "Standard name mapping"
+msgstr ""
+
+#: ../../standard_name_mapping.rst:7
+msgid "Introduction"
+msgstr ""
+
+#: ../../standard_name_mapping.rst
+msgid "The OpenREM config menu"
+msgstr ""
+
+#: ../../standard_name_mapping.rst:15
+msgid "Figure 1: The config menu"
+msgstr ""
+
+#: ../../standard_name_mapping.rst:17
+msgid ""
+"The same type of examination can appear in OpenREM under a range of "
+"different ``requested procedure names``, ``study descriptions`` or "
+"``procedure names``. Individual acquistions of the same type may appear "
+"under a range of different ``acquisition protocol names``. The standard "
+"name mapping feature allows a number of differently named exams or "
+"acquisitions to be grouped into a single standard name, allowing easier "
+"analysis of data for audits and diagnostic reference level (DRL) creation"
+" (see DRL definition on the IAEA_ website)."
+msgstr ""
+
+#: ../../standard_name_mapping.rst:23
+msgid ""
+"If the logged in user is an OpenREM adminstrator the ``standard name "
+"settings`` option will be available on the ``Config`` drop down menu "
+"(figure 1). Clicking on this will take the administrator to the standard "
+"name mapping settings page (figure 2). From this page the administrator "
+"can enable or disable standard name mapping for the OpenREM installation."
+" Enabling standard name mapping causes an additional column to be "
+"displayed in each modality summary page where any standard study-level "
+"names associated with each entry in the exam table are displayed (figure "
+"3), and when viewing the details of an individual study any matching "
+"standard acquisition names are displayed in the appropriate table row "
+"(figure 4). Enabling standard name mapping also makes the standard study "
+"name and standard acquisition name charts available. The administrator "
+"can also use the ``standard name settings`` page to access the standard "
+"name internal database refresh links. Note that the use of these links is"
+" not expected to be necessary in normal OpenREM use."
+msgstr ""
+
+#: ../../standard_name_mapping.rst
+msgid "The standard name mapping settings page"
+msgstr ""
+
+#: ../../standard_name_mapping.rst:39
+msgid "Figure 2: The standard name mapping settings page"
+msgstr ""
+
+#: ../../standard_name_mapping.rst
+msgid "Standard study names visible in the CT summary page"
+msgstr ""
+
+#: ../../standard_name_mapping.rst:48
+msgid "Figure 3: Standard study names visible in the CT summary page"
+msgstr ""
+
+#: ../../standard_name_mapping.rst
+msgid "Standard acquisition names visible in a study details page"
+msgstr ""
+
+#: ../../standard_name_mapping.rst:57
+msgid "Figure 4: Standard acquisition names visible in a study details page"
+msgstr ""
+
+#: ../../standard_name_mapping.rst:60
+msgid ""
+"Selecting the ``standard name mapping`` option within the ``Config`` drop"
+" down menu (figure 1) will take the user to the standard name mapping "
+"summary page(figure 5). This page shows any existing standard name "
+"mappings, which an OpenREM administrator is able to ``Modify`` or "
+"``Delete`` using the buttons on the right hand side of each entry. A "
+"normal OpenREM user can only view standard name mappings."
+msgstr ""
+
+#: ../../standard_name_mapping.rst
+msgid "The standard name mapping summary page"
+msgstr ""
+
+#: ../../standard_name_mapping.rst:71
+msgid "Figure 5: The standard name mapping summary page"
+msgstr ""
+
+#: ../../standard_name_mapping.rst:75
+msgid "Creating a new standard name mapping"
+msgstr ""
+
+#: ../../standard_name_mapping.rst:77
+msgid ""
+"A new standard name mapping can be created by an OpenREM administrator by"
+" clicking on the ``Add new XX entry`` button, where ``XX`` corresponds to"
+" a particular modality. This takes the administrator to a screen where "
+"the new standard name is set (figure 6), and where the administrator "
+"selects the ``study descriptions``, ``requested procedure names``, "
+"``procedure names`` and ``acquisition protocol names`` that they want to "
+"be included in the new standard name definition. The available items are "
+"listed in the left-hand tables. The administrator can move a required "
+"item into the right-hand table by double-clicking on an entry, or "
+"selecting an entry and then clicking on the arrow pointing to the right."
+msgstr ""
+
+#: ../../standard_name_mapping.rst
+msgid "Adding or modifying a standard name"
+msgstr ""
+
+#: ../../standard_name_mapping.rst:91
+msgid "Figure 6: Adding or modifying a standard name"
+msgstr ""
+
+#: ../../standard_name_mapping.rst:94
+msgid ""
+"The example in figure 7 shows that head-related ``study descriptions`` "
+"and ``requested procedure names`` have been chosen for a new standard "
+"name of ``Head``."
+msgstr ""
+
+#: ../../standard_name_mapping.rst:97
+msgid ""
+"Once all relevant items have been transferred to the right-hand tables "
+"the ``Submit`` button at the bottom of the page must be clicked to "
+"confirm the new entry. Once a ``study description``, ``requested "
+"procedure name``, ``procedure name`` or ``acquisition protocol name`` has"
+" been assigned to a standard name it cannot be added to another standard "
+"name, and disappears as an option in the left-hand tables when "
+"configuring future new standard name entries."
+msgstr ""
+
+#: ../../standard_name_mapping.rst
+msgid "Mapping a new standard name"
+msgstr ""
+
+#: ../../standard_name_mapping.rst:108
+msgid "Figure 7: Adding or modifying a standard name mapping"
+msgstr ""
+
+#: ../../standard_name_mapping.rst:112
+msgid "Modifying an existing standard name mapping"
+msgstr ""
+
+#: ../../standard_name_mapping.rst:114
+msgid ""
+"An existing standard name mapping can be modified by clicking the "
+"``Modify`` button on the right-hand side of an entry in the standard name"
+" mapping summary page (figure 5). This takes the administrator to the "
+"same screen as shown in figure 7, where the chosen ``study "
+"descriptions``, ``requested procedure names``, ``procedure names`` and "
+"``acquisition protocol names`` can be amended. Clicking ``Submit`` "
+"confirms the changes."
+msgstr ""
+
+#: ../../standard_name_mapping.rst:122
+msgid "Charts"
+msgstr ""
+
+#: ../../standard_name_mapping.rst:124
+msgid ""
+"Charts of standard name data can be plotted in OpenREM. This can be "
+"helpful because at study-level it enables multiple ``study "
+"descriptions``, ``requested procedure names`` and ``procedure names`` to "
+"be combined into a single data point. At acquisition level, multiple "
+"``acquisition protocol names`` can be combined into a single data point. "
+"For example, figure 8 below shows the median DLP for a range of ``study "
+"descriptions``. Three of the ``study descriptions`` relate to the head, "
+"and two of them relate to scans of the chest and abdomen. The three head-"
+"related descriptions have been mapped to a ``Head`` standard study name, "
+"and the two chest and abdomen descriptions have been mapped to a ``Chest "
+"+ Abdomen`` standard study name, resulting in the chart shown in figure "
+"9. The standard name mapping allows clearer visual comparison of the data"
+" per study for each hospital and piece of equipment."
+msgstr ""
+
+#: ../../standard_name_mapping.rst
+msgid "Chart of median DLP for each study description"
+msgstr ""
+
+#: ../../standard_name_mapping.rst:139
+msgid "Figure 8: Chart of median DLP for each study description"
+msgstr ""
+
+#: ../../standard_name_mapping.rst
+msgid "Chart of median DLP for each standard study name"
+msgstr ""
+
+#: ../../standard_name_mapping.rst:148
+msgid "Figure 9: Chart of median DLP for each standard study name"
+msgstr ""
+

@@ -1,5 +1,5 @@
 # SOME DESCRIPTIVE TITLE.
-# Copyright (C) 2013-2020, The Royal Marsden NHS Foundation Trust
+# Copyright (C) 2013-2022, The Royal Marsden NHS Foundation Trust
 # This file is distributed under the same license as the OpenREM package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-01 18:30+0100\n"
+"POT-Creation-Date: 2023-03-05 17:21+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -32,8 +32,20 @@ msgstr ""
 msgid "If you log in as a user that is in the ``admingroup``, then a menu is available at the right hand end of the navigation bar:"
 msgstr ""
 
+#: ../../i_patientsize.rst:-1
+msgid "Admin import patient size data menu"
+msgstr ""
+
 #: ../../i_patientsize.rst:18
 msgid "The first option takes you to a page where you can upload a csv file containing details of the patient height and weight, plus either the accession number or the Study Instance UID."
+msgstr ""
+
+#: ../../i_patientsize.rst:-1
+msgid "Uploading CSV files containing patient size information"
+msgstr ""
+
+#: ../../i_patientsize.rst:-1
+msgid "Upload patient size csv file button"
 msgstr ""
 
 #: ../../i_patientsize.rst:34
@@ -56,8 +68,16 @@ msgstr ""
 msgid "When the column headers are selected, click the 'Process the data' button."
 msgstr ""
 
+#: ../../i_patientsize.rst:-1
+msgid "Selecting header information"
+msgstr ""
+
 #: ../../i_patientsize.rst:56
 msgid "The progress of the import is then reported on the patient size imports page:"
+msgstr ""
+
+#: ../../i_patientsize.rst:-1
+msgid "Patient size importing"
 msgstr ""
 
 #: ../../i_patientsize.rst:64
@@ -76,8 +96,16 @@ msgstr ""
 msgid "After an import is complete, it is listed in the completed import tasks table. You can also get to this page from the Admin menu:"
 msgstr ""
 
+#: ../../i_patientsize.rst:-1
+msgid "Imports link"
+msgstr ""
+
 #: ../../i_patientsize.rst:84
 msgid "For each import, there is a link to the logfile, which looks something like this. With this import accession numbers weren't available so the patient size information was matched to the study instance UID:"
+msgstr ""
+
+#: ../../i_patientsize.rst:-1
+msgid "Size import logs"
 msgstr ""
 
 #: ../../i_patientsize.rst:95

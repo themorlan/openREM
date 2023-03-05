@@ -8,50 +8,70 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-04 12:05+0100\n"
+"POT-Creation-Date: 2023-03-05 17:21+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.8.0\n"
+"Generated-By: Babel 2.12.1\n"
 
-#: ../../upgrade_previous_0.10.0.rst:3 71c9286a272c419ab22b910fbd986843
-msgid "Upgrade to OpenREM 0.10.0 from before 0.9.1"
+#: ../../upgrade_previous_0.10.0.rst:3
+msgid "Upgrade to OpenREM 0.10.0 from 0.7.3 or later"
 msgstr ""
 
-#: ../../upgrade_previous_0.10.0.rst:7 f7bc9708902d435fa08ae95ae02ac860
+#: ../../upgrade_previous_0.10.0.rst:5
+msgid "*doc not ready for translation* **needs review**"
+msgstr ""
+
+#: ../../upgrade_previous_0.10.0.rst:8
+msgid ""
+"Upgrades to OpenREM 1.0 can only be made from version 0.10.0. "
+"Installations earlier than that need to be updated to version 0.10.0 "
+"before updating to version 1.0."
+msgstr ""
+
+#: ../../upgrade_previous_0.10.0.rst:11
+msgid ""
+"These instructions can be used to upgrade any database from version 0.7.3"
+" or later. 0.7.3 was released in August 2016. For upgrades from versions "
+"earlier than that, please review the upgrade instructions for that "
+"version in the `0.10.0-docs "
+"<https://docs.openrem.org/en/0.10.0-docs/release-0.7.3.html>`_."
+msgstr ""
+
+#: ../../upgrade_previous_0.10.0.rst:18
 msgid "Upgrade preparation"
 msgstr ""
 
-#: ../../upgrade_previous_0.10.0.rst:9 2c30422347cb41019fdcceae4ffa86c9
+#: ../../upgrade_previous_0.10.0.rst:20
 msgid ""
-"Version 0.9 and later of OpenREM has a minimum Python version of 2.7.9 "
-"(still needs to be 2.7 not 3) and a minimum version of setuptools. If "
-"your installation was originally for OpenREM 0.6 in 2014 or earlier, "
-"these may now be too old and need updating."
+"Python 2.7.9 or later must be installed, but it must still be Python 2.7 "
+"and not any of the Python 3 releases."
 msgstr ""
 
-#: ../../upgrade_previous_0.10.0.rst:13 9de1ca7e9c1c46658d0fb32f1b8d3588
+#: ../../upgrade_previous_0.10.0.rst:22
 msgid ""
 "To check the Python version, activate the virtualenv if you are using "
 "one, then:"
 msgstr ""
 
-#: ../../upgrade_previous_0.10.0.rst:19 79d569f1f47a418682f9b961398deaac
-msgid "If the version is earlier than ``2.7.9``, then an upgrade is needed."
+#: ../../upgrade_previous_0.10.0.rst:28
+msgid ""
+"If the version is earlier than ``2.7.9``, then an upgrade is needed. If "
+"the version is ``3.x``, then Python 2.7 must be installed."
 msgstr ""
 
-#: ../../upgrade_previous_0.10.0.rst:21 d3508197b5e0436cb229281e930e7b37
+#: ../../upgrade_previous_0.10.0.rst:31
 msgid "**Ubuntu Linux**"
 msgstr ""
 
-#: ../../upgrade_previous_0.10.0.rst:23 8559a0b799214b01b315480cfd892697
+#: ../../upgrade_previous_0.10.0.rst:33
 msgid "Check which version of Ubuntu is installed (``lsb_release -a``)"
 msgstr ""
 
-#: ../../upgrade_previous_0.10.0.rst:24 106aeab9eed1419380c11c3bdf9f4cfa
+#: ../../upgrade_previous_0.10.0.rst:34
 msgid ""
 "If it is 14.04 LTS (Trusty), then an operating system upgrade or "
 "migration to a new server is required. If migrating, ensure the version "
@@ -60,350 +80,472 @@ msgid ""
 "when up and running again perform the upgrade on the new server"
 msgstr ""
 
-#: ../../upgrade_previous_0.10.0.rst:28 06e9f33706d046e682990277833b42c4
+#: ../../upgrade_previous_0.10.0.rst:38
 msgid "16.04 LTS (Xenial) or later should have 2.7.11 or later available."
 msgstr ""
 
-#: ../../upgrade_previous_0.10.0.rst:29 f920ea240d424a03ab905eb35da29c27
+#: ../../upgrade_previous_0.10.0.rst:39
 msgid ""
 "For other Linux distributions check in their archives for which versions "
 "are available."
 msgstr ""
 
-#: ../../upgrade_previous_0.10.0.rst:31 d4a380e25909431d9c33098c1a2913c3
+#: ../../upgrade_previous_0.10.0.rst:41
 msgid "**Windows**"
 msgstr ""
 
-#: ../../upgrade_previous_0.10.0.rst:33 8872ecc1726243f888fe82d366aacf78
+#: ../../upgrade_previous_0.10.0.rst:43
 msgid ""
 "A newer version of Python 2.7 can be downloaded from `python.org "
 "<https://www.python.org/downloads>`_ and installed over the current "
 "version."
 msgstr ""
 
-#: ../../upgrade_previous_0.10.0.rst:36 c485dd5950e94420a26221f1fe92eb4e
+#: ../../upgrade_previous_0.10.0.rst:46
 msgid "**Linux and Windows**"
 msgstr ""
 
-#: ../../upgrade_previous_0.10.0.rst:38 adb3ffb24508417898d5541a41af6ad7
+#: ../../upgrade_previous_0.10.0.rst:48
 msgid ""
 "With a version of Python 2.7.9 or later, setuptools can be updated "
 "(activate virtualenv if using one):"
 msgstr ""
 
-#: ../../upgrade_previous_0.10.0.rst:46 af274b0824354637887624f346193da1
-msgid "Upgrading from version 0.7.3 or earlier"
-msgstr ""
-
-#: ../../upgrade_previous_0.10.0.rst:48 a0f6a46523fa46eab39cfbaf75d001c8
-msgid ""
-"Follow the instructions to :doc:`release-0.7.3` first, then return to "
-"these instructions to upgrade to 0.9.1."
-msgstr ""
-
-#: ../../upgrade_previous_0.10.0.rst:53 89d6a157c01d49a9aedd54807cc91c7c
-msgid "Upgrading from version 0.7.4 or later"
-msgstr ""
-
-#: ../../upgrade_previous_0.10.0.rst:56 8bc2ea6032bc4333a092d3fbcfcd58a1
+#: ../../upgrade_previous_0.10.0.rst:56
 msgid "Upgrade"
 msgstr ""
 
-#: ../../upgrade_previous_0.10.0.rst:58 1632173b7cdf46bea671911305da0216
+#: ../../upgrade_previous_0.10.0.rst:58
 msgid "Back up your database"
 msgstr ""
 
-#: ../../upgrade_previous_0.10.0.rst:60 350cba7947c94e8582023bd6e9a7d132
+#: ../../upgrade_previous_0.10.0.rst:60
 msgid "For PostgreSQL on linux you can refer to :ref:`backup-psql-db`"
 msgstr ""
 
-#: ../../upgrade_previous_0.10.0.rst:61 89fed097c81d46a29403dc4b83edf9e3
-msgid "For PostgreSQL on Windows you can refer to :doc:`backupRestorePostgreSQL`"
+#: ../../upgrade_previous_0.10.0.rst:61
+msgid "For PostgreSQL on Windows you can refer to :ref:`database-windows`"
 msgstr ""
 
-#: ../../upgrade_previous_0.10.0.rst:62 4f123fe2f660456a849c4af172df155f
+#: ../../upgrade_previous_0.10.0.rst:62
 msgid ""
 "For a non-production SQLite3 database, simply make a copy of the database"
 " file"
 msgstr ""
 
-#: ../../upgrade_previous_0.10.0.rst:64 958c6eb5d8134668aae33e3bcd183030
+#: ../../upgrade_previous_0.10.0.rst:64
 msgid "Stop any Celery workers"
 msgstr ""
 
-#: ../../upgrade_previous_0.10.0.rst:66 08a938ed68df4b65b610f63b2cc717be
+#: ../../upgrade_previous_0.10.0.rst:66
 msgid ""
 "Consider temporarily disabling your DICOM Store SCP, or redirecting the "
 "data to be processed later"
 msgstr ""
 
-#: ../../upgrade_previous_0.10.0.rst:68 7de53db9bd0749ae87de3683fb4762c0
+#: ../../upgrade_previous_0.10.0.rst:68
 msgid "If you are using a virtualenv, activate it"
 msgstr ""
 
-#: ../../upgrade_previous_0.10.0.rst:70 30b9c5b451ba427888117f83aba90928
+#: ../../upgrade_previous_0.10.0.rst:70
+msgid "Install specific versions of some packages that are needed:"
+msgstr ""
+
+#: ../../upgrade_previous_0.10.0.rst:78
 msgid "Install specific version of Celery:"
 msgstr ""
 
-#: ../../upgrade_previous_0.10.0.rst:72 0914fec4660843dda01af9092e1dd2dd
+#: ../../upgrade_previous_0.10.0.rst:80
 msgid "**Linux server:**"
 msgstr ""
 
-#: ../../upgrade_previous_0.10.0.rst:78 92afed2f13264906849d857825b34942
+#: ../../upgrade_previous_0.10.0.rst:86
 msgid "**Windows server:**"
 msgstr ""
 
-#: ../../upgrade_previous_0.10.0.rst:84 43e3a464e3e2447ca61cbd48c8e3345b
+#: ../../upgrade_previous_0.10.0.rst:92
 msgid "Install the new version of OpenREM:"
 msgstr ""
 
-#: ../../upgrade_previous_0.10.0.rst:93 1af32c4d58794f2eaa4cf90664416c39
+#: ../../upgrade_previous_0.10.0.rst:99
 msgid "Update the configuration"
 msgstr ""
 
-#: ../../upgrade_previous_0.10.0.rst:95 ac5c3b759185479cb06a43870dffdbd9
+#: ../../upgrade_previous_0.10.0.rst:101
 msgid "Locate and edit your local_settings file"
 msgstr ""
 
-#: ../../upgrade_previous_0.10.0.rst:97 ../../upgrade_previous_0.10.0.rst:150
-#: 074408fe369440af9f53b1437855ef32 e1a15f87911b4b1aa818febd9d2299a5
+#: ../../upgrade_previous_0.10.0.rst:103
 msgid ""
 "Ubuntu linux: ``/usr/local/lib/python2.7/dist-"
 "packages/openrem/openremproject/local_settings.py``"
 msgstr ""
 
-#: ../../upgrade_previous_0.10.0.rst:98 ../../upgrade_previous_0.10.0.rst:151
-#: 541338c5e4504574a4f540b3b469aa0e 751a78606d0348ad8cb913a71860f23e
+#: ../../upgrade_previous_0.10.0.rst:104
 msgid ""
 "Other linux: ``/usr/lib/python2.7/site-"
 "packages/openrem/openremproject/local_settings.py``"
 msgstr ""
 
-#: ../../upgrade_previous_0.10.0.rst:99 ../../upgrade_previous_0.10.0.rst:152
-#: 6f2ce0d8d5df44f1bf31687b21dd2380 df5bcd6e710e45718704b5fb8e90fd32
+#: ../../upgrade_previous_0.10.0.rst:105
 msgid ""
 "Linux virtualenv: ``vitualenvfolder/lib/python2.7/site-"
 "packages/openrem/openremproject/local_settings.py``"
 msgstr ""
 
-#: ../../upgrade_previous_0.10.0.rst:100 ../../upgrade_previous_0.10.0.rst:153
-#: 171e6ce21e5c465ca5d12006799e02f5 d0218c27019b4918b80cff215236f803
+#: ../../upgrade_previous_0.10.0.rst:106
 msgid ""
 "Windows: ``C:\\Python27\\Lib\\site-"
 "packages\\openrem\\openremproject\\local_settings.py``"
 msgstr ""
 
-#: ../../upgrade_previous_0.10.0.rst:101 ../../upgrade_previous_0.10.0.rst:154
-#: 204600ef0cdd48babb62c2c57e40ea4e 5c5f7bd769454cf6b23dbbbb7ec0a899
+#: ../../upgrade_previous_0.10.0.rst:107
 msgid ""
 "Windows virtualenv: ``virtualenvfolder\\Lib\\site-"
 "packages\\openrem\\openremproject\\local_settings.py``"
 msgstr ""
 
-#: ../../upgrade_previous_0.10.0.rst:105 8f6153a16155427481e5188adf0d2109
-msgid "Date format - changed with 0.8"
-msgstr ""
-
-#: ../../upgrade_previous_0.10.0.rst:106 cc94d291b687409d985fbb272c349452
-msgid ""
-"Set the date format for xlsx exports (need to check csv situation). Copy "
-"the following code into your ``local_settings.py`` file if you want to "
-"change it from ``dd/mm/yyy``:"
-msgstr ""
-
-#: ../../upgrade_previous_0.10.0.rst:117 3088f56738b4455185197404bb1f7f48
-msgid "Time zone and language - changed with 0.8"
-msgstr ""
-
-#: ../../upgrade_previous_0.10.0.rst:119 e2442d9daeee4b0e8de412b3f74496dd
-msgid ""
-"Consider setting the timezone and language in ``local_settings.py``. See "
-"``local_settings.py.example``."
-msgstr ""
-
-#: ../../upgrade_previous_0.10.0.rst:122 e6c921749a5648b38fd2f7f50a4a3050
+#: ../../upgrade_previous_0.10.0.rst:111
 msgid "Add additional log file configuration - changed with 0.8"
 msgstr ""
 
-#: ../../upgrade_previous_0.10.0.rst:126 96ae21e47f9943d396cba96184ceb932
-msgid ""
-"If the configuration is not added for the new ``openrem_extractor.log`` "
-"you will find it being created where ever you start the webserver from, "
-"and starting the webserver may fail."
-msgstr ""
-
-#: ../../upgrade_previous_0.10.0.rst:129 fd32226d8b504b14abe7754733fba1e7
+#: ../../upgrade_previous_0.10.0.rst:113
 msgid ""
 "Add the new extractor log file configuration to the ``local_settings.py``"
-" - you can copy the 'Logging configuration' section from  "
-"``local_settings.py.example`` if you haven't made many changes to this "
-"section. See the :ref:`local_settings_logfile` settings in the install "
-"instructions."
+" - you can copy the 'Logging configuration' section here if you haven't "
+"made any changes. The addition that needs to be inserted are the lines "
+"relating to the ``extractor`` log file. This is only for upgrading the "
+"database - the ``local_settings.py`` file will be updated again for the "
+"upgrade to 1.0:"
 msgstr ""
 
-#: ../../upgrade_previous_0.10.0.rst:135 8b872bd35433492aa9f1fa4df259ec26
-msgid ""
-"If you are upgrading from an earlier beta with the Toshiba RDSR creation "
-"logs defined, this has changed names and must be modified in "
-"``local_settings.py`` before the migration below. It should be changed "
-"to::"
-msgstr ""
-
-#: ../../upgrade_previous_0.10.0.rst:140 9a56e2215a8a448b8afaa6f9f7101780
-msgid "substituting ``INFO`` for whichever level of logging is desired."
-msgstr ""
-
-#: ../../upgrade_previous_0.10.0.rst:143 7c882a6ddca44c43b64180ed233f4420
-msgid "E-mail server settings - changed with 0.9.0"
-msgstr ""
-
-#: ../../upgrade_previous_0.10.0.rst:145 95bbff2f7b2e4b03ad8a4d5258c74fe9
-msgid ""
-"If you want selected OpenREM users to be automatically sent fluoroscopy "
-"high dose alerts then set the details of the e-mail server to be used in "
-"the `E-mail server settings` part of your ``local_settings.py`` file. "
-"Locate and edit your local_settings file"
-msgstr ""
-
-#: ../../upgrade_previous_0.10.0.rst:156 27cc6af6863644a9a6f0080c7b962822
-msgid ""
-"Then change the e-mail section settings to reflect the e-mail server that"
-" is to be used:"
-msgstr ""
-
-#: ../../upgrade_previous_0.10.0.rst:170 2ae23ecb72b94443bf98d4caf2df4aca
-msgid "See the :ref:`email_configuration` documentation for full details."
-msgstr ""
-
-#: ../../upgrade_previous_0.10.0.rst:174 230911b7725e4a51905a6816fef56348
+#: ../../upgrade_previous_0.10.0.rst:149
 msgid "Migrate the database"
 msgstr ""
 
-#: ../../upgrade_previous_0.10.0.rst:176 602f16dbd4b3445cbf7a9b3eac2e8973
+#: ../../upgrade_previous_0.10.0.rst:151
 msgid "In a shell/command window, move into the ``openrem`` folder:"
 msgstr ""
 
-#: ../../upgrade_previous_0.10.0.rst:178 9271682a9c7049d1bcec925ced1de15f
+#: ../../upgrade_previous_0.10.0.rst:153
 msgid "Ubuntu linux: ``/usr/local/lib/python2.7/dist-packages/openrem/``"
 msgstr ""
 
-#: ../../upgrade_previous_0.10.0.rst:179 95b46c12b0524a21b74443fb6f1511c5
+#: ../../upgrade_previous_0.10.0.rst:154
 msgid "Other linux: ``/usr/lib/python2.7/site-packages/openrem/``"
 msgstr ""
 
-#: ../../upgrade_previous_0.10.0.rst:180 fc3233f6adbe422fa2ca6fb6b17aa9da
+#: ../../upgrade_previous_0.10.0.rst:155
 msgid "Linux virtualenv: ``vitualenvfolder/lib/python2.7/site-packages/openrem/``"
 msgstr ""
 
-#: ../../upgrade_previous_0.10.0.rst:181 8f662dce84f149269514d4a5d3b12e58
+#: ../../upgrade_previous_0.10.0.rst:156
 msgid "Windows: ``C:\\Python27\\Lib\\site-packages\\openrem\\``"
 msgstr ""
 
-#: ../../upgrade_previous_0.10.0.rst:182 8b6c24c6228d49d6b8573c37c5d4f789
+#: ../../upgrade_previous_0.10.0.rst:157
 msgid "Windows virtualenv: ``virtualenvfolder\\Lib\\site-packages\\openrem\\``"
 msgstr ""
 
-#: ../../upgrade_previous_0.10.0.rst:191 d20cf60a008a45f6899c9a3b9e26aa52
-msgid "Update static files"
+#: ../../upgrade_previous_0.10.0.rst:167
+msgid "Systemd service names in Ubuntu installs"
 msgstr ""
 
-#: ../../upgrade_previous_0.10.0.rst:193 7bc295eaa2774549abf60eb22684fe71
+#: ../../upgrade_previous_0.10.0.rst:169
 msgid ""
-"In the same shell/command window as you used above run the following "
-"command to clear the static files belonging to your previous OpenREM "
-"version and replace them with those belonging to the version you have "
-"just installed (assuming you are using a production web server...):"
-msgstr ""
-
-#: ../../upgrade_previous_0.10.0.rst:201 8d19c82f02a644adb5bf0d80c3dbda91
-msgid "Virtual directory users"
-msgstr ""
-
-#: ../../upgrade_previous_0.10.0.rst:203 6387daca04c64f99bf35a355e1513eb4
-msgid ""
-"If you are running your website in a virtual directory, you also have to "
-"update the reverse.js file. To get the file in the correct path, take "
-"care that you insert just after the declaration of ``STATIC_ROOT`` the "
-"following line in your ``local_settings.py`` (see also the sample "
-"``local_settings.py.example``):"
-msgstr ""
-
-#: ../../upgrade_previous_0.10.0.rst:211 63d419cefa4b4d15b61d23fdbc9e5b93
-msgid "To update the reverse.js file execute the following command:"
-msgstr ""
-
-#: ../../upgrade_previous_0.10.0.rst:217 df11f8bcb7e143798c9dbfa2f1bfbc3d
-msgid "See  :doc:`virtual_directory` for more details."
-msgstr ""
-
-#: ../../upgrade_previous_0.10.0.rst:220 9f5b2e5affc145b48310014e90ee268d
-msgid "Enable task management - changed in 0.9.0"
-msgstr ""
-
-#: ../../upgrade_previous_0.10.0.rst:223 2e91ac4223aa48d7b2adf1a58844fb16
-msgid "RabbitMQ management interface"
-msgstr ""
-
-#: ../../upgrade_previous_0.10.0.rst:225 ae13dcfbda3140c0a94706f156df4b70
-msgid ""
-"To make use of the RabbitMQ queue display and purge control, the "
-"management interface needs to be enabled. To do so, follow the "
-"instructions at :ref:`enableRabbitMQ`."
-msgstr ""
-
-#: ../../upgrade_previous_0.10.0.rst:229 70e8b70941b2473297a8772809fc55b5
-msgid "Celery management interface, Flower"
-msgstr ""
-
-#: ../../upgrade_previous_0.10.0.rst:231 84937416288049b18114cf7c44b1b270
-msgid ""
-"To make use of the Celery task management, Flower needs to be running. To"
-" do so, follow the instructions in :ref:`start_flower`. For 'one-page "
-"Ubuntu' installs, add the Flower related config and create, register and "
-"start the systemd service files as described in "
-":ref:`one_page_linux_celery`. If you need to change the default Flower "
-"port of 5555 then make sure you do so in "
-"``openremproject\\local_settings.py`` to add/modify the line "
-"``FLOWER_PORT = 5555`` as well as when you start Flower."
-msgstr ""
-
-#: ../../upgrade_previous_0.10.0.rst:238 bb3d8797dfa14ece9cebc5b8d87680f5
-msgid "Celery for Windows config - changed in 0.9.0"
-msgstr ""
-
-#: ../../upgrade_previous_0.10.0.rst:240 925795263e264e15834dbbe86fa94bef
-msgid ""
-"For best performance and reliability when using Celery on Windows, if "
-"your command for starting Celery specifies a pool option, for example "
-"``-P solo``, remove it so that Celery reverts to using the default "
-"``prefork`` pool. This will enable multiple tasks to run concurrently and"
-" it will be possible to terminate tasks."
-msgstr ""
-
-#: ../../upgrade_previous_0.10.0.rst:244 9173341c42724b30a380ae7324e3299a
-msgid ""
-"If you are a Windows user you may also wish to review :doc:`celery-"
-"windows` as the example control batch files have been updated."
-msgstr ""
-
-#: ../../upgrade_previous_0.10.0.rst:249 646c7813f1624078af0688e9d87545d3
-msgid "Ubuntu installs that followed :doc:`quick_start_linux`"
-msgstr ""
-
-#: ../../upgrade_previous_0.10.0.rst:251 c13fed7d14e44ad9867db088f3f4f697
-msgid ""
-"Systemd service files have been renamed in these docs to use *openrem-"
+"Systemd service files were renamed in the the 0.9.1 docs to use *openrem-"
 "function* rather than *function-openrem*. To update the service files "
 "accordingly, follow the following steps. **This is optional**, but will "
 "make finding them easier (e.g. ``sudo systemctl status "
-"openrem-[tab][tab]`` will list them!)"
+"openrem-[tab][tab]`` will list them) and these names are assumed for the "
+":doc:`upgrade_docker` and :doc:`upgrade_linux` docs. However, only the "
+"``gunicorn`` service remains after the upgrade to 1.0, so you may find it"
+" easier just to remember the only service names, or just rename that one."
 msgstr ""
 
-#: ../../upgrade_previous_0.10.0.rst:278 92720e55767642049cea9feff79d5cdc
-msgid "Post upgrade migration"
+#: ../../upgrade_previous_0.10.0.rst:198
+msgid "Upgrade to 1.0"
 msgstr ""
 
-#: ../../upgrade_previous_0.10.0.rst:280 448727d26bf64dc9beb6ba5eaeb5386c
-msgid "Now return to the 0.10.0 release docs for :ref:`post_upgrade0100`"
+#: ../../upgrade_previous_0.10.0.rst:200
+msgid ""
+"Now return to :doc:`installation` instructions to follow the instructions"
+" to 1.0 for your preferred server solution."
 msgstr ""
+
+#: ../../upgrade_previous_0.10.0.rst:202
+msgid ""
+"After upgrading to version 1.0, there will be automatic tasks that are "
+"created to populate the summary fields introduced in version 0.10."
+msgstr ""
+
+#: ../../upgrade_previous_0.10.0.rst:-1
+msgid "0.10 upgrade panel before log in"
+msgstr ""
+
+#: ../../upgrade_previous_0.10.0.rst:210
+msgid ""
+"Log in as an administrator to start the migration process. If you have a "
+"large number of studies in your database this can take some time. A large"
+" database (several hundred studies) on slow disks might take a day or "
+"two, on faster disks or with a smaller database it could take from a few "
+"minutes to an hour or so. You will be able to monitor the progress on the"
+" home page as seen in the figure at the bottom of this page."
+msgstr ""
+
+#: ../../upgrade_previous_0.10.0.rst:-1
+msgid "0.10 upgrade panel after log in as administrator"
+msgstr ""
+
+#: ../../upgrade_previous_0.10.0.rst:220
+msgid ""
+"One task per modality type (CT, fluoroscopy, mammography and radiography)"
+" is generated to create a task per study in each modality to populate the"
+" new fields for that study. If the number of workers is the same or less "
+"than the number of modality types in your database then the study level "
+"tasks will all be created before any of them are executed as all the "
+"workers will be busy. Therefore there might be a delay before the "
+"progress indicators on the OpenREM front page start to update. You can "
+"review the number of tasks being created on the ``Config -> Tasks`` page."
+msgstr ""
+
+#: ../../upgrade_previous_0.10.0.rst:226
+msgid ""
+"Before the migration is complete, some of the information on the modality"
+" pages of OpenREM will be missing, such as the dose information for "
+"example, but otherwise everything that doesn't rely on Celery workers "
+"will work as normal. Studies sent directly to be imported will carry on "
+"during the migration, but query-retrieve tasks will get stuck behind the "
+"migration tasks."
+msgstr ""
+
+#: ../../upgrade_previous_0.10.0.rst:-1
+msgid "0.10 upgrade panel, population of fields in progress"
+msgstr ""
+
+#: ../../upgrade_previous_0.10.0.rst:236
+msgid ""
+"When the process is complete the 'Summary data fields migration' panel "
+"will disappear and will not be seen again."
+msgstr ""
+
+#~ msgid "Upgrade to OpenREM 0.10.0 from before 0.9.1"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Version 0.9 and later of OpenREM "
+#~ "has a minimum Python version of "
+#~ "2.7.9 (still needs to be 2.7 not"
+#~ " 3) and a minimum version of "
+#~ "setuptools. If your installation was "
+#~ "originally for OpenREM 0.6 in 2014 "
+#~ "or earlier, these may now be too"
+#~ " old and need updating."
+#~ msgstr ""
+
+#~ msgid "If the version is earlier than ``2.7.9``, then an upgrade is needed."
+#~ msgstr ""
+
+#~ msgid "Upgrading from version 0.7.3 or earlier"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Follow the instructions to "
+#~ ":doc:`release-0.7.3` first, then return to "
+#~ "these instructions to upgrade to 0.9.1."
+#~ msgstr ""
+
+#~ msgid "Upgrading from version 0.7.4 or later"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "For PostgreSQL on Windows you can "
+#~ "refer to :doc:`backupRestorePostgreSQL`"
+#~ msgstr ""
+
+#~ msgid "Date format - changed with 0.8"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Set the date format for xlsx "
+#~ "exports (need to check csv situation)."
+#~ " Copy the following code into your"
+#~ " ``local_settings.py`` file if you want "
+#~ "to change it from ``dd/mm/yyy``:"
+#~ msgstr ""
+
+#~ msgid "Time zone and language - changed with 0.8"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Consider setting the timezone and "
+#~ "language in ``local_settings.py``. See "
+#~ "``local_settings.py.example``."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "If the configuration is not added "
+#~ "for the new ``openrem_extractor.log`` you "
+#~ "will find it being created where "
+#~ "ever you start the webserver from, "
+#~ "and starting the webserver may fail."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Add the new extractor log file "
+#~ "configuration to the ``local_settings.py`` -"
+#~ " you can copy the 'Logging "
+#~ "configuration' section from  "
+#~ "``local_settings.py.example`` if you haven't "
+#~ "made many changes to this section. "
+#~ "See the :ref:`local_settings_logfile` settings "
+#~ "in the install instructions."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "If you are upgrading from an "
+#~ "earlier beta with the Toshiba RDSR "
+#~ "creation logs defined, this has changed"
+#~ " names and must be modified in "
+#~ "``local_settings.py`` before the migration "
+#~ "below. It should be changed to::"
+#~ msgstr ""
+
+#~ msgid "substituting ``INFO`` for whichever level of logging is desired."
+#~ msgstr ""
+
+#~ msgid "E-mail server settings - changed with 0.9.0"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "If you want selected OpenREM users "
+#~ "to be automatically sent fluoroscopy "
+#~ "high dose alerts then set the "
+#~ "details of the e-mail server to be"
+#~ " used in the `E-mail server settings`"
+#~ " part of your ``local_settings.py`` file."
+#~ " Locate and edit your local_settings "
+#~ "file"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Then change the e-mail section settings"
+#~ " to reflect the e-mail server that"
+#~ " is to be used:"
+#~ msgstr ""
+
+#~ msgid "See the :ref:`email_configuration` documentation for full details."
+#~ msgstr ""
+
+#~ msgid "Update static files"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "In the same shell/command window as "
+#~ "you used above run the following "
+#~ "command to clear the static files "
+#~ "belonging to your previous OpenREM "
+#~ "version and replace them with those "
+#~ "belonging to the version you have "
+#~ "just installed (assuming you are using"
+#~ " a production web server...):"
+#~ msgstr ""
+
+#~ msgid "Virtual directory users"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "If you are running your website in"
+#~ " a virtual directory, you also have"
+#~ " to update the reverse.js file. To"
+#~ " get the file in the correct "
+#~ "path, take care that you insert "
+#~ "just after the declaration of "
+#~ "``STATIC_ROOT`` the following line in "
+#~ "your ``local_settings.py`` (see also the "
+#~ "sample ``local_settings.py.example``):"
+#~ msgstr ""
+
+#~ msgid "To update the reverse.js file execute the following command:"
+#~ msgstr ""
+
+#~ msgid "See  :doc:`virtual_directory` for more details."
+#~ msgstr ""
+
+#~ msgid "Enable task management - changed in 0.9.0"
+#~ msgstr ""
+
+#~ msgid "RabbitMQ management interface"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "To make use of the RabbitMQ queue"
+#~ " display and purge control, the "
+#~ "management interface needs to be "
+#~ "enabled. To do so, follow the "
+#~ "instructions at :ref:`enableRabbitMQ`."
+#~ msgstr ""
+
+#~ msgid "Celery management interface, Flower"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "To make use of the Celery task "
+#~ "management, Flower needs to be running."
+#~ " To do so, follow the instructions"
+#~ " in :ref:`start_flower`. For 'one-page "
+#~ "Ubuntu' installs, add the Flower related"
+#~ " config and create, register and "
+#~ "start the systemd service files as "
+#~ "described in :ref:`one_page_linux_celery`. If "
+#~ "you need to change the default "
+#~ "Flower port of 5555 then make sure"
+#~ " you do so in "
+#~ "``openremproject\\local_settings.py`` to add/modify "
+#~ "the line ``FLOWER_PORT = 5555`` as "
+#~ "well as when you start Flower."
+#~ msgstr ""
+
+#~ msgid "Celery for Windows config - changed in 0.9.0"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "For best performance and reliability "
+#~ "when using Celery on Windows, if "
+#~ "your command for starting Celery "
+#~ "specifies a pool option, for example "
+#~ "``-P solo``, remove it so that "
+#~ "Celery reverts to using the default "
+#~ "``prefork`` pool. This will enable "
+#~ "multiple tasks to run concurrently and"
+#~ " it will be possible to terminate "
+#~ "tasks."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "If you are a Windows user you "
+#~ "may also wish to review :doc:`celery-"
+#~ "windows` as the example control batch"
+#~ " files have been updated."
+#~ msgstr ""
+
+#~ msgid "Ubuntu installs that followed :doc:`quick_start_linux`"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Systemd service files have been renamed"
+#~ " in these docs to use *openrem-"
+#~ "function* rather than *function-openrem*. "
+#~ "To update the service files accordingly,"
+#~ " follow the following steps. **This "
+#~ "is optional**, but will make finding "
+#~ "them easier (e.g. ``sudo systemctl "
+#~ "status openrem-[tab][tab]`` will list them!)"
+#~ msgstr ""
+
+#~ msgid "Post upgrade migration"
+#~ msgstr ""
+
+#~ msgid "Now return to the 0.10.0 release docs for :ref:`post_upgrade0100`"
+#~ msgstr ""
 

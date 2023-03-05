@@ -1,5 +1,5 @@
 # SOME DESCRIPTIVE TITLE.
-# Copyright (C) 2013-2020, The Royal Marsden NHS Foundation Trust
+# Copyright (C) 2013-2022, The Royal Marsden NHS Foundation Trust
 # This file is distributed under the same license as the OpenREM package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-01 18:30+0100\n"
+"POT-Creation-Date: 2023-03-05 17:21+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -64,202 +64,18 @@ msgstr ""
 msgid "Exports: fixed another non-ASCII bug"
 msgstr ""
 
-#: ../../release-0.8.1.rst:20
-msgid "If upgrading from 0.7.4, see also :doc:`release-0.8.0`"
+#: ../../release-0.8.1.rst:21
+msgid "Upgrade to current version"
 msgstr ""
 
-#: ../../release-0.8.1.rst:25
-msgid "Upgrading an OpenREM server with no internet access"
+#: ../../release-0.8.1.rst:23
+msgid ":doc:`upgrade_previous_0.10.0` and then upgrade to 1.0."
 msgstr ""
 
-#: ../../release-0.8.1.rst:27
-msgid "Follow the instructions found at :doc:`upgrade-offline`, before returning here to update the database and configuration."
+#: ../../release-0.8.1.rst:26
+msgid "Specific upgrade instructions"
 msgstr ""
 
-#: ../../release-0.8.1.rst:32
-msgid "Upgrading from version 0.7.4 or 0.8.0"
-msgstr ""
-
-#: ../../release-0.8.1.rst:35
-msgid "Upgrade"
-msgstr ""
-
-#: ../../release-0.8.1.rst:37
-msgid "Back up your database"
-msgstr ""
-
-#: ../../release-0.8.1.rst:39
-msgid "For PostgreSQL on linux you can refer to :ref:`backup-psql-db`"
-msgstr ""
-
-#: ../../release-0.8.1.rst:40
-msgid "For PostgreSQL on Windows you can refer to :ref:`backupRestorePostgreSQL`"
-msgstr ""
-
-#: ../../release-0.8.1.rst:41
-msgid "For a non-production SQLite3 database, simply make a copy of the database file"
-msgstr ""
-
-#: ../../release-0.8.1.rst:43
-msgid "Stop any Celery workers"
-msgstr ""
-
-#: ../../release-0.8.1.rst:45
-msgid "Consider temporarily disabling your DICOM Store SCP, or redirecting the data to be processed later"
-msgstr ""
-
-#: ../../release-0.8.1.rst:47
-msgid "If you are using a virtualenv, activate it"
-msgstr ""
-
-#: ../../release-0.8.1.rst:49
-msgid "Install the new version of OpenREM:"
-msgstr ""
-
-#: ../../release-0.8.1.rst:58
-msgid "Update the configuration"
-msgstr ""
-
-#: ../../release-0.8.1.rst:59
-msgid "*no changes should be required if upgrading from 0.8.0*"
-msgstr ""
-
-#: ../../release-0.8.1.rst:61
-msgid "Locate and edit your local_settings file"
-msgstr ""
-
-#: ../../release-0.8.1.rst:63
-msgid "Ubuntu linux: ``/usr/local/lib/python2.7/dist-packages/openrem/openremproject/local_settings.py``"
-msgstr ""
-
-#: ../../release-0.8.1.rst:64
-msgid "Other linux: ``/usr/lib/python2.7/site-packages/openrem/openremproject/local_settings.py``"
-msgstr ""
-
-#: ../../release-0.8.1.rst:65
-msgid "Linux virtualenv: ``vitualenvfolder/lib/python2.7/site-packages/openrem/openremproject/local_settings.py``"
-msgstr ""
-
-#: ../../release-0.8.1.rst:66
-msgid "Windows: ``C:\\Python27\\Lib\\site-packages\\openrem\\openremproject\\local_settings.py``"
-msgstr ""
-
-#: ../../release-0.8.1.rst:67
-msgid "Windows virtualenv: ``virtualenvfolder\\Lib\\site-packages\\openrem\\openremproject\\local_settings.py``"
-msgstr ""
-
-#: ../../release-0.8.1.rst:70
-msgid "Date format"
-msgstr ""
-
-#: ../../release-0.8.1.rst:71
-msgid "Set the date format for xlsx exports (need to check csv situation). Copy the following code into your ``local_settings.py`` file if you want to change it from ``dd/mm/yyy``:"
-msgstr ""
-
-#: ../../release-0.8.1.rst:82
-msgid "Time zone and language"
-msgstr ""
-
-#: ../../release-0.8.1.rst:84
-msgid "Consider setting the timezone and language in ``local_settings.py``. See ``local_settings.py.example``."
-msgstr ""
-
-#: ../../release-0.8.1.rst:87
-msgid "Add additional log file configuration"
-msgstr ""
-
-#: ../../release-0.8.1.rst:91
-msgid "If the configuration is not added for the new ``openrem_extractor.log`` you will find it being created whereever you start the webserver from, and starting the webserver may fail."
-msgstr ""
-
-#: ../../release-0.8.1.rst:94
-msgid "Add the new extractor log file configuration to the ``local_settings.py`` - you can copy the 'Logging configuration' section from  ``local_settings.py.example`` if you haven't made many changes to this section. See the :ref:`local_settings_logfile` settings in the install instructions."
-msgstr ""
-
-#: ../../release-0.8.1.rst:100
-msgid "If you are upgrading from an earlier beta with the Toshiba RDSR creation logs defined, this has changed names and must be modified in ``local_settings.py`` before the migration below. It should be changed to::"
-msgstr ""
-
-#: ../../release-0.8.1.rst:105
-msgid "substituting ``INFO`` for whichever level of logging is desired."
-msgstr ""
-
-#: ../../release-0.8.1.rst:108
-msgid "Adding legacy Toshiba CT functionality"
-msgstr ""
-
-#: ../../release-0.8.1.rst:109
-msgid "*No change required if upgrading from 0.8.0*"
-msgstr ""
-
-#: ../../release-0.8.1.rst:111
-msgid "If you need to import data from older Toshiba CT scanners into OpenREM then the following tools need to be available on the same server as OpenREM:"
-msgstr ""
-
-#: ../../release-0.8.1.rst:114
-msgid "The `Offis DICOM toolkit`_"
-msgstr ""
-
-#: ../../release-0.8.1.rst:115
-msgid "`Java`_"
-msgstr ""
-
-#: ../../release-0.8.1.rst:116
-msgid "pixelmed.jar from the `PixelMed Java DICOM Toolkit`_"
-msgstr ""
-
-#: ../../release-0.8.1.rst:118
-msgid "The paths to these must be set in ``local_settings.py`` for your system:"
-msgstr ""
-
-#: ../../release-0.8.1.rst:131
-msgid "The example above is for Windows. On linux, if you have installed the Offis DICOM toolkit with ``sudo apt install dcmtk`` or similar, you can find the path for the configuration above using the command ``which dcmconv``. This will be something like ``/usr/bin/dcmconv``, so the ``DCMTK_PATH`` would be ``'/usr/bin`` and the ``DCMCONV`` would be ``os.path.join(DCMTK_PATH, 'dcmconv')``. Similarly for ``DCMMKDIR`` and ``JAVA_EXE``, which might be ``/usr/bin/java``. The pixelmed.jar file should be downloaded from the link above, and you will need to provide the path to where you have saved it."
-msgstr ""
-
-#: ../../release-0.8.1.rst:138
-msgid "The list of CT scanners that the extractor works with has been reduced. You can add to this list, but you will need to verify that any systems you configure to use this extractor produce data in OpenREM that you expect."
-msgstr ""
-
-#: ../../release-0.8.1.rst:143
-msgid "Migrate the database"
-msgstr ""
-
-#: ../../release-0.8.1.rst:145
-msgid "In a shell/command window, move into the ``openrem`` folder:"
-msgstr ""
-
-#: ../../release-0.8.1.rst:147
-msgid "Ubuntu linux: ``/usr/local/lib/python2.7/dist-packages/openrem/``"
-msgstr ""
-
-#: ../../release-0.8.1.rst:148
-msgid "Other linux: ``/usr/lib/python2.7/site-packages/openrem/``"
-msgstr ""
-
-#: ../../release-0.8.1.rst:149
-msgid "Linux virtualenv: ``vitualenvfolder/lib/python2.7/site-packages/openrem/``"
-msgstr ""
-
-#: ../../release-0.8.1.rst:150
-msgid "Windows: ``C:\\Python27\\Lib\\site-packages\\openrem\\``"
-msgstr ""
-
-#: ../../release-0.8.1.rst:151
-msgid "Windows virtualenv: ``virtualenvfolder\\Lib\\site-packages\\openrem\\``"
-msgstr ""
-
-#: ../../release-0.8.1.rst:161
-msgid "Update static files"
-msgstr ""
-
-#: ../../release-0.8.1.rst:163
-msgid "In the same shell/command window as you used above run the following command to clear the static files belonging to your previous OpenREM version and replace them with those belonging to the version you have just installed (assuming you are using a production web server...):"
-msgstr ""
-
-#: ../../release-0.8.1.rst:173
-msgid "Restart all the services"
-msgstr ""
-
-#: ../../release-0.8.1.rst:175
-msgid "Follow the guide at :doc:`startservices`."
+#: ../../release-0.8.1.rst:28
+msgid "For the original upgrade instructions, the last docs release to include them was `0.10.0-docs <https://docs.openrem.org/en/0.10.0-docs/release-0.8.1.html>`_"
 msgstr ""
