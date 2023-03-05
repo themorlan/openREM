@@ -3,7 +3,7 @@ OpenREM version history
 =======================
 
 
-1.0.0b1 (2023-xx-xx)
+1.0.0a1 (2023-03-05)
 --------------------
 * :issue:`977`  Documentation: fix issues preventing translations to be built
 * :issue:`976`  NM charts: Fixed bug where graphs were not displayed correctly for some chart options

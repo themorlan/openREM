@@ -78,6 +78,7 @@ definitions:
           - coverage combine
           - coveralls
           - coverage xml
+          - bash <(curl -Ls https://coverage.codacy.com/get.sh)
         artifacts:
           - coverage.xml
         services:
