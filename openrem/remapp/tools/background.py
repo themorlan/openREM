@@ -54,9 +54,9 @@ django.setup()
 
 from remapp.models import BackgroundTask, DicomQuery
 
-from huey.contrib.djhuey import db_task # pylint: disable=wrong-import-position
-from huey.api import Result # pylint: disable=wrong-import-position
-from huey.contrib.djhuey import HUEY as huey # pylint: disable=wrong-import-position
+from huey.contrib.djhuey import db_task  # pylint: disable=wrong-import-position
+from huey.api import Result  # pylint: disable=wrong-import-position
+from huey.contrib.djhuey import HUEY as huey  # pylint: disable=wrong-import-position
 
 
 class QueuedTask:

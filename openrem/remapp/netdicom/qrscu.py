@@ -913,14 +913,10 @@ def _check_sr_type_in_study(ae, remote, assoc, study, query, get_empty_sr):
     logger.debug(f"{query_id_8} Check SR type: sop_classes: {sop_classes}")
 
     if "1.2.840.10008.5.1.4.1.1.88.67" in sop_classes:
-        _remove_sr_objects(
-            series_sr, "1.2.840.10008.5.1.4.1.1.88.67", query_id_8
-        )
+        _remove_sr_objects(series_sr, "1.2.840.10008.5.1.4.1.1.88.67", query_id_8)
         return "RDSR"
     elif "1.2.840.10008.5.1.4.1.1.88.22" in sop_classes:
-        _remove_sr_objects(
-            series_sr, "1.2.840.10008.5.1.4.1.1.88.22", query_id_8
-        )
+        _remove_sr_objects(series_sr, "1.2.840.10008.5.1.4.1.1.88.22", query_id_8)
         return "ESR"
     elif "null_response" in sop_classes:
         logger.debug(
