@@ -53,6 +53,8 @@ Development version
 .. image:: https://app.codacy.com/project/badge/Grade/9a3ead1299da41f99bf6d701d72e0363
     :target: https://www.codacy.com/bb/openrem/openrem/dashboard
 
+.. image:: https://app.codacy.com/project/badge/Coverage/9a3ead1299da41f99bf6d701d72e0363
+    :target: https://www.codacy.com/bb/openrem/openrem/dashboard
 
 Sonar Cloud
 
