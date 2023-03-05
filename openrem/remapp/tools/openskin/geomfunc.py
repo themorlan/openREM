@@ -88,9 +88,9 @@ def intersect(a_ray, a_triangle):
     return output
 
 
-def collimate(
+def collimate(  # pylint: disable=too-many-locals
     a_ray, area, d_ref, lr_angle, cc_angle
-):  # pylint: disable=too-many-locals
+):
     """This function produces a pair of triangles representing a square field
     of a collimated x-ray beam. These are then used for intersection checks to
     see if the phantom cell sees radiation.

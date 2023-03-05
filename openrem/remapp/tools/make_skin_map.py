@@ -51,9 +51,9 @@ from remapp.models import (  # pylint: disable=wrong-import-position
     OpenSkinSafeList,
 )
 from .background import record_task_info  # pylint: disable=wrong-import-position
-from .save_skin_map_structure import (
+from .save_skin_map_structure import (  # pylint: disable=wrong-import-position
     save_openskin_structure,
-)  # pylint: disable=wrong-import-position
+)
 from .openskin.calc_exp_map import CalcExpMap  # pylint: disable=wrong-import-position
 from ..version import __skin_map_version__  # pylint: disable=wrong-import-position
 
