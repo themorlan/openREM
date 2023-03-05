@@ -83,7 +83,9 @@ class OpenSkinBlackBox(TestCase):
         safe_list_entry.save()
 
         """Test known Siemens Zee RDSR"""
-        study = GeneralStudyModuleAttr.objects.filter(generalequipmentmoduleattr__manufacturer__exact="Siemens")[0]
+        study = GeneralStudyModuleAttr.objects.filter(
+            generalequipmentmoduleattr__manufacturer__exact="Siemens"
+        )[0]
 
         make_skin_map(study.pk)
         study_date = study.study_date
@@ -103,7 +105,9 @@ class OpenSkinBlackBox(TestCase):
             self.assertAlmostEqual(existing_skin_map_data["phantom_width"], 33.735, 3)
             self.assertEqual(existing_skin_map_data["phantom_height"], 70)
             self.assertAlmostEqual(existing_skin_map_data["phantom_head_height"], 24.0)
-            self.assertAlmostEqual(existing_skin_map_data["phantom_head_radius"], 9.231, 3)
+            self.assertAlmostEqual(
+                existing_skin_map_data["phantom_head_radius"], 9.231, 3
+            )
             self.assertAlmostEqual(existing_skin_map_data["phantom_depth"], 19.735, 3)
             self.assertAlmostEqual(existing_skin_map_data["phantom_flat_dist"], 14.0)
             self.assertAlmostEqual(existing_skin_map_data["phantom_curved_dist"], 31.0)
@@ -127,7 +131,9 @@ class OpenSkinBlackBox(TestCase):
         safe_list_entry.software_version = "No Match"
         safe_list_entry.save()
 
-        study = GeneralStudyModuleAttr.objects.filter(generalequipmentmoduleattr__manufacturer__exact="Siemens")[0]
+        study = GeneralStudyModuleAttr.objects.filter(
+            generalequipmentmoduleattr__manufacturer__exact="Siemens"
+        )[0]
 
         make_skin_map(study.pk)
         study_date = study.study_date
@@ -151,7 +157,9 @@ class OpenSkinBlackBox(TestCase):
         safe_list_entry.software_version = "VC14J 150507"
         safe_list_entry.save()
 
-        study = GeneralStudyModuleAttr.objects.filter(generalequipmentmoduleattr__manufacturer__exact="Siemens")[0]
+        study = GeneralStudyModuleAttr.objects.filter(
+            generalequipmentmoduleattr__manufacturer__exact="Siemens"
+        )[0]
 
         make_skin_map(study.pk)
         study_date = study.study_date
@@ -171,7 +179,9 @@ class OpenSkinBlackBox(TestCase):
             self.assertAlmostEqual(existing_skin_map_data["phantom_width"], 33.735, 3)
             self.assertEqual(existing_skin_map_data["phantom_height"], 70)
             self.assertAlmostEqual(existing_skin_map_data["phantom_head_height"], 24.0)
-            self.assertAlmostEqual(existing_skin_map_data["phantom_head_radius"], 9.231, 3)
+            self.assertAlmostEqual(
+                existing_skin_map_data["phantom_head_radius"], 9.231, 3
+            )
             self.assertAlmostEqual(existing_skin_map_data["phantom_depth"], 19.735, 3)
             self.assertAlmostEqual(existing_skin_map_data["phantom_flat_dist"], 14.0)
             self.assertAlmostEqual(existing_skin_map_data["phantom_curved_dist"], 31.0)
@@ -195,7 +205,9 @@ class OpenSkinBlackBox(TestCase):
         safe_list_entry.manufacturer = "Not Siemens"
         safe_list_entry.save()
 
-        study = GeneralStudyModuleAttr.objects.filter(generalequipmentmoduleattr__manufacturer__exact="Siemens")[0]
+        study = GeneralStudyModuleAttr.objects.filter(
+            generalequipmentmoduleattr__manufacturer__exact="Siemens"
+        )[0]
 
         make_skin_map(study.pk)
         study_date = study.study_date
@@ -215,7 +227,9 @@ class OpenSkinBlackBox(TestCase):
 
     @tag("slow")
     def test_rotational_exposure(self):
-        study = GeneralStudyModuleAttr.objects.filter(generalequipmentmoduleattr__manufacturer__exact="CANON_MEC")[0]
+        study = GeneralStudyModuleAttr.objects.filter(
+            generalequipmentmoduleattr__manufacturer__exact="CANON_MEC"
+        )[0]
 
         make_skin_map(study.pk)
         study_date = study.study_date
@@ -235,14 +249,18 @@ class OpenSkinBlackBox(TestCase):
             self.assertAlmostEqual(existing_skin_map_data["phantom_width"], 35.372, 3)
             self.assertEqual(existing_skin_map_data["phantom_height"], 70)
             self.assertAlmostEqual(existing_skin_map_data["phantom_head_height"], 24.0)
-            self.assertAlmostEqual(existing_skin_map_data["phantom_head_radius"], 9.231, 3)
+            self.assertAlmostEqual(
+                existing_skin_map_data["phantom_head_radius"], 9.231, 3
+            )
             self.assertAlmostEqual(existing_skin_map_data["phantom_depth"], 20.372, 3)
             self.assertAlmostEqual(existing_skin_map_data["phantom_flat_dist"], 15.0)
             self.assertAlmostEqual(existing_skin_map_data["phantom_curved_dist"], 32.0)
             self.assertAlmostEqual(existing_skin_map_data["patient_height"], 179.0)
             self.assertAlmostEqual(existing_skin_map_data["patient_mass"], 77.0)
             self.assertEqual(existing_skin_map_data["patient_orientation"], "HFS")
-            self.assertEqual(existing_skin_map_data["patient_height_source"], "extracted")
+            self.assertEqual(
+                existing_skin_map_data["patient_height_source"], "extracted"
+            )
             self.assertEqual(existing_skin_map_data["patient_mass_source"], "extracted")
             self.assertEqual(
                 existing_skin_map_data["patient_orientation_source"], "supine assumed"

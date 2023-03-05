@@ -88,7 +88,9 @@ def intersect(a_ray, a_triangle):
     return output
 
 
-def collimate(a_ray, area, d_ref, lr_angle, cc_angle):  # pylint: disable=too-many-locals
+def collimate(
+    a_ray, area, d_ref, lr_angle, cc_angle
+):  # pylint: disable=too-many-locals
     """This function produces a pair of triangles representing a square field
     of a collimated x-ray beam. These are then used for intersection checks to
     see if the phantom cell sees radiation.
@@ -111,13 +113,13 @@ def collimate(a_ray, area, d_ref, lr_angle, cc_angle):  # pylint: disable=too-ma
     cc_rads = math.radians(cc_angle)
 
     # Set up a default vecotr pointing up Z
-    up_point = np.array([0,0,10])
+    up_point = np.array([0, 0, 10])
 
     # Get the rotation matrix for LR (rotation around Y)
-    rot_mat_lr = rotation_matrix(np.array([0,1,0]), lr_rads)
+    rot_mat_lr = rotation_matrix(np.array([0, 1, 0]), lr_rads)
 
     # Rotate our default vector for LR
-    rot_vector = np.dot(up_point,rot_mat_lr)
+    rot_vector = np.dot(up_point, rot_mat_lr)
 
     # Create a new axis of rotation 90 degrees from the current vector to do CC rotation
     new_up_point = np.array([-rot_vector[2], 0, rot_vector[0]])
@@ -162,9 +164,13 @@ def rotation_matrix(axis, theta):  # pylint: disable=too-many-locals
     aa, bb, cc, dd = a * a, b * b, c * c, d * d
     bc, ad, ac, ab, bd, cd = b * c, a * d, a * c, a * b, b * d, c * d
 
-    return np.array([[aa + bb - cc - dd, 2 * (bc + ad), 2 * (bd - ac)],
-                     [2 * (bc - ad), aa + cc - bb - dd, 2 * (cd + ab)],
-                     [2 * (bd + ac), 2 * (cd - ab), aa + dd - bb - cc]])
+    return np.array(
+        [
+            [aa + bb - cc - dd, 2 * (bc + ad), 2 * (bd - ac)],
+            [2 * (bc - ad), aa + cc - bb - dd, 2 * (cd + ab)],
+            [2 * (bd + ac), 2 * (cd - ab), aa + dd - bb - cc],
+        ]
+    )
 
 
 def build_ray(
