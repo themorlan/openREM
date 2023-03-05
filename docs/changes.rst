@@ -5,6 +5,7 @@ OpenREM version history
 
 1.0.0b1 (2023-xx-xx)
 --------------------
+* :issue:`977`  Documentation: fix issues preventing translations to be built
 * :issue:`976`  NM charts: Fixed bug where graphs were not displayed correctly for some chart options
 * :issue:`972`  DICOM Networking: better analysis of SR series with multiple SOP Class UIDs
 * :issue:`971`  Imports: fixing NM image index error
