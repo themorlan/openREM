@@ -8,65 +8,73 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-04 12:05+0100\n"
+"POT-Creation-Date: 2023-03-05 17:21+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.8.0\n"
+"Generated-By: Babel 2.12.1\n"
 
-#: ../../netdicom-nodes.rst:3 cbf56ba3dd4d4d51a33c06f82dd0d650
+#: ../../netdicom-nodes.rst:3
 msgid "DICOM Network Configuration"
 msgstr ""
 
-#: ../../netdicom-nodes.rst:7 35db5d4acf694f7392cf1e131d75a36c
+#: ../../netdicom-nodes.rst:7
 msgid "Configuring DICOM store nodes in OpenREM"
 msgstr ""
 
-#: ../../netdicom-nodes.rst:9 065d8aa38a5248a5a6ce0fcd5a1595fc
+#: ../../netdicom-nodes.rst:9
 msgid ""
-"You need to configure one or more DICOM Store nodes (Store Service Class "
-"Provider, or Store SCP) if you want either of the following:"
+"You need to configure details of the DICOM store node to enable the "
+"query-retrieve functionality. You will also need to have installed "
+"Orthanc or an alternative:"
 msgstr ""
 
-#: ../../netdicom-nodes.rst:12 3aa3d8236ccf44d4b97db4ccd719e7ce
-msgid "OpenREM to provide DICOM store functionality"
+#: ../../netdicom-nodes.rst:12
+msgid "Orthanc enabled by default in Docker"
 msgstr ""
 
-#: ../../netdicom-nodes.rst:13 3864d36f49ec449fadf93c64328e8673
+#: ../../netdicom-nodes.rst:13
 msgid ""
-"OpenREM to be able to query retrieve a third-party system (PACS or "
-"modality), using the OpenREM Store SCP or a third party one, such as "
-"Conquest"
+"Installed in the Linux instructions and configured at "
+":ref:`dicom_store_scp_linux`"
 msgstr ""
 
-#: ../../netdicom-nodes.rst:16 5d7dde79e4544a4198ccdbfaadc86d88
+#: ../../netdicom-nodes.rst:14
+msgid "Installed in the Windows instructions and configured at *to be written*"
+msgstr ""
+
+#: ../../netdicom-nodes.rst:16
 msgid ""
 "To configure a DICOM Store SCP, on the ``Config`` menu select ``DICOM "
 "networking``, then click ``Add new Store`` and fill in the details (see "
 "figure 1):"
 msgstr ""
 
-#: ../../netdicom-nodes.rst:25 154961303afa406ab8074639ac144184
+#: ../../netdicom-nodes.rst
+msgid "DICOM Store SCP configuration"
+msgstr ""
+
+#: ../../netdicom-nodes.rst:25
 msgid "Figure 1: DICOM Store SCP configuration"
 msgstr ""
 
-#: ../../netdicom-nodes.rst:27 aa69b194cc0546b08f98faf856829a1d
+#: ../../netdicom-nodes.rst:27
 msgid ""
 "Name of local store node: This is the *friendly name*, such as ``OpenREM "
 "store``"
 msgstr ""
 
-#: ../../netdicom-nodes.rst:28 d32f74d434534ace8497c1b4839a7f11
+#: ../../netdicom-nodes.rst:28
 msgid ""
 "Application Entity Title of the node: This is the DICOM name for the "
 "store, and must be letters or numbers only, no spaces, and a maximum of "
 "16 characters"
 msgstr ""
 
-#: ../../netdicom-nodes.rst:30 2fca6dc2ef8744d2a5faba6bc8982709
+#: ../../netdicom-nodes.rst:30
 msgid ""
 "Port for store node: Port 104 is the reserved DICOM port, but it is "
 "common to use *high* ports such as 8104, partly because ports up to 1024 "
@@ -76,102 +84,27 @@ msgid ""
 "allow the port you choose here"
 msgstr ""
 
-#: ../../netdicom-nodes.rst:39 075b59b0580d4327a971ee880e5a54d5
-msgid "Native DICOM store node with direct import"
-msgstr ""
-
-#: ../../netdicom-nodes.rst:43 47225d7f03d04598b384bd95a8a69a2f
-msgid ""
-"Native DICOM store functionality has not proved to be stable over long "
-"periods. Therefore we cannot recommend that you use this feature in a "
-"production environment. However, please do test it and help us to improve"
-" it if you are able to!"
-msgstr ""
-
-#: ../../netdicom-nodes.rst:49 fac6708885ad4e60bdd3200fd0a7b097
-msgid ""
-"If you use supervisord or similar on Linux, then you might not be able to"
-" use the web interface or possibly the auto-start service as new threads "
-"spawned for the Store SCP tend to get killed. This wouldn't prevent you "
-"starting the SCP in a shell. See `Issue #337`_"
-msgstr ""
-
-#: ../../netdicom-nodes.rst:54 061f963f463e4824ada56aff4f682c3d
-msgid ""
-"An OpenREM DICOM Store SCP (service class provider) enables modalities or"
-" PACS to send DICOM structured reports and images directly to OpenREM "
-"where they are imported into the database."
-msgstr ""
-
-#: ../../netdicom-nodes.rst:57 b22c4ff06de8475b95b9af5b8dd91ae3
-msgid ""
-"The Store SCP service receives the data, checks whether it is one of the "
-"objects that OpenREM can extract data from, and starts an import task if "
-"applicable."
-msgstr ""
-
-#: ../../netdicom-nodes.rst:60 2ec436b49c2940278a28fce64a9216b7
-msgid ""
-"The object is then left in the ``dicom_in`` folder in the ``media`` "
-"folder, or it is deleted, depending on the policy set in "
-":doc:`i_deletesettings`."
-msgstr ""
-
-#: ../../netdicom-nodes.rst:64 b42d6666ea344ea387a8d64ee081400b
-msgid ""
-"For native DICOM store nodes, you need to open the ``Advanced - "
-"test/development use only`` section (see figure 2):"
-msgstr ""
-
-#: ../../netdicom-nodes.rst:72 b94a563eafaf45b0abcacedb1f22007e
-msgid "Figure 2: DICOM Store SCP advanced configuration"
-msgstr ""
-
-#: ../../netdicom-nodes.rst:74 9cf5bfbb38e14f18a594390608aca359
-msgid ""
-"Control the server using OpenREM: this checkbox will enable OpenREM to "
-"create and control the node"
-msgstr ""
-
-#: ../../netdicom-nodes.rst:75 f91f7fe9c9554055b3f073fd0802858c
-msgid ""
-"Auto-start the server using celery beat: if checked, and if :ref:`celery-"
-"beat` is running, then OpenREM will attempt to start the store node "
-"whenever it finds it not to be running."
-msgstr ""
-
-#: ../../netdicom-nodes.rst:80 ccab6ec7ac0b48d2aad45b97357bd89e
-msgid "Third-party DICOM store node for scripted import to OpenREM"
-msgstr ""
-
-#: ../../netdicom-nodes.rst:82 a55db28eb1b546ff87b7e1cf796a90a5
-msgid ""
-"If you are using Conquest or another third-party Store SCP to collect "
-"DICOM data, simply fill in the basic details as above without configuring"
-" the settings in the ``Advanced`` section. This will enable you to "
-"request remote hosts send data to your Store SCP in the *retrieve* part "
-"of the query-retrieve operation."
-msgstr ""
-
-#: ../../netdicom-nodes.rst:86 424f2f27dd44401c99cff36a1d6661c4
-msgid ""
-"See :doc:`conquestUbuntu` and :doc:`conquestAsWindowsService` for more "
-"information about using Conquest with OpenREM"
-msgstr ""
-
-#: ../../netdicom-nodes.rst:90 50e653d142c94d1ba44bf83257a24989
+#: ../../netdicom-nodes.rst:38
 msgid "Status of DICOM Store SCP nodes"
 msgstr ""
 
-#: ../../netdicom-nodes.rst:92 f1489f1812104400a01cbc90c00f225c
+#: ../../netdicom-nodes.rst:40
 msgid "DICOM Store SCP advanced configuration"
 msgstr ""
 
-#: ../../netdicom-nodes.rst:104 7cf75d21e6894a0e923ff86581ab2f9d
+#: ../../netdicom-nodes.rst:-1
+msgid "DICOM Store SCP status \"Alive\""
+msgstr ""
+
+#: ../../netdicom-nodes.rst:52
+msgid "DICOM Store SCP status \"Association fail\""
+msgstr ""
+
+#: ../../netdicom-nodes.rst:52
 msgid "Figure 3: DICOM Store SCP status - Alive and Association failed"
 msgstr ""
 
-#: ../../netdicom-nodes.rst:106 5b56d02395024640ac68e8516c95aa27
+#: ../../netdicom-nodes.rst:54
 msgid ""
 "DICOM Store SCP nodes that have been configured are listed in the left "
 "column of the DICOM network configuration page. For each server, the "
@@ -179,62 +112,41 @@ msgid ""
 "for command line/scripted use of the query-retrieve function."
 msgstr ""
 
-#: ../../netdicom-nodes.rst:110 646dbdc590564016913c50e1cc6de511
+#: ../../netdicom-nodes.rst:58
 msgid ""
 "In the title row of the Store SCP config panel, the status will be "
 "reported either as 'Server is alive' or 'Error: Association fail - server"
 " not running?' - see figure 3"
 msgstr ""
 
-#: ../../netdicom-nodes.rst:114 1526f85bfd644cbe891ebe4fdfa4e201
-msgid "Controlling native Store SCP nodes"
-msgstr ""
-
-#: ../../netdicom-nodes.rst:116 6a8fc74bdafa4475922b8fca9bcae19f
-msgid ""
-"If a native Store SCP node is not running, then a ``Start server`` button"
-" will be presented at the bottom right. If it is running, this buttin "
-"will change to ``Stop server``, and the ``Delete`` button will become "
-"inactive."
-msgstr ""
-
-#: ../../netdicom-nodes.rst:119 7e2642cfd864446b8f67aab73e3a4357
-msgid ""
-"If the node is configured to be auto-started, and if :ref:`celery-beat` "
-"is running, then each minute if the server is not started Celery will try"
-" to start the node. If you intend to stop the node for some reason, "
-"modify the configuration so that auto-start is not selected, then stop "
-"the server."
-msgstr ""
-
-#: ../../netdicom-nodes.rst:127 860009506b2546509c1cfb5c320f6d0a
+#: ../../netdicom-nodes.rst:64
 msgid "Query retrieve of third-party system, such as a PACS or modality"
 msgstr ""
 
-#: ../../netdicom-nodes.rst:129 73ea4448a563499199376536c7bf4202
+#: ../../netdicom-nodes.rst:66
 msgid ""
 "To Query-Retrieve a remote host, you will need to configure both a local "
 "Store SCP and the remote host."
 msgstr ""
 
-#: ../../netdicom-nodes.rst:131 83dabf5b43784315820a2b47a170d3e0
+#: ../../netdicom-nodes.rst:68
 msgid ""
 "To configure a remote query retrieve SCP, on the ``Config`` menu select "
 "``DICOM networking``, then click ``Add new QR Node`` and fill in the "
 "details:"
 msgstr ""
 
-#: ../../netdicom-nodes.rst:134 20bb9e9ad3004500a2f41dbfe5ea6c99
+#: ../../netdicom-nodes.rst:71
 msgid "Name of QR node: This is the *friendly name*, such as ``PACS QR``"
 msgstr ""
 
-#: ../../netdicom-nodes.rst:135 d8adec4e83b042b38366e1474134ff43
+#: ../../netdicom-nodes.rst:72
 msgid ""
 "AE Title of the remote node: This is the DICOM name of the remote node, "
 "16 or fewer letters and numbers, no spaces"
 msgstr ""
 
-#: ../../netdicom-nodes.rst:136 72bfd6120c66486e9a71b61cefacefbc
+#: ../../netdicom-nodes.rst:73
 msgid ""
 "AE Title this server: This is the DICOM name that the query (DICOM "
 "C-Find) will come from. This may be important if the remote node filters "
@@ -242,17 +154,17 @@ msgid ""
 "numbers, no spaces"
 msgstr ""
 
-#: ../../netdicom-nodes.rst:138 fd54736f02694a53bbdc5a93e6d61368
+#: ../../netdicom-nodes.rst:75
 msgid "Remote port: Enter the port the remote node is using (eg 104)"
 msgstr ""
 
-#: ../../netdicom-nodes.rst:139 369ceeb66751413e8c888e1bf6322d1e
+#: ../../netdicom-nodes.rst:76
 msgid ""
 "Remote IP address: The IP address of the remote node, for example "
 "``192.168.1.100``"
 msgstr ""
 
-#: ../../netdicom-nodes.rst:140 e51d78275e0c4e75b3af4a5d0da3e6b6
+#: ../../netdicom-nodes.rst:77
 msgid ""
 "Remote hostname: Alternatively, if your network has a DNS server that can"
 " resolve the hostnames, you can enter the hostname instead. If the "
@@ -260,30 +172,168 @@ msgid ""
 "only enter it if you know it will be resolved."
 msgstr ""
 
-#: ../../netdicom-nodes.rst:144 c1404e42dedb44859ca198b9170522dd
+#: ../../netdicom-nodes.rst:81
 msgid "Now go to the :doc:`netdicom-qr` documentation to learn how to use it."
 msgstr ""
 
-#: ../../netdicom-nodes.rst:151 a095e392cba54aec90dbedb4ef009332
+#: ../../netdicom-nodes.rst:88
 msgid "Troubleshooting: openrem_store.log"
 msgstr ""
 
-#: ../../netdicom-nodes.rst:153 5d188977f01c4db3b48e321a3532b856
+#: ../../netdicom-nodes.rst:90
 msgid ""
 "If the default logging settings haven't been changed then there will be a"
 " log files to refer to. The default location is within your ``MEDIAROOT``"
 " folder:"
 msgstr ""
 
-#: ../../netdicom-nodes.rst:156 178df242ea8649a1ba48d6deb5170e72
+#: ../../netdicom-nodes.rst:93
 msgid ""
 "This file contains information about each echo and association that is "
 "made against the store node, and any objects that are sent to it."
 msgstr ""
 
-#: ../../netdicom-nodes.rst:159 d72a75708f9641bd9e0c2d53c19a0e9c
+#: ../../netdicom-nodes.rst:96
 msgid ""
 "The following is an example of the log for a Philips *dose info* image "
 "being received:"
 msgstr ""
+
+#~ msgid ""
+#~ "You need to configure one or more"
+#~ " DICOM Store nodes (Store Service "
+#~ "Class Provider, or Store SCP) if "
+#~ "you want either of the following:"
+#~ msgstr ""
+
+#~ msgid "OpenREM to provide DICOM store functionality"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "OpenREM to be able to query "
+#~ "retrieve a third-party system (PACS "
+#~ "or modality), using the OpenREM Store"
+#~ " SCP or a third party one, such"
+#~ " as Conquest"
+#~ msgstr ""
+
+#~ msgid "Native DICOM store node with direct import"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Native DICOM store functionality has not"
+#~ " proved to be stable over long "
+#~ "periods. Therefore we cannot recommend "
+#~ "that you use this feature in a "
+#~ "production environment. However, please do "
+#~ "test it and help us to improve "
+#~ "it if you are able to!"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "If you use supervisord or similar "
+#~ "on Linux, then you might not be"
+#~ " able to use the web interface "
+#~ "or possibly the auto-start service "
+#~ "as new threads spawned for the "
+#~ "Store SCP tend to get killed. This"
+#~ " wouldn't prevent you starting the "
+#~ "SCP in a shell. See `Issue #337`_"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "An OpenREM DICOM Store SCP (service "
+#~ "class provider) enables modalities or "
+#~ "PACS to send DICOM structured reports"
+#~ " and images directly to OpenREM where"
+#~ " they are imported into the database."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "The Store SCP service receives the "
+#~ "data, checks whether it is one of"
+#~ " the objects that OpenREM can extract"
+#~ " data from, and starts an import "
+#~ "task if applicable."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "The object is then left in the "
+#~ "``dicom_in`` folder in the ``media`` "
+#~ "folder, or it is deleted, depending "
+#~ "on the policy set in "
+#~ ":doc:`i_deletesettings`."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "For native DICOM store nodes, you "
+#~ "need to open the ``Advanced - "
+#~ "test/development use only`` section (see "
+#~ "figure 2):"
+#~ msgstr ""
+
+#~ msgid "Figure 2: DICOM Store SCP advanced configuration"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Control the server using OpenREM: this"
+#~ " checkbox will enable OpenREM to "
+#~ "create and control the node"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Auto-start the server using celery "
+#~ "beat: if checked, and if :ref"
+#~ ":`celery-beat` is running, then OpenREM "
+#~ "will attempt to start the store "
+#~ "node whenever it finds it not to"
+#~ " be running."
+#~ msgstr ""
+
+#~ msgid "Third-party DICOM store node for scripted import to OpenREM"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "If you are using Conquest or "
+#~ "another third-party Store SCP to "
+#~ "collect DICOM data, simply fill in "
+#~ "the basic details as above without "
+#~ "configuring the settings in the "
+#~ "``Advanced`` section. This will enable "
+#~ "you to request remote hosts send "
+#~ "data to your Store SCP in the "
+#~ "*retrieve* part of the query-retrieve"
+#~ " operation."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "See :doc:`conquestUbuntu` and "
+#~ ":doc:`conquestAsWindowsService` for more information"
+#~ " about using Conquest with OpenREM"
+#~ msgstr ""
+
+#~ msgid "Controlling native Store SCP nodes"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "If a native Store SCP node is "
+#~ "not running, then a ``Start server`` "
+#~ "button will be presented at the "
+#~ "bottom right. If it is running, "
+#~ "this buttin will change to ``Stop "
+#~ "server``, and the ``Delete`` button will"
+#~ " become inactive."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "If the node is configured to be"
+#~ " auto-started, and if :ref:`celery-"
+#~ "beat` is running, then each minute "
+#~ "if the server is not started "
+#~ "Celery will try to start the node."
+#~ " If you intend to stop the node"
+#~ " for some reason, modify the "
+#~ "configuration so that auto-start is "
+#~ "not selected, then stop the server."
+#~ msgstr ""
 

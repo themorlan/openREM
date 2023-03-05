@@ -1,5 +1,5 @@
 # SOME DESCRIPTIVE TITLE.
-# Copyright (C) 2013-2020, The Royal Marsden NHS Foundation Trust
+# Copyright (C) 2013-2022, The Royal Marsden NHS Foundation Trust
 # This file is distributed under the same license as the OpenREM package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-01 22:50+0100\n"
+"POT-Creation-Date: 2023-03-05 17:21+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,6 +18,10 @@ msgstr ""
 
 #: ../../index.rst:3
 msgid "Welcome to OpenREM's documentation"
+msgstr ""
+
+#: ../../index.rst:-1
+msgid "OpenREM logo"
 msgstr ""
 
 #: ../../index.rst:11
@@ -40,18 +44,18 @@ msgstr ""
 msgid "Contents:"
 msgstr ""
 
-#: ../../index.rst:47
+#: ../../index.rst:49
 msgid "Indices and tables"
 msgstr ""
 
-#: ../../index.rst:49
+#: ../../index.rst:51
 msgid ":ref:`genindex`"
 msgstr ""
 
-#: ../../index.rst:50
+#: ../../index.rst:52
 msgid ":ref:`modindex`"
 msgstr ""
 
-#: ../../index.rst:51
+#: ../../index.rst:53
 msgid ":ref:`search`"
 msgstr ""

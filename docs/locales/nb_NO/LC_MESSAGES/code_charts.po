@@ -1,0 +1,819 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2013-2022, The Royal Marsden NHS Foundation Trust
+# This file is distributed under the same license as the OpenREM package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2023.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: OpenREM 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-03-05 17:21+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: nb_NO\n"
+"Language-Team: nb_NO <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.12.1\n"
+
+#: ../../code_charts.rst:2
+msgid "Charts"
+msgstr ""
+
+#: of remapp.interface.chart_functions.calc_facet_rows_and_height:1
+msgid ""
+"Calculates the required total chart height and the number of facet rows. "
+"Each row has a hard-coded height of 500 pixels."
+msgstr ""
+
+#: of remapp.interface.chart_functions.calc_facet_rows_and_height
+#: remapp.interface.chart_functions.calc_histogram_bin_data
+#: remapp.interface.chart_functions.calculate_colour_sequence
+#: remapp.interface.chart_functions.construct_over_time_charts
+#: remapp.interface.chart_functions.create_dataframe
+#: remapp.interface.chart_functions.create_dataframe_aggregates
+#: remapp.interface.chart_functions.create_dataframe_time_series
+#: remapp.interface.chart_functions.create_dataframe_weekdays
+#: remapp.interface.chart_functions.create_freq_sorted_category_list
+#: remapp.interface.chart_functions.create_sorted_category_list
+#: remapp.interface.chart_functions.csv_data_barchart
+#: remapp.interface.chart_functions.csv_data_frequency
+#: remapp.interface.chart_functions.empty_dataframe_msg
+#: remapp.interface.chart_functions.failed_chart_message_div
+#: remapp.interface.chart_functions.global_config
+#: remapp.interface.chart_functions.plotly_barchart
+#: remapp.interface.chart_functions.plotly_barchart_weekdays
+#: remapp.interface.chart_functions.plotly_binned_statistic_barchart
+#: remapp.interface.chart_functions.plotly_boxplot
+#: remapp.interface.chart_functions.plotly_frequency_barchart
+#: remapp.interface.chart_functions.plotly_histogram_barchart
+#: remapp.interface.chart_functions.plotly_scatter
+#: remapp.interface.chart_functions.plotly_set_default_theme
+#: remapp.interface.chart_functions.plotly_timeseries_linechart
+#: remapp.interface.chart_functions.save_fig_as_html_div
+msgid "Parameters"
+msgstr ""
+
+#: of remapp.interface.chart_functions.calc_facet_rows_and_height:4
+#: remapp.interface.chart_functions.create_freq_sorted_category_list:8
+#: remapp.interface.chart_functions.create_sorted_category_list:10
+#: remapp.interface.chart_functions.plotly_barchart:3
+#: remapp.interface.chart_functions.plotly_barchart_weekdays:3
+#: remapp.interface.chart_functions.plotly_binned_statistic_barchart:3
+#: remapp.interface.chart_functions.plotly_boxplot:3
+#: remapp.interface.chart_functions.plotly_frequency_barchart:3
+#: remapp.interface.chart_functions.plotly_histogram_barchart:3
+#: remapp.interface.chart_functions.plotly_scatter:3
+#: remapp.interface.chart_functions.plotly_timeseries_linechart:3
+msgid "Pandas DataFrame containing the data"
+msgstr ""
+
+#: of remapp.interface.chart_functions.calc_facet_rows_and_height:5
+msgid "string containing the DataFrame column name containing the facet names"
+msgstr ""
+
+#: of remapp.interface.chart_functions.calc_facet_rows_and_height:6
+msgid "int representing the number of subplots to have on each row"
+msgstr ""
+
+#: of remapp.interface.chart_functions.calc_facet_rows_and_height
+#: remapp.interface.chart_functions.calc_histogram_bin_data
+#: remapp.interface.chart_functions.calculate_colour_sequence
+#: remapp.interface.chart_functions.construct_over_time_charts
+#: remapp.interface.chart_functions.create_dataframe
+#: remapp.interface.chart_functions.create_dataframe_aggregates
+#: remapp.interface.chart_functions.create_dataframe_time_series
+#: remapp.interface.chart_functions.create_dataframe_weekdays
+#: remapp.interface.chart_functions.create_freq_sorted_category_list
+#: remapp.interface.chart_functions.create_sorted_category_list
+#: remapp.interface.chart_functions.csv_data_barchart
+#: remapp.interface.chart_functions.csv_data_frequency
+#: remapp.interface.chart_functions.empty_dataframe_msg
+#: remapp.interface.chart_functions.failed_chart_message_div
+#: remapp.interface.chart_functions.global_config
+#: remapp.interface.chart_functions.plotly_barchart
+#: remapp.interface.chart_functions.plotly_barchart_weekdays
+#: remapp.interface.chart_functions.plotly_binned_statistic_barchart
+#: remapp.interface.chart_functions.plotly_boxplot
+#: remapp.interface.chart_functions.plotly_frequency_barchart
+#: remapp.interface.chart_functions.plotly_histogram_barchart
+#: remapp.interface.chart_functions.plotly_scatter
+#: remapp.interface.chart_functions.plotly_set_default_theme
+#: remapp.interface.chart_functions.plotly_timeseries_linechart
+msgid "Returns"
+msgstr ""
+
+#: of remapp.interface.chart_functions.calc_facet_rows_and_height:7
+msgid ""
+"two-element list containing the chart height in pixels (int) and the "
+"number of facet rows (int)"
+msgstr ""
+
+#: of remapp.interface.chart_functions.calc_histogram_bin_data:1
+msgid "Calculates histogram bin label text, bin boundaries and bin mid-points"
+msgstr ""
+
+#: of remapp.interface.chart_functions.calc_histogram_bin_data:3
+#: remapp.interface.chart_functions.construct_over_time_charts:4
+msgid "the Pandas DataFrame containing the data"
+msgstr ""
+
+#: of remapp.interface.chart_functions.calc_histogram_bin_data:4
+msgid "(string )name of the DataFrame column that contains the values"
+msgstr ""
+
+#: of remapp.interface.chart_functions.calc_histogram_bin_data:5
+msgid "(int) the number of bins to use"
+msgstr ""
+
+#: of remapp.interface.chart_functions.calc_histogram_bin_data:6
+msgid ""
+"a three element list containing the bin labels, bin boundaries and bin "
+"mid-points"
+msgstr ""
+
+#: of remapp.interface.chart_functions.calculate_colour_sequence:1
+msgid ""
+"Calculates a sequence of n_colours from the matplotlib colourmap "
+"scale_name"
+msgstr ""
+
+#: of remapp.interface.chart_functions.calculate_colour_sequence:3
+msgid "string containing the name of the matplotlib colour scale to use"
+msgstr ""
+
+#: of remapp.interface.chart_functions.calculate_colour_sequence:4
+msgid "int representing the number of colours required"
+msgstr ""
+
+#: of remapp.interface.chart_functions.calculate_colour_sequence:5
+msgid "list of hexadecimal colours from a matplotlib colormap"
+msgstr ""
+
+#: of remapp.interface.chart_functions.construct_over_time_charts:1
+msgid ""
+"Construct a Plotly line chart of average values over time, optionally "
+"grouped by performing physician name. For \"boxplot\" a plotly boxplot of"
+" values over time is returned instead of an plotly line chart."
+msgstr ""
+
+#: of remapp.interface.chart_functions.construct_over_time_charts:5
+msgid "a dictionary of processing parameters"
+msgstr ""
+
+#: of remapp.interface.chart_functions.construct_over_time_charts:7
+#: remapp.interface.chart_functions.csv_data_barchart:5
+#: remapp.interface.chart_functions.plotly_barchart:7
+#: remapp.interface.chart_functions.plotly_barchart_weekdays:4
+#: remapp.interface.chart_functions.plotly_binned_statistic_barchart:5
+#: remapp.interface.chart_functions.plotly_binned_statistic_barchart:10
+#: remapp.interface.chart_functions.plotly_boxplot:7
+#: remapp.interface.chart_functions.plotly_frequency_barchart:5
+#: remapp.interface.chart_functions.plotly_scatter:5
+#: remapp.interface.chart_functions.plotly_timeseries_linechart:14
+msgid "(string) DataFrame column containing categories"
+msgstr ""
+
+#: of remapp.interface.chart_functions.construct_over_time_charts:8
+msgid "(string) name title"
+msgstr ""
+
+#: of remapp.interface.chart_functions.construct_over_time_charts:9
+#: remapp.interface.chart_functions.plotly_barchart_weekdays:5
+#: remapp.interface.chart_functions.plotly_boxplot:5
+#: remapp.interface.chart_functions.plotly_histogram_barchart:5
+#: remapp.interface.chart_functions.plotly_timeseries_linechart:8
+msgid "(string) DataFrame column containing values"
+msgstr ""
+
+#: of remapp.interface.chart_functions.construct_over_time_charts:10
+#: remapp.interface.chart_functions.plotly_barchart:6
+#: remapp.interface.chart_functions.plotly_barchart_weekdays:7
+#: remapp.interface.chart_functions.plotly_boxplot:8
+#: remapp.interface.chart_functions.plotly_histogram_barchart:6
+#: remapp.interface.chart_functions.plotly_scatter:14
+#: remapp.interface.chart_functions.plotly_timeseries_linechart:9
+msgid "(string) y-axis title"
+msgstr ""
+
+#: of remapp.interface.chart_functions.construct_over_time_charts:11
+#: remapp.interface.chart_functions.plotly_timeseries_linechart:12
+msgid "(string) DataFrame column containing dates"
+msgstr ""
+
+#: of remapp.interface.chart_functions.construct_over_time_charts:12
+msgid "(string) date title"
+msgstr ""
+
+#: of remapp.interface.chart_functions.construct_over_time_charts:13
+#: remapp.interface.chart_functions.plotly_timeseries_linechart:7
+msgid "(string) subplot title"
+msgstr ""
+
+#: of remapp.interface.chart_functions.construct_over_time_charts:14
+#: remapp.interface.chart_functions.plotly_barchart:11
+#: remapp.interface.chart_functions.plotly_barchart_weekdays:11
+#: remapp.interface.chart_functions.plotly_binned_statistic_barchart:16
+#: remapp.interface.chart_functions.plotly_boxplot:11
+#: remapp.interface.chart_functions.plotly_frequency_barchart:9
+#: remapp.interface.chart_functions.plotly_histogram_barchart:12
+#: remapp.interface.chart_functions.plotly_scatter:8
+msgid ""
+"2-element list. [0] sets sort direction, [1] used to determine which "
+"field to sort"
+msgstr ""
+
+#: of remapp.interface.chart_functions.construct_over_time_charts:15
+msgid ""
+"list of strings containing requred averages (\"mean\", \"median\", "
+"\"boxplot\")"
+msgstr ""
+
+#: of remapp.interface.chart_functions.construct_over_time_charts:16
+#: remapp.interface.chart_functions.create_dataframe_time_series:7
+msgid ""
+"string containing the time period to average over; \"A\" (years), \"Q\" "
+"(quarters), \"M\" (months), \"W\" (weeks), \"D\" (days)"
+msgstr ""
+
+#: of remapp.interface.chart_functions.construct_over_time_charts:18
+#: remapp.interface.chart_functions.plotly_frequency_barchart:8
+#: remapp.interface.chart_functions.plotly_scatter:9
+msgid "(string) \"series\" or \"system\""
+msgstr ""
+
+#: of remapp.interface.chart_functions.construct_over_time_charts:19
+#: remapp.interface.chart_functions.plotly_barchart:12
+#: remapp.interface.chart_functions.plotly_barchart_weekdays:8
+#: remapp.interface.chart_functions.plotly_binned_statistic_barchart:17
+#: remapp.interface.chart_functions.plotly_boxplot:12
+#: remapp.interface.chart_functions.plotly_frequency_barchart:14
+#: remapp.interface.chart_functions.plotly_histogram_barchart:11
+#: remapp.interface.chart_functions.plotly_scatter:12
+#: remapp.interface.chart_functions.plotly_timeseries_linechart:10
+#: remapp.interface.chart_functions.plotly_timeseries_linechart:11
+msgid "(string) colourmap to use"
+msgstr ""
+
+#: of remapp.interface.chart_functions.construct_over_time_charts:20
+#: remapp.interface.chart_functions.plotly_barchart:14
+#: remapp.interface.chart_functions.plotly_barchart_weekdays:9
+#: remapp.interface.chart_functions.plotly_binned_statistic_barchart:19
+#: remapp.interface.chart_functions.plotly_frequency_barchart:15
+#: remapp.interface.chart_functions.plotly_histogram_barchart:16
+#: remapp.interface.chart_functions.plotly_scatter:15
+#: remapp.interface.chart_functions.plotly_timeseries_linechart:18
+msgid "(string) default filename to use for plot bitmap export"
+msgstr ""
+
+#: of remapp.interface.chart_functions.construct_over_time_charts:21
+#: remapp.interface.chart_functions.plotly_barchart:10
+#: remapp.interface.chart_functions.plotly_barchart_weekdays:10
+#: remapp.interface.chart_functions.plotly_binned_statistic_barchart:8
+#: remapp.interface.chart_functions.plotly_boxplot:10
+#: remapp.interface.chart_functions.plotly_frequency_barchart:12
+#: remapp.interface.chart_functions.plotly_histogram_barchart:9
+#: remapp.interface.chart_functions.plotly_scatter:11
+#: remapp.interface.chart_functions.plotly_timeseries_linechart:6
+msgid "(int) number of subplots per row"
+msgstr ""
+
+#: of remapp.interface.chart_functions.construct_over_time_charts:22
+#: remapp.interface.chart_functions.plotly_barchart:13
+#: remapp.interface.chart_functions.plotly_barchart_weekdays:12
+#: remapp.interface.chart_functions.plotly_binned_statistic_barchart:18
+#: remapp.interface.chart_functions.plotly_boxplot:13
+#: remapp.interface.chart_functions.plotly_frequency_barchart:13
+#: remapp.interface.chart_functions.plotly_histogram_barchart:15
+#: remapp.interface.chart_functions.plotly_scatter:16
+#: remapp.interface.chart_functions.plotly_timeseries_linechart:17
+msgid "(boolean) flag to trigger return as a dictionary rather than a HTML DIV"
+msgstr ""
+
+#: of remapp.interface.chart_functions.construct_over_time_charts:23
+msgid "boolean flag to set whether to group by physician name"
+msgstr ""
+
+#: of remapp.interface.chart_functions.construct_over_time_charts:24
+msgid ""
+"a dictionary containing a combination of [\"mean\"], [\"median\"] and "
+"[\"boxplot\"] entries, each of which contains a Plotly figure embedded in"
+" an HTML DIV; or Plotly figure as a dictionary (if "
+"params[\"return_as_dict\"] is True); or an error message embedded in an "
+"HTML DIV if there was a ValueError when calculating the figure"
+msgstr ""
+
+#: of remapp.interface.chart_functions.create_dataframe:1
+msgid ""
+"Creates a Pandas DataFrame from the supplied database records. names "
+"fields are made categorical to save system memory Any missing (na) values"
+" in names fields are set to Blank"
+msgstr ""
+
+#: of remapp.interface.chart_functions.create_dataframe:5
+msgid "the database events"
+msgstr ""
+
+#: of remapp.interface.chart_functions.create_dataframe:6
+msgid ""
+"a dictionary of lists, each containing database field names to include in"
+" the DataFrame. The dictionary should include \"names\", \"values\", "
+"\"dates\", \"times\" and optionally \"system\" items"
+msgstr ""
+
+#: of remapp.interface.chart_functions.create_dataframe:8
+msgid ""
+"boolean flag to determine whether to make all \"names\" field values "
+"lower case"
+msgstr ""
+
+#: of remapp.interface.chart_functions.create_dataframe:9
+msgid "boolean flag to determine whether to strip whitespace"
+msgstr ""
+
+#: of remapp.interface.chart_functions.create_dataframe:10
+msgid "list of float valuse to multiply each \"values\" field value by"
+msgstr ""
+
+#: of remapp.interface.chart_functions.create_dataframe:11
+msgid ""
+"string containing database field name which contains a unique identifier "
+"for each record"
+msgstr ""
+
+#: of remapp.interface.chart_functions.create_dataframe:12
+msgid "a Pandas DataFrame with a column per required field"
+msgstr ""
+
+#: of remapp.interface.chart_functions.create_dataframe_aggregates:1
+msgid ""
+"Creates a Pandas DataFrame with the specified statistics (mean, median, "
+"count, for example) grouped by x-ray system name and by the list of "
+"provided df_name_cols."
+msgstr ""
+
+#: of remapp.interface.chart_functions.create_dataframe_aggregates:4
+msgid ""
+"Pandas DataFrame containing the raw data; it must have an "
+"\"x_ray_system_name\" column"
+msgstr ""
+
+#: of remapp.interface.chart_functions.create_dataframe_aggregates:5
+msgid "list of strings representing the DataFrame column names to group by"
+msgstr ""
+
+#: of remapp.interface.chart_functions.create_dataframe_aggregates:6
+msgid ""
+"string containing the DataFrame column over which to calculate the "
+"statistics"
+msgstr ""
+
+#: of remapp.interface.chart_functions.create_dataframe_aggregates:7
+msgid ""
+"list of strings containing the statistics to calculate, such as \"mean\","
+" \"median\", \"count\""
+msgstr ""
+
+#: of remapp.interface.chart_functions.create_dataframe_aggregates:8
+msgid "Pandas DataFrame containing the grouped aggregate data"
+msgstr ""
+
+#: of remapp.interface.chart_functions.create_dataframe_time_series:1
+msgid ""
+"Creates a Pandas DataFrame time series of average values grouped by "
+"x_ray_system_name and df_name_col"
+msgstr ""
+
+#: of remapp.interface.chart_functions.create_dataframe_time_series:3
+msgid "the Pandas DataFrame containing the raw data"
+msgstr ""
+
+#: of remapp.interface.chart_functions.create_dataframe_time_series:4
+msgid "string containing the DataFrame columnn name used to group the data"
+msgstr ""
+
+#: of remapp.interface.chart_functions.create_dataframe_time_series:5
+msgid ""
+"string containing the DataFrame column containing the values to be "
+"averaged"
+msgstr ""
+
+#: of remapp.interface.chart_functions.create_dataframe_time_series:6
+msgid "string containing the DataFrame column containing the dates"
+msgstr ""
+
+#: of remapp.interface.chart_functions.create_dataframe_time_series:9
+msgid "list of strings containing one or both of \"mean\" and \"median\""
+msgstr ""
+
+#: of remapp.interface.chart_functions.create_dataframe_time_series:10
+msgid "boolean flag to set whether to group by physician"
+msgstr ""
+
+#: of remapp.interface.chart_functions.create_dataframe_time_series:11
+msgid ""
+"Pandas DataFrame containing the time series of average values grouped by "
+"system and name"
+msgstr ""
+
+#: of remapp.interface.chart_functions.create_dataframe_weekdays:1
+msgid ""
+"Creates a Pandas DataFrame of the number of events in each day of the "
+"week, and in hour of that day."
+msgstr ""
+
+#: of remapp.interface.chart_functions.create_dataframe_weekdays:4
+msgid ""
+"Pandas DataFrame containing the raw data; it must have a \"study_time\" "
+"and \"x_ray_system_name\" column"
+msgstr ""
+
+#: of remapp.interface.chart_functions.create_dataframe_weekdays:5
+msgid "string containing the df column name to group the results by"
+msgstr ""
+
+#: of remapp.interface.chart_functions.create_dataframe_weekdays:6
+msgid "string containing the df column name containing dates"
+msgstr ""
+
+#: of remapp.interface.chart_functions.create_dataframe_weekdays:7
+msgid ""
+"Pandas DataFrame containing the number of studies per day and hour "
+"grouped by name"
+msgstr ""
+
+#: of remapp.interface.chart_functions.create_freq_sorted_category_list:1
+msgid ""
+"Create a sorted list of categories for frequency charts. Makes use of  "
+"Pandas DataFrame sort_values (https://pandas.pydata.org/pandas-"
+"docs/stable/reference/api/pandas.DataFrame.sort_values.html)."
+msgstr ""
+
+#: of remapp.interface.chart_functions.create_freq_sorted_category_list:4
+#: remapp.interface.chart_functions.create_sorted_category_list:6
+msgid "sorting[0] sets sort direction"
+msgstr ""
+
+#: of remapp.interface.chart_functions.create_freq_sorted_category_list:6
+msgid ""
+"sorting[1] used to determine field to sort on: \"name\" sorts by "
+"df_name_col; otherwise sorted by \"x_ray_system_name\""
+msgstr ""
+
+#: of remapp.interface.chart_functions.create_freq_sorted_category_list:9
+msgid "DataFrame column containing the category names"
+msgstr ""
+
+#: of remapp.interface.chart_functions.create_freq_sorted_category_list:10
+#: remapp.interface.chart_functions.create_sorted_category_list:13
+msgid ""
+"2-element list. [0] sets sort direction, [1] used to determine which "
+"field to sort on"
+msgstr ""
+
+#: of remapp.interface.chart_functions.create_freq_sorted_category_list:11
+#: remapp.interface.chart_functions.create_sorted_category_list:14
+msgid ""
+"dictionary with key df_name_col and a list of sorted categories as the "
+"value"
+msgstr ""
+
+#: of remapp.interface.chart_functions.create_sorted_category_list:1
+msgid ""
+"Create a sorted list of categories for scatter and over-time charts. The "
+"data is grouped by df_name_col and the mean and count calculated for "
+"each. The grouped DataFrame is then sorted according to the provided "
+"sorting. Makes use of  Pandas DataFrame sort_values "
+"(https://pandas.pydata.org/pandas-"
+"docs/stable/reference/api/pandas.DataFrame.sort_values.html)."
+msgstr ""
+
+#: of remapp.interface.chart_functions.create_sorted_category_list:8
+msgid ""
+"sorting[1] used to determine sort order: \"name\" sorts by df_name_col; "
+"otherwise sorted by \"x_ray_system_name\""
+msgstr ""
+
+#: of remapp.interface.chart_functions.create_sorted_category_list:11
+msgid "DataFrame column containing the category names. Used to group the data"
+msgstr ""
+
+#: of remapp.interface.chart_functions.create_sorted_category_list:12
+msgid "DataFrame column containing values to count and calculate the mean"
+msgstr ""
+
+#: of remapp.interface.chart_functions.csv_data_barchart:1
+#: remapp.interface.chart_functions.csv_data_frequency:1
+msgid ""
+"Calculates a Pandas DataFrame containing chart data to be used for csv "
+"download"
+msgstr ""
+
+#: of remapp.interface.chart_functions.csv_data_barchart:3
+#: remapp.interface.chart_functions.csv_data_frequency:3
+msgid "Plotly figure containing the data to extract"
+msgstr ""
+
+#: of remapp.interface.chart_functions.csv_data_barchart:4
+#: remapp.interface.chart_functions.plotly_barchart:4
+#: remapp.interface.chart_functions.plotly_binned_statistic_barchart:4
+#: remapp.interface.chart_functions.plotly_boxplot:4
+#: remapp.interface.chart_functions.plotly_frequency_barchart:4
+#: remapp.interface.chart_functions.plotly_histogram_barchart:4
+#: remapp.interface.chart_functions.plotly_scatter:4
+#: remapp.interface.chart_functions.plotly_timeseries_linechart:4
+msgid "a dictionary of parameters"
+msgstr ""
+
+#: of remapp.interface.chart_functions.csv_data_barchart:6
+msgid "(string) title for the name data"
+msgstr ""
+
+#: of remapp.interface.chart_functions.csv_data_barchart:7
+msgid "(string) title for the value data"
+msgstr ""
+
+#: of remapp.interface.chart_functions.csv_data_barchart:8
+msgid "(string) DataFrame column used to split data into subgroups"
+msgstr ""
+
+#: of remapp.interface.chart_functions.csv_data_barchart:9
+#: remapp.interface.chart_functions.csv_data_frequency:5
+msgid "DataFrame containing the data for download"
+msgstr ""
+
+#: of remapp.interface.chart_functions.csv_data_frequency:4
+msgid "a dictionary of parameters; must include \"x_axis_title\""
+msgstr ""
+
+#: of remapp.interface.chart_functions.download_link:1
+msgid ""
+"Adapted from: https://discuss.streamlit.io/t/heres-a-download-function-"
+"that-works-for-dataframes-and-txt/4052"
+msgstr ""
+
+#: of remapp.interface.chart_functions.download_link:4
+msgid "Generates a link to download the given object_to_download."
+msgstr ""
+
+#: of remapp.interface.chart_functions.download_link:6
+msgid ""
+"object_to_download (str, pd.DataFrame):  The object to be downloaded. "
+"download_filename (str): filename and extension of file. e.g. mydata.csv,"
+" some_txt_output.txt download_link_text (str): Text to display for "
+"download link."
+msgstr ""
+
+#: of remapp.interface.chart_functions.download_link:10
+msgid "Examples:"
+msgstr ""
+
+#: of remapp.interface.chart_functions.download_link:12
+msgid "``download_link(YOUR_DF, 'YOUR_DF.csv', 'Click here to download data!')``"
+msgstr ""
+
+#: of remapp.interface.chart_functions.download_link:14
+msgid ""
+"``download_link(YOUR_STRING, 'YOUR_STRING.txt', 'Click here to download "
+"your text!')``"
+msgstr ""
+
+#: of remapp.interface.chart_functions.empty_dataframe_msg:1
+msgid ""
+"Returns a string containing an HTML DIV with a message warning that the "
+"DataFrame is empty"
+msgstr ""
+
+#: of remapp.interface.chart_functions.empty_dataframe_msg:3
+msgid "parameters which may contain a custom_msg_line"
+msgstr ""
+
+#: of remapp.interface.chart_functions.empty_dataframe_msg:4
+msgid "string containing an html div with the empty DataFrame message"
+msgstr ""
+
+#: of remapp.interface.chart_functions.failed_chart_message_div:1
+msgid "Returns a string containing an HTML DIV with a failed chart message"
+msgstr ""
+
+#: of remapp.interface.chart_functions.failed_chart_message_div:3
+msgid "string containing a custom line to add to the message"
+msgstr ""
+
+#: of remapp.interface.chart_functions.failed_chart_message_div:4
+msgid "Python error object"
+msgstr ""
+
+#: of remapp.interface.chart_functions.failed_chart_message_div:5
+msgid "string containing the message in an HTML DIV"
+msgstr ""
+
+#: of remapp.interface.chart_functions.global_config:1
+msgid ""
+"Creates a Plotly global configuration dictionary. The parameters all "
+"relate to the chart bitmap that can be saved by the user."
+msgstr ""
+
+#: of remapp.interface.chart_functions.global_config:4
+msgid ""
+"string containing the file name to use if the user saves the chart as a "
+"graphic file"
+msgstr ""
+
+#: of remapp.interface.chart_functions.global_config:5
+msgid "floating point value used to scale the chart height"
+msgstr ""
+
+#: of remapp.interface.chart_functions.global_config:6
+msgid "int value for the height of the chart graphic file"
+msgstr ""
+
+#: of remapp.interface.chart_functions.global_config:7
+msgid "int value for the width of the chart graphic file"
+msgstr ""
+
+#: of remapp.interface.chart_functions.global_config:8
+msgid "a dictionary of Plotly options"
+msgstr ""
+
+#: of remapp.interface.chart_functions.plotly_barchart:1
+msgid "Create a plotly bar chart"
+msgstr ""
+
+#: of remapp.interface.chart_functions.plotly_barchart:5
+msgid "(string) DataFrame column containing values (\"mean\" or \"median\")"
+msgstr ""
+
+#: of remapp.interface.chart_functions.plotly_barchart:8
+#: remapp.interface.chart_functions.plotly_barchart_weekdays:6
+#: remapp.interface.chart_functions.plotly_boxplot:6
+#: remapp.interface.chart_functions.plotly_frequency_barchart:6
+#: remapp.interface.chart_functions.plotly_scatter:13
+#: remapp.interface.chart_functions.plotly_timeseries_linechart:16
+msgid "(string) x-axis title"
+msgstr ""
+
+#: of remapp.interface.chart_functions.plotly_barchart:9
+#: remapp.interface.chart_functions.plotly_binned_statistic_barchart:6
+#: remapp.interface.chart_functions.plotly_boxplot:9
+#: remapp.interface.chart_functions.plotly_frequency_barchart:11
+#: remapp.interface.chart_functions.plotly_histogram_barchart:7
+#: remapp.interface.chart_functions.plotly_timeseries_linechart:5
+msgid "(string) DataFrame column used to create subplots"
+msgstr ""
+
+#: of remapp.interface.chart_functions.plotly_barchart:15
+#: remapp.interface.chart_functions.plotly_frequency_barchart:16
+msgid "(string) default filename to use for plot csv export"
+msgstr ""
+
+#: of remapp.interface.chart_functions.plotly_barchart:16
+#: remapp.interface.chart_functions.plotly_binned_statistic_barchart:20
+#: remapp.interface.chart_functions.plotly_boxplot:14
+#: remapp.interface.chart_functions.plotly_histogram_barchart:17
+msgid ""
+"Plotly figure embedded in an HTML DIV; or Plotly figure as a dictionary "
+"(if params[\"return_as_dict\"] is True); or an error message embedded in "
+"an HTML DIV if there was a ValueError when calculating the figure"
+msgstr ""
+
+#: of remapp.interface.chart_functions.plotly_barchart_weekdays:1
+msgid "Create a plotly bar chart of event workload"
+msgstr ""
+
+#: of remapp.interface.chart_functions.plotly_barchart_weekdays:13
+#: remapp.interface.chart_functions.plotly_frequency_barchart:17
+#: remapp.interface.chart_functions.plotly_scatter:17
+#: remapp.interface.chart_functions.plotly_timeseries_linechart:19
+msgid ""
+"Plotly figure embedded in an HTML DIV; or Plotly figure as a dictionary "
+"(if \"return_as_dict\" is True); or an error message embedded in an HTML "
+"DIV if there was a ValueError when calculating the figure"
+msgstr ""
+
+#: of remapp.interface.chart_functions.plotly_binned_statistic_barchart:1
+msgid "Create a plotly binned statistic bar chart"
+msgstr ""
+
+#: of remapp.interface.chart_functions.plotly_binned_statistic_barchart:7
+msgid "(string) Subplot title"
+msgstr ""
+
+#: of remapp.interface.chart_functions.plotly_binned_statistic_barchart:9
+msgid "list of ints containing bin edges for binning"
+msgstr ""
+
+#: of remapp.interface.chart_functions.plotly_binned_statistic_barchart:11
+msgid "(string) DataFrame column containing x data"
+msgstr ""
+
+#: of remapp.interface.chart_functions.plotly_binned_statistic_barchart:12
+msgid "(string) DataFrame column containing y data"
+msgstr ""
+
+#: of remapp.interface.chart_functions.plotly_binned_statistic_barchart:13
+msgid "(string) Title for x-axis"
+msgstr ""
+
+#: of remapp.interface.chart_functions.plotly_binned_statistic_barchart:14
+msgid "(string) Title for y-axis"
+msgstr ""
+
+#: of remapp.interface.chart_functions.plotly_binned_statistic_barchart:15
+msgid "(string) \"mean\" or \"median\""
+msgstr ""
+
+#: of remapp.interface.chart_functions.plotly_boxplot:1
+msgid "Produce a plotly boxplot"
+msgstr ""
+
+#: of remapp.interface.chart_functions.plotly_frequency_barchart:1
+msgid "Create a plotly bar chart of event frequency"
+msgstr ""
+
+#: of remapp.interface.chart_functions.plotly_frequency_barchart:7
+msgid "list of strings with DataFrame columns to group data by"
+msgstr ""
+
+#: of remapp.interface.chart_functions.plotly_frequency_barchart:10
+#: remapp.interface.chart_functions.plotly_histogram_barchart:14
+#: remapp.interface.chart_functions.plotly_scatter:10
+#: remapp.interface.chart_functions.plotly_timeseries_linechart:15
+msgid "(string) legend title"
+msgstr ""
+
+#: of remapp.interface.chart_functions.plotly_histogram_barchart:1
+msgid "Create a plotly histogram bar chart"
+msgstr ""
+
+#: of remapp.interface.chart_functions.plotly_histogram_barchart:8
+msgid "string list of each category name"
+msgstr ""
+
+#: of remapp.interface.chart_functions.plotly_histogram_barchart:10
+msgid "(int) number of hisgogram bins to use"
+msgstr ""
+
+#: of remapp.interface.chart_functions.plotly_histogram_barchart:13
+msgid "(boolean) flag to calculate global max and min or per-subplot max and min"
+msgstr ""
+
+#: of remapp.interface.chart_functions.plotly_scatter:1
+msgid "Create a plotly scatter chart"
+msgstr ""
+
+#: of remapp.interface.chart_functions.plotly_scatter:6
+msgid "(string) DataFrame column containing x values"
+msgstr ""
+
+#: of remapp.interface.chart_functions.plotly_scatter:7
+msgid "(string) DataFrame column containing y values"
+msgstr ""
+
+#: of remapp.interface.chart_functions.plotly_set_default_theme:1
+msgid "A short method to set the plotly chart theme"
+msgstr ""
+
+#: of remapp.interface.chart_functions.plotly_set_default_theme:3
+msgid "the name of the theme"
+msgstr ""
+
+#: of remapp.interface.chart_functions.plotly_timeseries_linechart:1
+msgid "Create a plotly line chart of data over time"
+msgstr ""
+
+#: of remapp.interface.chart_functions.plotly_timeseries_linechart:13
+msgid "(string) DataFrame column containing frequency data"
+msgstr ""
+
+#: of remapp.interface.chart_functions.save_fig_as_html_div:1
+msgid ""
+"Saves the Plotly figure as an HTML file containing a single DIV. The file"
+" is saved on the OpenREM server in MEDIA_ROOT\\charts\\yyyy\\mm\\dd\\. "
+"Viewing the saved file requires an active internet connection as the "
+"Plotly JavaScript library is not included in the file."
+msgstr ""
+
+#: of remapp.interface.chart_functions.save_fig_as_html_div:5
+msgid ""
+"This method is not currently accessible to an OpenREM user or "
+"administrator - it is present to assist developers when producing example"
+" charts for the OpenREM documentation. It must be manually activated by "
+"setting active=True in the method definition."
+msgstr ""
+
+#: of remapp.interface.chart_functions.save_fig_as_html_div:9
+msgid "a Plotly figure"
+msgstr ""
+
+#: of remapp.interface.chart_functions.save_fig_as_html_div:10
+msgid "(string )the filename to use"
+msgstr ""
+
+#: of remapp.interface.chart_functions.save_fig_as_html_div:11
+msgid "(boolean) to set whether to save the figure"
+msgstr ""
+

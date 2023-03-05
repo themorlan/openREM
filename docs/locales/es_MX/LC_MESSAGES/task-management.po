@@ -1,0 +1,106 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2013-2022, The Royal Marsden NHS Foundation Trust
+# This file is distributed under the same license as the OpenREM package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2023.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: OpenREM 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-03-05 17:21+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: es_MX\n"
+"Language-Team: es_MX <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.12.1\n"
+
+#: ../../task-management.rst:2
+msgid "Task management"
+msgstr ""
+
+#: ../../task-management.rst:3
+msgid "*New in 0.9*"
+msgstr ""
+
+#: ../../task-management.rst:5
+msgid "Contents"
+msgstr ""
+
+#: ../../task-management.rst:8
+msgid "Viewing task and service statuses"
+msgstr ""
+
+#: ../../task-management.rst:15
+msgid "Config options"
+msgstr ""
+
+#: ../../task-management.rst:15
+msgid "Figure 1: The ``Config`` menu (user and admin)"
+msgstr ""
+
+#: ../../task-management.rst:17
+msgid ""
+"Users who are logged in with admin rights can use the **Config** menu and"
+" choose **Tasks** to see the following:"
+msgstr ""
+
+#: ../../task-management.rst:19
+msgid "A list of the tasks currently being executed"
+msgstr ""
+
+#: ../../task-management.rst:20
+msgid ""
+"A list of previous tasks and their final status. If any errors occured "
+"they will be displayed here."
+msgstr ""
+
+#: ../../task-management.rst:27
+msgid "Task and service status"
+msgstr ""
+
+#: ../../task-management.rst:27
+msgid "Figure 2: The task administration page"
+msgstr ""
+
+#: ../../task-management.rst:30
+msgid "Terminating running tasks"
+msgstr ""
+
+#: ../../task-management.rst:32
+msgid ""
+"It is possible to terminate any active tasks by clicking the red button. "
+"**There is no confirmation step**. Note that this immediately interrupts "
+"everything this process was doing so far, leading to things like "
+"partially imported studies. In general this should not be an issue (in "
+"case of aborted imports they should be completed when you start importing"
+" them again), but note that there is a certain risk in killing tasks and "
+"use this only as a last resort."
+msgstr ""
+
+#: ../../task-management.rst:38
+msgid ""
+"A note on move: executing a move will create a task which then produces "
+"import tasks for all the studies it should import. This means if you "
+"intend to abort a move you should abort the task with Task type \"move\" "
+"and not the import tasks started by that process!"
+msgstr ""
+
+#: ../../task-management.rst:43
+msgid "Configuring the size of task history"
+msgstr ""
+
+#: ../../task-management.rst:45
+msgid ""
+"The status of 2000 active, recent and older tasks are stored in the "
+"OpenREM database. This limit can be altered by users who are logged in "
+"with admin rights by clicking on **Task settings** in the **Config** menu"
+" and changing the current value. If this limit is set to a very high "
+"value it can cause the web browser to run out of memory when trying to "
+"view the **Task** page due to the large number of rows in the tables."
+msgstr ""
+

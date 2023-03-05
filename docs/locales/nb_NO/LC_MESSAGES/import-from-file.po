@@ -8,14 +8,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-01 18:30+0100\n"
+"POT-Creation-Date: 2023-03-05 17:21+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.8.0\n"
+"Generated-By: Babel 2.12.1\n"
 
 #: ../../import-from-file.rst:2
 msgid "Importing from DICOM files"
@@ -37,11 +37,21 @@ msgstr ""
 msgid "You can use wildcards to process a number of files at once, ie::"
 msgstr ""
 
-#: ../../import-from-file.rst:26
+#: ../../import-from-file.rst:25
+msgid "Radiopharmaceutical Radiation Dose Structured Reports"
+msgstr ""
+
+#: ../../import-from-file.rst:27
+msgid ""
+"You can use the same import script as for Radiation Dose Structured "
+"Reports."
+msgstr ""
+
+#: ../../import-from-file.rst:30
 msgid "For mammography DICOM images"
 msgstr ""
 
-#: ../../import-from-file.rst:31
+#: ../../import-from-file.rst:35
 msgid ""
 "The facility for extracting dose information from mammography DICOM "
 "images has been designed and tested with images created with the GE "
@@ -49,27 +59,38 @@ msgid ""
 " following systems:"
 msgstr ""
 
-#: ../../import-from-file.rst:36
+#: ../../import-from-file.rst:40
 msgid "GE Senographe Essential"
 msgstr ""
 
-#: ../../import-from-file.rst:37
+#: ../../import-from-file.rst:41
 msgid "Hologic Selenia"
 msgstr ""
 
-#: ../../import-from-file.rst:38
+#: ../../import-from-file.rst:42
 msgid "Siemens Inspiration"
 msgstr ""
 
-#: ../../import-from-file.rst:41
+#: ../../import-from-file.rst:45
 msgid "For radiographic DICOM images"
 msgstr ""
 
-#: ../../import-from-file.rst:48
+#: ../../import-from-file.rst:51
+msgid "For PET/NM DICOM images"
+msgstr ""
+
+#: ../../import-from-file.rst:56
+msgid ""
+"Note that more complete information can be loaded from the RRDSRs if "
+"available. For PET images the PET series information can be added to the "
+"RRDSR data."
+msgstr ""
+
+#: ../../import-from-file.rst:60
 msgid "For CT dose summary files from Philips CT scanners"
 msgstr ""
 
-#: ../../import-from-file.rst:53
+#: ../../import-from-file.rst:65
 msgid ""
 "This extractor makes use of the information stored in the header data of "
 "the Philips Secondary Capture object with a series description of 'Dose "
@@ -80,11 +101,11 @@ msgid ""
 "radiation dose'."
 msgstr ""
 
-#: ../../import-from-file.rst:61
+#: ../../import-from-file.rst:73
 msgid "For CT dose summary files from older Toshiba CT scanners"
 msgstr ""
 
-#: ../../import-from-file.rst:66
+#: ../../import-from-file.rst:78
 msgid ""
 "This extractor is designed to create a DICOM radiation dose structured "
 "report from the information contained in secondary capture dose summary "
@@ -98,80 +119,80 @@ msgid ""
 "the initial RDSR:"
 msgstr ""
 
-#: ../../import-from-file.rst:77
+#: ../../import-from-file.rst:89
 msgid "Study-level information"
 msgstr ""
 
-#: ../../import-from-file.rst:79
+#: ../../import-from-file.rst:91
 msgid "Study description"
 msgstr ""
 
-#: ../../import-from-file.rst:80
+#: ../../import-from-file.rst:92
 msgid "Requested procedure description"
 msgstr ""
 
-#: ../../import-from-file.rst:81
+#: ../../import-from-file.rst:93
 msgid "Software versions"
 msgstr ""
 
-#: ../../import-from-file.rst:82
+#: ../../import-from-file.rst:94
 msgid "Device serial number"
 msgstr ""
 
-#: ../../import-from-file.rst:85
+#: ../../import-from-file.rst:97
 msgid "Series-level information"
 msgstr ""
 
-#: ../../import-from-file.rst:87
+#: ../../import-from-file.rst:99
 msgid "Protocol name"
 msgstr ""
 
-#: ../../import-from-file.rst:88
+#: ../../import-from-file.rst:100
 msgid "Exposure time (per rotation)"
 msgstr ""
 
-#: ../../import-from-file.rst:89
+#: ../../import-from-file.rst:101
 msgid "kVp"
 msgstr ""
 
-#: ../../import-from-file.rst:90
+#: ../../import-from-file.rst:102
 msgid "Spiral pitch factor"
 msgstr ""
 
-#: ../../import-from-file.rst:91
+#: ../../import-from-file.rst:103
 msgid "Nominal total collimation width"
 msgstr ""
 
-#: ../../import-from-file.rst:92
+#: ../../import-from-file.rst:104
 msgid "Nominal single collimation width"
 msgstr ""
 
-#: ../../import-from-file.rst:93
+#: ../../import-from-file.rst:105
 msgid "Exposure modulation type"
 msgstr ""
 
-#: ../../import-from-file.rst:95
+#: ../../import-from-file.rst:107
 msgid ""
 "The routine was developed for older Toshiba CT scanners that cannot "
 "create RDSR objects themselves. It is known to work with:"
 msgstr ""
 
-#: ../../import-from-file.rst:98
+#: ../../import-from-file.rst:110
 msgid "Toshiba CX, software version V4.40ER011"
 msgstr ""
 
-#: ../../import-from-file.rst:99
+#: ../../import-from-file.rst:111
 msgid "Toshiba CXL, software version V4.51ER014"
 msgstr ""
 
-#: ../../import-from-file.rst:100
+#: ../../import-from-file.rst:112
 msgid ""
 "Toshiba CXL, software version V4.86ER008 (this software version can "
 "produce RDSR objects directly, but may not populate some fields, such as "
 "requested procedure name and study description)"
 msgstr ""
 
-#: ../../import-from-file.rst:104
+#: ../../import-from-file.rst:116
 msgid ""
 "This extractor has also been used successfully on images from a GE "
 "LightSpeed Plus scanner, although in this case no supplementary data is "

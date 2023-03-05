@@ -8,14 +8,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-01 18:30+0100\n"
+"POT-Creation-Date: 2023-03-05 17:21+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.8.0\n"
+"Generated-By: Babel 2.12.1\n"
 
 #: ../../code_models.rst:2
 msgid "Models"
@@ -74,7 +74,9 @@ msgstr ""
 #: remapp.models.CtIrradiationEventData:4 remapp.models.CtRadiationDose:9
 #: remapp.models.DeviceParticipant:6 remapp.models.ObserverContext:5
 #: remapp.models.PersonParticipant:7
-#: remapp.models.ProjectionXRayRadiationDose:10 remapp.models.ScanningLength:5
+#: remapp.models.ProjectionXRayRadiationDose:10
+#: remapp.models.RadiopharmaceuticalRadiationDose:10
+#: remapp.models.ScanningLength:5
 msgid "From DICOM Part 16:"
 msgstr ""
 
@@ -115,6 +117,12 @@ msgstr ""
 
 #: of remapp.models.AdminTaskQuestions:1
 msgid "Record if admin tasks have been dealt with"
+msgstr ""
+
+#: of remapp.models.BackgroundTaskMaximumRows:1
+msgid ""
+"Table to store the maximum number of rows allowed in the BackgroundTask "
+"table"
 msgstr ""
 
 #: of remapp.models.Calibration:1
@@ -245,7 +253,7 @@ msgid "Table to hold the export status and filenames"
 msgstr ""
 
 #: of remapp.models.Exposure:1
-msgid "In TID 10003b. Code value 113736 (uAs)"
+msgid "In TID 10003b. Code value 113736 (uA.s)"
 msgstr ""
 
 #: of remapp.models.Exposure.convert_uAs_to_mAs:1
@@ -451,6 +459,12 @@ msgid ""
 "this context applies."
 msgstr ""
 
+#: of remapp.models.OpenSkinSafeList:1
+msgid ""
+"Table to store systems names and software versions that are suitable for "
+"OpenSkin"
+msgstr ""
+
 #: of remapp.models.PKsForSummedRFDoseStudiesInDeltaWeeks:1
 msgid ""
 "Table to hold foreign keys of all studies that fall within the delta "
@@ -524,6 +538,23 @@ msgstr ""
 msgid "In TID 10003b. Code value 113793 (ms)"
 msgstr ""
 
+#: of remapp.models.RadiopharmaceuticalRadiationDose:1
+msgid "Radiopharmaceutical Radiation Dose TID 10021"
+msgstr ""
+
+#: of remapp.models.RadiopharmaceuticalRadiationDose:4
+msgid ""
+"This Template defines a container (the root) with subsidiary Content "
+"Items, each of which corresponds to a single Radiopharmaceutical "
+"Administration Dose event entry. There is a defined recording observer "
+"(the system and/or person responsible for recording the assay of the "
+"radiopharmaceutical, and the person administered the "
+"radiopharmaceutical). Multiple Radiopharmaceutical Radiation Dose objects"
+" may be created for one study. Radiopharmaceutical Start DateTime in TID "
+"10022 “Radiopharmaceutical Administration Event Data” will convey the "
+"order of administrations."
+msgstr ""
+
 #: of remapp.models.ScanningLength:1
 msgid "Scanning Length TID 10014"
 msgstr ""
@@ -550,6 +581,16 @@ msgstr ""
 
 #: of remapp.models.SourceOfCTDoseInformation:1
 msgid "Source of CT Dose Information"
+msgstr ""
+
+#: of remapp.models.StandardNameSettings:1
+msgid "Table to store standard name mapping settings"
+msgstr ""
+
+#: of remapp.models.StandardNames:1
+msgid ""
+"Table to store standard study description, requested procedure, procedure"
+" or acquisition names"
 msgstr ""
 
 #: of remapp.models.SummaryFields:1
@@ -595,4 +636,14 @@ msgstr ""
 #: of remapp.models.create_or_save_high_dose_metric_alert_recipient_setting:1
 msgid "Function to create or save fluoroscopy high dose alert recipient settings"
 msgstr ""
+
+#: of remapp.models.limit_background_task_table_rows:1
+msgid ""
+"Method to limit the number of rows in the BackgroundTask table. This "
+"method is triggered by a post_save signal associated with the "
+"BackgroundTask table."
+msgstr ""
+
+#~ msgid "In TID 10003b. Code value 113736 (uAs)"
+#~ msgstr ""
 

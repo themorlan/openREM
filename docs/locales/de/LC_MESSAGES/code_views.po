@@ -8,20 +8,251 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-04 12:05+0100\n"
+"POT-Creation-Date: 2023-03-05 17:21+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.8.0\n"
+"Generated-By: Babel 2.12.1\n"
 
-#: ../../code_views.rst:2 34270238f25f4171b0a5f583c4dc0ff2
+#: ../../code_views.rst:2
 msgid "Views"
 msgstr ""
 
-#: ../../code_views.rst:4 948099b7d8a34e34bf696194b1d6bd9d
-msgid "*Will be documented in future release*"
+#: of remapp.views.ct_detail_view:1 remapp.views.mg_detail_view:1
+msgid "Detail view for a CT study."
 msgstr ""
+
+#: of remapp.views.ct_summary_list_filter:1
+msgid "Obtain data for CT summary view."
+msgstr ""
+
+#: of remapp.views.dx_detail_view:1
+msgid "Detail view for a DX study."
+msgstr ""
+
+#: of remapp.views.dx_summary_list_filter:1
+#: remapp.views.rf_summary_list_filter:1
+msgid "Obtain data for radiographic summary view."
+msgstr ""
+
+#: of remapp.views.logout_page:1
+msgid "Log users out and re-direct them to the main page."
+msgstr ""
+
+#: of remapp.views.mg_summary_list_filter:1
+msgid "Mammography data for summary view."
+msgstr ""
+
+#: of remapp.views.multiply:1
+msgid "Return multiplication within Django templates"
+msgstr ""
+
+#: of remapp.views.multiply remapp.views.update_latest_studies
+#: remapp.views.update_modality_totals remapp.views.update_study_workload
+#: remapp.views_openskin.check_skin_safe_model
+#: remapp.views_openskin.get_matching_equipment_names
+msgid "Parameters"
+msgstr ""
+
+#: of remapp.views.multiply:3
+msgid "the value to multiply"
+msgstr ""
+
+#: of remapp.views.multiply:4
+msgid "the second value to multiply"
+msgstr ""
+
+#: of remapp.views.multiply remapp.views.update_latest_studies
+#: remapp.views.update_modality_totals remapp.views.update_study_workload
+#: remapp.views_openskin.check_skin_safe_model
+#: remapp.views_openskin.get_matching_equipment_names
+msgid "Returns"
+msgstr ""
+
+#: of remapp.views.multiply:5
+msgid "the multiplication"
+msgstr ""
+
+#: of remapp.views.nm_detail_view:1
+msgid "Detail view for a NM study."
+msgstr ""
+
+#: of remapp.views.nm_summary_list_filter:1
+msgid "Obtain data for NM summary view."
+msgstr ""
+
+#: of remapp.views.rf_detail_view:1
+msgid "Detail view for an RF study."
+msgstr ""
+
+#: of remapp.views.rf_detail_view_skin_map:1
+msgid ""
+"View to calculate a skin dose map. Currently just a copy of "
+"rf_detail_view."
+msgstr ""
+
+#: of remapp.views.standard_name_settings:1
+msgid "Obtain the system-level enable_standard_names setting."
+msgstr ""
+
+#: of remapp.views.update_latest_studies:1
+msgid ""
+"AJAX function to calculate the latest studies for each display name for a"
+" particular modality."
+msgstr ""
+
+#: of remapp.views.update_latest_studies:3 remapp.views.update_study_workload:3
+msgid "Request object"
+msgstr ""
+
+#: of remapp.views.update_latest_studies:4 remapp.views.update_study_workload:4
+msgid "HTML table of modalities"
+msgstr ""
+
+#: of remapp.views.update_modality_totals:1
+msgid "AJAX function to update study numbers automatically."
+msgstr ""
+
+#: of remapp.views.update_modality_totals:3
+msgid "request object"
+msgstr ""
+
+#: of remapp.views.update_modality_totals:4
+msgid "dictionary of totals"
+msgstr ""
+
+#: of remapp.views.update_study_workload:1
+msgid ""
+"AJAX function to calculate the number of studies in two user-defined time"
+" periods for a particular modality."
+msgstr ""
+
+#: ../../code_views.rst:9
+msgid "openSkin related views"
+msgstr ""
+
+#: of remapp.views_openskin:1
+msgid "openSkin related views."
+msgstr ""
+
+#: of remapp.views_openskin.SkinDoseMapCalcSettingsUpdate:1
+msgid "Update skin dose map calculation settings."
+msgstr ""
+
+#: of remapp.views_openskin.SkinDoseMapCalcSettingsUpdate.form_valid:1
+#: remapp.views_openskin.SkinSafeListCreate.form_valid:1
+#: remapp.views_openskin.SkinSafeListUpdate.form_valid:1
+msgid "If the form is valid, save the associated model."
+msgstr ""
+
+#: of remapp.views_openskin.SkinDoseMapCalcSettingsUpdate.get_context_data:1
+#: remapp.views_openskin.SkinSafeListCreate.get_context_data:1
+#: remapp.views_openskin.SkinSafeListUpdate.get_context_data:1
+msgid "Insert the form into the context dict."
+msgstr ""
+
+#: of remapp.views_openskin.SkinSafeListCreate:1
+msgid ""
+"Enable skin map calculations by adding model, or model and software "
+"version to `OpenSkinSafeList`."
+msgstr ""
+
+#: of remapp.views_openskin.SkinSafeListDelete:1
+msgid ""
+"Disable skin map calculations for particular model or model and software "
+"version."
+msgstr ""
+
+#: of remapp.views_openskin.SkinSafeListDelete.delete:1
+msgid ""
+"Call the delete() method on the fetched object and then redirect to the "
+"success URL."
+msgstr ""
+
+#: of remapp.views_openskin.SkinSafeListDelete.get_context_data:1
+msgid "Insert the single object into the context dict."
+msgstr ""
+
+#: of remapp.views_openskin.SkinSafeListUpdate:1
+msgid "Add or remove the software version restriction."
+msgstr ""
+
+#: of remapp.views_openskin.check_skin_safe_model:1
+msgid ""
+"Check if device matches on manufacturer and model without version "
+"restriction."
+msgstr ""
+
+#: of remapp.views_openskin.check_skin_safe_model:3
+msgid ""
+"openSkin safe list `OpenSkinSafeList` is checked against manufacturer and"
+" model. This function is then used to check if there are any entries on "
+"the list where `software_version` is blank."
+msgstr ""
+
+#: of remapp.views_openskin.check_skin_safe_model:6
+msgid "Queryset of safe list entries matching manufacturer and model"
+msgstr ""
+
+#: of remapp.views_openskin.check_skin_safe_model:9
+msgid ""
+"* **safe_list_model_pk** (*int or None*) -- Primary key of entry if match"
+" found, ``None`` otherwise * **model_enabled** (*bool*) -- ``True`` if "
+"match found with blank `software_version`, otherwise ``False``"
+msgstr ""
+
+#: of remapp.views_openskin.check_skin_safe_model:9
+msgid ""
+"**safe_list_model_pk** (*int or None*) -- Primary key of entry if match "
+"found, ``None`` otherwise"
+msgstr ""
+
+#: of remapp.views_openskin.check_skin_safe_model:10
+msgid ""
+"**model_enabled** (*bool*) -- ``True`` if match found with blank "
+"`software_version`, otherwise ``False``"
+msgstr ""
+
+#: of remapp.views_openskin.display_name_skin_enabled:1
+msgid ""
+"AJAX view to display if skin map calculations are enabled and links to "
+"change the configuration."
+msgstr ""
+
+#: of remapp.views_openskin.get_matching_equipment_names:1
+msgid ""
+"Get queryset of unique equipment names that match the manufacturer and "
+"model name being reviewed."
+msgstr ""
+
+#: of remapp.views_openskin.get_matching_equipment_names:3
+msgid ""
+"Filters the `UniqueEquipmentNames` table for fluoroscopy entries (or dual"
+" fluoro + radiography) that match the manufacturer and model that has "
+"been selected."
+msgstr ""
+
+#: of remapp.views_openskin.get_matching_equipment_names:6
+msgid "Name of manufacturer from `UniqueEquipmentNames` table"
+msgstr ""
+
+#: of remapp.views_openskin.get_matching_equipment_names:8
+msgid "Model name from `UniqueEquipmentNames` table"
+msgstr ""
+
+#: of remapp.views_openskin.get_matching_equipment_names:11
+msgid ""
+"Queryset filtered for fluoro systems matching the manufacturer and model "
+"name"
+msgstr ""
+
+#: of remapp.views_openskin.get_matching_equipment_names
+msgid "Return type"
+msgstr ""
+
+#~ msgid "*Will be documented in future release*"
+#~ msgstr ""
 

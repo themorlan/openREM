@@ -28,7 +28,5 @@ sphinx==5.3.0
 sphinx_rtd_theme==1.1.1
 readthedocs-sphinx-ext==2.2.0
 sphinx-issues==3.0.1
-sphinxcontrib-programoutput
-sphinxcontrib-autoprogram
 sphinx-argparse
 sphinx-copybutton

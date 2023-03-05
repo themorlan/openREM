@@ -8,20 +8,150 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-04 12:05+0100\n"
+"POT-Creation-Date: 2023-03-05 17:21+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.8.0\n"
+"Generated-By: Babel 2.12.1\n"
 
-#: ../../code_exportviews.rst:2 128fd8d362c54977b4f0fa10a74b80ca
+#: ../../code_exportviews.rst:2
 msgid "Export Views"
 msgstr ""
 
-#: 33a923aef1df4ccd822c0c463b4756a0 of remapp.exports.exportviews.include_pid:1
+#: of remapp.exports.exportviews.ct_xlsx_phe2019:1
+msgid ""
+"View to launch  task to export CT studies to xlsx file in PHE 2019 CT "
+"survey format"
+msgstr ""
+
+#: of remapp.exports.exportviews.ct_xlsx_phe2019
+#: remapp.exports.exportviews.ctcsv1 remapp.exports.exportviews.ctxlsx1
+#: remapp.exports.exportviews.deletefile remapp.exports.exportviews.download
+#: remapp.exports.exportviews.dx_xlsx_phe2019 remapp.exports.exportviews.dxcsv1
+#: remapp.exports.exportviews.dxxlsx1 remapp.exports.exportviews.export
+#: remapp.exports.exportviews.export_abort
+#: remapp.exports.exportviews.export_remove remapp.exports.exportviews.flcsv1
+#: remapp.exports.exportviews.mgnhsbsp remapp.exports.exportviews.nmcsv1
+#: remapp.exports.exportviews.nmxlsx1
+#: remapp.exports.exportviews.rf_xlsx_phe2019
+#: remapp.exports.exportviews.rfxlsx1 remapp.exports.exportviews.update_active
+#: remapp.exports.exportviews.update_complete
+#: remapp.exports.exportviews.update_error
+#: remapp.exports.exportviews.update_queue
+msgid "Parameters"
+msgstr ""
+
+#: of remapp.exports.exportviews.ct_xlsx_phe2019:3
+#: remapp.exports.exportviews.dx_xlsx_phe2019:3
+#: remapp.exports.exportviews.rf_xlsx_phe2019:3
+msgid "Contains the database filtering parameters and user details."
+msgstr ""
+
+#: of remapp.exports.exportviews.ctcsv1:1
+msgid "View to launch  task to export CT studies to csv file"
+msgstr ""
+
+#: of remapp.exports.exportviews.ctcsv1:3 remapp.exports.exportviews.ctxlsx1:3
+#: remapp.exports.exportviews.dxcsv1:3 remapp.exports.exportviews.dxxlsx1:3
+#: remapp.exports.exportviews.flcsv1:3 remapp.exports.exportviews.mgnhsbsp:3
+#: remapp.exports.exportviews.nmcsv1:3 remapp.exports.exportviews.nmxlsx1:3
+#: remapp.exports.exportviews.rfxlsx1:3
+msgid "Contains the database filtering parameters. Also used to get user group."
+msgstr ""
+
+#: of remapp.exports.exportviews.ctcsv1:4 remapp.exports.exportviews.ctxlsx1:4
+#: remapp.exports.exportviews.dxcsv1:4 remapp.exports.exportviews.dxxlsx1:4
+#: remapp.exports.exportviews.flcsv1:4 remapp.exports.exportviews.nmcsv1:4
+#: remapp.exports.exportviews.nmxlsx1:4 remapp.exports.exportviews.rfxlsx1:4
+msgid "string, 0 or 1 from URL indicating if names should be exported"
+msgstr ""
+
+#: of remapp.exports.exportviews.ctcsv1:5 remapp.exports.exportviews.ctxlsx1:5
+#: remapp.exports.exportviews.dxcsv1:5 remapp.exports.exportviews.dxxlsx1:5
+#: remapp.exports.exportviews.flcsv1:5 remapp.exports.exportviews.nmcsv1:5
+#: remapp.exports.exportviews.nmxlsx1:5 remapp.exports.exportviews.rfxlsx1:5
+msgid "string, 0 or 1 from URL indicating if patient ID should be exported"
+msgstr ""
+
+#: of remapp.exports.exportviews.ctxlsx1:1
+msgid "View to launch  task to export CT studies to xlsx file"
+msgstr ""
+
+#: of remapp.exports.exportviews.deletefile:1
+msgid "View to delete export files from the server"
+msgstr ""
+
+#: of remapp.exports.exportviews.deletefile:3
+msgid "Contains the task ID"
+msgstr ""
+
+#: of remapp.exports.exportviews.download:1
+msgid "View to handle downloads of files from the server"
+msgstr ""
+
+#: of remapp.exports.exportviews.download:3
+msgid ""
+"Originally used for download of the export spreadsheets, now also used "
+"for downloading the patient size import logfiles."
+msgstr ""
+
+#: of remapp.exports.exportviews.download:6 remapp.exports.exportviews.export:3
+msgid "Used to get user group."
+msgstr ""
+
+#: of remapp.exports.exportviews.download:7
+msgid "ID of the export or logfile"
+msgstr ""
+
+#: of remapp.exports.exportviews.dx_xlsx_phe2019:1
+msgid ""
+"View to launch  task to export DX studies to xlsx file in PHE 2019 DX "
+"survey format"
+msgstr ""
+
+#: of remapp.exports.exportviews.dx_xlsx_phe2019:4
+msgid "string, 'projection' or 'exam'"
+msgstr ""
+
+#: of remapp.exports.exportviews.dxcsv1:1
+msgid "View to launch  task to export DX and CR studies to csv file"
+msgstr ""
+
+#: of remapp.exports.exportviews.dxxlsx1:1
+msgid "View to launch  task to export DX and CR studies to xlsx file"
+msgstr ""
+
+#: of remapp.exports.exportviews.export:1
+msgid ""
+"View to list current and completed exports to track progress, download "
+"and delete"
+msgstr ""
+
+#: of remapp.exports.exportviews.export_abort:1
+msgid "View to abort current export job"
+msgstr ""
+
+#: of remapp.exports.exportviews.export_abort:3
+#: remapp.exports.exportviews.export_remove:3
+msgid "Contains the task primary key"
+msgstr ""
+
+#: of remapp.exports.exportviews.export_remove:1
+msgid "Function to remove export task from queue"
+msgstr ""
+
+#: of remapp.exports.exportviews.export_remove:4
+msgid "UUID of task in question"
+msgstr ""
+
+#: of remapp.exports.exportviews.flcsv1:1
+msgid "View to launch  task to export fluoroscopy studies to csv file"
+msgstr ""
+
+#: of remapp.exports.exportviews.include_pid:1
 msgid ""
 "Check if user is allowed to export PID, then check if they have asked to."
 " :param request: request so we can determine the user and therefore "
@@ -31,123 +161,7 @@ msgid ""
 "include_pat_id as bools"
 msgstr ""
 
-#: acb498aa299c4becad3aeb57b588098d of remapp.exports.exportviews.ctcsv1:1
-msgid "View to launch celery task to export CT studies to csv file"
-msgstr ""
-
-#: 01476a6170ff4935a56130dd7161ba6b 014c5fd61e184aaba149735ccc2ae803
-#: 02ef653a8529436ea4ac1465fe0511a6 213cacd077dd4430bf1077e868252579
-#: 2ed2b6cc811b4967a4d8c52c8c2817ae 308704667e524b30a41c70f06cf7375a
-#: 3ba435c37cef48a0a93fc3243faf371e 6efd4ad351a94d909f3ba01c93bcd2c2
-#: 72688f5ab5ad45568a74adb94e2ae66b 9533f42af5d4433dbd9f4767813f9c42
-#: 9b4f975752fa415997fd9b7d56b6485d a58b98a659b045a994c45a931299acdf
-#: bab9260bb8e5428b9313df5badc63c5d d87004cebe7d4aabba7be29a6d048dc1
-#: ed20fb5947954e0ab0f4f3f027f68a08 f492672d4c304e19a50a5ed0923dd8f8
-#: f776e9dff33f42168524b595a770e482 of
-#: remapp.exports.exportviews.ct_xlsx_phe2019 remapp.exports.exportviews.ctcsv1
-#: remapp.exports.exportviews.ctxlsx1 remapp.exports.exportviews.deletefile
-#: remapp.exports.exportviews.download
-#: remapp.exports.exportviews.dx_xlsx_phe2019 remapp.exports.exportviews.dxcsv1
-#: remapp.exports.exportviews.dxxlsx1 remapp.exports.exportviews.export
-#: remapp.exports.exportviews.export_abort remapp.exports.exportviews.flcsv1
-#: remapp.exports.exportviews.mgnhsbsp
-#: remapp.exports.exportviews.rf_xlsx_phe2019
-#: remapp.exports.exportviews.rfxlsx1 remapp.exports.exportviews.update_active
-#: remapp.exports.exportviews.update_complete
-#: remapp.exports.exportviews.update_error
-msgid "Parameters"
-msgstr ""
-
-#: 8e6c44f5b9e048e3b6c31a91c8cc9140 a26aa6526bf648b7985c3f624e5bc7e1
-#: b009078d38ae4ffe986896d4d8a73daa b207df3f3e704f8ca443bdd6974de425
-#: d6f26927d75b4af88fef904d8f31177b edbcba5dff614eff8033f1cef2662e67
-#: fc1788cce2094565987e8881383f2ce6 of remapp.exports.exportviews.ctcsv1:3
-#: remapp.exports.exportviews.ctxlsx1:3 remapp.exports.exportviews.dxcsv1:3
-#: remapp.exports.exportviews.dxxlsx1:3 remapp.exports.exportviews.flcsv1:3
-#: remapp.exports.exportviews.mgnhsbsp:3 remapp.exports.exportviews.rfxlsx1:3
-msgid "Contains the database filtering parameters. Also used to get user group."
-msgstr ""
-
-#: 3b13648191a94a86af431562b73fcaea 4c44de590d2a4b0db83bdf6ba77ec161
-#: 507156418a1f40f0bd6654e56cf35ea3 ad11929099194f76bff63dbcf5c743b0
-#: b226b4fca5b34e529dee5445d89418f4 bdd3da407a394ee483fca14e4fc74e45 of
-#: remapp.exports.exportviews.ctcsv1:4 remapp.exports.exportviews.ctxlsx1:4
-#: remapp.exports.exportviews.dxcsv1:4 remapp.exports.exportviews.dxxlsx1:4
-#: remapp.exports.exportviews.flcsv1:4 remapp.exports.exportviews.rfxlsx1:4
-msgid "string, 0 or 1 from URL indicating if names should be exported"
-msgstr ""
-
-#: 2475926ee01541e79d0dd6850c5ff52a 367277fbcc6c4adba9414ea539e7cf77
-#: 547d35d7549a418ea2623fce235a75d8 f239635e464841fc992f5bc6d40ec959
-#: fa772a798c7d41e1bdb14420d70c6295 fb11d8c578e14eb596bc4958d3eecfe2 of
-#: remapp.exports.exportviews.ctcsv1:5 remapp.exports.exportviews.ctxlsx1:5
-#: remapp.exports.exportviews.dxcsv1:5 remapp.exports.exportviews.dxxlsx1:5
-#: remapp.exports.exportviews.flcsv1:5 remapp.exports.exportviews.rfxlsx1:5
-msgid "string, 0 or 1 from URL indicating if patient ID should be exported"
-msgstr ""
-
-#: ba049589e6e0477b92835c16233cfb21 of remapp.exports.exportviews.ctxlsx1:1
-msgid "View to launch celery task to export CT studies to xlsx file"
-msgstr ""
-
-#: 0d999a2c8577401f833edd8d5fc000b7 of
-#: remapp.exports.exportviews.ct_xlsx_phe2019:1
-msgid ""
-"View to launch celery task to export CT studies to xlsx file in PHE 2019 "
-"CT survey format"
-msgstr ""
-
-#: 5f78efbe705e43b1a85455d6e06a64b1 a9fe26312e1146e89691ae9111f12b00
-#: f7468fe1bdfb4044b8eb0aaec1952e19 of
-#: remapp.exports.exportviews.ct_xlsx_phe2019:3
-#: remapp.exports.exportviews.dx_xlsx_phe2019:3
-#: remapp.exports.exportviews.rf_xlsx_phe2019:3
-msgid "Contains the database filtering parameters and user details."
-msgstr ""
-
-#: 4cf6bcac9d0546789b0c231aa8843750 of remapp.exports.exportviews.dxcsv1:1
-msgid "View to launch celery task to export DX and CR studies to csv file"
-msgstr ""
-
-#: 8c02c708f5a142dca6d8911645d41870 of remapp.exports.exportviews.dxxlsx1:1
-msgid "View to launch celery task to export DX and CR studies to xlsx file"
-msgstr ""
-
-#: 99e8594f780f4094b8758cf18613ac70 of
-#: remapp.exports.exportviews.dx_xlsx_phe2019:1
-msgid ""
-"View to launch celery task to export DX studies to xlsx file in PHE 2019 "
-"DX survey format"
-msgstr ""
-
-#: 507f751fcb9b4cd898441c05bcc7b77a of
-#: remapp.exports.exportviews.dx_xlsx_phe2019:4
-msgid "string, 'projection' or 'exam'"
-msgstr ""
-
-#: d5370a9fbf9a41d7bb1a422add585b5b of remapp.exports.exportviews.flcsv1:1
-msgid "View to launch celery task to export fluoroscopy studies to csv file"
-msgstr ""
-
-#: 1a33c85376694c21891f8ac2f1ac0264 of remapp.exports.exportviews.rfxlsx1:1
-msgid "View to launch celery task to export fluoroscopy studies to xlsx file"
-msgstr ""
-
-#: 5b133ec4802b4fe38e5de5581694f9ae of remapp.exports.exportviews.rfopenskin:1
-msgid ""
-"Create csv export suitable for import to standalone openSkin :param "
-"request: request object :param pk: primary key of study in "
-"GeneralStudyModuleAttr table"
-msgstr ""
-
-#: 90cb41e735164953b2eeef80b5407eed of
-#: remapp.exports.exportviews.rf_xlsx_phe2019:1
-msgid ""
-"View to launch celery task to export fluoro studies to xlsx file in PHE "
-"2019 IR/fluoro survey format"
-msgstr ""
-
-#: 37cba32c104546e796a1c17d5f88531a of remapp.exports.exportviews.mgcsv1:1
+#: of remapp.exports.exportviews.mgcsv1:1
 msgid ""
 "Launches export of mammo data to CSV :param request: Contains the "
 "database filtering parameters. Also used to get user group. :param name: "
@@ -156,7 +170,13 @@ msgid ""
 "exported :return:"
 msgstr ""
 
-#: 702532600d1b47309a7ca7cbe10ebe87 of remapp.exports.exportviews.mgxlsx1:1
+#: of remapp.exports.exportviews.mgnhsbsp:1
+msgid ""
+"View to launch  task to export mammography studies to csv file using a "
+"NHSBSP template"
+msgstr ""
+
+#: of remapp.exports.exportviews.mgxlsx1:1
 msgid ""
 "Launches export of mammo data to xlsx :param request: Contains the "
 "database filtering parameters. Also used to get user group. :param name: "
@@ -165,102 +185,118 @@ msgid ""
 "exported :return:"
 msgstr ""
 
-#: b5145b7b2f8c487eb44d5b8ab84bf41d of remapp.exports.exportviews.mgnhsbsp:1
+#: of remapp.exports.exportviews.nmcsv1:1
+msgid "View to launch task to export NM studies to csv file"
+msgstr ""
+
+#: of remapp.exports.exportviews.nmxlsx1:1
+msgid "View to launch celery task to export NM studies to excel file"
+msgstr ""
+
+#: of remapp.exports.exportviews.rf_xlsx_phe2019:1
 msgid ""
-"View to launch celery task to export mammography studies to csv file "
-"using a NHSBSP template"
+"View to launch  task to export fluoro studies to xlsx file in PHE 2019 "
+"IR/fluoro survey format"
 msgstr ""
 
-#: 2059fbfd53f94d2cb71f84816ad6563b of remapp.exports.exportviews.export:1
+#: of remapp.exports.exportviews.rfopenskin:1
 msgid ""
-"View to list current and completed exports to track progress, download "
-"and delete"
+"Create csv export suitable for import to standalone openSkin :param "
+"request: request object :param pk: primary key of study in "
+"GeneralStudyModuleAttr table"
 msgstr ""
 
-#: 96cc006fd9224e9e84419cd8650892a9 a672ce588fbb46cb9dd08f51e2881cf9 of
-#: remapp.exports.exportviews.download:6 remapp.exports.exportviews.export:3
-msgid "Used to get user group."
+#: of remapp.exports.exportviews.rfxlsx1:1
+msgid "View to launch  task to export fluoroscopy studies to xlsx file"
 msgstr ""
 
-#: 1a91e1698cf542ba985d61b04b3db7b5 of remapp.exports.exportviews.download:1
-msgid "View to handle downloads of files from the server"
-msgstr ""
-
-#: e71b0d3ecbfb4bd2b581559d90a3081e of remapp.exports.exportviews.download:3
-msgid ""
-"Originally used for download of the export spreadsheets, now also used "
-"for downloading the patient size import logfiles."
-msgstr ""
-
-#: a9a128b64f604ee39d3199af3bd8d26a of remapp.exports.exportviews.download:7
-msgid "ID of the export or logfile"
-msgstr ""
-
-#: 12faa477141c4199b8e4f0dcda6be736 of remapp.exports.exportviews.deletefile:1
-msgid "View to delete export files from the server"
-msgstr ""
-
-#: fe675cf677ac4908a08f9df2cea73e03 of remapp.exports.exportviews.deletefile:3
-msgid "Contains the task ID"
-msgstr ""
-
-#: d2abe46471b642fb82122ee3c91bacd7 of
-#: remapp.exports.exportviews.export_abort:1
-msgid "View to abort current export job"
-msgstr ""
-
-#: eb35c2bf0f964ff3b5cb6d19426a565e of
-#: remapp.exports.exportviews.export_abort:3
-msgid "Contains the task primary key"
-msgstr ""
-
-#: c9357d3e6daa4d33922933f26e7839c0 of
-#: remapp.exports.exportviews.update_active:1
+#: of remapp.exports.exportviews.update_active:1
 msgid "AJAX function to return active exports"
 msgstr ""
 
-#: 8f765237e9e14f11a7af741db0ce8f32 bb30b216a99646149df0e23386a647e2 of
-#: remapp.exports.exportviews.update_active:3
+#: of remapp.exports.exportviews.update_active:3
 #: remapp.exports.exportviews.update_error:3
+#: remapp.exports.exportviews.update_queue:3
 msgid "Request object"
 msgstr ""
 
-#: 4cd5c7f08ba3479a81fdf1d7f61cf73a e5e3b2aae5564888a82e774974d7f4e7
-#: ee88f2aeb9c94f779fa5fd169b3a8fa1 of remapp.exports.exportviews.update_active
+#: of remapp.exports.exportviews.update_active
 #: remapp.exports.exportviews.update_complete
 #: remapp.exports.exportviews.update_error
+#: remapp.exports.exportviews.update_queue
 msgid "Returns"
 msgstr ""
 
-#: 824dc4fd5ce3460ca62adbce78aad9fe of
-#: remapp.exports.exportviews.update_active:4
+#: of remapp.exports.exportviews.update_active:4
+#: remapp.exports.exportviews.update_queue:4
 msgid "HTML table of active exports"
 msgstr ""
 
-#: 03788559b28f4163a2edd0de9c5c85af of
-#: remapp.exports.exportviews.update_error:1
-msgid "AJAX function to return exports in error state"
-msgstr ""
-
-#: f7663e8595454baaba403bc3c370438c of
-#: remapp.exports.exportviews.update_error:4
-msgid "HTML table of exports in error state"
-msgstr ""
-
-#: 4d77bde43bf9457d84baa9fc22030182 of
-#: remapp.exports.exportviews.update_complete:1
+#: of remapp.exports.exportviews.update_complete:1
 msgid "AJAX function to return recently completed exports"
 msgstr ""
 
-#: 10815c78a71041128bc4369a6db83850 of
-#: remapp.exports.exportviews.update_complete:3
+#: of remapp.exports.exportviews.update_complete:3
 msgid ""
 "Request object, including pk of latest complete export at initial page "
 "load"
 msgstr ""
 
-#: 5e099f1ce95d425f8540a515fecb4594 of
-#: remapp.exports.exportviews.update_complete:4
+#: of remapp.exports.exportviews.update_complete:4
 msgid "HTML table of completed exports"
 msgstr ""
+
+#: of remapp.exports.exportviews.update_error:1
+msgid "AJAX function to return exports in error state"
+msgstr ""
+
+#: of remapp.exports.exportviews.update_error:4
+msgid "HTML table of exports in error state"
+msgstr ""
+
+#: of remapp.exports.exportviews.update_queue:1
+msgid "AJAX function to return queued exports"
+msgstr ""
+
+#~ msgid "View to launch celery task to export CT studies to csv file"
+#~ msgstr ""
+
+#~ msgid "View to launch celery task to export CT studies to xlsx file"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "View to launch celery task to "
+#~ "export CT studies to xlsx file in"
+#~ " PHE 2019 CT survey format"
+#~ msgstr ""
+
+#~ msgid "View to launch celery task to export DX and CR studies to csv file"
+#~ msgstr ""
+
+#~ msgid "View to launch celery task to export DX and CR studies to xlsx file"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "View to launch celery task to "
+#~ "export DX studies to xlsx file in"
+#~ " PHE 2019 DX survey format"
+#~ msgstr ""
+
+#~ msgid "View to launch celery task to export fluoroscopy studies to csv file"
+#~ msgstr ""
+
+#~ msgid "View to launch celery task to export fluoroscopy studies to xlsx file"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "View to launch celery task to "
+#~ "export fluoro studies to xlsx file "
+#~ "in PHE 2019 IR/fluoro survey format"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "View to launch celery task to "
+#~ "export mammography studies to csv file"
+#~ " using a NHSBSP template"
+#~ msgstr ""
 

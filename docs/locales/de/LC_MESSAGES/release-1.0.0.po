@@ -8,343 +8,340 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-15 17:58+0100\n"
+"POT-Creation-Date: 2023-03-05 17:21+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.8.0\n"
+"Generated-By: Babel 2.12.1\n"
 
-#: ../../release-1.0.0.rst:3 a2054518aa5241b1885d968b54113bc4
-msgid "Upgrade to OpenREM 1.0.0"
+#: ../../release-1.0.0.rst:3
+msgid "OpenREM Release Notes version 1.0.0"
 msgstr ""
 
-#: ../../release-1.0.0.rst:7 b1f41107545842dcacad8016a55e4b4c
+#: ../../release-1.0.0.rst:5
+msgid "**Document not ready for translation**"
+msgstr ""
+
+#: ../../release-1.0.0.rst:9
 msgid "Headline changes"
 msgstr ""
 
-#: ../../release-1.0.0.rst:9 db1b2ee431a24b28b4b6a609864350a1
+#: ../../release-1.0.0.rst:11
 msgid "Python 3"
 msgstr ""
 
-#: ../../release-1.0.0.rst:10 ce3b788ab5884f9287d43178450d6469
+#: ../../release-1.0.0.rst:12
 msgid "Django 2.2"
 msgstr ""
 
-#: ../../release-1.0.0.rst:11 60619efdffa64c849ecbb6050f190ce0
-msgid "Docker"
+#: ../../release-1.0.0.rst:13
+msgid "Docker or direct install on Windows and Linux"
 msgstr ""
 
-#: ../../release-1.0.0.rst:13 0fa9ef3a3da24757af7a0d2f8d228ce4
+#: ../../release-1.0.0.rst:14
+msgid "Celery, Flower and RabbitMQ removed from requirements"
+msgstr ""
+
+#: ../../release-1.0.0.rst:16
 msgid "Performing physician added to standard fluoroscopy exports (:issue:`840`)"
 msgstr ""
 
-#: ../../release-1.0.0.rst:17 d4b579e0ee8e44438e6b48d3b06c7d0c
-msgid "Upgrade preparation"
-msgstr ""
-
-#: ../../release-1.0.0.rst:19 4474ea504ae44a0999245c462e55afa3
-msgid "These instructions assume you are upgrading from 0.10.0."
-msgstr ""
-
-#: ../../release-1.0.0.rst:20 14e75ece525e46deaf2f00e882966163
+#: ../../release-1.0.0.rst:17
 msgid ""
-"**Upgrades from 0.9.1 or earlier should review** "
-":doc:`upgrade_previous_0.10.0`. -- needs changing"
+"Station name checked at series level only, option to check at study level"
+" only instead (:issue:`772`)"
 msgstr ""
 
-#: ../../release-1.0.0.rst:25 76868c63f176423f8de1157d46f230e5
-msgid "Upgrade process from a PostgresQL database"
+#: ../../release-1.0.0.rst:20
+msgid "Upgrade from 0.10.0"
 msgstr ""
 
-#: ../../release-1.0.0.rst:28 6feb963523f84afabd694263219a4ff5
-msgid "Establish existing database details"
+#: ../../release-1.0.0.rst:22
+msgid "Review the :doc:`installation` doc to find the upgrade options"
 msgstr ""
 
-#: ../../release-1.0.0.rst:30 18cdddc544434245aa046b14fa42e4ba
-msgid ""
-"Review the current ``local_settings.py`` for the database settings and "
-"location of the ``MEDIA_ROOT`` folder. The file is in:"
+#: ../../release-1.0.0.rst:25
+msgid "Upgrade from an older version"
 msgstr ""
 
-#: ../../release-1.0.0.rst:33 fd34c3d4f980497faea229852958fd70
-msgid ""
-"Ubuntu linux: ``/usr/local/lib/python2.7/dist-"
-"packages/openrem/openremproject/local_settings.py``"
+#: ../../release-1.0.0.rst:27
+msgid ":doc:`upgrade_previous_0.10.0`"
 msgstr ""
 
-#: ../../release-1.0.0.rst:34 8cf6b69b1e3f4910a2463c45982d6555
-msgid ""
-"Other linux: ``/usr/lib/python2.7/site-"
-"packages/openrem/openremproject/local_settings.py``"
-msgstr ""
+#~ msgid "Upgrade to OpenREM 1.0.0"
+#~ msgstr ""
 
-#: ../../release-1.0.0.rst:35 123d33f363e04a298ea5ea48cc733cb6
-msgid ""
-"Linux virtualenv: ``vitualenvfolder/lib/python2.7/site-"
-"packages/openrem/openremproject/local_settings.py``"
-msgstr ""
+#~ msgid "Docker"
+#~ msgstr ""
 
-#: ../../release-1.0.0.rst:36 d786901342a744ffbd2a394181270a8f
-msgid ""
-"Windows: ``C:\\Python27\\Lib\\site-"
-"packages\\openrem\\openremproject\\local_settings.py``"
-msgstr ""
+#~ msgid "Upgrade preparation"
+#~ msgstr ""
 
-#: ../../release-1.0.0.rst:37 2e398a26969a4dbaa72c3c34c3199d7d
-msgid ""
-"Windows virtualenv: ``virtualenvfolder\\Lib\\site-"
-"packages\\openrem\\openremproject\\local_settings.py``"
-msgstr ""
+#~ msgid "These instructions assume you are upgrading from 0.10.0."
+#~ msgstr ""
 
-#: ../../release-1.0.0.rst:41 ff339d67acf54ad0ae63dcb9cb22ecb5
-msgid "Export the database"
-msgstr ""
+#~ msgid ""
+#~ "**Upgrades from 0.9.1 or earlier should"
+#~ " review** :doc:`upgrade_previous_0.10.0`. -- "
+#~ "needs changing"
+#~ msgstr ""
 
-#: ../../release-1.0.0.rst:43 f0d63927cede4feda2f16dfad31e24a8
-msgid "Open a command line window"
-msgstr ""
+#~ msgid "Upgrade process from a PostgresQL database"
+#~ msgstr ""
 
-#: ../../release-1.0.0.rst:44 d25607400d9d406d8d22d9879789d0d4
-msgid "Windows: go to Postgres bin folder, for example:"
-msgstr ""
+#~ msgid "Establish existing database details"
+#~ msgstr ""
 
-#: ../../release-1.0.0.rst:50 bb9c52a7251149b8a18b2d3b248d8c63
-msgid "Dump the database:"
-msgstr ""
+#~ msgid ""
+#~ "Review the current ``local_settings.py`` for"
+#~ " the database settings and location "
+#~ "of the ``MEDIA_ROOT`` folder. The file"
+#~ " is in:"
+#~ msgstr ""
 
-#: ../../release-1.0.0.rst:52 b04e18a018974825b118e8ae090d3189
-msgid ""
-"Use the username (``-U openremuser``) and database name (``-d "
-"openremdb``) from ``local_settings.py``"
-msgstr ""
+#~ msgid ""
+#~ "Ubuntu linux: ``/usr/local/lib/python2.7/dist-"
+#~ "packages/openrem/openremproject/local_settings.py``"
+#~ msgstr ""
 
-#: ../../release-1.0.0.rst:53 7a0efadc5d4c49019b88a0ffdd26346e
-msgid "Use the password from ``local_settings.py`` when prompted"
-msgstr ""
+#~ msgid ""
+#~ "Other linux: ``/usr/lib/python2.7/site-"
+#~ "packages/openrem/openremproject/local_settings.py``"
+#~ msgstr ""
 
-#: ../../release-1.0.0.rst:54 467dd63fa44f4b19a205ec5f4961831d
-msgid "For linux, the command is ``pg_dump`` (no ``.exe``)"
-msgstr ""
+#~ msgid ""
+#~ "Linux virtualenv: ``vitualenvfolder/lib/python2.7/site-"
+#~ "packages/openrem/openremproject/local_settings.py``"
+#~ msgstr ""
 
-#: ../../release-1.0.0.rst:55 69137312ce294df1b36038c8e6e9a595
-msgid "Set the path to somewhere suitable to dump the exported database file"
-msgstr ""
+#~ msgid ""
+#~ "Windows: ``C:\\Python27\\Lib\\site-"
+#~ "packages\\openrem\\openremproject\\local_settings.py``"
+#~ msgstr ""
 
-#: ../../release-1.0.0.rst:62 b7ee712adb784fba876c9b789146fbe1
-msgid "Set up the new installation"
-msgstr ""
+#~ msgid ""
+#~ "Windows virtualenv: ``virtualenvfolder\\Lib\\site-"
+#~ "packages\\openrem\\openremproject\\local_settings.py``"
+#~ msgstr ""
 
-#: ../../release-1.0.0.rst:64 f5c371e2ffac4d1eb9d91177bae2eac8
-msgid "Install Docker"
-msgstr ""
+#~ msgid "Export the database"
+#~ msgstr ""
 
-#: ../../release-1.0.0.rst:65 b489b90d594044d582627ad3f5322a6f
-msgid ""
-"Download and extract https://bitbucket.org/openrem/docker/get/develop.zip"
-" and open a shell (command window) in the new folder"
-msgstr ""
+#~ msgid "Open a command line window"
+#~ msgstr ""
 
-#: ../../release-1.0.0.rst:67 15f4a90cc0d846ceaf314d44088374f2
-msgid ""
-"Customise variables in ``.env.prod`` and in the ``orthanc_1`` section in "
-"``docker-compose.yml`` as necessary. A full description of the options "
-"are found in:"
-msgstr ""
+#~ msgid "Windows: go to Postgres bin folder, for example:"
+#~ msgstr ""
 
-#: ../../release-1.0.0.rst:76 5ed180524fe145f19eb830a20e705bf2
-msgid "Start the containers with:"
-msgstr ""
+#~ msgid "Dump the database:"
+#~ msgstr ""
 
-#: ../../release-1.0.0.rst:82 eb8a6f5fd64e41e69ca320071bced323
-msgid ""
-"Copy the database backup to the postgres docker container and import it. "
-"If you have changed the database variables, ensure that:"
-msgstr ""
+#~ msgid ""
+#~ "Use the username (``-U openremuser``) "
+#~ "and database name (``-d openremdb``) "
+#~ "from ``local_settings.py``"
+#~ msgstr ""
 
-#: ../../release-1.0.0.rst:85 c372b4c8da3e4f408e9a8d1ee8645c62
-msgid ""
-"the database user (``-U openremuser``) matches ``POSTGRES_USER`` in "
-"``.env.prod``"
-msgstr ""
+#~ msgid "Use the password from ``local_settings.py`` when prompted"
+#~ msgstr ""
 
-#: ../../release-1.0.0.rst:86 5325ee0388a94fc1a5e8e5d2078e27ea
-msgid ""
-"the database name (``-d openrem_prod``) matches ``POSTGRES_DB`` in "
-"``.env.prod``"
-msgstr ""
+#~ msgid "For linux, the command is ``pg_dump`` (no ``.exe``)"
+#~ msgstr ""
 
-#: ../../release-1.0.0.rst:88 1e09985abbbc4bc58fb1fac5001f48c5
-msgid ""
-"They don't have to match the old database settings. The filename in both "
-"commands (``openremdump.bak``) should match your backup filename."
-msgstr ""
+#~ msgid "Set the path to somewhere suitable to dump the exported database file"
+#~ msgstr ""
 
-#: ../../release-1.0.0.rst:99 0b3330a806aa4bc68e53af34b5471bb7
-msgid "It is normal to get an error about the public schema, for example:"
-msgstr ""
+#~ msgid "Set up the new installation"
+#~ msgstr ""
 
-#: ../../release-1.0.0.rst:110 870ab61a4ea64b5e9ef1a439ce381507
-msgid ""
-"Rename the 0.10 upgrade migration file, migrate the database (the steps "
-"and fakes are required as it is not a new database), and create the "
-"static files:"
-msgstr ""
+#~ msgid "Install Docker"
+#~ msgstr ""
 
-#: ../../release-1.0.0.rst:137 ../../release-1.0.0.rst:287
-#: 2e40ba3798634c61b1e325e857ca3fac 50486d358f1a4b3280f45ab82010b425
-msgid "Generate translation binary files"
-msgstr ""
+#~ msgid ""
+#~ "Download and extract "
+#~ "https://bitbucket.org/openrem/docker/get/develop.zip and "
+#~ "open a shell (command window) in "
+#~ "the new folder"
+#~ msgstr ""
 
-#: ../../release-1.0.0.rst:143 a7774c01c8ba4c96b552ac6e6bbdc706
-msgid ""
-"Copy in any existing skin dose map pickle files from your existing "
-"``MEDIA_ROOT/skin_maps`` folder (optional, they can be calculated again):"
-msgstr ""
+#~ msgid ""
+#~ "Customise variables in ``.env.prod`` and "
+#~ "in the ``orthanc_1`` section in "
+#~ "``docker-compose.yml`` as necessary. A full"
+#~ " description of the options are found"
+#~ " in:"
+#~ msgstr ""
 
-#: ../../release-1.0.0.rst:150 d03bbde1c8f4430a8861b6d0bb46ca88
-msgid "The new OpenREM installation should now be ready to be used."
-msgstr ""
+#~ msgid "Start the containers with:"
+#~ msgstr ""
 
-#: ../../release-1.0.0.rst:154 9d21a78c2abf4325a0858bbf458490a0
-msgid "Upgrading an OpenREM server with no internet access"
-msgstr ""
+#~ msgid ""
+#~ "Copy the database backup to the "
+#~ "postgres docker container and import it."
+#~ " If you have changed the database "
+#~ "variables, ensure that:"
+#~ msgstr ""
 
-#: ../../release-1.0.0.rst:156 787343ed50a142a7b8d6737d68b4bd2e
-msgid ""
-"Follow the instructions found at :doc:`upgrade-offline`, before returning"
-" here to update the configuration, migrate the database and complete the "
-"upgrade."
-msgstr ""
+#~ msgid ""
+#~ "the database user (``-U openremuser``) "
+#~ "matches ``POSTGRES_USER`` in ``.env.prod``"
+#~ msgstr ""
 
-#: ../../release-1.0.0.rst:161 16b2399287ec4ad69f593c49335ebb8b
-msgid "Upgrading an OpenREM server that uses a different database"
-msgstr ""
+#~ msgid ""
+#~ "the database name (``-d openrem_prod``) "
+#~ "matches ``POSTGRES_DB`` in ``.env.prod``"
+#~ msgstr ""
 
-#: ../../release-1.0.0.rst:167 a3c84a8d5e724ca998b2ab435b827701
-msgid "Upgrading without using Docker - linux only"
-msgstr ""
+#~ msgid ""
+#~ "They don't have to match the old"
+#~ " database settings. The filename in "
+#~ "both commands (``openremdump.bak``) should "
+#~ "match your backup filename."
+#~ msgstr ""
 
-#: ../../release-1.0.0.rst:169 fca7d7bb6acd415da7406de9050fb17c
-msgid ""
-"Upgrading without using Docker is not recommended, and not supported on "
-"Windows. Instructions are only provided for Linux and assume a "
-"configuration similar to the 'One page complete Ubuntu install' provided "
-"with release 0.8.1 and later."
-msgstr ""
+#~ msgid "It is normal to get an error about the public schema, for example:"
+#~ msgstr ""
 
-#: ../../release-1.0.0.rst:174 ab72cd769d98450aad31e826eed22aec
-msgid "Preparation"
-msgstr ""
+#~ msgid ""
+#~ "Rename the 0.10 upgrade migration file,"
+#~ " migrate the database (the steps and"
+#~ " fakes are required as it is "
+#~ "not a new database), and create "
+#~ "the static files:"
+#~ msgstr ""
 
-#: ../../release-1.0.0.rst:176 af21cde98b8e4999a8576073444a85f6
-msgid "Back up the database:"
-msgstr ""
+#~ msgid "Generate translation binary files"
+#~ msgstr ""
 
-#: ../../release-1.0.0.rst:182 1ca4a247a7e845fbaf39e9904bc0e58f
-msgid "Stop any Celery workers, Flower and Gunicorn, disable DICOM Store SCP:"
-msgstr ""
+#~ msgid ""
+#~ "Copy in any existing skin dose map"
+#~ " pickle files from your existing "
+#~ "``MEDIA_ROOT/skin_maps`` folder (optional, they "
+#~ "can be calculated again):"
+#~ msgstr ""
 
-#: ../../release-1.0.0.rst:191 e6d1407af33c45678b6a1fe89caed86a
-msgid "Install Python 3.8 and create a new virtualenv:"
-msgstr ""
+#~ msgid "The new OpenREM installation should now be ready to be used."
+#~ msgstr ""
 
-#: ../../release-1.0.0.rst:204 94cee990a2d74e3f8f4f707f9865f786
-msgid "Install the new version of OpenREM"
-msgstr ""
+#~ msgid "Upgrading an OpenREM server with no internet access"
+#~ msgstr ""
 
-#: ../../release-1.0.0.rst:217 ce9324a9052d4b4bb76c7b77964db9e9
-msgid "Update the local_settings.py file"
-msgstr ""
+#~ msgid ""
+#~ "Follow the instructions found at :doc"
+#~ ":`upgrade-offline`, before returning here "
+#~ "to update the configuration, migrate the"
+#~ " database and complete the upgrade."
+#~ msgstr ""
 
-#: ../../release-1.0.0.rst:219 451beca75e3e452e809dd77c85e16c65
-msgid "Remove the first line ``LOCAL_SETTINGS = True``"
-msgstr ""
+#~ msgid "Upgrading an OpenREM server that uses a different database"
+#~ msgstr ""
 
-#: ../../release-1.0.0.rst:220 fe13dd59a4af4ad3883187e9883a9f14
-msgid "Change second line to ``from .settings import *``"
-msgstr ""
+#~ msgid "Upgrading without using Docker - linux only"
+#~ msgstr ""
 
-#: ../../release-1.0.0.rst:221 056933bc035e41e4b242d6c9eff0164e
-msgid ""
-"Compare file to local_settings.py.example to see if there are other "
-"sections that should be updated"
-msgstr ""
+#~ msgid ""
+#~ "Upgrading without using Docker is not"
+#~ " recommended, and not supported on "
+#~ "Windows. Instructions are only provided "
+#~ "for Linux and assume a configuration "
+#~ "similar to the 'One page complete "
+#~ "Ubuntu install' provided with release "
+#~ "0.8.1 and later."
+#~ msgstr ""
 
-#: ../../release-1.0.0.rst:224 27b1d810f615454b8ccdc5e3fb014051
-msgid "Migrate the database"
-msgstr ""
+#~ msgid "Preparation"
+#~ msgstr ""
 
-#: ../../release-1.0.0.rst:226 cc82275907e3478abd63031d68a30372
-msgid "In a shell/command window, move into the ``openrem`` folder:"
-msgstr ""
+#~ msgid "Back up the database:"
+#~ msgstr ""
 
-#: ../../release-1.0.0.rst:232 17d8583bf5f3470aacda151abf8c6f56
-msgid "Prepare the migrations folder:"
-msgstr ""
+#~ msgid "Stop any Celery workers, Flower and Gunicorn, disable DICOM Store SCP:"
+#~ msgstr ""
 
-#: ../../release-1.0.0.rst:234 0348974e0af748f08cc09a06178a17e4
-msgid ""
-"Delete everything except ``__init__.py`` and "
-"``0001_initial.py.1-0-upgrade`` in ``remapp/migrations``"
-msgstr ""
+#~ msgid "Install Python 3.8 and create a new virtualenv:"
+#~ msgstr ""
 
-#: ../../release-1.0.0.rst:235 3f070e9cf6b1407f9d04ec29abda8a2e
-msgid "Rename ``0001_initial.py.1-0-upgrade`` to ``0001_initial.py``"
-msgstr ""
+#~ msgid "Install the new version of OpenREM"
+#~ msgstr ""
 
-#: ../../release-1.0.0.rst:243 3face72ec70346e0ad5e4ed319937436
-msgid "Migrate the database:"
-msgstr ""
+#~ msgid "Update the local_settings.py file"
+#~ msgstr ""
 
-#: ../../release-1.0.0.rst:263 bb1f5f0227ea4e418f63de54ae744416
-msgid "Update static files"
-msgstr ""
+#~ msgid "Remove the first line ``LOCAL_SETTINGS = True``"
+#~ msgstr ""
 
-#: ../../release-1.0.0.rst:269 169eb9702f204971ac062988f52d6bee
-msgid "Virtual directory users"
-msgstr ""
+#~ msgid "Change second line to ``from .settings import *``"
+#~ msgstr ""
 
-#: ../../release-1.0.0.rst:271 24b80dbc2c2c44cbba93b850933e463f
-msgid ""
-"If you are running your website in a virtual directory, you also have to "
-"update the reverse.js file. To get the file in the correct path, take "
-"care that you insert just after the declaration of ``STATIC_ROOT`` the "
-"following line in your ``local_settings.py`` (see also the sample "
-"``local_settings.py.example``):"
-msgstr ""
+#~ msgid ""
+#~ "Compare file to local_settings.py.example to"
+#~ " see if there are other sections "
+#~ "that should be updated"
+#~ msgstr ""
 
-#: ../../release-1.0.0.rst:279 93dde6e1c660405b82f35d9e76c28551
-msgid "To update the reverse.js file execute the following command:"
-msgstr ""
+#~ msgid "Migrate the database"
+#~ msgstr ""
 
-#: ../../release-1.0.0.rst:285 865dc88f7a914c87bb869c628ccf318a
-msgid "See  :doc:`virtual_directory` for more details."
-msgstr ""
+#~ msgid "In a shell/command window, move into the ``openrem`` folder:"
+#~ msgstr ""
 
-#: ../../release-1.0.0.rst:294 29aa2dfd69d9487887706f83c977e5a5
-msgid "Update all the services configurations"
-msgstr ""
+#~ msgid "Prepare the migrations folder:"
+#~ msgstr ""
 
-#: ../../release-1.0.0.rst:296 5bd6f2257a0d45dea6cf9e6c194c294c
-msgid "Edit the Gunicorn systemd file ``WorkingDirectory`` and ``ExecStart``:"
-msgstr ""
+#~ msgid ""
+#~ "Delete everything except ``__init__.py`` and"
+#~ " ``0001_initial.py.1-0-upgrade`` in "
+#~ "``remapp/migrations``"
+#~ msgstr ""
 
-#: ../../release-1.0.0.rst:310 ebe3dac7da1645b88c02c83eadf74f42
-msgid "Edit the Celery configuration file ``CELERY_BIN``:"
-msgstr ""
+#~ msgid "Rename ``0001_initial.py.1-0-upgrade`` to ``0001_initial.py``"
+#~ msgstr ""
 
-#: ../../release-1.0.0.rst:320 256caeae3d534cc6bce55a4b2e4e824f
-msgid "Edit the Celery systemd file ``WorkingDirectory``:"
-msgstr ""
+#~ msgid "Migrate the database:"
+#~ msgstr ""
 
-#: ../../release-1.0.0.rst:330 00ab8b1291cc43348d92e49bb8fe79be
-msgid "Edit the Flower systemd file ``WorkingDirectory``:"
-msgstr ""
+#~ msgid "Update static files"
+#~ msgstr ""
 
-#: ../../release-1.0.0.rst:341 a743be4c6db44a1a8a825b3d941ada32
-msgid "Reload systemd and restart the services"
-msgstr ""
+#~ msgid "Virtual directory users"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "If you are running your website in"
+#~ " a virtual directory, you also have"
+#~ " to update the reverse.js file. To"
+#~ " get the file in the correct "
+#~ "path, take care that you insert "
+#~ "just after the declaration of "
+#~ "``STATIC_ROOT`` the following line in "
+#~ "your ``local_settings.py`` (see also the "
+#~ "sample ``local_settings.py.example``):"
+#~ msgstr ""
+
+#~ msgid "To update the reverse.js file execute the following command:"
+#~ msgstr ""
+
+#~ msgid "See  :doc:`virtual_directory` for more details."
+#~ msgstr ""
+
+#~ msgid "Update all the services configurations"
+#~ msgstr ""
+
+#~ msgid "Edit the Gunicorn systemd file ``WorkingDirectory`` and ``ExecStart``:"
+#~ msgstr ""
+
+#~ msgid "Edit the Celery configuration file ``CELERY_BIN``:"
+#~ msgstr ""
+
+#~ msgid "Edit the Celery systemd file ``WorkingDirectory``:"
+#~ msgstr ""
+
+#~ msgid "Edit the Flower systemd file ``WorkingDirectory``:"
+#~ msgstr ""
+
+#~ msgid "Reload systemd and restart the services"
+#~ msgstr ""
 

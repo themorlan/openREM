@@ -1,5 +1,5 @@
 # SOME DESCRIPTIVE TITLE.
-# Copyright (C) 2013-2020, The Royal Marsden NHS Foundation Trust
+# Copyright (C) 2013-2022, The Royal Marsden NHS Foundation Trust
 # This file is distributed under the same license as the OpenREM package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-01 18:30+0100\n"
+"POT-Creation-Date: 2023-03-05 17:21+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -41,6 +41,10 @@ msgid "Configure what is deleted"
 msgstr ""
 
 #: ../../i_deletesettings.rst:25
+msgid "Config menu"
+msgstr ""
+
+#: ../../i_deletesettings.rst:25
 msgid "The ``Config`` menu"
 msgstr ""
 
@@ -50,6 +54,10 @@ msgstr ""
 
 #: ../../i_deletesettings.rst:29
 msgid "This will open the configuration page:"
+msgstr ""
+
+#: ../../i_deletesettings.rst:36
+msgid "Modify DICOM object delete settings"
 msgstr ""
 
 #: ../../i_deletesettings.rst:36
@@ -66,6 +74,10 @@ msgstr ""
 
 #: ../../i_deletesettings.rst:50
 msgid "When you have set your preferences, you will be redirected to the DICOM network configuration page, where at the bottom you can review the current settings:"
+msgstr ""
+
+#: ../../i_deletesettings.rst:57
+msgid "DICOM object deletion poligy review on DICOM config page"
 msgstr ""
 
 #: ../../i_deletesettings.rst:57

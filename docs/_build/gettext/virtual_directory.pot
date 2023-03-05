@@ -1,5 +1,5 @@
 # SOME DESCRIPTIVE TITLE.
-# Copyright (C) 2013-2020, The Royal Marsden NHS Foundation Trust
+# Copyright (C) 2013-2022, The Royal Marsden NHS Foundation Trust
 # This file is distributed under the same license as the OpenREM package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-01 18:30+0100\n"
+"POT-Creation-Date: 2023-03-05 17:21+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -61,55 +61,55 @@ msgid "Django needs to know the virtual directory name and which URLs the static
 msgstr ""
 
 #: ../../virtual_directory.rst:30
-msgid "Edit ``.env.prod``, uncomment the following lines (remove the ``#``) and set them as appropriate. For example, to serve the website from a subfolder/virtual directory named ``dms``:"
+msgid "Edit ``.env.prod``, uncomment the following lines (remove the ``#``) and set them as appropriate. The ``VIRTUAL_DIRECTORY`` setting must have a trailing ``/``. For example, to serve the website from a subfolder/virtual directory named ``dms``:"
 msgstr ""
 
-#: ../../virtual_directory.rst:41
-#: ../../virtual_directory.rst:112
+#: ../../virtual_directory.rst:42
+#: ../../virtual_directory.rst:113
 msgid "Modify webserver configuration"
 msgstr ""
 
-#: ../../virtual_directory.rst:43
+#: ../../virtual_directory.rst:44
 msgid "Edit ``nginx-conf/conf.d/openrem.conf`` to update the locations — again using the example virtual directory ``dms``:"
 msgstr ""
 
-#: ../../virtual_directory.rst:62
+#: ../../virtual_directory.rst:63
 msgid "Start the containers"
 msgstr ""
 
-#: ../../virtual_directory.rst:69
-#: ../../virtual_directory.rst:132
+#: ../../virtual_directory.rst:70
+#: ../../virtual_directory.rst:133
 msgid "Update reverse.js"
 msgstr ""
 
-#: ../../virtual_directory.rst:71
+#: ../../virtual_directory.rst:72
 msgid "The static reverse.js file should be updated in order to change the URLs in the static javascript files."
 msgstr ""
 
-#: ../../virtual_directory.rst:73
+#: ../../virtual_directory.rst:74
 msgid "Open a shell (command prompt) and navigate to the Docker OpenREM installation folder"
 msgstr ""
 
-#: ../../virtual_directory.rst:81
+#: ../../virtual_directory.rst:82
 msgid "Test!"
 msgstr ""
 
-#: ../../virtual_directory.rst:83
+#: ../../virtual_directory.rst:84
 msgid "You should now be able to reach the OpenREM interface using the virtual directory address."
 msgstr ""
 
-#: ../../virtual_directory.rst:87
-msgid "Non-Docker Linux install"
+#: ../../virtual_directory.rst:88
+msgid "Non-Docker install"
 msgstr ""
 
-#: ../../virtual_directory.rst:95
+#: ../../virtual_directory.rst:96
 msgid "Update local_settings.py"
 msgstr ""
 
-#: ../../virtual_directory.rst:97
+#: ../../virtual_directory.rst:98
 msgid "Update ``local_settings.py`` with the same variables as in the ``.env.prod`` file. If the values aren't in your copy of the file just add them in:"
 msgstr ""
 
-#: ../../virtual_directory.rst:141
+#: ../../virtual_directory.rst:142
 msgid "Restart the services"
 msgstr ""

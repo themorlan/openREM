@@ -8,53 +8,51 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-04 12:05+0100\n"
+"POT-Creation-Date: 2023-03-05 17:21+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.8.0\n"
+"Generated-By: Babel 2.12.1\n"
 
-#: ../../code_dicomimport.rst:2 7bcd9ea2f6314a6ca82659ba0db1afd4
+#: ../../code_dicomimport.rst:2
 msgid "DICOM import modules"
 msgstr ""
 
-#: ../../code_dicomimport.rst:5 df9eb4405d334fa08b987fba86c216f4
+#: ../../code_dicomimport.rst:5
 msgid "RDSR module"
 msgstr ""
 
-#: ../../code_dicomimport.rst:7 5e078a2f7d7b47c4be63b918394a0ecc
+#: ../../code_dicomimport.rst:7
 msgid ""
 "Ultimately this should be the only module required as it deals with all "
 "Radiation Dose Structured Reports. This is used for CT, fluoroscopy, "
-"mammography and digital radiography."
+"mammography, digital radiography and nuclear medicine."
 msgstr ""
 
-#: 588646b4a80a4cfdb45149536d6b1219 of openrem.remapp.extractors.rdsr.rdsr:1
+#: of openrem.remapp.extractors.rdsr.rdsr:1
 msgid "Extract radiation dose related data from DICOM Radiation SR objects."
 msgstr ""
 
-#: 28a7c632aa634b13be1402ceb53dfb46 6713e642c160415f97a8b844c931907c
-#: af565f7de68c4876b402dc45a8e1dd9d c7015f4100e9410087e5269f1902f012
-#: f2c836f8e9e34f82a48e96e26f338ada of
-#: openrem.remapp.extractors.ct_philips.ct_philips
+#: of openrem.remapp.extractors.ct_philips.ct_philips
 #: openrem.remapp.extractors.ct_toshiba.ct_toshiba
 #: openrem.remapp.extractors.dx.dx openrem.remapp.extractors.mam.mam
+#: openrem.remapp.extractors.nm_image.nm_image
 #: openrem.remapp.extractors.rdsr.rdsr
 msgid "Parameters"
 msgstr ""
 
-#: 1433c5b75fc741d1911b86147dc37307 of openrem.remapp.extractors.rdsr.rdsr:3
+#: of openrem.remapp.extractors.rdsr.rdsr:3
 msgid "relative or absolute path to Radiation Dose Structured Report."
 msgstr ""
 
-#: ../../code_dicomimport.rst:16 07594da28cfe433582cc19cdf457b946
+#: ../../code_dicomimport.rst:16
 msgid "Mammography module"
 msgstr ""
 
-#: ../../code_dicomimport.rst:18 98654c4b3bb7434caae896829bd80577
+#: ../../code_dicomimport.rst:18
 msgid ""
 "Mammography is interesting in that all the information required for dose "
 "audit is contained in the image header, including patient 'size', ie "
@@ -63,84 +61,99 @@ msgid ""
 "which would also capture any rejected images."
 msgstr ""
 
-#: 02f489c0f77745ddb872ddaee39dc3ff of openrem.remapp.extractors.mam.mam:1
+#: of openrem.remapp.extractors.mam.mam:1
 msgid ""
 "Extract radiation dose structured report related data from mammography "
 "images"
 msgstr ""
 
-#: cfc4c42ccbd74b699e7670923e9726c3 of openrem.remapp.extractors.mam.mam:3
+#: of openrem.remapp.extractors.mam.mam:3
 msgid "relative or absolute path to mammography DICOM image file."
 msgstr ""
 
-#: ../../code_dicomimport.rst:27 8c1b811b31b743d6bb30d85372ea1724
+#: ../../code_dicomimport.rst:27
 msgid "CR and DR module"
 msgstr ""
 
-#: ../../code_dicomimport.rst:29 31ae7c56620a4eae976931c3c0aea37d
+#: ../../code_dicomimport.rst:29
 msgid ""
 "In practice this is only useful for DR modalities, but most of them use "
 "the CR IOD instead of the DX one, so both are catered for. This module "
 "makes use of the image headers much like the mammography module."
 msgstr ""
 
-#: 3746da7b763746388e2c66511b582874 of openrem.remapp.extractors.dx.dx:1
+#: of openrem.remapp.extractors.dx.dx:1
 msgid ""
 "Extract radiation dose structured report related data from DX "
 "radiographic images"
 msgstr ""
 
-#: 6c4579ea66834b54a594114af64c6c8a of openrem.remapp.extractors.dx.dx:3
+#: of openrem.remapp.extractors.dx.dx:3
 msgid "relative or absolute path to DICOM DX radiographic image file."
 msgstr ""
 
-#: ../../code_dicomimport.rst:36 6602562a66da400aa00a994582c80615
+#: ../../code_dicomimport.rst:36
+msgid "NM Image module"
+msgstr ""
+
+#: ../../code_dicomimport.rst:38
+msgid ""
+"This has the abilty to read information from the DICOM Headers of PET and"
+" NM images. In contrast to the other import modules this may actually "
+"complement the data read from an RRDSR, because not all relevant data is "
+"included there."
+msgstr ""
+
+#: of openrem.remapp.extractors.nm_image.nm_image:1
+msgid "Extract radiation dose related data from DICOM PET/NM-Image."
+msgstr ""
+
+#: of openrem.remapp.extractors.nm_image.nm_image:3
+msgid "relative or absolute path to PET/NM-Image."
+msgstr ""
+
+#: ../../code_dicomimport.rst:45
 msgid "CT non-standard modules"
 msgstr ""
 
-#: ../../code_dicomimport.rst:39 7fe33c9bac96409c89adf92eec596fcf
+#: ../../code_dicomimport.rst:48
 msgid "Philips CT dose info reports"
 msgstr ""
 
-#: ../../code_dicomimport.rst:41 39d5df647e2f40f788b5f8ea398c845f
+#: ../../code_dicomimport.rst:50
 msgid ""
 "These have all the information that could be derived from the images also"
 " held in the DICOM header information, making harvesting relatively easy."
 " Used where RDSR is not available from older Philips systems."
 msgstr ""
 
-#: d3ce59e8704948e7ab3b6b476b071e6d of
-#: openrem.remapp.extractors.ct_philips.ct_philips:1
+#: of openrem.remapp.extractors.ct_philips.ct_philips:1
 msgid ""
 "Extract radiation dose structured report related data from Philips CT "
 "dose report images"
 msgstr ""
 
-#: 4dd2caa6918e442a9194f466521507fd of
-#: openrem.remapp.extractors.ct_philips.ct_philips:3
+#: of openrem.remapp.extractors.ct_philips.ct_philips:3
 msgid "relative or absolute path to Philips CT dose report DICOM image file."
 msgstr ""
 
-#: 06e818cfbe7b418babf5eb5c643bd6c9 of
-#: openrem.remapp.extractors.ct_philips.ct_philips:7
+#: of openrem.remapp.extractors.ct_philips.ct_philips:7
 msgid "Tested with:"
 msgstr ""
 
-#: f2285691d0554e919168792144c17bb8 of
-#: openrem.remapp.extractors.ct_philips.ct_philips:7
+#: of openrem.remapp.extractors.ct_philips.ct_philips:7
 msgid "Philips Gemini TF PET-CT v2.3.0"
 msgstr ""
 
-#: 7797745efbbf4b6484b868b77ca8f8a9 of
-#: openrem.remapp.extractors.ct_philips.ct_philips:8
+#: of openrem.remapp.extractors.ct_philips.ct_philips:8
 msgid "Brilliance BigBore v3.5.4.17001."
 msgstr ""
 
-#: ../../code_dicomimport.rst:47 b19042e3d4d04094b9cf6abed0474bd2
+#: ../../code_dicomimport.rst:56
 msgid "Toshiba dose summary and images"
 msgstr ""
 
-#: ../../code_dicomimport.rst:49 b50efda48bf14e67afc1590405959351
+#: ../../code_dicomimport.rst:58
 msgid ""
 "OpenREM can harvest information from older Toshiba CT systems that create"
 " dose summary images but cannot create RDSR objects by using a "
@@ -149,15 +162,21 @@ msgid ""
 "java.exe and pixelmed.jar are available to the system."
 msgstr ""
 
-#: 0ec3ced5258440cc8bccdbc88b7c07cc of
-#: openrem.remapp.extractors.ct_toshiba.ct_toshiba:1
+#: of openrem.remapp.extractors.ct_toshiba.ct_toshiba:1
 msgid ""
 "Function to create radiation dose structured reports from a folder of "
 "dose images."
 msgstr ""
 
-#: ebf807f1aa904a3f950688817c070b5c of
-#: openrem.remapp.extractors.ct_toshiba.ct_toshiba:3
+#: of openrem.remapp.extractors.ct_toshiba.ct_toshiba:3
 msgid "Path to folder containing Toshiba DICOM objects - dose summary and images"
 msgstr ""
+
+#~ msgid ""
+#~ "Ultimately this should be the only "
+#~ "module required as it deals with "
+#~ "all Radiation Dose Structured Reports. "
+#~ "This is used for CT, fluoroscopy, "
+#~ "mammography and digital radiography."
+#~ msgstr ""
 

@@ -8,220 +8,233 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-04 12:05+0100\n"
+"POT-Creation-Date: 2023-03-05 17:21+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.8.0\n"
+"Generated-By: Babel 2.12.1\n"
 
-#: ../../release-0.4.0.rst:2 9389cc93c8734fefb0ce7d6f14aa648d
+#: ../../release-0.4.0.rst:2
 msgid "OpenREM Release Notes version 0.4.0"
 msgstr ""
 
-#: ../../release-0.4.0.rst:5 16236a4f45b740e7969bac1118960a18
+#: ../../release-0.4.0.rst:5
 msgid "Headline changes"
 msgstr ""
 
-#: ../../release-0.4.0.rst:6 8b9e9205f905429dbe8c7e2fdf95e7d6
+#: ../../release-0.4.0.rst:7
 msgid "User authentication has been added"
 msgstr ""
 
-#: ../../release-0.4.0.rst:7 8f1c3228c25740fe95b30e640b324e2a
+#: ../../release-0.4.0.rst:8
 msgid "Studies can be deleted from the web interface"
 msgstr ""
 
-#: ../../release-0.4.0.rst:8 dac6b3a1bafa49769664c2d5ae02060f
+#: ../../release-0.4.0.rst:9
 msgid ""
 "Import scripts can now be passed a list of files, eg ``python "
 "openrem_rdsr.py *.dcm``"
 msgstr ""
 
-#: ../../release-0.4.0.rst:9 439204e39b2e45fb965251e8c50b71aa
+#: ../../release-0.4.0.rst:10
 msgid ""
 "Date of birth no longer retained for mammography (bug fix - correct "
 "behaviour already existed for other imports)"
 msgstr ""
 
-#: ../../release-0.4.0.rst:10 49d63c94c7a647089ac5c91577872ed5
+#: ../../release-0.4.0.rst:11
 msgid "General bug fixes to enable import from wider range of sources"
 msgstr ""
 
-#: ../../release-0.4.0.rst:11 1f74ebf4dca3488e86217c3674dabd35
+#: ../../release-0.4.0.rst:12
 msgid "Improved user documentation"
 msgstr ""
 
-#: ../../release-0.4.0.rst:14 12e47f3787904d91b560a3a841f8f1aa
+#: ../../release-0.4.0.rst:15
 msgid "Specific upgrade instructions"
 msgstr ""
 
-#: ../../release-0.4.0.rst:16 11b225ca703d4d9ebe28b61f88dd5768
-msgid "``pip install openrem==0.4.2`` `Go straight to 0.4.2`"
-msgstr ""
-
-#: ../../release-0.4.0.rst:17 ba684bfb5ebb4184a3a06272aa598e91
-msgid "Migrate the database"
-msgstr ""
-
-#: ../../release-0.4.0.rst:21 b379c16a7a6b44f38abcdcb738eb74b5
-msgid "A database migration is required that will need a choice to be made"
-msgstr ""
-
-#: ../../release-0.4.0.rst:23 0736b2ed0e4b461a8de98cb364f5b547
+#: ../../release-0.4.0.rst:17
 msgid ""
-"Linux: ``python /usr/lib/python2.7/dist-packages/openrem/manage.py "
-"schemamigration --auto remapp``"
+"For the original upgrade instructions, the last docs release to include "
+"them was `0.10.0-docs "
+"<https://docs.openrem.org/en/0.10.0-docs/release-0.4.0.html>`_"
 msgstr ""
 
-#: ../../release-0.4.0.rst:24 25b1b76346744d3988a891571f06ba72
-msgid ""
-"Windows: ``C:\\Python27\\Lib\\site-packages\\openrem\\manage.py "
-"schemamigration --auto remapp``"
-msgstr ""
+#~ msgid "``pip install openrem==0.4.2`` `Go straight to 0.4.2`"
+#~ msgstr ""
 
-#: ../../release-0.4.0.rst:26 ca0f692354bd4c5895ddd3fffe8c7092
-msgid ""
-"When South has considered the changes to the schema, you will see the "
-"following message::"
-msgstr ""
+#~ msgid "Migrate the database"
+#~ msgstr ""
 
-#: ../../release-0.4.0.rst:36 d3db8c5c2b7442e58b780ad1d2703790
-msgid ""
-"As per the final line above, the correct choice is ``3``. The fields that"
-" are now nullable previously weren't. Existing data in those fields will "
-"have a value, or those tables don't exist in the current database. The "
-"problem scenario is if after the migration these tables are used and one "
-"of the new nullable fields is left as null, you will not be able to "
-"migrate back to the old database schema without error. This is not "
-"something that you will want to do, so this is ok."
-msgstr ""
+#~ msgid "A database migration is required that will need a choice to be made"
+#~ msgstr ""
 
-#: ../../release-0.4.0.rst:43 6f3b3f6a0f5a452a84805eb37aa9e1d2
-msgid "Do the migration:"
-msgstr ""
+#~ msgid ""
+#~ "Linux: ``python /usr/lib/python2.7/dist-"
+#~ "packages/openrem/manage.py schemamigration --auto "
+#~ "remapp``"
+#~ msgstr ""
 
-#: ../../release-0.4.0.rst:45 2fc58a0e2a8743ffb21a9bdc57b7b041
-msgid ""
-"Linux: ``python /usr/lib/python2.7/dist-packages/openrem/manage.py "
-"migrate remapp``"
-msgstr ""
+#~ msgid ""
+#~ "Windows: ``C:\\Python27\\Lib\\site-"
+#~ "packages\\openrem\\manage.py schemamigration --auto "
+#~ "remapp``"
+#~ msgstr ""
 
-#: ../../release-0.4.0.rst:46 ecf67c2c795d4e99ba73d11dfa2d7a8b
-msgid ""
-"Windows: ``C:\\Python27\\Lib\\site-packages\\openrem\\manage.py migrate "
-"remapp``"
-msgstr ""
+#~ msgid ""
+#~ "When South has considered the changes"
+#~ " to the schema, you will see "
+#~ "the following message::"
+#~ msgstr ""
 
-#: ../../release-0.4.0.rst:48 f92aca92808441c7950f99aab2ee6e46
-msgid "Update the settings files"
-msgstr ""
+#~ msgid ""
+#~ "As per the final line above, the"
+#~ " correct choice is ``3``. The fields"
+#~ " that are now nullable previously "
+#~ "weren't. Existing data in those fields"
+#~ " will have a value, or those "
+#~ "tables don't exist in the current "
+#~ "database. The problem scenario is if "
+#~ "after the migration these tables are "
+#~ "used and one of the new nullable"
+#~ " fields is left as null, you "
+#~ "will not be able to migrate back"
+#~ " to the old database schema without"
+#~ " error. This is not something that"
+#~ " you will want to do, so this"
+#~ " is ok."
+#~ msgstr ""
 
-#: ../../release-0.4.0.rst:52 285f94abe7e745cc84a6ed7bc936f9b0
-msgid "The settings file has changed and will need to be manually edited."
-msgstr ""
+#~ msgid "Do the migration:"
+#~ msgstr ""
 
-#: ../../release-0.4.0.rst:54 516401f50844425d8c77d7acdfb0e239
-msgid ""
-"Changes need to be made to the ``settings.py`` file where the database "
-"details are stored. Normally upgrades don't touch this file and the copy "
-"in the upgrade has a ``.example`` suffix. **This upgrade and potentially "
-"future ones will need to change this file**, so the format has been "
-"changed. The ``settings.py`` file will now be replaced each time the code"
-" is upgraded. In addition, there is a new ``local_settings.py`` file that"
-" contains things that are specific to your installation, such as the "
-"database settings."
-msgstr ""
+#~ msgid ""
+#~ "Linux: ``python /usr/lib/python2.7/dist-"
+#~ "packages/openrem/manage.py migrate remapp``"
+#~ msgstr ""
 
-#: ../../release-0.4.0.rst:62 11bf0cc293b74b80a7325d0b26df51a5
-msgid ""
-"This upgrade will include a file called ``settings.py.new`` and the "
-"``local_settings.py.example`` file. You will need to do the following:"
-msgstr ""
+#~ msgid ""
+#~ "Windows: ``C:\\Python27\\Lib\\site-"
+#~ "packages\\openrem\\manage.py migrate remapp``"
+#~ msgstr ""
 
-#: ../../release-0.4.0.rst:65 a4e551913f9c4abdbd786078e37f1cfb
-msgid ""
-"Copy the database settings from your current ``settings.py`` file to the "
-"``local_settings.py.example`` file and rename it to remove the "
-"``.example``. Both of these files are in the ``openrem/openrem`` "
-"directory, which will be somewhere like"
-msgstr ""
+#~ msgid "Update the settings files"
+#~ msgstr ""
 
-#: ../../release-0.4.0.rst:69 6d1a852b29bf42659522c46c47f279c5
-msgid "Linux: ``/usr/lib/python2.7/dist-packages/openrem/openrem/``"
-msgstr ""
+#~ msgid "The settings file has changed and will need to be manually edited."
+#~ msgstr ""
 
-#: ../../release-0.4.0.rst:70 4bfb66405cb04e94bd04ed8896dba337
-msgid "Windows: ``C:\\Python27\\Lib\\site-packages\\openrem\\openrem\\``"
-msgstr ""
+#~ msgid ""
+#~ "Changes need to be made to the "
+#~ "``settings.py`` file where the database "
+#~ "details are stored. Normally upgrades "
+#~ "don't touch this file and the copy"
+#~ " in the upgrade has a ``.example``"
+#~ " suffix. **This upgrade and potentially "
+#~ "future ones will need to change "
+#~ "this file**, so the format has "
+#~ "been changed. The ``settings.py`` file "
+#~ "will now be replaced each time the"
+#~ " code is upgraded. In addition, there"
+#~ " is a new ``local_settings.py`` file "
+#~ "that contains things that are specific"
+#~ " to your installation, such as the"
+#~ " database settings."
+#~ msgstr ""
 
-#: ../../release-0.4.0.rst:72 f584d0b15ebb4aafbbfdbd6d0911df34
-msgid "Move the existing ``settings.py`` out of the python directories"
-msgstr ""
+#~ msgid ""
+#~ "This upgrade will include a file "
+#~ "called ``settings.py.new`` and the "
+#~ "``local_settings.py.example`` file. You will "
+#~ "need to do the following:"
+#~ msgstr ""
 
-#: ../../release-0.4.0.rst:73 1359b57ce1e540a8b9a746126e034e9a
-msgid "Rename the ``settings.py.new`` to ``settings.py``"
-msgstr ""
+#~ msgid ""
+#~ "Copy the database settings from your "
+#~ "current ``settings.py`` file to the "
+#~ "``local_settings.py.example`` file and rename "
+#~ "it to remove the ``.example``. Both "
+#~ "of these files are in the "
+#~ "``openrem/openrem`` directory, which will be"
+#~ " somewhere like"
+#~ msgstr ""
 
-#: ../../release-0.4.0.rst:75 a9ec01e608e44a63b46acc3aeca5ee56
-msgid "Create a new secret key"
-msgstr ""
+#~ msgid "Linux: ``/usr/lib/python2.7/dist-packages/openrem/openrem/``"
+#~ msgstr ""
 
-#: ../../release-0.4.0.rst:77 88507500100944bda942c92eb343345a
-msgid ""
-"All versions of openrem ship with the same secret key. This key is used "
-"for web security checks, and should be unique (and secret) for each "
-"installation."
-msgstr ""
+#~ msgid "Windows: ``C:\\Python27\\Lib\\site-packages\\openrem\\openrem\\``"
+#~ msgstr ""
 
-#: ../../release-0.4.0.rst:80 40af84ed2ffa4f1f90467d3b957d5f8f
-msgid ""
-"Generate a new secret key - http://www.miniwebtool.com/django-secret-key-"
-"generator/ is a suitable method of creating a new key."
-msgstr ""
+#~ msgid "Move the existing ``settings.py`` out of the python directories"
+#~ msgstr ""
 
-#: ../../release-0.4.0.rst:82 608aacea44c341ea9dea248d5b08fe47
-msgid ""
-"Copy the new key and use it to replace the default key in the "
-"``local_settings.py`` file"
-msgstr ""
+#~ msgid "Rename the ``settings.py.new`` to ``settings.py``"
+#~ msgstr ""
 
-#: ../../release-0.4.0.rst:84 feea17423df44638b0d5c6e8973a7b2b
-msgid "Restart your webserver"
-msgstr ""
+#~ msgid "Create a new secret key"
+#~ msgstr ""
 
-#: ../../release-0.4.0.rst:86 2661dfea74a8463ebc1d5dc68f807145
-msgid "Add some users"
-msgstr ""
+#~ msgid ""
+#~ "All versions of openrem ship with "
+#~ "the same secret key. This key is"
+#~ " used for web security checks, and"
+#~ " should be unique (and secret) for"
+#~ " each installation."
+#~ msgstr ""
 
-#: ../../release-0.4.0.rst:88 8b00d5a6b86b42e0b27937d5a558d447
-msgid ""
-"Go to the admin interface (eg http://localhost:8000/admin) and log in "
-"with the user created when you originally created the database "
-"(``manage.py syncdb``)"
-msgstr ""
+#~ msgid ""
+#~ "Generate a new secret key - "
+#~ "http://www.miniwebtool.com/django-secret-key-"
+#~ "generator/ is a suitable method of "
+#~ "creating a new key."
+#~ msgstr ""
 
-#: ../../release-0.4.0.rst:89 dd78715224314c5492422e3641d5efc5
-msgid ""
-"Create some users and add them to the appropriate groups (if there are no"
-" groups, go to the OpenREM homepage and they should be created)."
-msgstr ""
+#~ msgid ""
+#~ "Copy the new key and use it "
+#~ "to replace the default key in the"
+#~ " ``local_settings.py`` file"
+#~ msgstr ""
 
-#: ../../release-0.4.0.rst:91 5089e613dab948948e32a8c4d1510b3b
-msgid "``viewgroup`` can browse the data only"
-msgstr ""
+#~ msgid "Restart your webserver"
+#~ msgstr ""
 
-#: ../../release-0.4.0.rst:92 e0c0ccd2300f4954a338f8ebe204e7e3
-msgid ""
-"``exportgroup`` can do as view group plus export data to a spreadsheet, "
-"and will be able to import height and weight data in due course (See "
-"`Issue #21 <https://bitbucket.org/openrem/openrem/issue/21/>`_)"
-msgstr ""
+#~ msgid "Add some users"
+#~ msgstr ""
 
-#: ../../release-0.4.0.rst:93 0bf56f5b6f4945de8271195e85c2d651
-msgid ""
-"``admingroup`` can delete studies in addition to anything the export "
-"group can do"
-msgstr ""
+#~ msgid ""
+#~ "Go to the admin interface (eg "
+#~ "http://localhost:8000/admin) and log in with"
+#~ " the user created when you originally"
+#~ " created the database (``manage.py "
+#~ "syncdb``)"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Create some users and add them to"
+#~ " the appropriate groups (if there are"
+#~ " no groups, go to the OpenREM "
+#~ "homepage and they should be created)."
+#~ msgstr ""
+
+#~ msgid "``viewgroup`` can browse the data only"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "``exportgroup`` can do as view group "
+#~ "plus export data to a spreadsheet, "
+#~ "and will be able to import height"
+#~ " and weight data in due course "
+#~ "(See `Issue #21 "
+#~ "<https://bitbucket.org/openrem/openrem/issue/21/>`_)"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "``admingroup`` can delete studies in "
+#~ "addition to anything the export group"
+#~ " can do"
+#~ msgstr ""
 
