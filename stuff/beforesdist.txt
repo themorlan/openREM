@@ -10,7 +10,9 @@ Change the version number in
     Edit README.rst including docs links
     Edit description in setup.py between beta and release
 
-Clean the existing distribute folder:
+Clean the existing distribute folder - instructions assume the following layout:
+    bbOpenREM # bitbucket repo of openrem/openrem
+    distribute # empty folder at the same level as bbOpenREM
 	rm -r *
 
 Then get the new contents:
@@ -18,10 +20,13 @@ rsync -av --exclude-from='../bbOpenREM/stuff/distexclude.txt' ../bbOpenREM/ .
 cp ../bbOpenREM/stuff/v1initial.py openrem/remapp/migrations/0001_initial.py.1-0-upgrade
 
 Build:
-	python setup.py sdist bdist_wheel
+    Activate the venv you are using, then
+    python3 -m pip install --upgrade build
+	python3 -m build
 
 Test upload:
-    twine upload --repository-url https://test.pypi.org/legacy/ dist/*
+    python3 -m pip install --upgrade twine
+    twine upload --repository testpypi dist/*
 
     Go to https://test.pypi.org/project/OpenREM/ to review
 
