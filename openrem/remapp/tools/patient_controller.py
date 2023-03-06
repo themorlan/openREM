@@ -51,23 +51,28 @@ def add_or_update_patient_from_study(study: GeneralStudyModuleAttr):
             patient_id__exact=patient_module_attr.patient_id,
             patient_birth_date=patient_module_attr.patient_birth_date
         )
-        _update_patient(patient, patient_module_attr)
+        _update_patient(study, patient, patient_module_attr)
     except ObjectDoesNotExist:
         # Create a new patient object
-        patient = _create_patient(patient_module_attr)
+        patient = _create_patient(study, patient_module_attr)
     
+    patient.general_study_module_attr.add(study)
+
     if study.study_date is None:
         return
     
+    if VolatilePatientData.objects.filter(patient=patient, general_study_module_attr=study).exists():
+        return
+
     VolatilePatientData.objects.create(
         patient=patient,
-        record_date=study.study_date,
+        general_study_module_attr=study,
         patient_size=patient_study_module_attr.patient_size,
         patient_weight=patient_study_module_attr.patient_weight,
     ).save()
 
 
-def _update_patient(patient: Patients, patient_module_attr: PatientModuleAttr):
+def _update_patient(stduy: GeneralStudyModuleAttr, patient: Patients, patient_module_attr: PatientModuleAttr):
     if patient_module_attr.patient_name:
         patient.patient_name = patient_module_attr.patient_name
     if patient_module_attr.patient_name:
@@ -79,8 +84,7 @@ def _update_patient(patient: Patients, patient_module_attr: PatientModuleAttr):
     patient.save()
 
 
-def _create_patient(patient_module_attr: PatientModuleAttr) -> Patients:
-    print(patient_module_attr.patient_id)
+def _create_patient(study: GeneralStudyModuleAttr, patient_module_attr: PatientModuleAttr) -> Patients:
     patient = Patients(
         patient_id=patient_module_attr.patient_id,
         patient_name=patient_module_attr.patient_name,

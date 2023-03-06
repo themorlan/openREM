@@ -80,6 +80,7 @@
                         <th>Name</th>
                         <th>Date of birth</th>
                         <th>Sex</th>
+                        <th># of studies</th>
                         {% if admin.admingroup %}
                             <th>Details?</th>
                         {% endif %}
@@ -90,6 +91,7 @@
                             <td>{{ patient.patient_name }}</td>
                             <td>{{ patient.patient_birth_date }}</td>
                             <td>{{ patient.patient_sex }}</td>
+                            <td>{{ patient.general_study_module_attr.count }}</td>
                             {% if admin.admingroup %}
                                 <td>
                                     <a href="{% url 'patient_details' patient.patient_id %}">DETAILS</a>
