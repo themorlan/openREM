@@ -29,6 +29,7 @@
 """
 
 from datetime import datetime
+from dateutil import relativedelta
 from django.core.exceptions import ObjectDoesNotExist
 
 from remapp.models import GeneralStudyModuleAttr, StandardNames, PatientModuleAttr, Patients, VolatilePatientData, DiagnosticReferenceLevels, DiagnosticReferenceLevelAlerts
@@ -44,28 +45,38 @@ def check_for_new_alerts_in_study(study: GeneralStudyModuleAttr):
     std_names = StandardNames.objects.filter(modality__exact=study.modality_type)
     try:
         patient_id = PatientModuleAttr.objects.get(general_study_module_attributes=study).patient_id
-        patient = Patients.objects.get(patient_id=patient_id)
+        patient = Patients.objects.get(patient_id=patient_id, general_study_module_attr__in=[study])
     except ObjectDoesNotExist:
         return
 
+    patient_age = None
+    if study.study_date and patient.patient_birth_date:
+        patient_age = relativedelta.relativedelta(study.study_date, patient.patient_birth_date).years
+
     try:
-        additional_patient_data = VolatilePatientData.objects.get(patient=patient, record_date=study.study_date)
+        additional_patient_data = VolatilePatientData.objects.get(patient=patient, general_study_module_attr=study)
+        patient_bmi = None
+        if additional_patient_data.patient_weight and additional_patient_data.patient_size:
+            patient_bmi = additional_patient_data.patient_weight / (additional_patient_data.patient_size ** 2)
     except ObjectDoesNotExist:
         # TODO: interpolate with existing data
         return
 
-    # additional_patient_data might not be complete
-
-    check_drv_values_for_study(study, additional_patient_data, std_names)
+    check_drv_values_for_study(study, patient_age, patient_bmi, std_names)
 
 
-def check_drv_values_for_study(study: GeneralStudyModuleAttr, patient: VolatilePatientData, std_names):
+def check_drv_values_for_study(study: GeneralStudyModuleAttr, patient_age, patient_bmi, std_names):
+    study_dict = study.__dict__
     modality = study.modality_type
+
     if modality == "CT":
-        ref_name = "total_dlp"
+        drl_name = "total_dlp"
     elif modality == "RF" or modality == "DX":
-        ref_name = "total_dap"
+        drl_name = "total_dap"
     else:
+        return
+    
+    if study_dict[drl_name] is None:
         return
 
     field_names = [
@@ -75,30 +86,39 @@ def check_drv_values_for_study(study: GeneralStudyModuleAttr, patient: VolatileP
     ]
 
     for field_name in field_names:
-        _check_for_new_drv_alert_in_study(study, std_names, patient, field_name, ref_name)
+        try:
+            std_name = std_names.get(**{f"{field_name}__in": [study_dict[field_name]]})
+        except ObjectDoesNotExist:
+            continue
+        check_drl_for_study_and_std_name(study, std_name, patient_age, patient_bmi, study_dict[drl_name])
 
 
-def _check_for_new_drv_alert_in_study(study: GeneralStudyModuleAttr, std_names, patient, field_name, ref_name: str):
-    study_dict = study.__dict__
-    patient_age = patient.patient_age_decimal
-    if study_dict[ref_name] is None:
+def check_drl_for_study_and_std_name(study: GeneralStudyModuleAttr, std_name: StandardNames, patient_age, patient_bmi, value):
+    if not std_name.diagnostic_reference_level_criteria:
         return
-    if patient_age is None:
+    
+    if std_name.diagnostic_reference_level_criteria == "bmi":
+        ref_val = patient_bmi
+        print(ref_val)
+    else:
+        ref_val = patient_age
+
+    if not ref_val:
         return
+
     try:
-        std_name = std_names.get(**{f"{field_name}__in": [study_dict[field_name]]})
-        ref = DiagnosticReferenceLevels.objects.filter(standard_name__in=[std_name]).get(lower_bound__lte=patient_age, upper_bound__gte=patient_age)
+        drl = DiagnosticReferenceLevels.objects.filter(standard_name__in=[std_name]).get(lower_bound__lte=ref_val, upper_bound__gte=ref_val)
     except ObjectDoesNotExist:
         return
-    if ref.diagnostic_reference_level is None:
+    if drl.diagnostic_reference_level is None:
         return
-    if study_dict[ref_name] < ref.diagnostic_reference_level:
+    if value < drl.diagnostic_reference_level:
         return
-    if DiagnosticReferenceLevelAlerts.objects.filter(diagnostic_reference_level=ref, general_study_module_attributes=study, standard_name=std_name).exists():
+    if DiagnosticReferenceLevelAlerts.objects.filter(diagnostic_reference_level=drl, general_study_module_attributes=study, standard_name=std_name).exists():
         return
     DiagnosticReferenceLevelAlerts.objects.create(
         date_of_issue=datetime.now(),
-        diagnostic_reference_level=ref,
+        diagnostic_reference_level=drl,
         general_study_module_attributes=study,
         standard_name=std_name
     ).save()
