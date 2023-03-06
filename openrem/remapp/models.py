@@ -3460,3 +3460,21 @@ class EffectiveDoseAlerts(Alerts):
         max_digits=16, decimal_places=8, blank=True, null=True
     )
     patient_id = models.TextField(null=True)
+
+
+class Patients(models.Model):
+    patient_id = models.TextField(primary_key=True)
+    patient_name = models.TextField(blank=True, null=True)
+    patient_birth_date = models.DateField(blank=True, null=True)
+    patient_sex = models.CharField(max_length=2, blank=True, null=True)
+
+
+class VolatilePatientData(models.Model):
+    patient = models.ForeignKey(Patients, on_delete=models.CASCADE)
+    record_date = models.DateField()
+    patient_size = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+    patient_weight = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )

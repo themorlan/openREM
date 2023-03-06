@@ -79,6 +79,7 @@ from .interface.mod_filters import (
 )
 from .tools.make_skin_map import make_skin_map
 from .tools.alert_controller import check_for_new_alerts
+from .tools.patient_controller import add_or_update_patients
 from .views_charts_ct import (
     generate_required_ct_charts_list,
     ct_chart_form_processing,
@@ -109,7 +110,8 @@ from .models import (
     UpgradeStatus,
     StandardNameSettings,
     StandardNames,
-    DiagnosticReferenceLevelAlerts
+    DiagnosticReferenceLevelAlerts,
+    Patients
 )
 from .version import __version__, __docs_version__, __skin_map_version__
 
@@ -849,23 +851,13 @@ def patients_summary(request):
     """Obtain data for patients summary view."""
     
     admin = create_admin_info(request)
-    patients = PatientModuleAttr.objects.all().exclude(patient_id__isnull=True)
-    grouped_patients = {}
+    patients = Patients.objects.all().order_by("patient_id")
 
-    for patient in patients:
-        if patient.patient_id not in grouped_patients:
-            grouped_patients[patient.patient_id] = patient
-        
-        if patient.patient_name is not None:
-            grouped_patients[patient.patient_id].patient_name = patient.patient_name
-        if patient.patient_birth_date is not None:
-            grouped_patients[patient.patient_id].patient_birth_date = patient.patient_birth_date
-        if patient.patient_sex is not None:
-            grouped_patients[patient.patient_id].patient_sex = patient.patient_sex
+    add_or_update_patients()
 
     context = {
         "admin": admin,
-        "patients": grouped_patients.values(),
+        "patients": patients,
     }
 
     return render(request, "remapp/patients.html", context)
@@ -876,16 +868,7 @@ def patient_details(request, patient_id):
     """Show details for specifified patient."""
     
     admin = create_admin_info(request)
-    patients = PatientModuleAttr.objects.all().filter(patient_id__exact=patient_id)
-    patient_details = PatientModuleAttr()
-
-    for patient in patients:        
-        if patient.patient_name is not None:
-            patient_details.patient_name = patient.patient_name
-        if patient.patient_birth_date is not None:
-            patient_details.patient_birth_date = patient.patient_birth_date
-        if patient.patient_sex is not None:
-            patient_details.patient_sex = patient.patient_sex
+    patient_details = Patients.objects.get(patient_id__exact=patient_id)
 
     context = {
         "admin": admin,
