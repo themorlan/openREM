@@ -78,6 +78,7 @@ from .interface.mod_filters import (
     nm_filter,
 )
 from .tools.make_skin_map import make_skin_map
+from .tools.alert_controller import check_for_new_alerts
 from .views_charts_ct import (
     generate_required_ct_charts_list,
     ct_chart_form_processing,
@@ -108,7 +109,7 @@ from .models import (
     UpgradeStatus,
     StandardNameSettings,
     StandardNames,
-    Alerts
+    DiagnosticReferenceLevelAlerts
 )
 from .version import __version__, __docs_version__, __skin_map_version__
 
@@ -831,7 +832,9 @@ def alert_summary(request):
     """Obtain data for alert summary view."""
     
     admin = create_admin_info(request)
-    alerts = Alerts.objects.all()
+    alerts = DiagnosticReferenceLevelAlerts.objects.all()
+
+    check_for_new_alerts()
 
     context = {
         "admin": admin,

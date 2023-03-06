@@ -89,6 +89,48 @@ def add_standard_name(request, form):
     _save_reference_values(std_names, drl_formset, kfactor_formset)
 
 
+def update_all(modality):
+    # All StandardNames entries for the required modality
+    std_names = StandardNames.objects.filter(modality=modality)
+
+    # Obtain a list of relevant studies
+    studies = _get_studies(modality)
+
+    # Remove reference to the standard names from entries from generalstudymoduleattr (study level)
+    for std_name in std_names:
+        std_name.generalstudymoduleattr_set.clear()
+
+    # Remove references to the StandardName entries from the appropriate acquisition table
+    if modality == "CT":
+        for std_name in std_names:
+            std_name.ctirradiationeventdata_set.clear()
+    else:
+        for std_name in std_names:
+            std_name.irradeventxraydata_set.clear()
+
+    # Add the standard names back at the study level
+    _add_multiple_standard_studies(
+        studies,
+        std_names.filter(study_description__isnull=False),
+        std_names.filter(requested_procedure_code_meaning__isnull=False),
+        std_names.filter(procedure_code_meaning__isnull=False),
+    )
+
+    # Add the standard names back at the acquisition level
+    acquisitions = None
+    if modality == "CT":
+        acquisitions = CtIrradiationEventData.objects
+    else:
+        # Filter the IrradEventXRayData.objects to just contain the required modality
+        acquisitions = _filter_irrad_event_x_ray_data(modality)
+
+    _add_multiple_standard_acquisitions(
+        acquisitions,
+        std_names.filter(acquisition_protocol__isnull=False),
+        modality
+    )
+
+
 def update_standard_name(request, form, std_name_obj: StandardNames):
 
     data = form.cleaned_data
@@ -348,3 +390,5 @@ def _save_reference_values(std_names, *formsets):
             for item in formset.deleted_objects:
                 item.standard_name.remove(*std_names)
                 item.delete()
+
+

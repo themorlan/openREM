@@ -83,22 +83,20 @@
                 <table class="table table-bordered table-hover row-clickable small" aria-describedby="Study summary table">
                     <tr>
                         <th>Modality</th>
+                        <th>Standard name</th>
                         <th>Triggered by</th>
                         <th>Date issued</th>
-                        {% if admin.admingroup %}
-                            <th>Delete?</th>
-                        {% endif %}
+                        <th>Details?</th>
                     </tr>
                     {% for alert in alerts %}
                         <tr>
-                            <td></td>
-                            <td></td>
+                            <td>{{ alert.general_study_module_attributes.modality_type }}</td>
+                            <td>{{ alert.standard_name.standard_name }}</td>
+                            <td>{{ alert.general_study_module_attributes.total_dlp }} >> {{ alert.diagnostic_reference_level.diagnostic_reference_level }}</td>
                             <td>{{ alert.date_of_issue }}</td>
-                            {% if admin.admingroup %}
-                                <td>
-                                    <a href="">Delete</a>
-                                </td>
-                            {% endif %}
+                            <td>
+                                <a href="{% url 'ct_detail_view' pk=alert.general_study_module_attributes.id %}">Study details</a>
+                            </td>
                         </tr>
                     {% endfor %}
                 </table>
