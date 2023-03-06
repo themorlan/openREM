@@ -3435,7 +3435,6 @@ class Alerts(models.Model):
     """
 
     date_of_issue = models.DateTimeField(blank=True, null=True)
-    patient_module_attr = models.ForeignKey(PatientModuleAttr, on_delete=models.CASCADE)
 
 
 class DiagnosticReferenceLevelAlerts(Alerts):
@@ -3444,6 +3443,10 @@ class DiagnosticReferenceLevelAlerts(Alerts):
     """
     
     diagnostic_reference_level = models.ForeignKey(DiagnosticReferenceLevels, on_delete=models.CASCADE)
+    general_study_module_attributes = models.ForeignKey(
+        GeneralStudyModuleAttr, on_delete=models.CASCADE, null=True
+    )
+    standard_name = models.ForeignKey(StandardNames, on_delete=models.CASCADE, null=True)
 
 
 class EffectiveDoseAlerts(Alerts):
@@ -3455,3 +3458,4 @@ class EffectiveDoseAlerts(Alerts):
     cumulaive_effective_dose = models.DecimalField(
         max_digits=16, decimal_places=8, blank=True, null=True
     )
+    patient_id = models.TextField(null=True)
