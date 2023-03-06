@@ -62,7 +62,7 @@ def check_drv_values_for_study(study: GeneralStudyModuleAttr, patient, std_names
     ]
 
     for field_name in field_names:
-        _check_for_new_drv_alert_in_study(std_names, study, patient, field_name, ref_name)
+        _check_for_new_drv_alert_in_study(study, std_names, patient, field_name, ref_name)
 
 
 def _check_for_new_drv_alert_in_study(study: GeneralStudyModuleAttr, std_names, patient, field_name, ref_name: str):
@@ -74,7 +74,7 @@ def _check_for_new_drv_alert_in_study(study: GeneralStudyModuleAttr, std_names, 
         return
     try:
         std_name = std_names.get(**{f"{field_name}__in": [study_dict[field_name]]})
-        ref = DiagnosticReferenceLevels.objects.filter(standard_name__in=[std_name]).get(lower_bound__lte=age, upper_bound__gte=age)
+        ref = DiagnosticReferenceLevels.objects.filter(standard_name__in=[std_name]).get(lower_bound__lte=patient_age, upper_bound__gte=patient_age)
     except ObjectDoesNotExist:
         return
     if ref.diagnostic_reference_level is None:
