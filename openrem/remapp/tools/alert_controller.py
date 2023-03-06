@@ -31,7 +31,7 @@
 from datetime import datetime
 from django.core.exceptions import ObjectDoesNotExist
 
-from remapp.models import GeneralStudyModuleAttr, StandardNames, PatientStudyModuleAttr, DiagnosticReferenceLevels, DiagnosticReferenceLevelAlerts
+from remapp.models import GeneralStudyModuleAttr, StandardNames, PatientModuleAttr, Patients, VolatilePatientData, DiagnosticReferenceLevels, DiagnosticReferenceLevelAlerts
 
 
 def check_for_new_alerts():
@@ -42,11 +42,24 @@ def check_for_new_alerts():
 
 def check_for_new_alerts_in_study(study: GeneralStudyModuleAttr):
     std_names = StandardNames.objects.filter(modality__exact=study.modality_type)
-    patient = PatientStudyModuleAttr.objects.get(general_study_module_attributes=study)
-    check_drv_values_for_study(study, patient, std_names)
+    try:
+        patient_id = PatientModuleAttr.objects.get(general_study_module_attributes=study).patient_id
+        patient = Patients.objects.get(patient_id=patient_id)
+    except ObjectDoesNotExist:
+        return
+
+    try:
+        additional_patient_data = VolatilePatientData.objects.get(patient=patient, record_date=study.study_date)
+    except ObjectDoesNotExist:
+        # TODO: interpolate with existing data
+        return
+
+    # additional_patient_data might not be complete
+
+    check_drv_values_for_study(study, additional_patient_data, std_names)
 
 
-def check_drv_values_for_study(study: GeneralStudyModuleAttr, patient, std_names):
+def check_drv_values_for_study(study: GeneralStudyModuleAttr, patient: VolatilePatientData, std_names):
     modality = study.modality_type
     if modality == "CT":
         ref_name = "total_dlp"

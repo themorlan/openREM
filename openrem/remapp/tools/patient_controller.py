@@ -22,7 +22,7 @@
 
 """
 ..  module:: patient_controller
-    :synopsis: Module with tools to create, update (migrate) and delete patient data
+    :synopsis: Module with tools to create, update (merge) and delete patient data
 
 ..  moduleauthor:: Kevin Schärer
 
@@ -41,13 +41,16 @@ def add_or_update_patient_from_study(study: GeneralStudyModuleAttr):
     patient_module_attr = PatientModuleAttr.objects.get(general_study_module_attributes=study)
     patient_study_module_attr = PatientStudyModuleAttr.objects.get(general_study_module_attributes=study)
 
-    if patient_module_attr.patient_id is None:
-        # Patient has no ID, thus we cannot use the patient data
+    if not patient_module_attr.patient_id or not patient_module_attr.patient_birth_date:
+        # Patient has no ID and/or birth date, thus the given data cannot be identified uniquely - aborting
         return
     
     try:
         # Patient object already exists, thus we update missing data points
-        patient = Patients.objects.get(patient_id__exact=patient_module_attr.patient_id)
+        patient = Patients.objects.get(
+            patient_id__exact=patient_module_attr.patient_id,
+            patient_birth_date=patient_module_attr.patient_birth_date
+        )
         _update_patient(patient, patient_module_attr)
     except ObjectDoesNotExist:
         # Create a new patient object

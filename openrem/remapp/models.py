@@ -3445,9 +3445,9 @@ class DiagnosticReferenceLevelAlerts(Alerts):
     
     diagnostic_reference_level = models.ForeignKey(DiagnosticReferenceLevels, on_delete=models.CASCADE)
     general_study_module_attributes = models.ForeignKey(
-        GeneralStudyModuleAttr, on_delete=models.CASCADE, null=True
+        GeneralStudyModuleAttr, on_delete=models.CASCADE
     )
-    standard_name = models.ForeignKey(StandardNames, on_delete=models.CASCADE, null=True)
+    standard_name = models.ForeignKey(StandardNames, on_delete=models.CASCADE)
 
 
 class EffectiveDoseAlerts(Alerts):
@@ -3463,10 +3463,17 @@ class EffectiveDoseAlerts(Alerts):
 
 
 class Patients(models.Model):
-    patient_id = models.TextField(primary_key=True)
+    """
+    Table to store all patients. Data is gathered from the studies and grouped by patient id and birth date
+    """
+    patient_id = models.TextField(blank=True, null=True)
     patient_name = models.TextField(blank=True, null=True)
     patient_birth_date = models.DateField(blank=True, null=True)
     patient_sex = models.CharField(max_length=2, blank=True, null=True)
+    
+    override_patient_name = models.BooleanField(default=False)
+    override_birth_date = models.BooleanField(default=False)
+    override_sex = models.BooleanField(default=False)
 
 
 class VolatilePatientData(models.Model):
