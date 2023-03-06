@@ -37,6 +37,7 @@ Download all the software in the :ref:`windows_install_packages` section except 
 * dcmtk
 * 7Zip
 * Notepad++
+* WinSW
 
 Download Python packages from PyPI
 ----------------------------------
