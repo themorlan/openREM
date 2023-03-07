@@ -68,6 +68,7 @@ from .models import (
     BackgroundTaskMaximumRows,
     DiagnosticReferenceLevels,
     KFactors,
+    CumulativeDoseSettings,
 )
 
 logger = logging.getLogger()
@@ -2297,3 +2298,22 @@ class BackgroundTaskMaximumRowsForm(forms.ModelForm):
     class Meta(object):
         model = BackgroundTaskMaximumRows
         fields = ["max_background_task_rows"]
+
+
+class CumulativeDoseSettingsForm(forms.ModelForm):
+    """Form for configuring the cumulative dose settings"""
+
+    alert_time_period = forms.DurationField()
+
+    def __init__(self, *args, **kwargs):
+        super(CumulativeDoseSettingsForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper(self)
+        self.helper.form_class = "form-horizontal"
+        self.helper.layout = Layout(
+            Div("alert_time_period"),
+            FormActions(Submit("submit", "Submit")),
+        )
+
+    class Meta(object):
+        model = CumulativeDoseSettings
+        fields = ["alert_time_period"]

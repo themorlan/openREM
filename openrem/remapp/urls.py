@@ -302,6 +302,12 @@ settings_patterns = [
         views_admin.BackgroundTaskMaximumRowsUpdate.as_view(),
         name="background_task_settings",
     ),
+    path(
+        "cumulative_dose_settings/<int:pk>/",
+        views_admin.CumulativeDoseSettingsUpdate.as_view(),
+        name="cumulative_dose_settings",
+    ),
+    
 
 ]
 

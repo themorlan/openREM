@@ -31,6 +31,7 @@
 # Following two lines added so that sphinx autodocumentation works.
 from builtins import object  # pylint: disable=redefined-builtin
 import json
+from datetime import timedelta
 from django.db import models
 from django.urls import reverse
 from solo.models import SingletonModel
@@ -3485,3 +3486,16 @@ class EffectiveDoseAlerts(Alerts):
         max_digits=16, decimal_places=8, blank=True, null=True
     )
     patient = models.ForeignKey(Patients, on_delete=models.CASCADE)
+
+
+class CumulativeDoseSettings(SingletonModel):
+    """
+    Table to store the cumulative dose settings
+    """
+
+    alert_time_period = models.DurationField(
+        default=timedelta(days=90)
+    )
+
+    def get_absolute_url(self):
+        return reverse("cumulative_dose_settings", kwargs={"pk": 1})

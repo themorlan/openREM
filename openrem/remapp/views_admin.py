@@ -86,6 +86,7 @@ from .forms import (
     StandardNameSettingsForm,
     NMChartOptionsDisplayForm,
     BackgroundTaskMaximumRowsForm,
+    CumulativeDoseSettingsForm,
 )
 from .models import (
     AccumIntegratedProjRadiogDose,
@@ -116,6 +117,7 @@ from .models import (
     StandardNames,
     StandardNameSettings,
     BackgroundTaskMaximumRows,
+    CumulativeDoseSettings,
 )
 from .tools.get_values import get_keys_by_value
 from .tools.hash_id import hash_id
@@ -3431,3 +3433,40 @@ class BackgroundTaskMaximumRowsUpdate(UpdateView):  # pylint: disable=unused-var
                 "No changes made",
             )
             return redirect(reverse_lazy("background_task_settings", kwargs={"pk": 1}))
+
+
+class CumulativeDoseSettingsUpdate(UpdateView):  # pylint: disable=unused-variable
+    """UpdateView to update the cumulative dose settings"""
+
+    try:
+        CumulativeDoseSettings.get_solo()  # will create item if it doesn't exist
+    except (AvoidDataMigrationErrorPostgres, AvoidDataMigrationErrorSQLite):
+        pass
+
+    model = CumulativeDoseSettings
+    form_class = CumulativeDoseSettingsForm
+
+    def get_context_data(self, **context):
+        context = super(CumulativeDoseSettingsUpdate, self).get_context_data(**context)
+        admin = {
+            "openremversion": __version__,
+            "docsversion": __docs_version__,
+        }
+        for group in self.request.user.groups.all():
+            admin[group.name] = True
+        context["admin"] = admin
+        return context
+
+    def form_valid(self, form):
+        if form.has_changed():
+            if form.cleaned_data["alert_time_period"]:
+                messages.success(self.request, "Alert time period was updated")
+            else:
+                messages.info(self.request, "No changes made")
+            return super(CumulativeDoseSettingsUpdate, self).form_valid(form)
+        else:
+            messages.info(
+                self.request,
+                "No changes made",
+            )
+            return redirect(reverse_lazy("cumulative_dose_settings", kwargs={"pk": 1}))
