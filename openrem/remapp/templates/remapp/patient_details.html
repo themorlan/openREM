@@ -122,7 +122,8 @@
                 {% if effective_dose_alerts %}
                 <table class="table table-bordered table-hover row-clickable small" aria-describedby="Study summary table">
                     <tr>
-                        <th>Cumulative Dose</th>
+                        <th>Cumulative Dose (mSv)</th>
+                        <th>Date range</th>
                     </tr>
                     {% for alert in effective_dose_alerts %}
                     <tr>
@@ -130,6 +131,9 @@
                             <a href="">
                                 {{ alert.cumulative_dose }}
                             </a>
+                        </td>
+                        <td>
+                            {{ alert.first_study_date }} - {{ alert.last_study_date }}
                         </td>
                     </tr>
                     {% endfor %}
