@@ -3483,9 +3483,12 @@ class EffectiveDoseAlerts(Alerts):
     defined period by a globally specified value
     """
     
+    # (mSv)
     cumulative_dose = models.DecimalField(
         max_digits=16, decimal_places=8, blank=True, null=True
     )
+    first_study_date = models.DateField(blank=True, null=True)
+    last_study_date = models.DateField(blank=True, null=True)
     patient = models.ForeignKey(Patients, on_delete=models.CASCADE)
 
 
