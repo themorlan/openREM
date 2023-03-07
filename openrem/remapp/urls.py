@@ -55,7 +55,7 @@ main_patterns = [
     path("homeworkload/", views.update_study_workload, name="update_study_workload"),
     path("alerts/", views.alert_summary, name="alert_summary"),
     path("patients/", views.patients_summary, name="patients_summary"),
-    path("patients/<str:patient_id>", views.patient_details, name="patient_details"),
+    path("patients/<int:id>", views.patient_details, name="patient_details"),
     path("rf/", views.rf_summary_list_filter, name="rf_summary_list_filter"),
     path(
         "rf/chart/", views_charts_rf.rf_summary_chart_data, name="rf_summary_chart_data"

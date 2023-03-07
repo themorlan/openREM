@@ -94,7 +94,7 @@
                             <td>{{ patient.general_study_module_attr.count }}</td>
                             {% if admin.admingroup %}
                                 <td>
-                                    <a href="{% url 'patient_details' patient.patient_id %}">DETAILS</a>
+                                    <a href="{% url 'patient_details' patient.id %}">DETAILS</a>
                                 </td>
                             {% endif %}
                         </tr>

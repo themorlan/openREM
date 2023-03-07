@@ -3430,6 +3430,31 @@ class UpgradeStatus(SingletonModel):
     from_0_9_1_summary_fields = models.BooleanField(default=False)
 
 
+class Patients(models.Model):
+    """
+    Table to store all patients. Data is gathered from the studies and grouped by patient id and birth date
+    """
+    general_study_module_attr = models.ManyToManyField(GeneralStudyModuleAttr)
+    patient_id = models.TextField(blank=True, null=True)
+    patient_name = models.TextField(blank=True, null=True)
+    patient_birth_date = models.DateField(blank=True, null=True)
+    patient_sex = models.CharField(max_length=2, blank=True, null=True)
+    override_patient_name = models.BooleanField(default=False)
+    override_birth_date = models.BooleanField(default=False)
+    override_sex = models.BooleanField(default=False)
+
+
+class VolatilePatientData(models.Model):
+    patient = models.ForeignKey(Patients, on_delete=models.CASCADE)
+    general_study_module_attr = models.ForeignKey(GeneralStudyModuleAttr, on_delete=models.CASCADE)
+    patient_size = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+    patient_weight = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+
+
 class Alerts(models.Model):
     """
     Table to store all issued alerts
@@ -3456,32 +3481,7 @@ class EffectiveDoseAlerts(Alerts):
     defined period by a globally specified value
     """
     
-    cumulaive_effective_dose = models.DecimalField(
+    cumulative_dose = models.DecimalField(
         max_digits=16, decimal_places=8, blank=True, null=True
     )
-    patient_id = models.TextField(null=True)
-
-
-class Patients(models.Model):
-    """
-    Table to store all patients. Data is gathered from the studies and grouped by patient id and birth date
-    """
-    general_study_module_attr = models.ManyToManyField(GeneralStudyModuleAttr)
-    patient_id = models.TextField(blank=True, null=True)
-    patient_name = models.TextField(blank=True, null=True)
-    patient_birth_date = models.DateField(blank=True, null=True)
-    patient_sex = models.CharField(max_length=2, blank=True, null=True)
-    override_patient_name = models.BooleanField(default=False)
-    override_birth_date = models.BooleanField(default=False)
-    override_sex = models.BooleanField(default=False)
-
-
-class VolatilePatientData(models.Model):
     patient = models.ForeignKey(Patients, on_delete=models.CASCADE)
-    general_study_module_attr = models.ForeignKey(GeneralStudyModuleAttr, on_delete=models.CASCADE)
-    patient_size = models.DecimalField(
-        max_digits=16, decimal_places=8, blank=True, null=True
-    )
-    patient_weight = models.DecimalField(
-        max_digits=16, decimal_places=8, blank=True, null=True
-    )

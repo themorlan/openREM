@@ -111,6 +111,7 @@ from .models import (
     StandardNameSettings,
     StandardNames,
     DiagnosticReferenceLevelAlerts,
+    EffectiveDoseAlerts,
     Patients
 )
 from .version import __version__, __docs_version__, __skin_map_version__
@@ -864,15 +865,20 @@ def patients_summary(request):
 
 
 @login_required
-def patient_details(request, patient_id):
+def patient_details(request, id):
     """Show details for specifified patient."""
     
     admin = create_admin_info(request)
-    patient_details = Patients.objects.get(patient_id__exact=patient_id)
+    patient = Patients.objects.get(id=id)
+    studies = patient.general_study_module_attr.all()
+    drl_alerts = DiagnosticReferenceLevelAlerts.objects.filter(general_study_module_attributes__in=studies)
+    effective_dose_alerts = EffectiveDoseAlerts.objects.filter(patient=patient)
 
     context = {
         "admin": admin,
-        "patient_details": patient_details,
+        "patient_details": patient,
+        "drl_alerts": drl_alerts,
+        "effective_dose_alerts": effective_dose_alerts,
     }
 
     return render(request, "remapp/patient_details.html", context)

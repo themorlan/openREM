@@ -99,7 +99,6 @@ def check_drl_for_study_and_std_name(study: GeneralStudyModuleAttr, std_name: St
     
     if std_name.diagnostic_reference_level_criteria == "bmi":
         ref_val = patient_bmi
-        print(ref_val)
     else:
         ref_val = patient_age
 
@@ -116,9 +115,10 @@ def check_drl_for_study_and_std_name(study: GeneralStudyModuleAttr, std_name: St
         return
     if DiagnosticReferenceLevelAlerts.objects.filter(diagnostic_reference_level=drl, general_study_module_attributes=study, standard_name=std_name).exists():
         return
-    DiagnosticReferenceLevelAlerts.objects.create(
+    new_alert = DiagnosticReferenceLevelAlerts(
         date_of_issue=datetime.now(),
         diagnostic_reference_level=drl,
         general_study_module_attributes=study,
         standard_name=std_name
-    ).save()
+    )
+    new_alert.save()

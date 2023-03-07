@@ -88,6 +88,55 @@
                         <td>{{ patient_details.patient_sex }}</td>
                     </tr>
                 </table>
+
+
+                <h2>DRL Alerts</h2>
+                {% if drl_alerts %}
+                <table class="table table-bordered table-hover row-clickable small" aria-describedby="Study summary table">
+                    <tr>
+                        <th>Study Description</th>
+                        <th>Study date</th>
+                        <th>Standard name</th>
+                    </tr>
+                    {% for alert in drl_alerts %}
+                    <tr>
+                        <td>
+                            <a href="">
+                                {{ alert.general_study_module_attributes.study_description }}
+                            </a>
+                        </td>
+                        <td>
+                            {{ alert.general_study_module_attributes.study_date }}
+                        </td>
+                        <td>
+                            {{ alert.standard_name.standard_name }}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </table>
+                {% else %}
+                <p>No alerts yet</p>
+                {% endif %}
+
+                <h2>Effective Dose Alerts</h2>
+                {% if effective_dose_alerts %}
+                <table class="table table-bordered table-hover row-clickable small" aria-describedby="Study summary table">
+                    <tr>
+                        <th>Cumulative Dose</th>
+                    </tr>
+                    {% for alert in effective_dose_alerts %}
+                    <tr>
+                        <td>
+                            <a href="">
+                                {{ alert.cumulative_dose }}
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </table>
+                {% else %}
+                <p>No alerts yet</p>
+                {% endif %}
             
             
             {% endblock %}
