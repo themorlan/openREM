@@ -32,6 +32,7 @@
 from builtins import object  # pylint: disable=redefined-builtin
 import json
 from datetime import timedelta
+from decimal import Decimal
 from django.db import models
 from django.urls import reverse
 from solo.models import SingletonModel
@@ -3495,6 +3496,10 @@ class CumulativeDoseSettings(SingletonModel):
 
     alert_time_period = models.DurationField(
         default=timedelta(days=90)
+    )
+    # unit: [mSv]
+    cumulative_dose_threshold = models.DecimalField(
+        max_digits=16, decimal_places=8, default=Decimal(100.0)
     )
 
     def get_absolute_url(self):

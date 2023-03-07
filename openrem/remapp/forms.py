@@ -2303,17 +2303,16 @@ class BackgroundTaskMaximumRowsForm(forms.ModelForm):
 class CumulativeDoseSettingsForm(forms.ModelForm):
     """Form for configuring the cumulative dose settings"""
 
-    alert_time_period = forms.DurationField()
-
     def __init__(self, *args, **kwargs):
         super(CumulativeDoseSettingsForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper(self)
         self.helper.form_class = "form-horizontal"
         self.helper.layout = Layout(
-            Div("alert_time_period"),
+            Div("alert_time_period", "cumulative_dose_threshold"),
             FormActions(Submit("submit", "Submit")),
         )
 
     class Meta(object):
         model = CumulativeDoseSettings
-        fields = ["alert_time_period"]
+        fields = ["alert_time_period", "cumulative_dose_threshold"]
+        labels = {"cumulative_dose_threshold": "Cumulative dose threshold (mSv)"}

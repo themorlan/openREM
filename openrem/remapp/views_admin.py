@@ -3459,7 +3459,7 @@ class CumulativeDoseSettingsUpdate(UpdateView):  # pylint: disable=unused-variab
 
     def form_valid(self, form):
         if form.has_changed():
-            if form.cleaned_data["alert_time_period"]:
+            if form.cleaned_data["alert_time_period"] or form.cleaned_data["cumulative_dose_threshold"]:
                 messages.success(self.request, "Alert time period was updated")
             else:
                 messages.info(self.request, "No changes made")
