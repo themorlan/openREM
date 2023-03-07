@@ -80,6 +80,7 @@
                 {% endif %}
             {% endblock %}
             {% block col1 %}
+                <h2>DRL Alerts</h2>
                 <table class="table table-bordered table-hover row-clickable small" aria-describedby="Study summary table">
                     <tr>
                         <th>Modality</th>
@@ -88,7 +89,7 @@
                         <th>Date issued</th>
                         <th>Details?</th>
                     </tr>
-                    {% for alert in alerts %}
+                    {% for alert in drl_alerts %}
                         <tr>
                             <td>{{ alert.general_study_module_attributes.modality_type }}</td>
                             <td>{{ alert.standard_name.standard_name }}</td>
@@ -96,6 +97,28 @@
                             <td>{{ alert.date_of_issue }}</td>
                             <td>
                                 <a href="{% url 'ct_detail_view' pk=alert.general_study_module_attributes.id %}">Study details</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+
+                <h2>Effective Dose Alerts</h2>
+                <table class="table table-bordered table-hover row-clickable small" aria-describedby="Study summary table">
+                    <tr>
+                        <th>Patient</th>
+                        <th>Cumulative Dose (mSv)</th>
+                        <th>Date range</th>
+                    </tr>
+                    {% for alert in effective_dose_alerts %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'patient_details' id=alert.patient.id %}">{{ alert.patient.patient_id }} ({{ alert.patient.patient_name }})</a>
+                            </td>
+                            <td>
+                                {{ alert.cumulative_dose }}
+                            </td>
+                            <td>
+                                {{ alert.first_study_date }} - {{ alert.last_study_date }}
                             </td>
                         </tr>
                     {% endfor %}

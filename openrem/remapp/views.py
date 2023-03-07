@@ -835,13 +835,15 @@ def alert_summary(request):
     """Obtain data for alert summary view."""
     
     admin = create_admin_info(request)
-    alerts = DiagnosticReferenceLevelAlerts.objects.all()
+    drl_alerts = DiagnosticReferenceLevelAlerts.objects.all()
+    effective_dose_alerts = EffectiveDoseAlerts.objects.all()
 
     check_for_new_alerts()
 
     context = {
         "admin": admin,
-        "alerts": alerts,
+        "drl_alerts": drl_alerts,
+        "effective_dose_alerts": effective_dose_alerts,
     }
 
     return render(request, "remapp/alerts.html", context)
