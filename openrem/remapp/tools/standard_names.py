@@ -30,6 +30,8 @@
 """
 
 from django.db import IntegrityError
+from django.contrib import messages
+from django.utils.safestring import mark_safe
 from django.db.models import Q
 import numpy as np
 from remapp.forms import DiagnosticReferenceLevelsFormSet, KFactorsFormSet
@@ -43,10 +45,9 @@ def add_standard_name(request, form):
     std_name = data["standard_name"]
 
     if not std_name:
-        pass
-        # messages.warning(self.request, "Blank standard name - no update made")
-        # return redirect(self.success_url)
-
+        messages.warning(request, "Blank standard name - no update made")
+        return
+    
     modality = data["modality"]
 
     field_names = {
@@ -58,7 +59,7 @@ def add_standard_name(request, form):
 
     for (field, new_ids) in field_names.items():
         # Add new entries to the StandardNames table
-        _add_names(data[field], field, modality, std_name, new_ids)
+        _add_names(request, data[field], field, modality, std_name, new_ids, data)
 
     # Obtain a list of the required studies
     studies = _get_studies(modality)
@@ -215,7 +216,7 @@ def update_standard_name(request, form, std_name_obj: StandardNames):
             data[field],
             form.initial[field],
         )
-        _add_names(names_to_add, field, data["modality"], data["standard_name"], new_ids)
+        _add_names(request, names_to_add, field, data["modality"], data["standard_name"], new_ids, data)
 
     # Add the new standard names to the studies
     _add_multiple_standard_studies(
@@ -364,20 +365,20 @@ def _filter_irrad_event_x_ray_data(modality):
     return IrradEventXRayData.objects.filter(q_criteria)
 
 
-def _add_names(names_to_add, field, modality, standard_name, new_ids):
+def _add_names(request, names_to_add, field, modality, standard_name, new_ids, data):
     for item in names_to_add:
         new_entry = StandardNames(
             standard_name=standard_name,
             modality=modality,
+            diagnostic_reference_level_criteria=data["diagnostic_reference_level_criteria"],
+            k_factor_criteria=data["k_factor_criteria"],
             **{ field: item }
         )
         try:
             new_entry.save()
             new_ids.append(new_entry.pk)
         except IntegrityError as e:
-            pass
-            # messages.warning(self.request, mark_safe("Error adding name: {0}".format(e.args)))
-            # return redirect(self.success_url)
+            messages.warning(request, mark_safe("Error adding name: {0}".format(e.args)))
 
 
 def _save_reference_values(std_names, *formsets):

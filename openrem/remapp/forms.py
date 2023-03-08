@@ -1654,8 +1654,19 @@ class DicomStoreForm(forms.ModelForm):
             ] = "Port: set to the same as the DICOM_PORT setting in docker-compose.yml"
 
 
+DRL_CRITERIA_CHOICES = (("age", "age"), ("bmi", "bmi"))
+DRL_CRITERIA_DEFAULT_IDX = 0
+K_FACTOR_CRITERIA_CHOICES = (("age", "age"), ("bmi", "bmi"))
+K_FACTOR_CRITERIA_DEFAULT_IDX = 0
+
 class StandardNameFormBase(forms.ModelForm):
     """For configuring standard names for study description, requested procedure, procedure and acquisition name."""
+
+    diagnostic_reference_level_criteria = forms.ChoiceField(choices=DRL_CRITERIA_CHOICES,
+        initial=DRL_CRITERIA_CHOICES[DRL_CRITERIA_DEFAULT_IDX], label="DRL criteria")
+    
+    k_factor_criteria = forms.ChoiceField(choices=K_FACTOR_CRITERIA_CHOICES,
+        initial=K_FACTOR_CRITERIA_CHOICES[K_FACTOR_CRITERIA_DEFAULT_IDX], label="k-factor criteria")
 
     class Meta(object):
         model = StandardNames
@@ -1666,6 +1677,8 @@ class StandardNameFormBase(forms.ModelForm):
             "requested_procedure_code_meaning",
             "procedure_code_meaning",
             "acquisition_protocol",
+            "diagnostic_reference_level_criteria",
+            "k_factor_criteria",
         ]
         widgets = {
             "standard_name": forms.TextInput,
@@ -1705,19 +1718,8 @@ KFactorsFormSet = modelformset_factory(
     KFactors, fields=("lower_bound", "upper_bound", "k_factor"), can_delete=True, can_delete_extra=False,
 )
 
-DRL_CRITERIA_CHOICES = (("age", "age"), ("bmi", "bmi"))
-DRL_CRITERIA_DEFAULT_IDX = 0
-K_FACTOR_CRITERIA_CHOICES = (("age", "age"), ("bmi", "bmi"))
-K_FACTOR_CRITERIA_DEFAULT_IDX = 0
-
 class StandardNameFormCT(StandardNameFormBase):
     """Form for configuring standard names for study description, requested procedure, procedure and acquisition name"""
-
-    diagnostic_reference_level_criteria = forms.ChoiceField(choices=DRL_CRITERIA_CHOICES,
-        initial=DRL_CRITERIA_CHOICES[DRL_CRITERIA_DEFAULT_IDX], label="DRL criteria")
-    
-    k_factor_criteria = forms.ChoiceField(choices=K_FACTOR_CRITERIA_CHOICES,
-        initial=K_FACTOR_CRITERIA_CHOICES[K_FACTOR_CRITERIA_DEFAULT_IDX], label="k-factor criteria")
 
     def __init__(self, *args, **kwargs):
         super(StandardNameFormCT, self).__init__(*args, **kwargs)
