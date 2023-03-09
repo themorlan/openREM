@@ -918,6 +918,7 @@ class StandardNames(models.Model):
     procedure_code_meaning = models.TextField(blank=True, null=True)
     acquisition_protocol = models.TextField(blank=True, null=True)
     diagnostic_reference_level_criteria = models.TextField(blank=True, default="age")
+    drl_alert_factor = models.DecimalField(max_digits=16, decimal_places=8, default=Decimal(1.0))
     k_factor_criteria = models.TextField(blank=True, default="age")
 
     class Meta(object):
