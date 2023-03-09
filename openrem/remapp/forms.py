@@ -1678,8 +1678,10 @@ class StandardNameFormBase(forms.ModelForm):
             "procedure_code_meaning",
             "acquisition_protocol",
             "diagnostic_reference_level_criteria",
+            "drl_alert_factor",
             "k_factor_criteria",
         ]
+        labels = {"drl_alert_factor": "DRL alert factor"}
         widgets = {
             "standard_name": forms.TextInput,
             "modality": forms.HiddenInput,

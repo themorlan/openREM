@@ -31,6 +31,7 @@
 # Following two lines added so that sphinx autodocumentation works.
 from builtins import object  # pylint: disable=redefined-builtin
 import json
+from decimal import Decimal
 from django.db import models
 from django.urls import reverse
 from solo.models import SingletonModel
@@ -914,6 +915,7 @@ class StandardNames(models.Model):
     procedure_code_meaning = models.TextField(blank=True, null=True)
     acquisition_protocol = models.TextField(blank=True, null=True)
     diagnostic_reference_level_criteria = models.TextField(blank=True, default="age")
+    drl_alert_factor = models.DecimalField(max_digits=16, decimal_places=8, default=Decimal(1.0))
     k_factor_criteria = models.TextField(blank=True, default="age")
 
     class Meta(object):

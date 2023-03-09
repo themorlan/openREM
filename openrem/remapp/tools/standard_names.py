@@ -231,9 +231,18 @@ def update_standard_name(request, form, std_name_obj: StandardNames):
 
     std_names = std_names.filter(standard_name=form.initial["standard_name"])
 
-    # Update the StandardNames standard name if it has been changed
+    # Update the StandardNames properties if they have been changed
     if "standard_name" in data:
         std_names.update(standard_name=data["standard_name"])
+
+    if "drl_alert_factor" in data:
+        std_names.update(drl_alert_factor=data["drl_alert_factor"])
+
+    if "diagnostic_reference_level_criteria" in data:
+        std_names.update(diagnostic_reference_level_criteria=data["diagnostic_reference_level_criteria"])
+
+    if "k_factor_criteria" in data:
+        std_names.update(k_factor_criteria=data["k_factor_criteria"])
 
     drl_formset = DiagnosticReferenceLevelsFormSet(request.POST, prefix="drl_formset")
     kfactor_formset = KFactorsFormSet(request.POST, prefix="kfactor_formset")
@@ -371,6 +380,7 @@ def _add_names(request, names_to_add, field, modality, standard_name, new_ids, d
             standard_name=standard_name,
             modality=modality,
             diagnostic_reference_level_criteria=data["diagnostic_reference_level_criteria"],
+            drl_alert_factor=data["drl_alert_factor"],
             k_factor_criteria=data["k_factor_criteria"],
             **{ field: item }
         )
@@ -391,5 +401,3 @@ def _save_reference_values(std_names, *formsets):
             for item in formset.deleted_objects:
                 item.standard_name.remove(*std_names)
                 item.delete()
-
-
