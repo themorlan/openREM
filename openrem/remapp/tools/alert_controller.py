@@ -32,8 +32,8 @@ from datetime import datetime, timedelta
 from dateutil import relativedelta
 from decimal import Decimal
 from django.core.exceptions import ObjectDoesNotExist
-
-from remapp.models import GeneralStudyModuleAttr, EffectiveDoseAlerts, StandardNames, PatientModuleAttr, Patients, VolatilePatientData, DiagnosticReferenceLevels, DiagnosticReferenceLevelAlerts, CumulativeDoseSettings, KFactors
+from typing import Union
+from remapp.models import GeneralStudyModuleAttr, EffectiveDoseAlerts, StandardNames, PatientModuleAttr, Patients, VolatilePatientData, DiagnosticReferenceLevels, DiagnosticReferenceLevelAlerts, CumulativeDoseSettings, KFactors, CtIrradiationEventData, IrradEventXRayData
 
 
 def check_for_new_alerts():
@@ -48,18 +48,13 @@ def get_cumulative_dose_for_patient():
     Calculates the cumulative dose of a specific patient in a globally defined time period
     """
 
-    # TODO: Get all combinations of studies occured in the specified period of time
-    # TODO: For each combination calculate the effective dose, where parameters are given
-    # TODO: Check all cumulative doses and compare them with the globally defined threshold
-    # TODO: issue alerts if needed
-
     patients = Patients.objects.all()
-
 
     for patient in patients:
         patient_studies = patient.general_study_module_attr.all().order_by("study_date")
-        period: timedelta = CumulativeDoseSettings.get_solo().alert_time_period
-        threshold: Decimal = CumulativeDoseSettings.get_solo().cumulative_dose_threshold
+        cumulative_dose_settings: CumulativeDoseSettings = CumulativeDoseSettings.get_solo() # type: ignore
+        period: timedelta = cumulative_dose_settings.alert_time_period
+        threshold: Decimal = cumulative_dose_settings.cumulative_dose_threshold
 
         sliding_window = []
 
@@ -100,7 +95,7 @@ def calculate_effective_dose_for_study(study: GeneralStudyModuleAttr, patient: P
     study_std_names = study.standard_names.all()
     max_effective_dose = Decimal(0.0)
 
-    value = _get_comparison_value(study)
+    value = _get_comparison_value_from_study(study)
 
     if not value:
         return Decimal(0.0)
@@ -124,26 +119,31 @@ def calculate_effective_dose_for_study(study: GeneralStudyModuleAttr, patient: P
     return max_effective_dose
 
 
-def _get_comparison_value(study: GeneralStudyModuleAttr):
+def _get_comparison_value_from_study(study: GeneralStudyModuleAttr) -> Union[Decimal, None]:
     study_dict = study.__dict__
     modality = study.modality_type
 
     if modality == "CT":
-        drl_name = "total_dlp"
+        return study_dict["total_dlp"]
     elif modality == "RF" or modality == "DX":
-        drl_name = "total_dap"
-    else:
-        return None
-    
-    return study_dict[drl_name]
+        return study_dict["total_dap"]
+    return None
 
 
-def _get_patient_age(study: GeneralStudyModuleAttr, patient: Patients):
+def _get_comparison_value_from_event(event) -> Union[Decimal, None]:
+    if isinstance(event, CtIrradiationEventData):
+        return event.dlp
+    elif isinstance(event, IrradEventXRayData):
+        return event.dose_area_product
+    return None
+
+
+def _get_patient_age(study: GeneralStudyModuleAttr, patient: Patients) -> Union[int, None]:
     if study.study_date and patient.patient_birth_date:
         return relativedelta.relativedelta(study.study_date, patient.patient_birth_date).years
     return None
 
-def _get_patient_bmi(study: GeneralStudyModuleAttr, patient: Patients):
+def _get_patient_bmi(study: GeneralStudyModuleAttr, patient: Patients) -> Union[Decimal, None]:
     try:
         additional_patient_data = VolatilePatientData.objects.get(patient=patient, general_study_module_attr=study)
         if additional_patient_data.patient_weight and additional_patient_data.patient_size:
@@ -178,11 +178,14 @@ def check_for_new_alerts_in_study(study: GeneralStudyModuleAttr):
     check_drv_values_for_study(study, patient_age, patient_bmi, std_names)
 
 
-def check_drv_values_for_study(study: GeneralStudyModuleAttr, patient_age, patient_bmi, std_names):
-    value = _get_comparison_value(study)
-
-    if not value:
-        return
+def check_drv_values_for_study(
+        study: GeneralStudyModuleAttr, 
+        patient_age: Union[int, None], 
+        patient_bmi: Union[Decimal, None], 
+        std_names
+):
+    value = _get_comparison_value_from_study(study)
+    modality = study.modality_type
 
     field_names = [
         "study_description",
@@ -195,17 +198,38 @@ def check_drv_values_for_study(study: GeneralStudyModuleAttr, patient_age, patie
             std_name = std_names.get(**{f"{field_name}__in": [study.__dict__[field_name]]})
         except ObjectDoesNotExist:
             continue
-        check_drl_for_study_and_std_name(study, std_name, patient_age, patient_bmi, value)
+        check_drl_for_std_name(study, std_name, patient_age, patient_bmi, value)
+
+    try:
+        if modality == "CT":
+            events = study.ctradiationdose_set.get().ctirradiationeventdata_set.all() # type: ignore
+            for event in events:
+                std_name = std_names.get(**{"acquisition_protocol__in": [event.acquisition_protocol]})
+                value = _get_comparison_value_from_event(event)
+                check_drl_for_std_name(study, std_name, patient_age, patient_bmi, value)
+        else:
+            events = study.projectionxrayradiationdose_set.get().irradeventxraydata_set.all() # type: ignore
+            for event in events:
+                std_name = std_names.get(**{"acquisition_protocol__in": [event.acquisition_protocol]})
+                value = _get_comparison_value_from_event(event)
+                check_drl_for_std_name(study, std_name, patient_age, patient_bmi, value)
+    except ObjectDoesNotExist as e:
+        pass
 
 
-def check_drl_for_study_and_std_name(study: GeneralStudyModuleAttr, std_name: StandardNames, patient_age, patient_bmi, value):
-    if not std_name.diagnostic_reference_level_criteria:
+def check_drl_for_std_name(
+        study: GeneralStudyModuleAttr, 
+        std_name: StandardNames, 
+        patient_age: Union[int, None], 
+        patient_bmi: Union[Decimal, None], 
+        value: Union[Decimal, None]
+):
+    if not value or not std_name.diagnostic_reference_level_criteria:
         return
     
+    ref_val = patient_age
     if std_name.diagnostic_reference_level_criteria == "bmi":
         ref_val = patient_bmi
-    else:
-        ref_val = patient_age
 
     if not ref_val:
         return
