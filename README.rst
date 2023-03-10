@@ -8,6 +8,8 @@
 OpenREM
 #######
 
+**This is an alpha release for developers only at this stage**
+
 OpenREM is a free, open source application for patient radiation dose monitoring. The software is capable of importing and
 displaying data from a wide variety of x-ray dose related sources with filtering, charts and analysis. The software also
 enables easy export of the data in a form that is suitable for further analysis by suitably qualified medical physics
