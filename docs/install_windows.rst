@@ -281,8 +281,8 @@ IIS
     * Click ``OK``
 
     .. figure:: img/windows11-iis-on.png
-       :figwidth: 45%
-       :align: left
+       :figwidth: 40%
+       :align: center
        :alt: Enabling IIS on Windows 11
        :target: _images/windows11-iis-on.png
 
@@ -290,8 +290,8 @@ IIS
 
 
     .. figure:: img/windows11-iis-on-inc-cgi.png
-       :figwidth: 45%
-       :align: right
+       :figwidth: 40%
+       :align: center
        :alt: Enabling CGI within the IIS settings on Windows 11
        :target: _images/windows11-iis-on-inc-cgi.png
 
