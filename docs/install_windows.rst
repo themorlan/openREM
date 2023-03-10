@@ -276,13 +276,13 @@ IIS
     * Search for ``windows features``
     * Select ``Turn Windows features on or off``
     * Check the ``Internet Information Services`` box (figure 6)
-    * Expand the ``World Wide Web Services`` -> ``Application Development Features`` sub-menu
+    * Expand the ``Internet Information Services`` - ``World Wide Web Services`` - ``Application Development Features`` sub-menu (figure 7)
     * Check the ``CGI`` box (figure 7)
     * Click ``OK``
 
     .. figure:: img/windows11-iis-on.png
-       :figwidth: 60%
-       :align: center
+       :figwidth: 40%
+       :align: left
        :alt: Enabling IIS on Windows 11
        :target: _images/windows11-iis-on.png
 
@@ -290,8 +290,8 @@ IIS
 
 
     .. figure:: img/windows11-iis-on-inc-cgi.png
-       :figwidth: 60%
-       :align: center
+       :figwidth: 40%
+       :align: right
        :alt: Enabling CGI within the IIS settings on Windows 11
        :target: _images/windows11-iis-on-inc-cgi.png
 
@@ -737,16 +737,16 @@ Make sure that the previously downloaded and renamed ``WinSW.exe`` file is in th
 * Wait for the services to get registered and started up (Notice: many windows may appear and disappear quickly)
 
 You should now be able to see the new workers in the list of Windows Services. Search for ``services`` on the Windows
-Start menu and you will be shown a list of installed services. The OpenREM workers are shown as ``HUEY CONSUMER n``,
-where ``n`` is the worker number, as shown in figure 11.
+Start menu and you will be shown a list of installed services. The OpenREM task workers are shown as
+``HUEY CONSUMER n``, where ``n`` is the worker number, as shown in figure 11.
 
 .. figure:: img/huey-services.png
-   :figwidth: 60%
+   :figwidth: 100%
    :align: center
-   :alt: View worker services
+   :alt: Four Huey task workers in the Services window
    :target: _images/huey-services.png
 
-   Figure 11: The Huey consumers in the Services window
+   Figure 11: Four Huey task workers in the Services window
 
 
 Adjusting IIS Application Pool Identity
