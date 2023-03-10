@@ -159,6 +159,11 @@ Open the downloaded file to start the installation:
 gettext
 -------
 
+.. admonition:: What is gettext for?
+
+    The gettext binary enables the translations to be available to users of the web interface. It is not
+    essential if you don't want the translations to be available.
+
 Download the 64 bit static version of gettext 0.21 from https://mlocati.github.io/articles/gettext-iconv-windows.html.
 Use the ``.exe`` version (software install icon, not the zip icon)
 
@@ -176,11 +181,6 @@ Open the downloaded file to start the installation:
 * Additional Tasks leave both boxes ticked ``Next >``
 * Ready to Install ``Install``
 * ``Finish``
-
-.. admonition:: What is gettext for?
-
-    The gettext binary enables the translations to be available to users of the web interface. It is not
-    essential if you don't want the translations to be available.
 
 Pixelmed
 --------
