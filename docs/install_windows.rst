@@ -268,6 +268,35 @@ IIS
 * ``Install``
 * ``Close``
 
+.. admonition:: Running OpenREM on Windows 10 or Windows 11?
+
+    For non-server environments follow these IIS instructions:
+
+    * Open the Control Panel
+    * Search for ``windows features``
+    * Select ``Turn Windows features on or off``
+    * Check the ``Internet Information Services`` box (figure 6)
+    * Expand the ``World Wide Web Services`` -> ``Application Development Features`` sub-menu
+    * Check the ``CGI`` box (figure 7)
+    * Click ``OK``
+
+    .. figure:: img/windows11-iis-on.png
+       :figwidth: 60%
+       :align: center
+       :alt: Enabling IIS on Windows 11
+       :target: _images/windows11-iis-on.png
+
+       Figure 6: Enabling IIS on Windows 11
+
+
+    .. figure:: img/windows11-iis-on-inc-cgi.png
+       :figwidth: 60%
+       :align: center
+       :alt: Enabling CGI within the IIS settings on Windows 11
+       :target: _images/windows11-iis-on-inc-cgi.png
+
+       Figure 7: Enabling CGI within the IIS settings on Windows 11
+
 You can check the server is running by browsing to http://localhost/ on the server. You should see the
 default IIS Welcome page. It might not work immediately, check again in a few minutes.
 
@@ -353,7 +382,7 @@ warning to check if you are sure - ``Yes``:
    :alt: openremproject folder
    :target: _images/openremproject_folder.png
 
-   Figure 6: openremproject folder
+   Figure 8: openremproject folder
 
 Edit ``local_settings.py`` as needed (right click ``Edit with Notepad++``) Make sure you change the ``PASSWORD``, the
 ``SECRET_KEY`` (to anything, just change it), the ``ALLOWED_HOSTS`` list, regionalisation settings and the ``EMAIL``
@@ -544,7 +573,7 @@ Configure IIS
    :alt: Environment Variables Collection
    :target: _images/CollectionEditor.png
 
-   Figure 7: Environment Variables Collection Editor
+   Figure 9: Environment Variables Collection Editor
 
 * Under FastCGI Properties -> Process Model click on the ``Activity Timeout`` value and change it to ``1200``
 
@@ -559,7 +588,7 @@ Configure IIS
    :alt: Add FastCGI Application settings
    :target: _images/FastCGIApplication.png
 
-   Figure 8: Add FastCGI Application settings
+   Figure 10: Add FastCGI Application settings
 
 * Click ``OK`` to close the dialogue box
 
@@ -706,6 +735,19 @@ Make sure that the previously downloaded and renamed ``WinSW.exe`` file is in th
 * Enter the associated password
 * Enter the number of workers you would like to spawn, this number should no exceed the number of CPU cores available to your system
 * Wait for the services to get registered and started up (Notice: many windows may appear and disappear quickly)
+
+You should now be able to see the new workers in the list of Windows Services. Search for ``services`` on the Windows
+Start menu and you will be shown a list of installed services. The OpenREM workers are shown as ``HUEY CONSUMER n``,
+where ``n`` is the worker number, as shown in figure 11.
+
+.. figure:: img/huey-services.png
+   :figwidth: 60%
+   :align: center
+   :alt: View worker services
+   :target: _images/huey-services.png
+
+   Figure 11: The Huey consumers in the Services window
+
 
 Adjusting IIS Application Pool Identity
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
