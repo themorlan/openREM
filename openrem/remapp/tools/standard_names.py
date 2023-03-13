@@ -87,7 +87,7 @@ def add_standard_name(request, form):
 
     drl_formset = DiagnosticReferenceLevelsFormSet(request.POST, prefix="drl_formset")
     kfactor_formset = KFactorsFormSet(request.POST, prefix="kfactor_formset")
-    _save_reference_values(std_names, drl_formset, kfactor_formset)
+    _save_reference_values(modality, std_names, drl_formset, kfactor_formset)
 
 
 def update_all(modality):
@@ -246,7 +246,7 @@ def update_standard_name(request, form, std_name_obj: StandardNames):
 
     drl_formset = DiagnosticReferenceLevelsFormSet(request.POST, prefix="drl_formset")
     kfactor_formset = KFactorsFormSet(request.POST, prefix="kfactor_formset")
-    _save_reference_values(std_names, drl_formset, kfactor_formset)
+    _save_reference_values(std_name_obj.modality, std_names, drl_formset, kfactor_formset)
 
 
 def delete_standard_name(std_name_obj: StandardNames):
@@ -391,10 +391,12 @@ def _add_names(request, names_to_add, field, modality, standard_name, new_ids, d
             messages.warning(request, mark_safe("Error adding name: {0}".format(e.args)))
 
 
-def _save_reference_values(std_names, *formsets):
+def _save_reference_values(modality, std_names, *formsets):
     for formset in formsets:
         if formset.is_valid():
             for item in formset.save(commit=False):
+                if modality in ["RF", "DX"]:
+                    item.diagnostic_reference_level /= 1000000
                 item.save()
                 item.standard_name.add(*std_names)
 
