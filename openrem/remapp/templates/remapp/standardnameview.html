@@ -101,4 +101,12 @@
     <a class="btn btn-default" href="{% url 'add_name_dx' %}" role="button">Add new radiography entry</a>
 {% endif %}
 
+<a id="nm" class="vert-offset">
+  <h3>Nuclear Medicine</h3>
+</a>
+<span id="NM-names">Querying the database for standard names, please wait</span>
+{% if admin.admingroup %}
+    <a class="btn btn-default" href="{% url 'add_name_nm' %}" role="button">Add new NM entry</a>
+{% endif %}
+
 {% endblock %}

@@ -2151,6 +2151,79 @@ class StandardNameFormRF(StandardNameFormBase):
             js = ("/admin/jsi18n",)
 
 
+class StandardNameFormNM(StandardNameFormBase):
+    """Form for configuring standard names for study description, requested procedure, procedure and acquisition name"""
+
+    def __init__(self, *args, **kwargs):
+        super(StandardNameFormNM, self).__init__(*args, **kwargs)
+        self.fields["modality"].initial = "NM"
+
+        try:
+            del self.fields["acquisition_protocol"]
+        except KeyError:
+            pass
+
+        all_studies = GeneralStudyModuleAttr.objects.filter(modality_type__iexact="NM")
+
+        field_names = [
+            ("study_description", "Study description"),
+            ("requested_procedure_code_meaning", "Requested procedure name"),
+            ("procedure_code_meaning", "Procedure name"),
+        ]
+
+        for field_name, label_name in field_names:
+            # Exclude items already in the RF standard names entries except for the current value of the field
+            items_to_exclude = (
+                StandardNames.objects.all()
+                .filter(modality="NM")
+                .values(field_name)
+                .exclude(**{field_name: None})
+            )
+            if "standard_name" in self.initial:
+                items_to_exclude = items_to_exclude.exclude(
+                    standard_name=self.initial["standard_name"]
+                )
+
+            query = (
+                all_studies.values_list(field_name, flat=True)
+                .exclude(**{field_name + "__in": items_to_exclude})
+                .distinct()
+                .order_by(field_name)
+            )
+            query_choices = [("", "None")] + [(item, item) for item in query]
+
+            initial_choices = (
+                StandardNames.objects.all()
+                .filter(modality="NM")
+                .exclude(**{field_name: None})
+                .order_by(field_name)
+            )
+            if "standard_name" in self.initial:
+                initial_choices = initial_choices.filter(
+                    standard_name=self.initial["standard_name"]
+                )
+
+            self.initial[field_name] = list(
+                initial_choices.values_list(field_name, flat=True)
+            )
+
+            self.fields[field_name] = forms.MultipleChoiceField(
+                choices=query_choices,
+                required=False,
+                widget=FilteredSelectMultiple(
+                    label_name.lower() + "s", is_stacked=False
+                ),
+            )
+
+        class Media:
+            css = {
+                "all": (
+                    os.path.join(settings.BASE_DIR, "/static/admin/css/widgets.css"),
+                ),
+            }
+            js = ("/admin/jsi18n",)
+
+
 class StandardNameSettingsForm(forms.ModelForm):
     """Form for configuring whether standard names are shown / used"""
 

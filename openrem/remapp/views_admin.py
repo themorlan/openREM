@@ -80,6 +80,7 @@ from .forms import (
     StandardNameFormDX,
     StandardNameFormMG,
     StandardNameFormRF,
+    StandardNameFormNM,
     StandardNameSettingsForm,
     NMChartOptionsDisplayForm,
     BackgroundTaskMaximumRowsForm,
@@ -3195,6 +3196,24 @@ class StandardNameAddRF(StandardNameAddCore):  # pylint: disable=unused-variable
         return context
 
 
+class StandardNameAddNM(StandardNameAddCore):  # pylint: disable=unused-variable
+    """CreateView to add a standard name to the database"""
+
+    model = StandardNames
+    form_class = StandardNameFormNM
+
+    def get_context_data(self, **context):
+
+        # The user has navigated to this page
+        context = super(StandardNameAddNM, self).get_context_data(**context)
+        admin = {"openremversion": __version__, "docsversion": __docs_version__}
+        for group in self.request.user.groups.all():
+            admin[group.name] = True
+        context["admin"] = admin
+        context["modality_name"] = "NM"
+        return context
+
+
 @login_required
 def standard_names_view(request):
     if request.method == "POST":
@@ -3206,6 +3225,7 @@ def standard_names_view(request):
     mg_names = f.filter(modality__iexact="MG").distinct()
     dx_names = f.filter(modality__iexact="DX").distinct()
     rf_names = f.filter(modality__iexact="RF").distinct()
+    nm_names = f.filter(modality__iexact="NM").distinct()
 
     admin = {
         "openremversion": __version__,
@@ -3222,7 +3242,8 @@ def standard_names_view(request):
         "mg_names": mg_names,
         "dx_names": dx_names,
         "rf_names": rf_names,
-        "modalities": ["CT", "RF", "MG", "DX"],
+        "nm_names": nm_names,
+        "modalities": ["CT", "RF", "MG", "DX", "NM"],
     }
 
     return render(request, "remapp/standardnameview.html", return_structure)
@@ -3641,6 +3662,24 @@ class StandardNameUpdateMG(StandardNameUpdateCore):  # pylint: disable=unused-va
         return context
 
 
+class StandardNameUpdateNM(StandardNameUpdateCore):  # pylint: disable=unused-variable
+    """UpdateView to update a standard NM name"""
+
+    model = StandardNames
+    form_class = StandardNameFormNM
+
+    def get_context_data(self, **context):
+        context = super(StandardNameUpdateNM, self).get_context_data(**context)
+        admin = {
+            "openremversion": __version__,
+            "docsversion": __docs_version__,
+        }
+        for group in self.request.user.groups.all():
+            admin[group.name] = True
+        context["admin"] = admin
+        return context
+
+
 @login_required
 def standard_name_update(request, std_name_pk=None, modality=None):
     """View to list 'failed import' studies
@@ -3649,7 +3688,7 @@ def standard_name_update(request, std_name_pk=None, modality=None):
     :param modality: modality to filter by
     :return:
     """
-    if not modality in ["CT", "RF", "MG", "DX"]:
+    if not modality in ["CT", "RF", "MG", "DX", "NM"]:
         messages.error(
             request,
             "No modality provided.",
@@ -3682,6 +3721,9 @@ def standard_name_update(request, std_name_pk=None, modality=None):
 
         if modality.lower() == "mg":
             return redirect(reverse_lazy("update_name_mg", kwargs={"pk": std_name_pk}))
+        
+        if modality.lower() == "nm":
+            return redirect(reverse_lazy("update_name_nm", kwargs={"pk": std_name_pk}))
     else:
         messages.error(request, "Incorrect attempt to update standard name.")
         return redirect(reverse_lazy("standard_names_view"))
