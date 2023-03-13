@@ -8,331 +8,338 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-04 12:05+0100\n"
+"POT-Creation-Date: 2023-03-05 17:21+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.8.0\n"
+"Generated-By: Babel 2.12.1\n"
 
-#: ../../release-0.8.0.rst:3 4e2cbf34a8aa42d6aaa3e80a927b4e24
+#: ../../release-0.8.0.rst:3
 msgid "OpenREM Release Notes version 0.8.0"
 msgstr ""
 
-#: ../../release-0.8.0.rst:7 7abcd2fe72d041df841ebbeb77934198
+#: ../../release-0.8.0.rst:7
 msgid "Headline changes"
 msgstr ""
 
-#: ../../release-0.8.0.rst:9 3fa4a52724754182a9538a35bd5f0c26
+#: ../../release-0.8.0.rst:9
 msgid ""
 "This release has extensive automated testing for large parts of the "
 "codebase (for the first time)"
 msgstr ""
 
-#: ../../release-0.8.0.rst:10 5e25e77bc5ab46e08dc7745bbcb4600c
+#: ../../release-0.8.0.rst:10
 msgid ""
 "Code quality is much improved, reduced duplication, better documentation,"
 " many bugs fixed"
 msgstr ""
 
-#: ../../release-0.8.0.rst:11 3da720bbe9ab4358a41ae9fda0327138
+#: ../../release-0.8.0.rst:11
 msgid "Imports: RDSR from a wider range of systems now import properly"
 msgstr ""
 
-#: ../../release-0.8.0.rst:12 6151e99084db42548582fe77532ffb1f
+#: ../../release-0.8.0.rst:12
 msgid ""
 "Imports: Better distinction and control over defining RDSR studies as RF "
 "or DX"
 msgstr ""
 
-#: ../../release-0.8.0.rst:13 8edb706cca244b68b505ebb06ac3efaa
+#: ../../release-0.8.0.rst:13
 msgid ""
 "Imports: Code and instructions to generate and import RDSR from older "
 "Toshiba CT scanners"
 msgstr ""
 
-#: ../../release-0.8.0.rst:14 1106163c52de4303bd8697bcb63f2d1e
+#: ../../release-0.8.0.rst:14
 msgid "Imports: DICOM Query-Retrieve functionality has been overhauled"
 msgstr ""
 
-#: ../../release-0.8.0.rst:15 4e64c508b6e5453aaaaac9ae7105116b
+#: ../../release-0.8.0.rst:15
 msgid ""
 "Imports: Duplicate checking improved to allow cumulative and continued "
 "study RDSRs to import properly"
 msgstr ""
 
-#: ../../release-0.8.0.rst:16 e15c2678a2d04e8d8438636a7002279d
+#: ../../release-0.8.0.rst:16
 msgid ""
 "Imports: indicators that a study is not a patient can now be configured "
 "in the web interface"
 msgstr ""
 
-#: ../../release-0.8.0.rst:17 ff6b4195bef243a9bc4e5294dbaf4fa5
+#: ../../release-0.8.0.rst:17
 msgid "Imports, display and export: Better handling of non-ASCII characters"
 msgstr ""
 
-#: ../../release-0.8.0.rst:18 22603007fb6f4c3f8cafa9019c205ab2
+#: ../../release-0.8.0.rst:18
 msgid ""
 "Interface: More detailed, consistent and faster rendering of the data in "
 "the web interface"
 msgstr ""
 
-#: ../../release-0.8.0.rst:19 44d3798f72f548a1b2a17c64a47900f1
+#: ../../release-0.8.0.rst:19
 msgid ""
 "Interface: Maps of fluoroscopy radiation exposure incident on a phantom "
 "(Siemens RDSRs only)"
 msgstr ""
 
-#: ../../release-0.8.0.rst:20 7bbaed5dccfc4adc9c3417d5f68ac30d
+#: ../../release-0.8.0.rst:20
 msgid "Interface: More and better charts, including scatter plots for mammography"
 msgstr ""
 
-#: ../../release-0.8.0.rst:21 4c6ebd4aa4b343399ee6948031871e58
+#: ../../release-0.8.0.rst:21
 msgid ""
 "Interface: Display names dialogue has been extended to allow "
 "administration of all studies from each source"
 msgstr ""
 
-#: ../../release-0.8.0.rst:22 5b42c4dcdc5f4b888a854dd6d0ff2484
+#: ../../release-0.8.0.rst:22
 msgid "Exports: Much faster, and more consistent"
 msgstr ""
 
-#: ../../release-0.8.0.rst:23 49806227b9f845638b6c22365217a1a9
+#: ../../release-0.8.0.rst:23
 msgid "Documentation: Extensive user documentation improvements"
 msgstr ""
 
-#: ../../release-0.8.0.rst:29 7c7cd40393cb43ceb2bd29f0f3517cc8
-msgid "Upgrading an OpenREM server with no internet access"
+#: ../../release-0.8.0.rst:26
+msgid "Upgrade to current version"
 msgstr ""
 
-#: ../../release-0.8.0.rst:31 bd6d90b9c9c9415dafca4ef685792a6b
+#: ../../release-0.8.0.rst:28
+msgid ":doc:`upgrade_previous_0.10.0` and then upgrade to 1.0."
+msgstr ""
+
+#: ../../release-0.8.0.rst:32
+msgid "Specific upgrade instructions"
+msgstr ""
+
+#: ../../release-0.8.0.rst:34
 msgid ""
-"Follow the instructions found at :doc:`upgrade-offline`, before returning"
-" here to update the database and configuration."
+"For the original upgrade instructions, the last docs release to include "
+"them was `0.10.0-docs "
+"<https://docs.openrem.org/en/0.10.0-docs/release-0.8.0.html>`_"
 msgstr ""
 
-#: ../../release-0.8.0.rst:35 6225db0c2251465694ba82061395fd4c
-msgid "Upgrading from version 0.7.4 or previous 0.8.0 betas"
-msgstr ""
+#~ msgid "Upgrading an OpenREM server with no internet access"
+#~ msgstr ""
 
-#: ../../release-0.8.0.rst:38 1e03b41501024477b3218eb493c0a9a8
-msgid "Upgrade"
-msgstr ""
+#~ msgid ""
+#~ "Follow the instructions found at :doc"
+#~ ":`upgrade-offline`, before returning here "
+#~ "to update the database and "
+#~ "configuration."
+#~ msgstr ""
 
-#: ../../release-0.8.0.rst:40 6a4360b087be418e96251f714d817e2c
-msgid "Back up your database"
-msgstr ""
+#~ msgid "Upgrading from version 0.7.4 or previous 0.8.0 betas"
+#~ msgstr ""
 
-#: ../../release-0.8.0.rst:42 352865c887d74d9b9762978ff8ed86fa
-msgid "For PostgreSQL on linux you can refer to :ref:`backup-psql-db`"
-msgstr ""
+#~ msgid "Upgrade"
+#~ msgstr ""
 
-#: ../../release-0.8.0.rst:43 2a36ed31aeb84d44b87ad86e612f8e73
-msgid "For PostgreSQL on Windows you can refer to :ref:`backupRestorePostgreSQL`"
-msgstr ""
+#~ msgid "Back up your database"
+#~ msgstr ""
 
-#: ../../release-0.8.0.rst:44 6418aabed2a843be9f6e79dab46562c8
-msgid ""
-"For a non-production SQLite3 database, simply make a copy of the database"
-" file"
-msgstr ""
+#~ msgid "For PostgreSQL on linux you can refer to :ref:`backup-psql-db`"
+#~ msgstr ""
 
-#: ../../release-0.8.0.rst:46 f0b7b07502704ed494919baeb6c86cf5
-msgid "Stop any Celery workers"
-msgstr ""
+#~ msgid ""
+#~ "For PostgreSQL on Windows you can "
+#~ "refer to :ref:`backupRestorePostgreSQL`"
+#~ msgstr ""
 
-#: ../../release-0.8.0.rst:48 251b3470e971412e875fdbc164e4237d
-msgid ""
-"Consider temporarily disabling your DICOM StoreSCP, or redirecting the "
-"data to be processed later"
-msgstr ""
+#~ msgid ""
+#~ "For a non-production SQLite3 database,"
+#~ " simply make a copy of the "
+#~ "database file"
+#~ msgstr ""
 
-#: ../../release-0.8.0.rst:50 31d96f4693d94d8fb00be8eec60cad20
-msgid "If you are using a virtualenv, activate it"
-msgstr ""
+#~ msgid "Stop any Celery workers"
+#~ msgstr ""
 
-#: ../../release-0.8.0.rst:52 43b7300ee78941d990373f62a9d7a1af
-msgid "Install the new version of OpenREM:"
-msgstr ""
+#~ msgid ""
+#~ "Consider temporarily disabling your DICOM "
+#~ "StoreSCP, or redirecting the data to "
+#~ "be processed later"
+#~ msgstr ""
 
-#: ../../release-0.8.0.rst:59 e39e8f1ae67a43bd95f84fba5314cbc5
-msgid "Update the configuration"
-msgstr ""
+#~ msgid "If you are using a virtualenv, activate it"
+#~ msgstr ""
 
-#: ../../release-0.8.0.rst:61 ac641a83525c4c448157a5ffc7deef68
-msgid "Locate and edit your local_settings file"
-msgstr ""
+#~ msgid "Install the new version of OpenREM:"
+#~ msgstr ""
 
-#: ../../release-0.8.0.rst:63 2a5d259b5cff44c5aa6357a3921ad40d
-msgid ""
-"Ubuntu linux: ``/usr/local/lib/python2.7/dist-"
-"packages/openrem/openremproject/local_settings.py``"
-msgstr ""
+#~ msgid "Update the configuration"
+#~ msgstr ""
 
-#: ../../release-0.8.0.rst:64 4c9f3bfa9a60492b85e09cb2d13307af
-msgid ""
-"Other linux: ``/usr/lib/python2.7/site-"
-"packages/openrem/openremproject/local_settings.py``"
-msgstr ""
+#~ msgid "Locate and edit your local_settings file"
+#~ msgstr ""
 
-#: ../../release-0.8.0.rst:65 2e9c97d11e9d4c80a4300cac181ee939
-msgid ""
-"Linux virtualenv: ``vitualenvfolder/lib/python2.7/site-"
-"packages/openrem/openremproject/local_settings.py``"
-msgstr ""
+#~ msgid ""
+#~ "Ubuntu linux: ``/usr/local/lib/python2.7/dist-"
+#~ "packages/openrem/openremproject/local_settings.py``"
+#~ msgstr ""
 
-#: ../../release-0.8.0.rst:66 dc4777c9e177448388e14580022a0028
-msgid ""
-"Windows: ``C:\\Python27\\Lib\\site-"
-"packages\\openrem\\openremproject\\local_settings.py``"
-msgstr ""
+#~ msgid ""
+#~ "Other linux: ``/usr/lib/python2.7/site-"
+#~ "packages/openrem/openremproject/local_settings.py``"
+#~ msgstr ""
 
-#: ../../release-0.8.0.rst:67 94e7750146a246459d1d37542e326f48
-msgid ""
-"Windows virtualenv: ``virtualenvfolder\\Lib\\site-"
-"packages\\openrem\\openremproject\\local_settings.py``"
-msgstr ""
+#~ msgid ""
+#~ "Linux virtualenv: ``vitualenvfolder/lib/python2.7/site-"
+#~ "packages/openrem/openremproject/local_settings.py``"
+#~ msgstr ""
 
-#: ../../release-0.8.0.rst:70 869d7020d3f64f68b88fd5b9968e98d0
-msgid "Date format"
-msgstr ""
+#~ msgid ""
+#~ "Windows: ``C:\\Python27\\Lib\\site-"
+#~ "packages\\openrem\\openremproject\\local_settings.py``"
+#~ msgstr ""
 
-#: ../../release-0.8.0.rst:71 9be6d9da960f49179dc2ba17b04b956c
-msgid ""
-"Set the date format for xlsx exports (need to check csv situation). Copy "
-"the following code into your ``local_settings.py`` file if you want to "
-"change it from ``dd/mm/yyy``:"
-msgstr ""
+#~ msgid ""
+#~ "Windows virtualenv: ``virtualenvfolder\\Lib\\site-"
+#~ "packages\\openrem\\openremproject\\local_settings.py``"
+#~ msgstr ""
 
-#: ../../release-0.8.0.rst:82 6bc92216ec1e46fbbcc93772ea80318b
-msgid "Time zone and language"
-msgstr ""
+#~ msgid "Date format"
+#~ msgstr ""
 
-#: ../../release-0.8.0.rst:84 2d2db08b5a884d32a5e33647ed944ea8
-msgid ""
-"Consider setting the timezone and language in ``local_settings.py``. See "
-"``local_settings.py.example``."
-msgstr ""
+#~ msgid ""
+#~ "Set the date format for xlsx "
+#~ "exports (need to check csv situation)."
+#~ " Copy the following code into your"
+#~ " ``local_settings.py`` file if you want "
+#~ "to change it from ``dd/mm/yyy``:"
+#~ msgstr ""
 
-#: ../../release-0.8.0.rst:87 92f458797829457582a3d25772739951
-msgid "Add additional log file configuration"
-msgstr ""
+#~ msgid "Time zone and language"
+#~ msgstr ""
 
-#: ../../release-0.8.0.rst:91 660d0b2e756d4db686735183c76125d1
-msgid ""
-"If the configuration is not added for the new ``openrem_extractor.log`` "
-"you will find it being created whereever you start the webserver from, "
-"and starting the webserver may fail."
-msgstr ""
+#~ msgid ""
+#~ "Consider setting the timezone and "
+#~ "language in ``local_settings.py``. See "
+#~ "``local_settings.py.example``."
+#~ msgstr ""
 
-#: ../../release-0.8.0.rst:94 625c2058c1214fcfb51d6d9abf6d9419
-msgid ""
-"Add the new extractor log file configuration to the ``local_settings.py``"
-" - you can copy the 'Logging configuration' section from  "
-"``local_settings.py.example`` if you haven't made many changes to this "
-"section. See the :ref:`local_settings_logfile` settings in the install "
-"instructions."
-msgstr ""
+#~ msgid "Add additional log file configuration"
+#~ msgstr ""
 
-#: ../../release-0.8.0.rst:100 1d6b3881c6824eacb84f2d9f3b5bdafd
-msgid ""
-"If you are upgrading from an earlier beta with the Toshiba RDSR creation "
-"logs defined, this has changed names and must be modified in "
-"``local_settings.py`` before the migration below. It should be changed "
-"to::"
-msgstr ""
+#~ msgid ""
+#~ "If the configuration is not added "
+#~ "for the new ``openrem_extractor.log`` you "
+#~ "will find it being created whereever "
+#~ "you start the webserver from, and "
+#~ "starting the webserver may fail."
+#~ msgstr ""
 
-#: ../../release-0.8.0.rst:105 3276a1083b2c46a6877f169696239d93
-msgid "substituting ``INFO`` for whichever level of logging is desired."
-msgstr ""
+#~ msgid ""
+#~ "Add the new extractor log file "
+#~ "configuration to the ``local_settings.py`` -"
+#~ " you can copy the 'Logging "
+#~ "configuration' section from  "
+#~ "``local_settings.py.example`` if you haven't "
+#~ "made many changes to this section. "
+#~ "See the :ref:`local_settings_logfile` settings "
+#~ "in the install instructions."
+#~ msgstr ""
 
-#: ../../release-0.8.0.rst:108 6e620391f62f400f9aace0aa2df8fac3
-msgid "Adding legacy Toshiba CT functionality"
-msgstr ""
+#~ msgid ""
+#~ "If you are upgrading from an "
+#~ "earlier beta with the Toshiba RDSR "
+#~ "creation logs defined, this has changed"
+#~ " names and must be modified in "
+#~ "``local_settings.py`` before the migration "
+#~ "below. It should be changed to::"
+#~ msgstr ""
 
-#: ../../release-0.8.0.rst:110 af10f272b78b4f6e8628f78ba5c4858e
-msgid ""
-"If you need to import data from older Toshiba CT scanners into OpenREM "
-"then the following tools need to be available on the same server as "
-"OpenREM:"
-msgstr ""
+#~ msgid "substituting ``INFO`` for whichever level of logging is desired."
+#~ msgstr ""
 
-#: ../../release-0.8.0.rst:113 68eab657c81a40999f19a0d3fd36241c
-msgid "The `Offis DICOM toolkit`_"
-msgstr ""
+#~ msgid "Adding legacy Toshiba CT functionality"
+#~ msgstr ""
 
-#: ../../release-0.8.0.rst:114 71d2f3ce543845e78ad1f4199793cde1
-msgid "`Java`_"
-msgstr ""
+#~ msgid ""
+#~ "If you need to import data from"
+#~ " older Toshiba CT scanners into "
+#~ "OpenREM then the following tools need"
+#~ " to be available on the same "
+#~ "server as OpenREM:"
+#~ msgstr ""
 
-#: ../../release-0.8.0.rst:115 85d43c5b7cbc4160aa32f87740e9a562
-msgid "pixelmed.jar from the `PixelMed Java DICOM Toolkit`_"
-msgstr ""
+#~ msgid "The `Offis DICOM toolkit`_"
+#~ msgstr ""
 
-#: ../../release-0.8.0.rst:117 0e9f768d6f484287b244c9e761178607
-msgid "The paths to these must be set in ``local_settings.py`` for your system:"
-msgstr ""
+#~ msgid "`Java`_"
+#~ msgstr ""
 
-#: ../../release-0.8.0.rst:130 f4a86b85249840b98b16e6ff8195b1ff
-msgid ""
-"The example above is for Windows. On linux, if you have installed the "
-"Offis DICOM toolkit with ``sudo apt install dcmtk`` or similar, you can "
-"find the path for the configuration above using the command ``which "
-"dcmconv``. This will be something like ``/usr/bin/dcmconv``, so the "
-"``DCMTK_PATH`` would be ``'/usr/bin`` and the ``DCMCONV`` would be "
-"``os.path.join(DCMTK_PATH, 'dcmconv')``. Similarly for ``DCMMKDIR`` and "
-"``JAVA_EXE``, which might be ``/usr/bin/java``. The pixelmed.jar file "
-"should be downloaded from the link above, and you will need to provide "
-"the path to where you have saved it."
-msgstr ""
+#~ msgid "pixelmed.jar from the `PixelMed Java DICOM Toolkit`_"
+#~ msgstr ""
 
-#: ../../release-0.8.0.rst:139 c74380cd0ddb4c058d735371da02a595
-msgid "Migrate the database"
-msgstr ""
+#~ msgid ""
+#~ "The paths to these must be set "
+#~ "in ``local_settings.py`` for your system:"
+#~ msgstr ""
 
-#: ../../release-0.8.0.rst:141 ea00bda534274f08a8be962b2fdaf6ed
-msgid "In a shell/command window, move into the openrem folder:"
-msgstr ""
+#~ msgid ""
+#~ "The example above is for Windows. "
+#~ "On linux, if you have installed "
+#~ "the Offis DICOM toolkit with ``sudo "
+#~ "apt install dcmtk`` or similar, you "
+#~ "can find the path for the "
+#~ "configuration above using the command "
+#~ "``which dcmconv``. This will be "
+#~ "something like ``/usr/bin/dcmconv``, so the"
+#~ " ``DCMTK_PATH`` would be ``'/usr/bin`` and"
+#~ " the ``DCMCONV`` would be "
+#~ "``os.path.join(DCMTK_PATH, 'dcmconv')``. Similarly "
+#~ "for ``DCMMKDIR`` and ``JAVA_EXE``, which "
+#~ "might be ``/usr/bin/java``. The pixelmed.jar"
+#~ " file should be downloaded from the"
+#~ " link above, and you will need "
+#~ "to provide the path to where you"
+#~ " have saved it."
+#~ msgstr ""
 
-#: ../../release-0.8.0.rst:143 110872b525744a1c9ab83478a2e867c4
-msgid "Ubuntu linux: ``/usr/local/lib/python2.7/dist-packages/openrem/``"
-msgstr ""
+#~ msgid "Migrate the database"
+#~ msgstr ""
 
-#: ../../release-0.8.0.rst:144 35b672e5b4a64562b85bb6edd853550f
-msgid "Other linux: ``/usr/lib/python2.7/site-packages/openrem/``"
-msgstr ""
+#~ msgid "In a shell/command window, move into the openrem folder:"
+#~ msgstr ""
 
-#: ../../release-0.8.0.rst:145 fd32e90dced6471581e8a076968d1b11
-msgid "Linux virtualenv: ``vitualenvfolder/lib/python2.7/site-packages/openrem/``"
-msgstr ""
+#~ msgid "Ubuntu linux: ``/usr/local/lib/python2.7/dist-packages/openrem/``"
+#~ msgstr ""
 
-#: ../../release-0.8.0.rst:146 b463816efbe54a69834c3f489b40023c
-msgid "Windows: ``C:\\Python27\\Lib\\site-packages\\openrem\\``"
-msgstr ""
+#~ msgid "Other linux: ``/usr/lib/python2.7/site-packages/openrem/``"
+#~ msgstr ""
 
-#: ../../release-0.8.0.rst:147 435a51f566644570be55757c3c9f1a10
-msgid "Windows virtualenv: ``virtualenvfolder\\Lib\\site-packages\\openrem\\``"
-msgstr ""
+#~ msgid ""
+#~ "Linux virtualenv: ``vitualenvfolder/lib/python2.7/site-"
+#~ "packages/openrem/``"
+#~ msgstr ""
 
-#: ../../release-0.8.0.rst:157 5bca406bf1f34c05afcdd5a32ac80846
-msgid "Update static files"
-msgstr ""
+#~ msgid "Windows: ``C:\\Python27\\Lib\\site-packages\\openrem\\``"
+#~ msgstr ""
 
-#: ../../release-0.8.0.rst:159 74947898680e459b9916e254452cf99c
-msgid ""
-"In the same shell/command window as you used above run the following "
-"command to clear the static files belonging to your previous OpenREM "
-"version and replace them with those belonging to the version you have "
-"just installed (assuming you are using a production web server...):"
-msgstr ""
+#~ msgid "Windows virtualenv: ``virtualenvfolder\\Lib\\site-packages\\openrem\\``"
+#~ msgstr ""
 
-#: ../../release-0.8.0.rst:169 4c05fa01d8e24850bb64d6034440b6b5
-msgid "Restart all the services"
-msgstr ""
+#~ msgid "Update static files"
+#~ msgstr ""
 
-#: ../../release-0.8.0.rst:171 72a4701863c844619bd8144e8d25dd7c
-msgid "Follow the guide at :doc:`startservices`."
-msgstr ""
+#~ msgid ""
+#~ "In the same shell/command window as "
+#~ "you used above run the following "
+#~ "command to clear the static files "
+#~ "belonging to your previous OpenREM "
+#~ "version and replace them with those "
+#~ "belonging to the version you have "
+#~ "just installed (assuming you are using"
+#~ " a production web server...):"
+#~ msgstr ""
+
+#~ msgid "Restart all the services"
+#~ msgstr ""
+
+#~ msgid "Follow the guide at :doc:`startservices`."
+#~ msgstr ""
 

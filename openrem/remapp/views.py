@@ -959,8 +959,8 @@ def openrem_home(request):
         upgrade_status.save()
         migration_complete = True
 
-    #from remapp.tools.send_high_dose_alert_emails import send_rf_high_dose_alert_email
-    #send_rf_high_dose_alert_email(881397)
+    # from remapp.tools.send_high_dose_alert_emails import send_rf_high_dose_alert_email
+    # send_rf_high_dose_alert_email(881397)
     # send_rf_high_dose_alert_email(417973)
     # # Send a test e-mail
     # from django.core.mail import send_mail

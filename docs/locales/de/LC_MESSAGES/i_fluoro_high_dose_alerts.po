@@ -8,36 +8,40 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-26 00:23+0100\n"
+"POT-Creation-Date: 2023-03-05 17:21+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.8.0\n"
+"Generated-By: Babel 2.12.1\n"
 
-#: ../../i_fluoro_high_dose_alerts.rst:2 4b46f487589c464cb221648a9a434c2c
+#: ../../i_fluoro_high_dose_alerts.rst:2
 msgid "Fluroscopy high dose alerts"
 msgstr ""
 
-#: ../../i_fluoro_high_dose_alerts.rst:3 52cd8b58ed2d4fdc97c9a0777bb5a290
+#: ../../i_fluoro_high_dose_alerts.rst:3
 msgid "*New in 0.8.2*"
 msgstr ""
 
-#: ../../i_fluoro_high_dose_alerts.rst:5 d141641d69d84dfbaffff40b60ade051
+#: ../../i_fluoro_high_dose_alerts.rst:5
 msgid "Contents"
 msgstr ""
 
-#: ../../i_fluoro_high_dose_alerts.rst:8 789bfe2370a94367a1df8d555185f3c1
+#: ../../i_fluoro_high_dose_alerts.rst:8
 msgid "Alert level configuration"
 msgstr ""
 
-#: ../../i_fluoro_high_dose_alerts.rst:16 d64e3b3106aa48f18794d2c02d4b4c46
+#: ../../i_fluoro_high_dose_alerts.rst
+msgid "Config options"
+msgstr ""
+
+#: ../../i_fluoro_high_dose_alerts.rst:16
 msgid "Figure 1: The ``Config`` menu (user and admin)"
 msgstr ""
 
-#: ../../i_fluoro_high_dose_alerts.rst:18 e42107cb32534c3cad3b55cf7b46d1da
+#: ../../i_fluoro_high_dose_alerts.rst:18
 msgid ""
 "The system highlights fluoroscopy studies that have exceeded defined "
 "levels of DAP, total dose at reference point and peak skin dose. These "
@@ -45,35 +49,47 @@ msgid ""
 "`Fluoro alert levels` option in the ``Config`` menu (figure 1)."
 msgstr ""
 
-#: ../../i_fluoro_high_dose_alerts.rst:23 7b72ffbb4f124acf96115d19eb317533
+#: ../../i_fluoro_high_dose_alerts.rst:23
 msgid ""
 "The default alert levels are 20000 cGy.cm\\ :sup:`2` DAP, 2 Gy total dose"
 " at reference point and 2 Gy peak skin dose(figure 2)."
 msgstr ""
 
-#: ../../i_fluoro_high_dose_alerts.rst:32 4ba61d969f654daeb88cde86ce3739fc
+#: ../../i_fluoro_high_dose_alerts.rst
+msgid "Fluoroscopy high dose alert settings"
+msgstr ""
+
+#: ../../i_fluoro_high_dose_alerts.rst:32
 msgid "Figure 2: Fluoroscopy high dose alert settings"
 msgstr ""
 
-#: ../../i_fluoro_high_dose_alerts.rst:34 e1b658b8408042b7b1994a757c195e84
+#: ../../i_fluoro_high_dose_alerts.rst:34
 msgid ""
 "Figures 3 and 4 illustrate how studies that exceed an alert level are "
 "highlighted in the filtered and detailed fluoroscopy views."
 msgstr ""
 
-#: ../../i_fluoro_high_dose_alerts.rst:43 a197dc2cdeb44dc89be07f21c9bdf797
+#: ../../i_fluoro_high_dose_alerts.rst
+msgid "Filtered view showing the highlighting of some high dose studies"
+msgstr ""
+
+#: ../../i_fluoro_high_dose_alerts.rst:43
 msgid "Figure 3: Filtered view showing the highlighting of some high dose studies"
 msgstr ""
 
-#: ../../i_fluoro_high_dose_alerts.rst:52 5fac2e62efa646c2b9855328474381ae
+#: ../../i_fluoro_high_dose_alerts.rst
+msgid "Detailed view showing high-dose highlighting"
+msgstr ""
+
+#: ../../i_fluoro_high_dose_alerts.rst:52
 msgid "Figure 4: Detailed view showing high-dose highlighting"
 msgstr ""
 
-#: ../../i_fluoro_high_dose_alerts.rst:56 4a2bc6502d9b42b99dcf0ec4cfc845f8
+#: ../../i_fluoro_high_dose_alerts.rst:56
 msgid "Alerts for cumulative dose over a period of time"
 msgstr ""
 
-#: ../../i_fluoro_high_dose_alerts.rst:58 20a9eeb3255e45a0acb333f4dd7d5087
+#: ../../i_fluoro_high_dose_alerts.rst:58
 msgid ""
 "As well as alerting to individual studies that exceed alert levels the "
 "system can be configured to calculate cumulative dose over a defined "
@@ -86,35 +102,35 @@ msgid ""
 "yet been implemented for the skin dose."
 msgstr ""
 
-#: ../../i_fluoro_high_dose_alerts.rst:67 9e5f0d998ab74827a2f36f0082b820be
+#: ../../i_fluoro_high_dose_alerts.rst:67
 msgid ""
 "For this feature to work the storage of patient ID or encrypted patient "
 "ID must be enabled (see the :doc:`patientid` documentation)."
 msgstr ""
 
-#: ../../i_fluoro_high_dose_alerts.rst:70 ec54468b66364c618ee5413c8a45d57a
+#: ../../i_fluoro_high_dose_alerts.rst:70
 msgid "The configuration settings for this feature are (figure 2):"
 msgstr ""
 
-#: ../../i_fluoro_high_dose_alerts.rst:72 6809479dc2c9463981daaa53b46a1885
+#: ../../i_fluoro_high_dose_alerts.rst:72
 msgid ""
 "The number of previous weeks over which to sum DAP and dose at RP for "
 "studies with matching patient ID is defined in the options"
 msgstr ""
 
-#: ../../i_fluoro_high_dose_alerts.rst:75 fdb6de9334bf49a49cb949de79ac3863
+#: ../../i_fluoro_high_dose_alerts.rst:75
 msgid ""
 "The display of summed DAP and dose at RP values in the fluoroscopy "
 "filtered and detailed views, and in e-mail notifications"
 msgstr ""
 
-#: ../../i_fluoro_high_dose_alerts.rst:78 d91cc8722f5c4f158d32773363ea3d05
+#: ../../i_fluoro_high_dose_alerts.rst:78
 msgid ""
 "The automatic calculation of summed DAP and dose at RP for new studies "
 "imported into OpenREM"
 msgstr ""
 
-#: ../../i_fluoro_high_dose_alerts.rst:81 93322350899345d391662d8039b7a487
+#: ../../i_fluoro_high_dose_alerts.rst:81
 msgid ""
 "An example of a study where there is another study with matching patient "
 "ID is shown below in figure 5. In this example neither of the two "
@@ -122,15 +138,19 @@ msgid ""
 "summed together the total dose at RP does exceed the corresponding alert."
 msgstr ""
 
-#: ../../i_fluoro_high_dose_alerts.rst:92 f7002ae39c7447f694469611d59c1b16
+#: ../../i_fluoro_high_dose_alerts.rst
+msgid "Detailed view showing associated studies over a time period"
+msgstr ""
+
+#: ../../i_fluoro_high_dose_alerts.rst:92
 msgid "Figure 5: Detailed view showing associated studies over a time period"
 msgstr ""
 
-#: ../../i_fluoro_high_dose_alerts.rst:96 86050fb9010d41a993ed6b7d47fa537d
+#: ../../i_fluoro_high_dose_alerts.rst:96
 msgid "Recalculation of summed data"
 msgstr ""
 
-#: ../../i_fluoro_high_dose_alerts.rst:98 164e96c8a86241d59e24b1d39c0eaff7
+#: ../../i_fluoro_high_dose_alerts.rst:98
 msgid ""
 "After upgrading from a version of OpenREM prior to 0.8.2, or after "
 "changing the alert levels or number of weeks to look for matching data, "
@@ -140,11 +160,15 @@ msgid ""
 " of the screen."
 msgstr ""
 
-#: ../../i_fluoro_high_dose_alerts.rst:110 ac4cece6bdb240069308eba45355bd16
+#: ../../i_fluoro_high_dose_alerts.rst
+msgid "Prompt to recalculate the summed dose values"
+msgstr ""
+
+#: ../../i_fluoro_high_dose_alerts.rst:110
 msgid "Figure 6: Prompt to recalculate the summed dose values"
 msgstr ""
 
-#: ../../i_fluoro_high_dose_alerts.rst:112 3c83825022c4457c867a962238c19140
+#: ../../i_fluoro_high_dose_alerts.rst:112
 msgid ""
 "Recalculation of the summed data is likely to take several minutes. "
 "During this time the form buttons are faded out and disabled, and a "
@@ -152,26 +176,30 @@ msgid ""
 "must remain on this page until the calculations are complete."
 msgstr ""
 
-#: ../../i_fluoro_high_dose_alerts.rst:123 4964a19169114972b50891d1f1adef0f
+#: ../../i_fluoro_high_dose_alerts.rst
+msgid "Recalculating the summed dose values"
+msgstr ""
+
+#: ../../i_fluoro_high_dose_alerts.rst:123
 msgid "Figure 7: Prompt to recalculate the summed dose values"
 msgstr ""
 
-#: ../../i_fluoro_high_dose_alerts.rst:125 f971516feae74f12839edec35e1dc2fe
+#: ../../i_fluoro_high_dose_alerts.rst:125
 msgid ""
 "Once all summed data has been recalculated the orange recalculate button "
 "is hidden, the other form buttons are reactivated and the user is shown a"
 " success message at the top of the screen (figure 8, below)."
 msgstr ""
 
-#: ../../i_fluoro_high_dose_alerts.rst:135 6bab4bef3ff1402bb231a6ef27df6634
+#: ../../i_fluoro_high_dose_alerts.rst:135
 msgid "Figure 8: Message on successful recalculation"
 msgstr ""
 
-#: ../../i_fluoro_high_dose_alerts.rst:139 7b95fedb8af74f2d8925640a89ab2cbc
+#: ../../i_fluoro_high_dose_alerts.rst:139
 msgid "E-mail notifications of high dose alerts"
 msgstr ""
 
-#: ../../i_fluoro_high_dose_alerts.rst:141 a5039063270f4c1c8019b3f55ac0c533
+#: ../../i_fluoro_high_dose_alerts.rst:141
 msgid ""
 "For this feature to function the e-mail section in ``local_settings.py`` "
 "must be correctly completed (see the : ref :`email_configuration` "
@@ -180,7 +208,7 @@ msgid ""
 "specified in the e-mail settings."
 msgstr ""
 
-#: ../../i_fluoro_high_dose_alerts.rst:147 9aad6ab731f54d0590f511c4c3cad05e
+#: ../../i_fluoro_high_dose_alerts.rst:147
 msgid ""
 "OpenREM users can be automatically sent e-mail notifications of studies "
 "that have exceeded a high dose alert level. This feature can be enabled "
@@ -188,20 +216,24 @@ msgid ""
 "configuration page as shown in figure 2 above."
 msgstr ""
 
-#: ../../i_fluoro_high_dose_alerts.rst:152 9db0a21aa5874dd281f95b7108ece98c
+#: ../../i_fluoro_high_dose_alerts.rst:152
 msgid ""
 "Alert recipients users are chosen by navigating to the `Fluoro alert "
 "notifcation` page via the `Config` menu. Figure 9 shows an example of the"
 " notification page."
 msgstr ""
 
-#: ../../i_fluoro_high_dose_alerts.rst:155 ba895f81c33f44b6b9fee2f9f4ae3af8
+#: ../../i_fluoro_high_dose_alerts.rst:155
 msgid ""
 "It should be noted that any OpenREM user selected to receive high dose "
 "alerts must have an e-mail address entered in their user profile."
 msgstr ""
 
-#: ../../i_fluoro_high_dose_alerts.rst:164 ba31d4063d724166974be31c6926f686
+#: ../../i_fluoro_high_dose_alerts.rst
+msgid "E-mail user-notification of high-dose alerts"
+msgstr ""
+
+#: ../../i_fluoro_high_dose_alerts.rst:164
 msgid "Figure 9: E-mail user-notification of high-dose alerts"
 msgstr ""
 

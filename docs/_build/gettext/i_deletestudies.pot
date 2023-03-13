@@ -1,5 +1,5 @@
 # SOME DESCRIPTIVE TITLE.
-# Copyright (C) 2013-2020, The Royal Marsden NHS Foundation Trust
+# Copyright (C) 2013-2022, The Royal Marsden NHS Foundation Trust
 # This file is distributed under the same license as the OpenREM package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-01 18:30+0100\n"
+"POT-Creation-Date: 2023-03-05 17:21+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,6 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
+#: ../../i_deletestudies.rst:-1
 #: ../../i_deletestudies.rst:3
 msgid "Deleting studies"
 msgstr ""
@@ -37,6 +38,10 @@ msgid "All studies from one source"
 msgstr ""
 
 #: ../../i_deletestudies.rst:27
+msgid "Admin menu"
+msgstr ""
+
+#: ../../i_deletestudies.rst:27
 msgid "The ``Config`` menu (admin)"
 msgstr ""
 
@@ -50,6 +55,10 @@ msgstr ""
 
 #: ../../i_deletestudies.rst:36
 msgid "In the last column is a link to ``Review`` the studies from that source. This can be useful for troubleshooting a particular source, or you can use it to delete all the studies from one source in one go."
+msgstr ""
+
+#: ../../i_deletestudies.rst:44
+msgid "Source study review"
 msgstr ""
 
 #: ../../i_deletestudies.rst:44

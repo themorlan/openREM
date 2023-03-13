@@ -8,99 +8,105 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-04 12:05+0100\n"
+"POT-Creation-Date: 2023-03-05 17:21+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.8.0\n"
+"Generated-By: Babel 2.12.1\n"
 
-#: ../../trouble500.rst:2 dfe3e65836b849ed9d95c7e87634622b
+#: ../../trouble500.rst:2
 msgid "Server 500 errors"
 msgstr ""
 
-#: ../../trouble500.rst:4 92f8a89e324e4e90ba5d00cacf521f53
+#: ../../trouble500.rst:4
 msgid "**Turn on debug mode**"
 msgstr ""
 
-#: ../../trouble500.rst:6 fd752d77302f472cb3223db02d97fe06
+#: ../../trouble500.rst:6
 msgid ""
 "This will render a debug report in the browser - usually revealing the "
 "problem."
 msgstr ""
 
-#: ../../trouble500.rst:9 e43bc38881574b39b29841f05cdffc49
+#: ../../trouble500.rst:9
 msgid "Docker installs"
 msgstr ""
 
-#: ../../trouble500.rst:11 8f0c91e4046e4a03b6cdcb8b61123a05
+#: ../../trouble500.rst:11
 msgid ""
 "Edit the ``.env.prod`` file. Find the following line and change it from "
 "``0`` to ``1``:"
 msgstr ""
 
-#: ../../trouble500.rst:17 81e7f2454c0a4420ab0b5196cbf5f819
+#: ../../trouble500.rst:17
 msgid ""
 "Restart the containers using a command line in the folder containing your"
 " installation. This might be enough:"
 msgstr ""
 
-#: ../../trouble500.rst:23 dac5c2630d764384a12fd772f6a9138a
+#: ../../trouble500.rst:23
 msgid "If the webserver fails, then restart all the containers:"
 msgstr ""
 
-#: ../../trouble500.rst:31 db60f57bb0434ceca590051edc84b629
-msgid "Non-Docker Linux installs"
+#: ../../trouble500.rst:31
+msgid "Non-Docker installs"
 msgstr ""
 
-#: ../../trouble500.rst:33 7a2b3547486244f89f0e8650c1aef185
+#: ../../trouble500.rst:33
 msgid "Locate and edit your local_settings file"
 msgstr ""
 
-#: ../../trouble500.rst:39 ccac3408b4cd45fc8b597aab3a7d9eef
+#: ../../trouble500.rst:39
 msgid "Find the following line and make it active:"
 msgstr ""
 
-#: ../../trouble500.rst:45 e5dba53329b14fae9da2e01938795341
+#: ../../trouble500.rst:45
 msgid "Restart the web service:"
 msgstr ""
 
-#: ../../trouble500.rst:52 2d6e9f5bca684a65b85a1b4fb884fdce
+#: ../../trouble500.rst:52
 msgid "Returning to normal mode"
 msgstr ""
 
-#: ../../trouble500.rst:54 b68d5bf5e63b485a9cb4cd3124a96a40
+#: ../../trouble500.rst:54
 msgid ""
 "You should always disable debug mode when you have fixed the error. If "
 "you leave debug mode in place, the system is likely to run out of memory "
 "as database queries are cached in this mode."
 msgstr ""
 
-#: ../../trouble500.rst:57 e27dfcf6e73441f5ac073ad20e0c0bf0
+#: ../../trouble500.rst:57
 msgid "Docker:"
 msgstr ""
 
-#: ../../trouble500.rst:59 f5941d0cda5244458033d278680da6f0
+#: ../../trouble500.rst:59
 msgid "Edit ``.env.prod`` to set ``DEBUG=0``"
 msgstr ""
 
-#: ../../trouble500.rst:60 922a1c0d7c0e46cdbf01a960f5b6a790
+#: ../../trouble500.rst:60
 msgid "Restart ``docker-compose``"
 msgstr ""
 
-#: ../../trouble500.rst:62 26a6dd3ffbc44023a0035704ec852502
-msgid "Non-docker Linux:"
+#: ../../trouble500.rst:62
+msgid "Non-docker:"
 msgstr ""
 
-#: ../../trouble500.rst:64 9c7636294dfd4be1ad08907774a9b689
+#: ../../trouble500.rst:64
 msgid ""
 "Edit ``local_settings.py`` again to comment out the ``DEBUG`` line (add a"
 " ``#`` to the start) or set it to ``False``"
 msgstr ""
 
-#: ../../trouble500.rst:65 9b551ff43fbe41d7b2b1e8b409bac92e
+#: ../../trouble500.rst:65
 msgid "Reload the web service"
 msgstr ""
+
+#~ msgid "Non-Docker Linux installs"
+#~ msgstr ""
+
+#~ msgid "Non-docker Linux:"
+#~ msgstr ""
 

@@ -8,17 +8,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-01 18:30+0100\n"
+"POT-Creation-Date: 2023-03-05 17:21+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.8.0\n"
+"Generated-By: Babel 2.12.1\n"
 
 #: ../../release-0.9.0.rst:3
-msgid "Upgrade to OpenREM 0.9.0"
+msgid "OpenREM Release Notes version 0.9.0"
 msgstr ""
 
 #: ../../release-0.9.0.rst:7
@@ -117,209 +117,224 @@ msgstr ""
 msgid "Installation: :doc:`virtual_directory`"
 msgstr ""
 
+#: ../../release-0.9.0.rst:30
+msgid "Upgrade to current version"
+msgstr ""
+
 #: ../../release-0.9.0.rst:32
-msgid "Upgrading an OpenREM server with no internet access"
+msgid ":doc:`upgrade_previous_0.10.0` and then upgrade to 1.0."
 msgstr ""
 
-#: ../../release-0.9.0.rst:34
+#: ../../release-0.9.0.rst:35
+msgid "Original upgrade instructions"
+msgstr ""
+
+#: ../../release-0.9.0.rst:37
 msgid ""
-"Follow the instructions found at :doc:`upgrade-offline`, before returning"
-" here to update the database and configuration."
+"For the original upgrade instructions, the last docs release to include "
+"them was `0.10.0-docs "
+"<https://docs.openrem.org/en/0.10.0-docs/release-0.9.0.html>`_"
 msgstr ""
 
-#: ../../release-0.9.0.rst:38
-msgid "Upgrading from version 0.8.x"
-msgstr ""
+#~ msgid "Upgrade to OpenREM 0.9.0"
+#~ msgstr ""
 
-#: ../../release-0.9.0.rst:41
-msgid "Upgrade"
-msgstr ""
+#~ msgid "Upgrading an OpenREM server with no internet access"
+#~ msgstr ""
 
-#: ../../release-0.9.0.rst:43
-msgid "Back up your database"
-msgstr ""
+#~ msgid ""
+#~ "Follow the instructions found at :doc"
+#~ ":`upgrade-offline`, before returning here "
+#~ "to update the database and "
+#~ "configuration."
+#~ msgstr ""
 
-#: ../../release-0.9.0.rst:45
-msgid "For PostgreSQL on linux you can refer to :ref:`backup-psql-db`"
-msgstr ""
+#~ msgid "Upgrading from version 0.8.x"
+#~ msgstr ""
 
-#: ../../release-0.9.0.rst:46
-msgid "For PostgreSQL on Windows you can refer to :doc:`backupRestorePostgreSQL`"
-msgstr ""
+#~ msgid "Upgrade"
+#~ msgstr ""
 
-#: ../../release-0.9.0.rst:47
-msgid ""
-"For a non-production SQLite3 database, simply make a copy of the database"
-" file"
-msgstr ""
+#~ msgid "Back up your database"
+#~ msgstr ""
 
-#: ../../release-0.9.0.rst:49
-msgid "Stop any Celery workers"
-msgstr ""
+#~ msgid "For PostgreSQL on linux you can refer to :ref:`backup-psql-db`"
+#~ msgstr ""
 
-#: ../../release-0.9.0.rst:51
-msgid ""
-"Consider temporarily disabling your DICOM Store SCP, or redirecting the "
-"data to be processed later"
-msgstr ""
+#~ msgid ""
+#~ "For PostgreSQL on Windows you can "
+#~ "refer to :doc:`backupRestorePostgreSQL`"
+#~ msgstr ""
 
-#: ../../release-0.9.0.rst:53
-msgid "If you are using a virtualenv, activate it"
-msgstr ""
+#~ msgid ""
+#~ "For a non-production SQLite3 database,"
+#~ " simply make a copy of the "
+#~ "database file"
+#~ msgstr ""
 
-#: ../../release-0.9.0.rst:55
-msgid "Install the new version of OpenREM:"
-msgstr ""
+#~ msgid "Stop any Celery workers"
+#~ msgstr ""
 
-#: ../../release-0.9.0.rst:64
-msgid "Migrate the database"
-msgstr ""
+#~ msgid ""
+#~ "Consider temporarily disabling your DICOM "
+#~ "Store SCP, or redirecting the data "
+#~ "to be processed later"
+#~ msgstr ""
 
-#: ../../release-0.9.0.rst:66
-msgid "In a shell/command window, move into the ``openrem`` folder:"
-msgstr ""
+#~ msgid "If you are using a virtualenv, activate it"
+#~ msgstr ""
 
-#: ../../release-0.9.0.rst:68
-msgid "Ubuntu linux: ``/usr/local/lib/python2.7/dist-packages/openrem/``"
-msgstr ""
+#~ msgid "Install the new version of OpenREM:"
+#~ msgstr ""
 
-#: ../../release-0.9.0.rst:69
-msgid "Other linux: ``/usr/lib/python2.7/site-packages/openrem/``"
-msgstr ""
+#~ msgid "Migrate the database"
+#~ msgstr ""
 
-#: ../../release-0.9.0.rst:70
-msgid "Linux virtualenv: ``vitualenvfolder/lib/python2.7/site-packages/openrem/``"
-msgstr ""
+#~ msgid "In a shell/command window, move into the ``openrem`` folder:"
+#~ msgstr ""
 
-#: ../../release-0.9.0.rst:71
-msgid "Windows: ``C:\\Python27\\Lib\\site-packages\\openrem\\``"
-msgstr ""
+#~ msgid "Ubuntu linux: ``/usr/local/lib/python2.7/dist-packages/openrem/``"
+#~ msgstr ""
 
-#: ../../release-0.9.0.rst:72
-msgid "Windows virtualenv: ``virtualenvfolder\\Lib\\site-packages\\openrem\\``"
-msgstr ""
+#~ msgid "Other linux: ``/usr/lib/python2.7/site-packages/openrem/``"
+#~ msgstr ""
 
-#: ../../release-0.9.0.rst:81
-msgid "Update static files"
-msgstr ""
+#~ msgid ""
+#~ "Linux virtualenv: ``vitualenvfolder/lib/python2.7/site-"
+#~ "packages/openrem/``"
+#~ msgstr ""
 
-#: ../../release-0.9.0.rst:83
-msgid ""
-"In the same shell/command window as you used above run the following "
-"command to clear the static files belonging to your previous OpenREM "
-"version and replace them with those belonging to the version you have "
-"just installed (assuming you are using a production web server...):"
-msgstr ""
+#~ msgid "Windows: ``C:\\Python27\\Lib\\site-packages\\openrem\\``"
+#~ msgstr ""
 
-#: ../../release-0.9.0.rst:93
-msgid "Enable the RabbitMQ management interface"
-msgstr ""
+#~ msgid "Windows virtualenv: ``virtualenvfolder\\Lib\\site-packages\\openrem\\``"
+#~ msgstr ""
 
-#: ../../release-0.9.0.rst:95
-msgid ""
-"To make use of the RabbitMQ queue display and purge control, the "
-"management interface needs to be enabled. To do so, follow the "
-"instructions at :ref:`enableRabbitMQ`."
-msgstr ""
+#~ msgid "Update static files"
+#~ msgstr ""
 
-#: ../../release-0.9.0.rst:99
-msgid "Enable the Celery management interface, Flower"
-msgstr ""
+#~ msgid ""
+#~ "In the same shell/command window as "
+#~ "you used above run the following "
+#~ "command to clear the static files "
+#~ "belonging to your previous OpenREM "
+#~ "version and replace them with those "
+#~ "belonging to the version you have "
+#~ "just installed (assuming you are using"
+#~ " a production web server...):"
+#~ msgstr ""
 
-#: ../../release-0.9.0.rst:101
-msgid ""
-"To make use of the Celery task management, Flower needs to be running. To"
-" do so, follow the instructions in :ref:`start_flower`. For 'one-page "
-"Ubuntu' installs, add the Flower related config and create, register and "
-"start the systemd service files as described in "
-":ref:`one_page_linux_celery`. If you need to change the default Flower "
-"port of 5555 then make sure you do so in "
-"``openremproject\\local_settings.py`` to add/modify the line "
-"``FLOWER_PORT = 5555`` as well as when you start Flower."
-msgstr ""
+#~ msgid "Enable the RabbitMQ management interface"
+#~ msgstr ""
 
-#: ../../release-0.9.0.rst:108
-msgid "Changes to Celery for Windows"
-msgstr ""
+#~ msgid ""
+#~ "To make use of the RabbitMQ queue"
+#~ " display and purge control, the "
+#~ "management interface needs to be "
+#~ "enabled. To do so, follow the "
+#~ "instructions at :ref:`enableRabbitMQ`."
+#~ msgstr ""
 
-#: ../../release-0.9.0.rst:110
-msgid ""
-"For best performance and reliability when using Celery on Windows, it is "
-"recommended to do the following from the openrem folder (activate "
-"virtualenv if using one):"
-msgstr ""
+#~ msgid "Enable the Celery management interface, Flower"
+#~ msgstr ""
 
-#: ../../release-0.9.0.rst:117
-msgid ""
-"If your command for starting Celery specifies a pool option, for example "
-"``-P solo``, remove it so that Celery reverts to using the default "
-"``prefork`` pool. This will enable multiple tasks to run concurrently and"
-" it will be possible to terminate tasks."
-msgstr ""
+#~ msgid ""
+#~ "To make use of the Celery task "
+#~ "management, Flower needs to be running."
+#~ " To do so, follow the instructions"
+#~ " in :ref:`start_flower`. For 'one-page "
+#~ "Ubuntu' installs, add the Flower related"
+#~ " config and create, register and "
+#~ "start the systemd service files as "
+#~ "described in :ref:`one_page_linux_celery`. If "
+#~ "you need to change the default "
+#~ "Flower port of 5555 then make sure"
+#~ " you do so in "
+#~ "``openremproject\\local_settings.py`` to add/modify "
+#~ "the line ``FLOWER_PORT = 5555`` as "
+#~ "well as when you start Flower."
+#~ msgstr ""
 
-#: ../../release-0.9.0.rst:121
-msgid ""
-"If you are a Windows user you may also wish to review :doc:`celery-"
-"windows` as the example control batch files have been updated."
-msgstr ""
+#~ msgid "Changes to Celery for Windows"
+#~ msgstr ""
 
-#: ../../release-0.9.0.rst:125
-msgid "E-mail server settings"
-msgstr ""
+#~ msgid ""
+#~ "For best performance and reliability "
+#~ "when using Celery on Windows, it "
+#~ "is recommended to do the following "
+#~ "from the openrem folder (activate "
+#~ "virtualenv if using one):"
+#~ msgstr ""
 
-#: ../../release-0.9.0.rst:126
-msgid ""
-"If you want selected OpenREM users to be automatically sent fluoroscopy "
-"high dose alerts then set the details of the e-mail server to be used in "
-"the `E-mail server settings` part of your ``local_settings.py`` file. "
-"Locate and edit your local_settings file"
-msgstr ""
+#~ msgid ""
+#~ "If your command for starting Celery "
+#~ "specifies a pool option, for example "
+#~ "``-P solo``, remove it so that "
+#~ "Celery reverts to using the default "
+#~ "``prefork`` pool. This will enable "
+#~ "multiple tasks to run concurrently and"
+#~ " it will be possible to terminate "
+#~ "tasks."
+#~ msgstr ""
 
-#: ../../release-0.9.0.rst:131
-msgid ""
-"Ubuntu linux: ``/usr/local/lib/python2.7/dist-"
-"packages/openrem/openremproject/local_settings.py``"
-msgstr ""
+#~ msgid ""
+#~ "If you are a Windows user you "
+#~ "may also wish to review :doc:`celery-"
+#~ "windows` as the example control batch"
+#~ " files have been updated."
+#~ msgstr ""
 
-#: ../../release-0.9.0.rst:132
-msgid ""
-"Other linux: ``/usr/lib/python2.7/site-"
-"packages/openrem/openremproject/local_settings.py``"
-msgstr ""
+#~ msgid "E-mail server settings"
+#~ msgstr ""
 
-#: ../../release-0.9.0.rst:133
-msgid ""
-"Linux virtualenv: ``vitualenvfolder/lib/python2.7/site-"
-"packages/openrem/openremproject/local_settings.py``"
-msgstr ""
+#~ msgid ""
+#~ "If you want selected OpenREM users "
+#~ "to be automatically sent fluoroscopy "
+#~ "high dose alerts then set the "
+#~ "details of the e-mail server to be"
+#~ " used in the `E-mail server settings`"
+#~ " part of your ``local_settings.py`` file."
+#~ " Locate and edit your local_settings "
+#~ "file"
+#~ msgstr ""
 
-#: ../../release-0.9.0.rst:134
-msgid ""
-"Windows: ``C:\\Python27\\Lib\\site-"
-"packages\\openrem\\openremproject\\local_settings.py``"
-msgstr ""
+#~ msgid ""
+#~ "Ubuntu linux: ``/usr/local/lib/python2.7/dist-"
+#~ "packages/openrem/openremproject/local_settings.py``"
+#~ msgstr ""
 
-#: ../../release-0.9.0.rst:135
-msgid ""
-"Windows virtualenv: ``virtualenvfolder\\Lib\\site-"
-"packages\\openrem\\openremproject\\local_settings.py``"
-msgstr ""
+#~ msgid ""
+#~ "Other linux: ``/usr/lib/python2.7/site-"
+#~ "packages/openrem/openremproject/local_settings.py``"
+#~ msgstr ""
 
-#: ../../release-0.9.0.rst:137
-msgid ""
-"Then change the e-mail section settings to reflect the e-mail server that"
-" is to be used:"
-msgstr ""
+#~ msgid ""
+#~ "Linux virtualenv: ``vitualenvfolder/lib/python2.7/site-"
+#~ "packages/openrem/openremproject/local_settings.py``"
+#~ msgstr ""
 
-#: ../../release-0.9.0.rst:151
-msgid "See the :ref:`email_configuration` documentation for full details."
-msgstr ""
+#~ msgid ""
+#~ "Windows: ``C:\\Python27\\Lib\\site-"
+#~ "packages\\openrem\\openremproject\\local_settings.py``"
+#~ msgstr ""
 
-#: ../../release-0.9.0.rst:155
-msgid "Restart all the services"
-msgstr ""
+#~ msgid ""
+#~ "Windows virtualenv: ``virtualenvfolder\\Lib\\site-"
+#~ "packages\\openrem\\openremproject\\local_settings.py``"
+#~ msgstr ""
 
-#: ../../release-0.9.0.rst:157
-msgid "Follow the guide at :doc:`startservices`."
-msgstr ""
+#~ msgid ""
+#~ "Then change the e-mail section settings"
+#~ " to reflect the e-mail server that"
+#~ " is to be used:"
+#~ msgstr ""
+
+#~ msgid "See the :ref:`email_configuration` documentation for full details."
+#~ msgstr ""
+
+#~ msgid "Restart all the services"
+#~ msgstr ""
+
+#~ msgid "Follow the guide at :doc:`startservices`."
+#~ msgstr ""
 

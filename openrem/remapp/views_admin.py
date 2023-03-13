@@ -2956,6 +2956,7 @@ def populate_summary_progress(request):
 
 
 class StandardNameAddCore(CreateView):
+
     success_url = reverse_lazy("standard_names_view")
 
     def form_valid(self, form):
@@ -2982,6 +2983,7 @@ class StandardNameAddCT(StandardNameAddCore):  # pylint: disable=unused-variable
     form_class = StandardNameFormCT
 
     def get_context_data(self, **context):
+
         # The user has navigated to this page
         context = super(StandardNameAddCT, self).get_context_data(**context)
         admin = {"openremversion": __version__, "docsversion": __docs_version__}
@@ -3294,7 +3296,11 @@ def standard_name_update_all_form(request, modality=None):
     for group in request.user.groups.all():
         admin[group.name] = True
 
-    return render(request, "remapp/standardnamesrefreshall.html", {"admin": admin, "modality": modality})
+    return render(
+        request,
+        "remapp/standardnamesrefreshall.html",
+        {"admin": admin, "modality": modality},
+    )
 
 
 @login_required
@@ -3322,7 +3328,9 @@ def standard_name_update_all(request, modality=None):
     if request.method == "GET":
         update_all(modality)
 
-        messages.success(request, "All {0} standard name entries refreshed".format(modality))
+        messages.success(
+            request, "All {0} standard name entries refreshed".format(modality)
+        )
 
         django_messages = []
         for message in messages.get_messages(request):
@@ -3408,7 +3416,9 @@ class BackgroundTaskMaximumRowsUpdate(UpdateView):  # pylint: disable=unused-var
     form_class = BackgroundTaskMaximumRowsForm
 
     def get_context_data(self, **context):
-        context = super(BackgroundTaskMaximumRowsUpdate, self).get_context_data(**context)
+        context = super(BackgroundTaskMaximumRowsUpdate, self).get_context_data(
+            **context
+        )
         admin = {
             "openremversion": __version__,
             "docsversion": __docs_version__,

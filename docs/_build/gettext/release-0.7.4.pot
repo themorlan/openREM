@@ -1,5 +1,5 @@
 # SOME DESCRIPTIVE TITLE.
-# Copyright (C) 2013-2020, The Royal Marsden NHS Foundation Trust
+# Copyright (C) 2013-2022, The Royal Marsden NHS Foundation Trust
 # This file is distributed under the same license as the OpenREM package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-01 18:30+0100\n"
+"POT-Creation-Date: 2023-03-05 17:21+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -36,99 +36,18 @@ msgstr ""
 msgid "Install: New release of dependency django-filter breaks OpenREM. Pegged at previous version for now"
 msgstr ""
 
-#: ../../release-0.7.4.rst:15
-msgid "Upgrading an OpenREM server with no internet access"
+#: ../../release-0.7.4.rst:14
+msgid "Upgrade to current version"
 msgstr ""
 
-#: ../../release-0.7.4.rst:17
-#: ../../release-0.7.4.rst:27
-msgid "Follow the instructions to :doc:`release-0.7.0` and to :doc:`release-0.7.3` first."
+#: ../../release-0.7.4.rst:16
+msgid ":doc:`upgrade_previous_0.10.0` and then upgrade to 1.0."
 msgstr ""
 
 #: ../../release-0.7.4.rst:19
-msgid "Then use the instructions found at :doc:`upgrade-offline` again, but this time change the pip commands from ``openrem==0.7.1`` to ``openrem==0.7.4``."
+msgid "Specific upgrade instructions"
 msgstr ""
 
-#: ../../release-0.7.4.rst:25
-msgid "Upgrading from 0.6 series"
-msgstr ""
-
-#: ../../release-0.7.4.rst:29
-msgid "Finally, return to these instructions to upgrade to 0.7.4."
-msgstr ""
-
-#: ../../release-0.7.4.rst:34
-msgid "Upgrading from version 0.7.1"
-msgstr ""
-
-#: ../../release-0.7.4.rst:36
-msgid "Follow the instructions to :doc:`release-0.7.3` first, then return to these instructions to upgrade to 0.7.4."
-msgstr ""
-
-#: ../../release-0.7.4.rst:41
-msgid "Upgrading from version 0.7.3"
-msgstr ""
-
-#: ../../release-0.7.4.rst:43
-msgid "Back up your database"
-msgstr ""
-
-#: ../../release-0.7.4.rst:45
-msgid "For PostgreSQL you can refer to :ref:`backup-psql-db`"
-msgstr ""
-
-#: ../../release-0.7.4.rst:46
-msgid "For a non-production SQLite3 database, simply make a copy of the database file"
-msgstr ""
-
-#: ../../release-0.7.4.rst:48
-msgid "Stop any Celery workers"
-msgstr ""
-
-#: ../../release-0.7.4.rst:50
-msgid "If you are using a virtualenv, activate it"
-msgstr ""
-
-#: ../../release-0.7.4.rst:52
-msgid "Install the new version of OpenREM:"
-msgstr ""
-
-#: ../../release-0.7.4.rst:58
-msgid "In a shell/command window, move into the openrem folder:"
-msgstr ""
-
-#: ../../release-0.7.4.rst:60
-msgid "Ubuntu linux: ``/usr/local/lib/python2.7/dist-packages/openrem/``"
-msgstr ""
-
-#: ../../release-0.7.4.rst:61
-msgid "Other linux: ``/usr/lib/python2.7/site-packages/openrem/``"
-msgstr ""
-
-#: ../../release-0.7.4.rst:62
-msgid "Linux virtualenv: ``vitualenvfolder/lib/python2.7/site-packages/openrem/``"
-msgstr ""
-
-#: ../../release-0.7.4.rst:63
-msgid "Windows: ``C:\\Python27\\Lib\\site-packages\\openrem\\``"
-msgstr ""
-
-#: ../../release-0.7.4.rst:64
-msgid "Windows virtualenv: ``virtualenvfolder\\Lib\\site-packages\\openrem\\``"
-msgstr ""
-
-#: ../../release-0.7.4.rst:67
-msgid "Check for any migrations"
-msgstr ""
-
-#: ../../release-0.7.4.rst:73
-msgid "The expected response should is: ``No changes detected in app 'remapp'``"
-msgstr ""
-
-#: ../../release-0.7.4.rst:76
-msgid "Restart all the services"
-msgstr ""
-
-#: ../../release-0.7.4.rst:78
-msgid "Follow the guide at :doc:`startservices`."
+#: ../../release-0.7.4.rst:21
+msgid "For the original upgrade instructions, the last docs release to include them was `0.10.0-docs <https://docs.openrem.org/en/0.10.0-docs/release-0.7.4.html>`_"
 msgstr ""
