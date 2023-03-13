@@ -1,5 +1,5 @@
 # SOME DESCRIPTIVE TITLE.
-# Copyright (C) 2013-2020, The Royal Marsden NHS Foundation Trust
+# Copyright (C) 2013-2022, The Royal Marsden NHS Foundation Trust
 # This file is distributed under the same license as the OpenREM package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-01 18:30+0100\n"
+"POT-Creation-Date: 2023-03-05 17:21+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -60,12 +60,20 @@ msgstr ""
 msgid "Configure what is stored"
 msgstr ""
 
+#: ../../patientid.rst:-1
+msgid "Configuration menu"
+msgstr ""
+
 #: ../../patientid.rst:30
 msgid "On the Config menu, select ``Patient ID``:"
 msgstr ""
 
 #: ../../patientid.rst:36
 msgid "The initial settings are as follows:"
+msgstr ""
+
+#: ../../patientid.rst:-1
+msgid "Modify patient identifiable data settings"
 msgstr ""
 
 #: ../../patientid.rst:42
@@ -104,6 +112,10 @@ msgstr ""
 msgid "In the modality pages of the OpenREM web interface, if you are in the ``pidgroup`` you will have a filter for patient name and patient ID available:"
 msgstr ""
 
+#: ../../patientid.rst:-1
+msgid "Patient name and ID in search filter"
+msgstr ""
+
 #: ../../patientid.rst:75
 msgid "If the values in the database are *not* encrypted, then partial search terms can be used as a case-insensitive 'contains' query will be applied."
 msgstr ""
@@ -118,6 +130,10 @@ msgstr ""
 
 #: ../../patientid.rst:84
 msgid "Users in the ``pidgroup`` will have extra export buttons available in the modality pages:"
+msgstr ""
+
+#: ../../patientid.rst:-1
+msgid "Export buttons for pidgroup users"
 msgstr ""
 
 #: ../../patientid.rst:90

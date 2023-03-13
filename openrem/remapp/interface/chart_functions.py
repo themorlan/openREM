@@ -51,6 +51,7 @@ from plotly.offline import plot
 from plotly.subplots import make_subplots
 from scipy import stats
 
+
 def global_config(
     filename,
     height_multiplier=1.0,

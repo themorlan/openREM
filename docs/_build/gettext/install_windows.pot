@@ -1,0 +1,1286 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2013-2022, The Royal Marsden NHS Foundation Trust
+# This file is distributed under the same license as the OpenREM package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: OpenREM 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-03-05 17:21+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../install_windows.rst:3
+msgid "Native Windows install"
+msgstr ""
+
+#: ../../install_windows.rst:5
+msgid "**Document not ready for translation**"
+msgstr ""
+
+#: ../../install_windows.rst:7
+msgid "This install is based on Windows Server 2022 using:"
+msgstr ""
+
+#: ../../install_windows.rst:9
+msgid "Python 3.10 running in a virtualenv"
+msgstr ""
+
+#: ../../install_windows.rst:10
+msgid "Database: PostgreSQL"
+msgstr ""
+
+#: ../../install_windows.rst:11
+msgid "DICOM Store SCP: Orthanc running on port 104"
+msgstr ""
+
+#: ../../install_windows.rst:12
+msgid "Webserver: Microsoft IIS running on port 80"
+msgstr ""
+
+#: ../../install_windows.rst:13
+msgid "WinSW to run background tasks as services"
+msgstr ""
+
+#: ../../install_windows.rst:14
+msgid "Notepad++ for editing files"
+msgstr ""
+
+#: ../../install_windows.rst:15
+msgid "Database files stored on D:"
+msgstr ""
+
+#: ../../install_windows.rst:16
+msgid "OpenREM files stored on E:"
+msgstr ""
+
+#: ../../install_windows.rst:17
+msgid "With Physics (QA) images being collected and zipped for retrieval"
+msgstr ""
+
+#: ../../install_windows.rst:19
+msgid "The instructions should work for Windows Server 2016 and 2019; and will probably work with Windows 10/11 with some modification. Desktop editions of Windows are not recommended for a production OpenREM install."
+msgstr ""
+
+#: ../../install_windows.rst:22
+msgid "If you are upgrading an existing installation to a new Windows server, go to the :doc:`upgrade_windows_new_server` first."
+msgstr ""
+
+#: ../../install_windows.rst:25
+msgid "If you are upgrading an existing Windows Server installation in-place, go to :doc:`upgrade_windows` instead."
+msgstr ""
+
+#: ../../install_windows.rst:27
+msgid "If you are installing on a server with no internet access, go to :doc:`install_offline` to download the packages."
+msgstr ""
+
+#: ../../install_windows.rst:29
+msgid "These instructions assume the following disk layout - there is more information about the reasoning in the box below:"
+msgstr ""
+
+#: ../../install_windows.rst:31
+msgid "``C:`` OS disk"
+msgstr ""
+
+#: ../../install_windows.rst:32
+msgid "``D:`` Database disk"
+msgstr ""
+
+#: ../../install_windows.rst:33
+msgid "``E:`` Data disk"
+msgstr ""
+
+#: ../../install_windows.rst:36
+msgid "Initial prep"
+msgstr ""
+
+#: ../../install_windows.rst:39
+msgid "Creating folders"
+msgstr ""
+
+#: ../../install_windows.rst:41
+msgid "Why D: and E: drives?"
+msgstr ""
+
+#: ../../install_windows.rst:43
+msgid "OpenREM data are stored on drive E: to keep the data away from the operating system drive so that it is easier for building/recreating the server and knowing what needs to be backed up."
+msgstr ""
+
+#: ../../install_windows.rst:46
+msgid "For the same reason, we will install PostgreSQL so that the database data are store on drive D: - this makes it possible to provide a different configuration of disk for the database drive, with different backup policies."
+msgstr ""
+
+#: ../../install_windows.rst:49
+msgid "However, it is also possible to store all the data on the C: drive if that works better for your installation. In this case, it would be advisable to create a folder C:\\\\OpenREM\\\\ and create all the folders specified below into that folder."
+msgstr ""
+
+#: ../../install_windows.rst:53
+msgid "You can also use different drive letters if that works better for your installation. **In both cases paths will need to be modified in the instructions to suite**."
+msgstr ""
+
+#: ../../install_windows.rst:0
+msgid "Windows install folder layout"
+msgstr ""
+
+#: ../../install_windows.rst:62
+msgid "Figure 1: Windows install folder layout"
+msgstr ""
+
+#: ../../install_windows.rst:64
+msgid "Create the following folders. The instructions here are for a ``CMD`` window but they can be created in Windows Explorer instead:"
+msgstr ""
+
+#: ../../install_windows.rst:75
+msgid "Set permissions"
+msgstr ""
+
+#: ../../install_windows.rst:77
+msgid "Right click on the ``E:\\log`` folder and click ``Properties``"
+msgstr ""
+
+#: ../../install_windows.rst:78
+msgid "In the ``Security`` tab click ``Edit...`` and ``Add...``"
+msgstr ""
+
+#: ../../install_windows.rst:80
+msgid "If the server is connected to a domain"
+msgstr ""
+
+#: ../../install_windows.rst:82
+msgid "If the server is connected to a domain, the ``From this location:`` will have the name of the domain. Click ``Locations...`` and choose the name of the server instead of the domain name."
+msgstr ""
+
+#: ../../install_windows.rst:0
+msgid "Set account location"
+msgstr ""
+
+#: ../../install_windows.rst:90
+msgid "Figure 2: Set account location"
+msgstr ""
+
+#: ../../install_windows.rst:92
+msgid "Enter the object name ``IIS_IUSRS`` and click ``OK``"
+msgstr ""
+
+#: ../../install_windows.rst:93
+msgid "Tick the ``Modify`` ``Allow`` to enable read and write permissions"
+msgstr ""
+
+#: ../../install_windows.rst:94
+msgid "Click ``OK`` twice to close the dialogues"
+msgstr ""
+
+#: ../../install_windows.rst:96
+msgid "Repeat for the ``E:\\media`` and ``E:\\task_queue`` folders"
+msgstr ""
+
+#: ../../install_windows.rst:101
+msgid "Installing packages"
+msgstr ""
+
+#: ../../install_windows.rst:104
+msgid "Python"
+msgstr ""
+
+#: ../../install_windows.rst:106
+msgid "Download the latest version for Windows from https://www.python.org/downloads/ as long as it is in the 3.10 series. OpenREM v1.0 has not been tested with Python 3.11 yet."
+msgstr ""
+
+#: ../../install_windows.rst:109
+#: ../../install_windows.rst:126
+#: ../../install_windows.rst:143
+#: ../../install_windows.rst:172
+#: ../../install_windows.rst:242
+msgid "Open the downloaded file to start the installation:"
+msgstr ""
+
+#: ../../install_windows.rst:111
+msgid "Customize installation"
+msgstr ""
+
+#: ../../install_windows.rst:112
+msgid "Leave all the Optional Features ticked, and click ``Next``"
+msgstr ""
+
+#: ../../install_windows.rst:113
+msgid "Tick ``Install for all users`` - this will automatically tick ``Precompile standard library``"
+msgstr ""
+
+#: ../../install_windows.rst:114
+#: ../../install_windows.rst:225
+#: ../../install_windows.rst:249
+#: ../../install_windows.rst:268
+msgid "``Install``"
+msgstr ""
+
+#: ../../install_windows.rst:115
+msgid "Click to ``Disable path length limit`` - might not be necessary but might be useful!"
+msgstr ""
+
+#: ../../install_windows.rst:116
+#: ../../install_windows.rst:226
+#: ../../install_windows.rst:269
+msgid "``Close``"
+msgstr ""
+
+#: ../../install_windows.rst:119
+msgid "Orthanc"
+msgstr ""
+
+#: ../../install_windows.rst:121
+msgid "Download the 64 bit version from https://www.orthanc-server.com/download-windows.php."
+msgstr ""
+
+#: ../../install_windows.rst:123
+msgid "The download file might be blocked because it isn't a commonly downloaded executable. Click the ``...`` menu and select ``Keep``. Then click ``Show more`` and ``Keep anyway``."
+msgstr ""
+
+#: ../../install_windows.rst:128
+msgid "Click ``Next >``, accept the agreement and ``Next >`` again."
+msgstr ""
+
+#: ../../install_windows.rst:129
+msgid "Default install location, ``Next >``"
+msgstr ""
+
+#: ../../install_windows.rst:130
+msgid "Select Orthanc storage directory - ``Browse...`` to ``E:\\orthanc\\storage``, ``OK`` and ``Next >``"
+msgstr ""
+
+#: ../../install_windows.rst:131
+msgid "Click ``Next >`` for a Full installation"
+msgstr ""
+
+#: ../../install_windows.rst:132
+msgid "Start Menu Folder ``Next >``"
+msgstr ""
+
+#: ../../install_windows.rst:133
+#: ../../install_windows.rst:177
+msgid "Ready to Install ``Install``"
+msgstr ""
+
+#: ../../install_windows.rst:134
+#: ../../install_windows.rst:157
+#: ../../install_windows.rst:178
+#: ../../install_windows.rst:841
+msgid "``Finish``"
+msgstr ""
+
+#: ../../install_windows.rst:138
+msgid "PostgreSQL"
+msgstr ""
+
+#: ../../install_windows.rst:140
+msgid "Download the latest version of PostgreSQL from https://www.enterprisedb.com/downloads/postgres-postgresql-downloads - choose the Windows x86-64 version. OpenREM v1.0 has been tested with PostgreSQL v14.5."
+msgstr ""
+
+#: ../../install_windows.rst:145
+msgid "Some Microsoft redistributables will install"
+msgstr ""
+
+#: ../../install_windows.rst:146
+msgid "Click ``Next >`` to start"
+msgstr ""
+
+#: ../../install_windows.rst:147
+msgid "Default Installation Directory ``Next >``"
+msgstr ""
+
+#: ../../install_windows.rst:148
+msgid "All components ``Next >``"
+msgstr ""
+
+#: ../../install_windows.rst:149
+msgid "Data Directory - browse to ``D:\\database`` then ``Select folder`` and ``Next >``"
+msgstr ""
+
+#: ../../install_windows.rst:150
+msgid "Create a password for the ``postgres`` superuser - you will need this to setup the database with pgAdmin 4 later"
+msgstr ""
+
+#: ../../install_windows.rst:151
+msgid "Enter it twice and ``Next >``"
+msgstr ""
+
+#: ../../install_windows.rst:152
+msgid "Default port ``Next >``"
+msgstr ""
+
+#: ../../install_windows.rst:153
+msgid "Default Locale ``Next >``"
+msgstr ""
+
+#: ../../install_windows.rst:154
+msgid "Pre Installation Summary ``Next >``"
+msgstr ""
+
+#: ../../install_windows.rst:155
+msgid "Ready to Install ``Next >`` and the installation will begin"
+msgstr ""
+
+#: ../../install_windows.rst:156
+msgid "Untick ``Launch Stack Builder at exit``"
+msgstr ""
+
+#: ../../install_windows.rst:160
+msgid "gettext"
+msgstr ""
+
+#: ../../install_windows.rst:162
+msgid "Download the 64 bit static version of gettext 0.21 from https://mlocati.github.io/articles/gettext-iconv-windows.html. Use the ``.exe`` version (software install icon, not the zip icon)"
+msgstr ""
+
+#: ../../install_windows.rst:0
+msgid "gettext download page"
+msgstr ""
+
+#: ../../install_windows.rst:170
+msgid "Figure 3: gettext download page"
+msgstr ""
+
+#: ../../install_windows.rst:174
+msgid "Accept the agreement ``Next >``"
+msgstr ""
+
+#: ../../install_windows.rst:175
+msgid "Default installation directory ``Next >``"
+msgstr ""
+
+#: ../../install_windows.rst:176
+msgid "Additional Tasks leave both boxes ticked ``Next >``"
+msgstr ""
+
+#: ../../install_windows.rst:180
+msgid "What is gettext for?"
+msgstr ""
+
+#: ../../install_windows.rst:182
+msgid "The gettext binary enables the translations to be available to users of the web interface. It is not essential if you don't want the translations to be available."
+msgstr ""
+
+#: ../../install_windows.rst:186
+msgid "Pixelmed"
+msgstr ""
+
+#: ../../install_windows.rst:188
+msgid "Download DoseUtility from from the page http://www.dclunie.com/pixelmed/software/webstart/DoseUtilityUsage.html - find ``How to install it (locally)`` near the bottom of the page and click the ``Windows executable that does not require Java to be installed`` link."
+msgstr ""
+
+#: ../../install_windows.rst:0
+msgid "Pixelmed download page"
+msgstr ""
+
+#: ../../install_windows.rst:197
+msgid "Figure 4: Pixelmed download page"
+msgstr ""
+
+#: ../../install_windows.rst:199
+msgid "Open the downloaded zip file and open a new file browser at ``E:\\pixelmed``"
+msgstr ""
+
+#: ../../install_windows.rst:200
+msgid "Drag the contents of the zip file to the ``pixelmed`` folder"
+msgstr ""
+
+#: ../../install_windows.rst:203
+msgid "DCMTK"
+msgstr ""
+
+#: ../../install_windows.rst:205
+msgid "Download from https://dcmtk.org/dcmtk.php.en - look for the ``DCMTK executable binaries`` section, and download the 64 bit DLL build for Windows."
+msgstr ""
+
+#: ../../install_windows.rst:0
+msgid "DCMTK download page"
+msgstr ""
+
+#: ../../install_windows.rst:213
+msgid "Figure 5: DCMTK download page"
+msgstr ""
+
+#: ../../install_windows.rst:215
+msgid "Open the downloaded zip file and open a new file browser at ``E:\\dcmtk``"
+msgstr ""
+
+#: ../../install_windows.rst:216
+msgid "Drag the contents of the dcmtk-3.x.x-win64-dynamic folder in the zip file to the ``dcmtk`` folder"
+msgstr ""
+
+#: ../../install_windows.rst:217
+msgid "You should end up with ``E:\\dcmtk\\bin\\`` etc"
+msgstr ""
+
+#: ../../install_windows.rst:220
+msgid "7Zip"
+msgstr ""
+
+#: ../../install_windows.rst:222
+msgid "Download the 64-bit x64 exe file from https://www.7-zip.org/"
+msgstr ""
+
+#: ../../install_windows.rst:224
+msgid "Type, or click on the ``...`` to browse to ``E:\\7-zip\\``"
+msgstr ""
+
+#: ../../install_windows.rst:229
+msgid "WinSW"
+msgstr ""
+
+#: ../../install_windows.rst:231
+msgid "Download the 64-bit x64 exe file from https://github.com/winsw/winsw/releases/tag/v2.12.0"
+msgstr ""
+
+#: ../../install_windows.rst:233
+msgid "Open a new file browser at ``E:\\winsw``"
+msgstr ""
+
+#: ../../install_windows.rst:234
+msgid "Drag the exe file to the ``winsw`` folder"
+msgstr ""
+
+#: ../../install_windows.rst:235
+msgid "Rename the exe file from ``WinSW-x64`` to ``WinSW``"
+msgstr ""
+
+#: ../../install_windows.rst:238
+msgid "Notepad++"
+msgstr ""
+
+#: ../../install_windows.rst:240
+msgid "Download the latest version of Notepad++ from https://notepad-plus-plus.org/downloads/"
+msgstr ""
+
+#: ../../install_windows.rst:244
+msgid "Select a language ``OK``"
+msgstr ""
+
+#: ../../install_windows.rst:245
+msgid "Welcome ``Next >``"
+msgstr ""
+
+#: ../../install_windows.rst:246
+msgid "License Agreement ``I Agree``"
+msgstr ""
+
+#: ../../install_windows.rst:247
+msgid "Install Location ``Next >``"
+msgstr ""
+
+#: ../../install_windows.rst:248
+msgid "Choose Components ``Next >``"
+msgstr ""
+
+#: ../../install_windows.rst:250
+msgid "``Finish`` (you can untick the ``Run Notepad++`` option, we don't need it yet)"
+msgstr ""
+
+#: ../../install_windows.rst:253
+msgid "IIS"
+msgstr ""
+
+#: ../../install_windows.rst:255
+msgid "Open the Control Panel"
+msgstr ""
+
+#: ../../install_windows.rst:256
+msgid "Search for ``windows features``"
+msgstr ""
+
+#: ../../install_windows.rst:257
+msgid "Select ``Turn Windows features on or off``"
+msgstr ""
+
+#: ../../install_windows.rst:258
+msgid "Start the wizard ``Next >``"
+msgstr ""
+
+#: ../../install_windows.rst:259
+msgid "Role-based or feature-based installation ``Next >``"
+msgstr ""
+
+#: ../../install_windows.rst:260
+msgid "Leave the current server highlighted ``Next >``"
+msgstr ""
+
+#: ../../install_windows.rst:261
+msgid "Check the ``Web Server (IIS)`` box"
+msgstr ""
+
+#: ../../install_windows.rst:262
+msgid "In the pop-up dialogue for adding IIS Management Console, click ``Add Features``"
+msgstr ""
+
+#: ../../install_windows.rst:263
+msgid "``Next >``"
+msgstr ""
+
+#: ../../install_windows.rst:264
+msgid "Features, ``Next >``"
+msgstr ""
+
+#: ../../install_windows.rst:265
+msgid "Web Server Role (IIS) ``Next >``"
+msgstr ""
+
+#: ../../install_windows.rst:266
+msgid "Expand the ``Application Development`` section"
+msgstr ""
+
+#: ../../install_windows.rst:267
+msgid "Check the ``CGI`` box, ``Next >``"
+msgstr ""
+
+#: ../../install_windows.rst:271
+msgid "You can check the server is running by browsing to http://localhost/ on the server. You should see the default IIS Welcome page. It might not work immediately, check again in a few minutes."
+msgstr ""
+
+#: ../../install_windows.rst:275
+msgid "Installing Python packages"
+msgstr ""
+
+#: ../../install_windows.rst:278
+msgid "Create and activate the virtualenv"
+msgstr ""
+
+#: ../../install_windows.rst:280
+msgid "Open a ``CMD`` window:"
+msgstr ""
+
+#: ../../install_windows.rst:290
+msgid "Install OpenREM"
+msgstr ""
+
+#: ../../install_windows.rst:291
+msgid "Installing on a server with no internet access"
+msgstr ""
+
+#: ../../install_windows.rst:293
+msgid "Make sure the virtualenv is activated (command line will have the name of the virtualenv as a prefix: ``(venv) E:\\``), then navigate to where the ``openremfiles`` directory is that you copied from the computer *with* internet access, eg if it is in your desktop folder:"
+msgstr ""
+
+#: ../../install_windows.rst:302
+msgid "Now upgrade ``pip`` and install OpenREM and its dependencies:"
+msgstr ""
+
+#: ../../install_windows.rst:316
+msgid "OpenREM configuration and database creation"
+msgstr ""
+
+#: ../../install_windows.rst:319
+msgid "PostgreSQL database creation"
+msgstr ""
+
+#: ../../install_windows.rst:321
+msgid "Start  pgAdmin 4 - you will need the password you set when installing PostgreSQL"
+msgstr ""
+
+#: ../../install_windows.rst:324
+msgid "Create user"
+msgstr ""
+
+#: ../../install_windows.rst:326
+msgid "Click on ``Servers`` to expand, enter the password again"
+msgstr ""
+
+#: ../../install_windows.rst:327
+msgid "Right click ``Login/Group Roles``, ``Create``, ``Login/Group Role...``"
+msgstr ""
+
+#: ../../install_windows.rst:328
+msgid "Name: ``openremuser``"
+msgstr ""
+
+#: ../../install_windows.rst:329
+msgid "Definition, Password: add a password for the openremuser"
+msgstr ""
+
+#: ../../install_windows.rst:330
+msgid "Privileges: activate ``Can login?`` and ``Create database?``"
+msgstr ""
+
+#: ../../install_windows.rst:331
+#: ../../install_windows.rst:339
+msgid "``Save``"
+msgstr ""
+
+#: ../../install_windows.rst:334
+msgid "Create database"
+msgstr ""
+
+#: ../../install_windows.rst:336
+msgid "Right click ``Databases``, ``Create``, ``Database...``"
+msgstr ""
+
+#: ../../install_windows.rst:337
+msgid "Database: ``openremdb``"
+msgstr ""
+
+#: ../../install_windows.rst:338
+msgid "Owner: ``openremuser``"
+msgstr ""
+
+#: ../../install_windows.rst:344
+msgid "Configure OpenREM"
+msgstr ""
+
+#: ../../install_windows.rst:346
+msgid "Open the ``E:\\venv\\Lib\\site-packages\\openrem\\openremproject`` folder and rename the example ``local_settings.py`` and ``wsgi.py`` files to remove the ``.windows`` and ``.example`` suffixes. Removing the file name extension will produce a warning to check if you are sure - ``Yes``:"
+msgstr ""
+
+#: ../../install_windows.rst:0
+msgid "openremproject folder"
+msgstr ""
+
+#: ../../install_windows.rst:356
+msgid "Figure 6: openremproject folder"
+msgstr ""
+
+#: ../../install_windows.rst:358
+msgid "Edit ``local_settings.py`` as needed (right click ``Edit with Notepad++``) Make sure you change the ``PASSWORD``, the ``SECRET_KEY`` (to anything, just change it), the ``ALLOWED_HOSTS`` list, regionalisation settings and the ``EMAIL`` configuration. You can modify the email settings later if necessary. Some settings are not shown here but are documented in the settings file or elsewhere in the docs. For details on the final variable see :ref:`ignore-device-obs-uid`."
+msgstr ""
+
+#: ../../install_windows.rst:363
+#: ../../install_windows.rst:459
+msgid "Upgrading to a new server"
+msgstr ""
+
+#: ../../install_windows.rst:365
+msgid "If you are upgrading to a new Linux server, review the ``local_settings.py`` file from the old server to copy over the ``ALLOWED_HOSTS`` list and the ``EMAIL`` configuration, and check all the other settings. Change the ``SECRET_KEY`` from the default, but it doesn't have to match the one on the old server. The database ``NAME``, ``USER`` and ``PASSWORD`` will be the ones you created on the new server. For details on the final variable see :ref:`ignore-device-obs-uid`."
+msgstr ""
+
+#: ../../install_windows.rst:448
+msgid "Populate OpenREM database and collate static files"
+msgstr ""
+
+#: ../../install_windows.rst:450
+msgid "In a ``CMD`` window, move to the openrem Python folder and activate the virtualenv:"
+msgstr ""
+
+#: ../../install_windows.rst:461
+msgid "If you are upgrading to a new Windows server, do these additional steps before continuing with those below:"
+msgstr ""
+
+#: ../../install_windows.rst:463
+msgid "Rename ``E:\\venv\\Lib\\site-packages\\openrem\\remapp\\migrations\\0001_initial.py.1-0-upgrade`` to ``0001_initial.py``"
+msgstr ""
+
+#: ../../install_windows.rst:465
+msgid "Import the database - update the path to the database backup file you copied from the old server. These steps can take a long time depending on the size of the database and the resources of the server:"
+msgstr ""
+
+#: ../../install_windows.rst:472
+msgid "Migrate the database:"
+msgstr ""
+
+#: ../../install_windows.rst:489
+msgid "Make sure you didn't get a ``RuntimeWarning`` when running the last command - scroll back up to the command and check you *don't* see the following:"
+msgstr ""
+
+#: ../../install_windows.rst:500
+msgid "If you do, check the database name and password settings in the ``local_settings.py`` file. You will need to delete the file ``E:\\venv\\Lib\\site-packages\\openrem\\remapp\\migrations\\0001_initial.py`` before trying again."
+msgstr ""
+
+#: ../../install_windows.rst:509
+msgid "Create the translation files, assuming ``gettext`` was installed:"
+msgstr ""
+
+#: ../../install_windows.rst:515
+msgid "If this is a new install, not an upgrade, create the superuser account:"
+msgstr ""
+
+#: ../../install_windows.rst:522
+msgid "Webserver"
+msgstr ""
+
+#: ../../install_windows.rst:525
+msgid "Configure IIS"
+msgstr ""
+
+#: ../../install_windows.rst:527
+#: ../../install_windows.rst:712
+msgid "Open ``Internet Information Services (IIS) Manager`` from the Start menu or the Administrative Tools."
+msgstr ""
+
+#: ../../install_windows.rst:528
+msgid "Click on the name of your server in the ``Connections`` pane on the left"
+msgstr ""
+
+#: ../../install_windows.rst:529
+msgid "Double click on ``FastCGI Settings``"
+msgstr ""
+
+#: ../../install_windows.rst:530
+msgid "In the ``Actions`` pane on the right, click ``Add Application``"
+msgstr ""
+
+#: ../../install_windows.rst:531
+msgid "In the ``Full Path:`` box type or browse to ``E:\\venv\\Scripts\\python.exe``"
+msgstr ""
+
+#: ../../install_windows.rst:532
+msgid "In the ``Arguments`` box type the path to wfastcgi.py: ``E:\\venv\\Lib\\site-packages\\wfastcgi.py``"
+msgstr ""
+
+#: ../../install_windows.rst:533
+msgid "Under FastCGI properties, click on ``(Collection)`` next to ``Environment Variables`` and click on the grey ``…`` box"
+msgstr ""
+
+#: ../../install_windows.rst:534
+msgid "In the EnvironmentVariables Collection Editor click ``Add``"
+msgstr ""
+
+#: ../../install_windows.rst:535
+msgid "Change the value of ``Name`` to ``DJANGO_SETTINGS_MODULE`` (must be upper-case)"
+msgstr ""
+
+#: ../../install_windows.rst:536
+msgid "Set the ``Value`` to ``openremproject.settings``"
+msgstr ""
+
+#: ../../install_windows.rst:537
+msgid "Click ``Add`` again and add the variable name ``PYTHONPATH`` with the value ``E:\\venv\\Lib\\site-packages\\openrem``"
+msgstr ""
+
+#: ../../install_windows.rst:538
+msgid "Click ``Add`` again and add the variable name ``WSGI_HANDLER`` with the value ``django.core.wsgi.get_wsgi_application()``"
+msgstr ""
+
+#: ../../install_windows.rst:539
+#: ../../install_windows.rst:576
+#: ../../install_windows.rst:605
+msgid "Click ``OK``"
+msgstr ""
+
+#: ../../install_windows.rst:0
+msgid "Environment Variables Collection"
+msgstr ""
+
+#: ../../install_windows.rst:547
+msgid "Figure 7: Environment Variables Collection Editor"
+msgstr ""
+
+#: ../../install_windows.rst:549
+msgid "Under FastCGI Properties -> Process Model click on the ``Activity Timeout`` value and change it to ``1200``"
+msgstr ""
+
+#: ../../install_windows.rst:551
+msgid "Activity Timeout on slow running systems"
+msgstr ""
+
+#: ../../install_windows.rst:553
+msgid "If you encounter issues with long-running requests failing on slow running systems, you might try increasing the value of the ``Activity Timeout`` further."
+msgstr ""
+
+#: ../../install_windows.rst:0
+msgid "Add FastCGI Application settings"
+msgstr ""
+
+#: ../../install_windows.rst:562
+msgid "Figure 8: Add FastCGI Application settings"
+msgstr ""
+
+#: ../../install_windows.rst:564
+msgid "Click ``OK`` to close the dialogue box"
+msgstr ""
+
+#: ../../install_windows.rst:568
+msgid "Create a new website"
+msgstr ""
+
+#: ../../install_windows.rst:570
+#: ../../install_windows.rst:713
+msgid "In the ``Connections`` pane expand the tree under server name"
+msgstr ""
+
+#: ../../install_windows.rst:571
+msgid "Expand the Sites folder, right click on ``Default Website`` and click ``Remove``"
+msgstr ""
+
+#: ../../install_windows.rst:572
+msgid "Click ``Yes``"
+msgstr ""
+
+#: ../../install_windows.rst:573
+msgid "Right click on ``Sites`` and click ``Add Website…``"
+msgstr ""
+
+#: ../../install_windows.rst:574
+msgid "Enter Site name as ``OpenREM``"
+msgstr ""
+
+#: ../../install_windows.rst:575
+msgid "Under Content Directory Physical path enter or browse to ``E:\\venv\\Lib\\site-packages\\openrem``"
+msgstr ""
+
+#: ../../install_windows.rst:580
+msgid "Configure the new website"
+msgstr ""
+
+#: ../../install_windows.rst:582
+msgid "Click on the ``OpenREM`` site under ``Connections`` in the left pane"
+msgstr ""
+
+#: ../../install_windows.rst:583
+msgid "Double click on ``Handler Mappings``"
+msgstr ""
+
+#: ../../install_windows.rst:584
+msgid "In the right pane, under ``Actions`` click ``Add Module Mapping…``"
+msgstr ""
+
+#: ../../install_windows.rst:585
+msgid "In the ``Request Path`` box enter an asterix (``*``)"
+msgstr ""
+
+#: ../../install_windows.rst:586
+msgid "In the Module box select ``FastCgiModule`` (*not the CgiModule*)"
+msgstr ""
+
+#: ../../install_windows.rst:587
+msgid "In the ``Executable`` box enter ``E:\\venv\\Scripts\\python.exe|E:\\venv\\Lib\\site-packages\\wfastcgi.py``"
+msgstr ""
+
+#: ../../install_windows.rst:588
+msgid "In ``Name`` type ``OpenREM CGI handler`` (value of name is not important)"
+msgstr ""
+
+#: ../../install_windows.rst:589
+msgid "Click ``Request Restrictions`` and untick the ``Invoke handler only if request is mapped to:`` checkbox"
+msgstr ""
+
+#: ../../install_windows.rst:590
+msgid "Click ``OK`` twice to close the Request Restrictions dialog and the Add Module Mapping dialogue"
+msgstr ""
+
+#: ../../install_windows.rst:591
+msgid "When prompted ``Do you want to create a FastCGI application for this executable?`` click ``No``"
+msgstr ""
+
+#: ../../install_windows.rst:593
+msgid "Quick test!"
+msgstr ""
+
+#: ../../install_windows.rst:595
+msgid "You can now browse on the server to http://localhost/ and you should see an \"ugly\" version of the website. It will look better after we have configured the static files, next!"
+msgstr ""
+
+#: ../../install_windows.rst:599
+msgid "Configure IIS to server the static files"
+msgstr ""
+
+#: ../../install_windows.rst:601
+msgid "Right click on the ``OpenREM`` site under ``Connections`` in the left pane"
+msgstr ""
+
+#: ../../install_windows.rst:602
+msgid "Click ``Add Virtual Directory``"
+msgstr ""
+
+#: ../../install_windows.rst:603
+msgid "Enter ``static`` as the Alias"
+msgstr ""
+
+#: ../../install_windows.rst:604
+msgid "Enter or browse to ``E:\\static`` as the Physical path"
+msgstr ""
+
+#: ../../install_windows.rst:607
+msgid "Double click on ``Handler Mappings`` in the middle pane"
+msgstr ""
+
+#: ../../install_windows.rst:608
+msgid "Click on ``View Ordered List...`` in the right pane"
+msgstr ""
+
+#: ../../install_windows.rst:609
+msgid "Select ``StaticFile``"
+msgstr ""
+
+#: ../../install_windows.rst:610
+msgid "Click ``Move Up`` in the ``Action`` pane on the right until ``StaticFile`` is at the top"
+msgstr ""
+
+#: ../../install_windows.rst:611
+msgid "There will be a warning about the list order being changed - click ``Yes`` to continue"
+msgstr ""
+
+#: ../../install_windows.rst:614
+msgid "Test the webserver"
+msgstr ""
+
+#: ../../install_windows.rst:616
+msgid "Browse to http://localhost/ on the server, or browse to the servername in a browser on another machine, and you should be able to see the new OpenREM web service."
+msgstr ""
+
+#: ../../install_windows.rst:620
+msgid "Task queue"
+msgstr ""
+
+#: ../../install_windows.rst:622
+msgid "Running OpenREM on Windows 10 or Windows 11?"
+msgstr ""
+
+#: ../../install_windows.rst:624
+msgid "For non-server environments, where task executors don't need to be persistent across system restarts, there is a shortcut for starting workers. You can start a single worker in a new console as follows:"
+msgstr ""
+
+#: ../../install_windows.rst:634
+msgid "If you want more than one worker to run tasks in parallel, you will need to repeat the previous steps for each additional worker in a new console."
+msgstr ""
+
+#: ../../install_windows.rst:637
+msgid "You can stop a worker by pressing ``Ctrl`` + ``C`` in the appropriate console"
+msgstr ""
+
+#: ../../install_windows.rst:639
+msgid "If you cannot start a worker or you are getting error messages, please make sure that your current user has read and write permissions in the ``E:\\task_queue`` directory."
+msgstr ""
+
+#: ../../install_windows.rst:643
+msgid "OpenREM uses a task queue to run its background tasks. Therefore, we need additional Windows services that allow us to run these tasks separately from the web application."
+msgstr ""
+
+#: ../../install_windows.rst:646
+msgid "To accomplish that we need to do the following:"
+msgstr ""
+
+#: ../../install_windows.rst:649
+msgid "Create local service account"
+msgstr ""
+
+#: ../../install_windows.rst:651
+msgid "First we need to create an account that will allow the IIS worker to control the task workers. Most importantly, to kill a task if necessary."
+msgstr ""
+
+#: ../../install_windows.rst:653
+msgid "There is a difference if you are connected to an Active Directory or not. Whatever suits your setup, follow the guide ``A`` if you are not in an Active Directory or ``B`` if you are."
+msgstr ""
+
+#: ../../install_windows.rst:657
+msgid "Guide A"
+msgstr ""
+
+#: ../../install_windows.rst:659
+msgid "For a Windows instance which is not associated to an Active Directory, it suffices to create a local user account:"
+msgstr ""
+
+#: ../../install_windows.rst:661
+msgid "Open the ``Search Tab``"
+msgstr ""
+
+#: ../../install_windows.rst:662
+msgid "Search for ``Add, edit, or remove other users``"
+msgstr ""
+
+#: ../../install_windows.rst:663
+msgid "In the menu, click ``Add someone else to this PC``"
+msgstr ""
+
+#: ../../install_windows.rst:664
+msgid "In the left pane right click on ``Users``"
+msgstr ""
+
+#: ../../install_windows.rst:665
+msgid "Click ``New User...``"
+msgstr ""
+
+#: ../../install_windows.rst:666
+msgid "Fill in all fields with the data of a new user account (see image)"
+msgstr ""
+
+#: ../../install_windows.rst:667
+msgid "Untick ``User must change password at next login``"
+msgstr ""
+
+#: ../../install_windows.rst:668
+msgid "Click ``Create``"
+msgstr ""
+
+#: ../../install_windows.rst:669
+msgid "In the left pane click on ``Groups``"
+msgstr ""
+
+#: ../../install_windows.rst:670
+msgid "Right click on ``IIS_IUSRS``"
+msgstr ""
+
+#: ../../install_windows.rst:671
+msgid "Click ``Add to Group...``"
+msgstr ""
+
+#: ../../install_windows.rst:672
+msgid "Click on the ``Add`` button"
+msgstr ""
+
+#: ../../install_windows.rst:673
+msgid "In the textfield, enter the username of the previously created account"
+msgstr ""
+
+#: ../../install_windows.rst:674
+msgid "Click ``Ok`` twice"
+msgstr ""
+
+#: ../../install_windows.rst:677
+msgid "Guide B"
+msgstr ""
+
+#: ../../install_windows.rst:679
+msgid "For a Windows instance that is connected to an Active Directory, or even a controller of one, follow this guide:"
+msgstr ""
+
+#: ../../install_windows.rst:681
+msgid "Open the ``Server Manager``"
+msgstr ""
+
+#: ../../install_windows.rst:682
+msgid "In the navigation bar, click on ``Tools``"
+msgstr ""
+
+#: ../../install_windows.rst:683
+msgid "Click ``Active Directory Users and Computers``"
+msgstr ""
+
+#: ../../install_windows.rst:684
+msgid "In the left pane, expand your domain"
+msgstr ""
+
+#: ../../install_windows.rst:685
+msgid "Right click on ``Users``"
+msgstr ""
+
+#: ../../install_windows.rst:686
+msgid "Hove over ``New``"
+msgstr ""
+
+#: ../../install_windows.rst:687
+msgid "Click on ``User``"
+msgstr ""
+
+#: ../../install_windows.rst:688
+msgid "Fill in all required fields with the data of a new user account"
+msgstr ""
+
+#: ../../install_windows.rst:689
+msgid "Click ``Next``"
+msgstr ""
+
+#: ../../install_windows.rst:690
+msgid "Enter the new user password twice and untick ``User must change password at next login``"
+msgstr ""
+
+#: ../../install_windows.rst:691
+msgid "Click ``Next`` and then ``Finish`` to create the service account"
+msgstr ""
+
+#: ../../install_windows.rst:694
+msgid "Creating worker services"
+msgstr ""
+
+#: ../../install_windows.rst:696
+#: ../../install_windows.rst:728
+msgid "Copy the file from"
+msgstr ""
+
+#: ../../install_windows.rst:698
+msgid "``E:\\venv\\Lib\\site-packages\\openrem\\sample-config\\queue-init.bat`` to"
+msgstr ""
+
+#: ../../install_windows.rst:699
+msgid "``E:\\winsw\\``"
+msgstr ""
+
+#: ../../install_windows.rst:701
+msgid "Make sure that the previously downloaded and renamed ``WinSW.exe`` file is in the same folder (``E:\\winsw\\``)."
+msgstr ""
+
+#: ../../install_windows.rst:703
+msgid "Double click the ``queue-init.bat`` file"
+msgstr ""
+
+#: ../../install_windows.rst:704
+msgid "Enter your Domain name or leave empty if not applicable"
+msgstr ""
+
+#: ../../install_windows.rst:705
+msgid "Enter the username of the previously created account"
+msgstr ""
+
+#: ../../install_windows.rst:706
+msgid "Enter the associated password"
+msgstr ""
+
+#: ../../install_windows.rst:707
+msgid "Enter the number of workers you would like to spawn, this number should no exceed the number of CPU cores available to your system"
+msgstr ""
+
+#: ../../install_windows.rst:708
+msgid "Wait for the services to get registered and started up (Notice: many windows may appear and disappear quickly)"
+msgstr ""
+
+#: ../../install_windows.rst:711
+msgid "Adjusting IIS Application Pool Identity"
+msgstr ""
+
+#: ../../install_windows.rst:714
+msgid "Click on ``Application Pools``"
+msgstr ""
+
+#: ../../install_windows.rst:715
+msgid "Right click on ``OpenREM`` in the middle pane"
+msgstr ""
+
+#: ../../install_windows.rst:716
+msgid "Click ``Advanced Settings...``"
+msgstr ""
+
+#: ../../install_windows.rst:717
+msgid "Under ``Process Model`` click on ``Identity`` and then on the grey ``…`` box"
+msgstr ""
+
+#: ../../install_windows.rst:718
+msgid "Select the ``Custom account:`` radio button"
+msgstr ""
+
+#: ../../install_windows.rst:719
+msgid "Click on ``Set...``"
+msgstr ""
+
+#: ../../install_windows.rst:720
+msgid "Enter the credentials of the preivously created account. If you are in an Active Directory prefix ther usernmae with ``<YOUR-DOMAIN>\\``"
+msgstr ""
+
+#: ../../install_windows.rst:721
+msgid "Click ``OK`` three times"
+msgstr ""
+
+#: ../../install_windows.rst:724
+msgid "DICOM Store SCP"
+msgstr ""
+
+#: ../../install_windows.rst:726
+msgid "Copy the Lua file to the Orthanc folder. This will control how we process the incoming DICOM objects."
+msgstr ""
+
+#: ../../install_windows.rst:730
+msgid "``E:\\venv\\Lib\\site-packages\\openrem\\sample-config\\openrem_orthanc_config_windows.lua`` to"
+msgstr ""
+
+#: ../../install_windows.rst:731
+msgid "``E:\\orthanc\\``"
+msgstr ""
+
+#: ../../install_windows.rst:733
+msgid "Edit the Orthanc Lua configuration options - right click on the file you just copied ``Edit with Notepad++``"
+msgstr ""
+
+#: ../../install_windows.rst:735
+msgid "Set ``use_physics_filtering`` to true if you want Orthanc to keep physics test studies, and have it put them in the ``E:\\orthanc\\dicom\\`` folder. Set it to ``false`` to disable this feature. Add names or IDs to ``physics_to_keep`` as a comma separated list."
+msgstr ""
+
+#: ../../install_windows.rst:750
+msgid "Lists of things to ignore. Orthanc will ignore anything matching the content of these comma separated lists; they will not be imported into OpenREM."
+msgstr ""
+
+#: ../../install_windows.rst:764
+msgid "Enable or disable additional functionality to extract dose information from older Toshiba and GE scanners, and specify which CT scanners should use this method. Each system should be listed as ``{'Manufacturer', 'Model name'}``, with systems in a comma separated list within curly brackets, as per the example below:"
+msgstr ""
+
+#: ../../install_windows.rst:782
+#: ../../install_windows.rst:827
+msgid "Save any changes."
+msgstr ""
+
+#: ../../install_windows.rst:784
+msgid "Edit the Orthanc configuration. Navigate to ``C:\\Program Files\\Orthanc Server\\Configuration`` and right click on ``orthanc.json`` and click ``Edit with Notepad++``:"
+msgstr ""
+
+#: ../../install_windows.rst:787
+msgid "Add the Lua script to the Orthanc config:"
+msgstr ""
+
+#: ../../install_windows.rst:798
+msgid "Set the AE Title and port:"
+msgstr ""
+
+#: ../../install_windows.rst:811
+msgid "Optionally, you may also like to enable the HTTP server interface for Orthanc (although if the Lua script is removing all the objects as soon as they are processed, you won't see much!):"
+msgstr ""
+
+#: ../../install_windows.rst:822
+msgid "You will also need to open the firewall for port 8042."
+msgstr ""
+
+#: ../../install_windows.rst:824
+msgid "To see the Orthanc web interface, go to http://openremserver:8042/ -- of course change the server name to that of your server!"
+msgstr ""
+
+#: ../../install_windows.rst:830
+msgid "Allow DICOM traffic through the firewall"
+msgstr ""
+
+#: ../../install_windows.rst:832
+msgid "Type ``windows firewall`` in the Start menu to open ``Windows Defender Firewall``"
+msgstr ""
+
+#: ../../install_windows.rst:833
+msgid "Click ``Advanced settings`` in the left hand pane to open ``Windows Defender Firewall with Advanced Security``"
+msgstr ""
+
+#: ../../install_windows.rst:834
+msgid "Click ``Inbound Rules`` in the left hand pane"
+msgstr ""
+
+#: ../../install_windows.rst:835
+msgid "Click ``New Rule...`` in the right hand pane"
+msgstr ""
+
+#: ../../install_windows.rst:836
+msgid "Click ``Port`` and ``Next >``"
+msgstr ""
+
+#: ../../install_windows.rst:837
+msgid "Leave as ``TCP`` and specify port ``104`` and click ``Next >``"
+msgstr ""
+
+#: ../../install_windows.rst:838
+msgid "``Allow the connection``, ``Next >``"
+msgstr ""
+
+#: ../../install_windows.rst:839
+msgid "Leave the boxes ticked for ``When does this rule apply`` if that is appropriate, ``Next >``"
+msgstr ""
+
+#: ../../install_windows.rst:840
+msgid "Name ``Orthanc DICOM port``"
+msgstr ""
+
+#: ../../install_windows.rst:844
+msgid "Finish off"
+msgstr ""
+
+#: ../../install_windows.rst:846
+msgid "Restart Orthanc:"
+msgstr ""
+
+#: ../../install_windows.rst:848
+msgid "Launch ``Services`` from the start menu"
+msgstr ""
+
+#: ../../install_windows.rst:849
+msgid "Find ``Orthanc`` on the list and click ``Restart``"
+msgstr ""
+
+#: ../../install_windows.rst:850
+msgid "Orthanc logs can be reviewed at ``C:\\Program Files\\Orthanc Server\\Logs`` - the current log file will have the latest date and time in the filename - right click ``Edit with Notepad++``"
+msgstr ""
+
+#: ../../install_windows.rst:853
+msgid "You can check if the port is running and allowed through the firewall using the ``Network`` tab of Resource Monitor."
+msgstr ""

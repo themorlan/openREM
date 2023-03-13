@@ -1,5 +1,5 @@
 # SOME DESCRIPTIVE TITLE.
-# Copyright (C) 2013-2020, The Royal Marsden NHS Foundation Trust
+# Copyright (C) 2013-2022, The Royal Marsden NHS Foundation Trust
 # This file is distributed under the same license as the OpenREM package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-08 21:35+0100\n"
+"POT-Creation-Date: 2023-03-05 17:21+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -97,7 +97,7 @@ msgid "If True, studies that already exist in the database are removed from the 
 msgstr ""
 
 #: ../../../openrem/remapp/netdicom/qrscu.py:docstring of openrem.remapp.netdicom.qrscu.qrscu:34
-msgid "include and exclude lists for StationName and StudyDescription (Default value = None)"
+msgid "lowercase include and exclude lists for StationName and StudyDescription (Default value = None)"
 msgstr ""
 
 #: ../../../openrem/remapp/netdicom/qrscu.py:docstring of openrem.remapp.netdicom.qrscu.qrscu:36
@@ -121,98 +121,11 @@ msgid "Move function"
 msgstr ""
 
 #: ../../../openrem/remapp/netdicom/qrscu.py:docstring of openrem.remapp.netdicom.qrscu.movescu:1
-msgid "C-Move request element of query-retrieve service class user :param query_id: UUID of query in the DicomQuery table :return: None"
+msgid "C-Move request element of query-retrieve service class user :param query_id: ID of query in the DicomQuery table :return: None"
 msgstr ""
 
 #: ../../code_netdicom.rst:20
 msgid "openrem_qr.py script"
-msgstr ""
-
-#: ../../None:1
-msgid "Database ID of the remote QR node"
-msgstr ""
-
-#: ../../None:1
-msgid "Database ID of the local store node"
-msgstr ""
-
-#: ../../None:1
-msgid "Query for CT studies. Cannot be used with -sr"
-msgstr ""
-
-#: ../../None:1
-#: ../../None:1
-#: ../../None:1
-#: ../../None:1
-#: ../../None:1
-#: ../../None:1
-#: ../../None:1
-#: ../../None:1
-msgid "Default: False"
-msgstr ""
-
-#: ../../None:1
-msgid "Query for mammography studies. Cannot be used with -sr"
-msgstr ""
-
-#: ../../None:1
-msgid "Query for fluoroscopy studies. Cannot be used with -sr"
-msgstr ""
-
-#: ../../None:1
-msgid "Query for planar X-ray studies. Cannot be used with -sr"
-msgstr ""
-
-#: ../../None:1
-msgid "Date from, format yyyy-mm-dd. Cannot be used with --single_date"
-msgstr ""
-
-#: ../../None:1
-msgid "Date until, format yyyy-mm-dd. Cannot be used with --single_date"
-msgstr ""
-
-#: ../../None:1
-msgid "Date, format yyy-mm-dd. Cannot be used with --dfrom or --duntil"
-msgstr ""
-
-#: ../../None:1
-msgid "Time from, format hhmm. Requires --single_date."
-msgstr ""
-
-#: ../../None:1
-msgid "Time until, format hhmm. Requires --single_date."
-msgstr ""
-
-#: ../../None:1
-msgid "Terms to exclude in study description, comma separated, quote whole string"
-msgstr ""
-
-#: ../../None:1
-msgid "Terms that must be included in study description, comma separated, quote whole string"
-msgstr ""
-
-#: ../../None:1
-msgid "Terms to exclude in station name, comma separated, quote whole string"
-msgstr ""
-
-#: ../../None:1
-msgid "Terms to include in station name, comma separated, quote whole string"
-msgstr ""
-
-#: ../../None:1
-msgid "Advanced: Attempt to retrieve CT dose summary objects and one image from each series"
-msgstr ""
-
-#: ../../None:1
-msgid "Advanced: Use if store has RDSRs only, no images. Cannot be used with -ct, -mg, -fl, -dx"
-msgstr ""
-
-#: ../../None:1
-msgid "Advanced: Retrieve duplicates (objects that have been processed before)"
-msgstr ""
-
-#: ../../None:1
-msgid "Advanced: Get SR series that return nothing at image level query"
 msgstr ""
 
 #: ../../code_netdicom.rst:30

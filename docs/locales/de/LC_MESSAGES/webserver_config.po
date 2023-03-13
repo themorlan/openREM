@@ -8,24 +8,24 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-04 12:05+0100\n"
+"POT-Creation-Date: 2023-03-05 17:21+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.8.0\n"
+"Generated-By: Babel 2.12.1\n"
 
-#: ../../webserver_config.rst:3 161ecc937bcf44d18fb226b3201a427d
+#: ../../webserver_config.rst:3
 msgid "Webserver configuration"
 msgstr ""
 
-#: ../../webserver_config.rst:6 439fce83cef94d099471d1016578b781
+#: ../../webserver_config.rst:6
 msgid "Webserver timeout"
 msgstr ""
 
-#: ../../webserver_config.rst:8 94e514e805044eb6a417097435324625
+#: ../../webserver_config.rst:8
 msgid ""
 "Some long running actions can cause webserver errors if they take longer "
 "than the timeout setting in the webserver, particularly generating "
@@ -33,37 +33,37 @@ msgid ""
 "five minutes. To modify this, change the following two settings:"
 msgstr ""
 
-#: ../../webserver_config.rst:12 1fc237a1191d44a79ea1621e44f1fcea
+#: ../../webserver_config.rst:12
 msgid ""
 "Edit ``docker-compose.yml`` in the Docker OpenREM installation folder and"
 " change the timeout setting on the following line:"
 msgstr ""
 
-#: ../../webserver_config.rst:22 a418354f853349db9866d67442c72082
+#: ../../webserver_config.rst:22
 msgid "Edit ``nginx-conf/conf.d/openrem.conf`` and set the same timeout:"
 msgstr ""
 
-#: ../../webserver_config.rst:34 a542b8367e924d99b4bc96f97a167c45
+#: ../../webserver_config.rst:34
 msgid "Reload the containers:"
 msgstr ""
 
-#: ../../webserver_config.rst:42 f38b2e253fe444f094af223706903aea
-msgid "Non-Docker Linux install"
+#: ../../webserver_config.rst:42
+msgid "Non-Docker install"
 msgstr ""
 
-#: ../../webserver_config.rst:44 18a0a2f1feb34b46ad9a6a5ca6df398b
+#: ../../webserver_config.rst:44
 msgid "Change the same settings as for the Docker install above:"
 msgstr ""
 
-#: ../../webserver_config.rst:50 8fbe313f3b31462ea84cfc00cb4a2917
+#: ../../webserver_config.rst:50
 msgid "and"
 msgstr ""
 
-#: ../../webserver_config.rst:63 0ba30e97b9e847a5aa43d025bb4826a2
+#: ../../webserver_config.rst:63
 msgid "Adding an SSL certificate"
 msgstr ""
 
-#: ../../webserver_config.rst:65 ce3f986aa72041cdbd8710d6a7a73bfd
+#: ../../webserver_config.rst:65
 msgid ""
 "It is advisable to add an SSL certificate to the web server even though "
 "it might only be accessible within an institution. There are several "
@@ -72,7 +72,7 @@ msgid ""
 "websites."
 msgstr ""
 
-#: ../../webserver_config.rst:69 888279a33b1f43a59d73a32e9a25d961
+#: ../../webserver_config.rst:69
 msgid ""
 "It is likely that within your institution there will be a corporate "
 "trusted root certificate and a mechanism of getting certificates you "
@@ -84,14 +84,14 @@ msgid ""
 "names-one"
 msgstr ""
 
-#: ../../webserver_config.rst:75 94af38530e0e431d973a525e1fe71678
+#: ../../webserver_config.rst:75
 msgid ""
 "Once you have a signed certificate, place it and the key in ``nginx-"
 "conf/certs``, where it will be available in the Nginx container at "
 "``/etc/ssl/private``."
 msgstr ""
 
-#: ../../webserver_config.rst:78 c817ab992d734361aa04962f65d4e9b4
+#: ../../webserver_config.rst:78
 msgid ""
 "There are two conf files in ``nginx-conf/conf.d`` - the default one is "
 "``openrem.conf``. There is an alternative one named ``openrem-"
@@ -99,9 +99,12 @@ msgid ""
 " both so the secure version is the only one to have a ``.conf`` ending."
 msgstr ""
 
-#: ../../webserver_config.rst:82 9d4f30f74d8d470d9f270547101941b9
+#: ../../webserver_config.rst:82
 msgid ""
 "Ensure the the following lines are updated for the name of your server "
 "and the names of your signed certificate and key:"
 msgstr ""
+
+#~ msgid "Non-Docker Linux install"
+#~ msgstr ""
 

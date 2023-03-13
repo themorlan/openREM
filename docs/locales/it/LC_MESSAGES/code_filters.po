@@ -8,14 +8,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-01 18:30+0100\n"
+"POT-Creation-Date: 2023-03-05 17:21+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.8.0\n"
+"Generated-By: Babel 2.12.1\n"
 
 #: ../../code_filters.rst:2
 msgid "Filtering code"
@@ -24,8 +24,20 @@ msgstr ""
 #: of remapp.interface.mod_filters.CTFilterPlusPid:1
 #: remapp.interface.mod_filters.DXFilterPlusPid:1
 #: remapp.interface.mod_filters.MGFilterPlusPid:1
+#: remapp.interface.mod_filters.NMFilterPlusPid:1
 #: remapp.interface.mod_filters.RFFilterPlusPid:1
 msgid "Adding patient name and ID to filter if permissions allow"
+msgstr ""
+
+#: of remapp.interface.mod_filters.CTFilterPlusPidPlusStdNames:1
+#: remapp.interface.mod_filters.CTFilterPlusStdNames:1
+#: remapp.interface.mod_filters.DXFilterPlusPidPlusStdNames:1
+#: remapp.interface.mod_filters.DXFilterPlusStdNames:1
+#: remapp.interface.mod_filters.MGFilterPlusPidPlusStdNames:1
+#: remapp.interface.mod_filters.MGFilterPlusStdNames:1
+#: remapp.interface.mod_filters.RFFilterPlusPidPlusStdNames:1
+#: remapp.interface.mod_filters.RFFilterPlusStdNames:1
+msgid "Adding standard name fields"
 msgstr ""
 
 #: of remapp.interface.mod_filters.CTSummaryListFilter:1
@@ -35,6 +47,7 @@ msgstr ""
 #: of remapp.interface.mod_filters.CTSummaryListFilter.Meta:1
 #: remapp.interface.mod_filters.DXSummaryListFilter.Meta:1
 #: remapp.interface.mod_filters.MGSummaryListFilter.Meta:1
+#: remapp.interface.mod_filters.NMSummaryListFilter.Meta:1
 #: remapp.interface.mod_filters.RFSummaryListFilter.Meta:1
 msgid "Lists fields and order-by information for django-filter filtering"
 msgstr ""
@@ -75,13 +88,12 @@ msgstr ""
 msgid "Filter for mammography studies to display in web interface."
 msgstr ""
 
-#: of remapp.interface.mod_filters.RFSummaryListFilter:1
-msgid "Filter for fluoroscopy studies to display in web interface."
+#: of remapp.interface.mod_filters.NMSummaryListFilter:1
+msgid "Filter for NM studies to display in web interface."
 msgstr ""
 
-#: of remapp.interface.mod_filters.ct_acq_filter:1
-#: remapp.interface.mod_filters.dx_acq_filter:1
-msgid "Additional filters at event level"
+#: of remapp.interface.mod_filters.RFSummaryListFilter:1
+msgid "Filter for fluoroscopy studies to display in web interface."
 msgstr ""
 
 #: of remapp.interface.mod_filters.custom_id_filter:1
@@ -91,4 +103,7 @@ msgstr ""
 #: of remapp.interface.mod_filters.custom_name_filter:1
 msgid "Search for name as plain text and encrypted"
 msgstr ""
+
+#~ msgid "Additional filters at event level"
+#~ msgstr ""
 

@@ -8,17 +8,65 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-01 18:30+0100\n"
+"POT-Creation-Date: 2023-03-05 17:21+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.8.0\n"
+"Generated-By: Babel 2.12.1\n"
 
 #: ../../code_forms.rst:2
 msgid "Forms"
+msgstr ""
+
+#: of remapp.forms.BackgroundTaskMaximumRowsForm:1
+msgid ""
+"Form for configuring the maximum number of rows in the BackgroundTask "
+"table"
+msgstr ""
+
+#: of remapp.forms.BackgroundTaskMaximumRowsForm.media:1
+#: remapp.forms.CTChartOptionsDisplayForm.media:1
+#: remapp.forms.CTChartOptionsDisplayFormIncStandard.media:1
+#: remapp.forms.CTChartOptionsForm.media:1
+#: remapp.forms.CTChartOptionsFormIncStandard.media:1
+#: remapp.forms.DXChartOptionsDisplayForm.media:1
+#: remapp.forms.DXChartOptionsDisplayFormIncStandard.media:1
+#: remapp.forms.DXChartOptionsForm.media:1
+#: remapp.forms.DXChartOptionsFormIncStandard.media:1
+#: remapp.forms.DicomDeleteSettingsForm.media:1
+#: remapp.forms.DicomQRForm.media:1 remapp.forms.DicomQueryForm.media:1
+#: remapp.forms.DicomStoreForm.media:1
+#: remapp.forms.GeneralChartOptionsDisplayForm.media:1
+#: remapp.forms.HomepageOptionsForm.media:1
+#: remapp.forms.MGChartOptionsDisplayForm.media:1
+#: remapp.forms.MGChartOptionsDisplayFormIncStandard.media:1
+#: remapp.forms.MGChartOptionsForm.media:1
+#: remapp.forms.MGChartOptionsFormIncStandard.media:1
+#: remapp.forms.MergeOnDeviceObserverUIDForm.media:1
+#: remapp.forms.NMChartOptionsDisplayForm.media:1
+#: remapp.forms.NMChartOptionsForm.media:1
+#: remapp.forms.NotPatientIDForm.media:1
+#: remapp.forms.NotPatientNameForm.media:1
+#: remapp.forms.RFChartOptionsDisplayForm.media:1
+#: remapp.forms.RFChartOptionsDisplayFormIncStandard.media:1
+#: remapp.forms.RFChartOptionsForm.media:1
+#: remapp.forms.RFChartOptionsFormIncStandard.media:1
+#: remapp.forms.RFHighDoseFluoroAlertsForm.media:1
+#: remapp.forms.SizeHeadersForm.media:1 remapp.forms.SizeUploadForm.media:1
+#: remapp.forms.SkinDoseMapCalcSettingsForm.media:1
+#: remapp.forms.SkinSafeListForm.media:1
+#: remapp.forms.StandardNameFormBase.media:1
+#: remapp.forms.StandardNameFormCT.media:1
+#: remapp.forms.StandardNameFormDX.media:1
+#: remapp.forms.StandardNameFormMG.media:1
+#: remapp.forms.StandardNameFormRF.media:1
+#: remapp.forms.StandardNameSettingsForm.media:1
+#: remapp.forms.UpdateDisplayNamesForm.media:1
+#: remapp.forms.itemsPerPageForm.media:1
+msgid "Return all media required to render the widgets on this form."
 msgstr ""
 
 #: of remapp.forms.CTChartOptionsDisplayForm:1
@@ -57,7 +105,7 @@ msgid ""
 "selected. :return: Form with modalities _or_ sr_only selected"
 msgstr ""
 
-#: of remapp.forms.DicomQueryForm.date:1
+#: datetime.date:1 of
 msgid "date(year, month, day) --> date object"
 msgstr ""
 
@@ -94,7 +142,7 @@ msgid ""
 msgstr ""
 
 #: of remapp.forms.DicomQueryForm.date.isocalendar:1
-msgid "Return a 3-tuple containing ISO year, week number, and weekday."
+msgid "Return a named tuple containing ISO year, week number, and weekday."
 msgstr ""
 
 #: of remapp.forms.DicomQueryForm.date.isoformat:1
@@ -161,6 +209,14 @@ msgid ""
 "Observer UID"
 msgstr ""
 
+#: of remapp.forms.NMChartOptionsDisplayForm:1
+msgid "Form for NM chart display options"
+msgstr ""
+
+#: of remapp.forms.NMChartOptionsForm:1
+msgid "Form for NM chart options"
+msgstr ""
+
 #: of remapp.forms.NotPatientIDForm:1
 msgid "Form for configuring not-patient ID patterns"
 msgstr ""
@@ -192,4 +248,28 @@ msgstr ""
 #: of remapp.forms.SkinDoseMapCalcSettingsForm:1
 msgid "Form for configuring whether skin dose maps are shown / calculated"
 msgstr ""
+
+#: of remapp.forms.SkinSafeListForm:1
+msgid "Form for adding/updating/removing system from openSkin safe list"
+msgstr ""
+
+#: of remapp.forms.StandardNameFormBase:1
+msgid ""
+"For configuring standard names for study description, requested "
+"procedure, procedure and acquisition name."
+msgstr ""
+
+#: of remapp.forms.StandardNameFormCT:1 remapp.forms.StandardNameFormDX:1
+#: remapp.forms.StandardNameFormMG:1 remapp.forms.StandardNameFormRF:1
+msgid ""
+"Form for configuring standard names for study description, requested "
+"procedure, procedure and acquisition name"
+msgstr ""
+
+#: of remapp.forms.StandardNameSettingsForm:1
+msgid "Form for configuring whether standard names are shown / used"
+msgstr ""
+
+#~ msgid "Return a 3-tuple containing ISO year, week number, and weekday."
+#~ msgstr ""
 

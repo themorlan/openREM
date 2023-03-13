@@ -8,206 +8,268 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-04 12:05+0100\n"
+"POT-Creation-Date: 2023-03-05 17:21+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.8.0\n"
+"Generated-By: Babel 2.12.1\n"
 
-#: ../../code_forms.rst:2 317c7940c068480aa59cd80572e4fbae
+#: ../../code_forms.rst:2
 msgid "Forms"
 msgstr ""
 
-#: 2c2310b0a43141fba6afacb4848435c3 of remapp.forms.SizeUploadForm:1
-msgid "Form for patient size csv file upload"
+#: of remapp.forms.BackgroundTaskMaximumRowsForm:1
+msgid ""
+"Form for configuring the maximum number of rows in the BackgroundTask "
+"table"
 msgstr ""
 
-#: 55482f3d1ce049b69d54496cd2fe7ef6 of remapp.forms.SizeHeadersForm:1
-msgid "Form for csv column header patient size imports through the web interface"
+#: of remapp.forms.BackgroundTaskMaximumRowsForm.media:1
+#: remapp.forms.CTChartOptionsDisplayForm.media:1
+#: remapp.forms.CTChartOptionsDisplayFormIncStandard.media:1
+#: remapp.forms.CTChartOptionsForm.media:1
+#: remapp.forms.CTChartOptionsFormIncStandard.media:1
+#: remapp.forms.DXChartOptionsDisplayForm.media:1
+#: remapp.forms.DXChartOptionsDisplayFormIncStandard.media:1
+#: remapp.forms.DXChartOptionsForm.media:1
+#: remapp.forms.DXChartOptionsFormIncStandard.media:1
+#: remapp.forms.DicomDeleteSettingsForm.media:1
+#: remapp.forms.DicomQRForm.media:1 remapp.forms.DicomQueryForm.media:1
+#: remapp.forms.DicomStoreForm.media:1
+#: remapp.forms.GeneralChartOptionsDisplayForm.media:1
+#: remapp.forms.HomepageOptionsForm.media:1
+#: remapp.forms.MGChartOptionsDisplayForm.media:1
+#: remapp.forms.MGChartOptionsDisplayFormIncStandard.media:1
+#: remapp.forms.MGChartOptionsForm.media:1
+#: remapp.forms.MGChartOptionsFormIncStandard.media:1
+#: remapp.forms.MergeOnDeviceObserverUIDForm.media:1
+#: remapp.forms.NMChartOptionsDisplayForm.media:1
+#: remapp.forms.NMChartOptionsForm.media:1
+#: remapp.forms.NotPatientIDForm.media:1
+#: remapp.forms.NotPatientNameForm.media:1
+#: remapp.forms.RFChartOptionsDisplayForm.media:1
+#: remapp.forms.RFChartOptionsDisplayFormIncStandard.media:1
+#: remapp.forms.RFChartOptionsForm.media:1
+#: remapp.forms.RFChartOptionsFormIncStandard.media:1
+#: remapp.forms.RFHighDoseFluoroAlertsForm.media:1
+#: remapp.forms.SizeHeadersForm.media:1 remapp.forms.SizeUploadForm.media:1
+#: remapp.forms.SkinDoseMapCalcSettingsForm.media:1
+#: remapp.forms.SkinSafeListForm.media:1
+#: remapp.forms.StandardNameFormBase.media:1
+#: remapp.forms.StandardNameFormCT.media:1
+#: remapp.forms.StandardNameFormDX.media:1
+#: remapp.forms.StandardNameFormMG.media:1
+#: remapp.forms.StandardNameFormRF.media:1
+#: remapp.forms.StandardNameSettingsForm.media:1
+#: remapp.forms.UpdateDisplayNamesForm.media:1
+#: remapp.forms.itemsPerPageForm.media:1
+msgid "Return all media required to render the widgets on this form."
 msgstr ""
 
-#: 7dc2fa8119b64bfe85c7c348de782f10 of remapp.forms.DXChartOptionsForm:1
-msgid "Form for DX chart options"
-msgstr ""
-
-#: 8d46a2a91f984d72b1b2cffac7eddb4e of remapp.forms.CTChartOptionsForm:1
-msgid "Form for CT chart options"
-msgstr ""
-
-#: 8c584e27262f4e46a88964cd68f05c5e of remapp.forms.RFChartOptionsForm:1
-msgid "Form for RF chart options"
-msgstr ""
-
-#: 6789e07553254e59a27ada473653c8fb of remapp.forms.RFChartOptionsDisplayForm:1
-msgid "Form for RF chart display options"
-msgstr ""
-
-#: 75134ee5cdc04edc8382f985da4b6499 of remapp.forms.MGChartOptionsForm:1
-msgid "Form for MG chart options"
-msgstr ""
-
-#: f90576f8d049413e87289531196ab441 of remapp.forms.MGChartOptionsDisplayForm:1
-msgid "Form for MG chart display options"
-msgstr ""
-
-#: a04f2eca27c94a429b7610f12c22ae38 of remapp.forms.DXChartOptionsDisplayForm:1
-msgid "Form for DX chart display options"
-msgstr ""
-
-#: 543d43565ba7468d8bb376bfca7cf57e of remapp.forms.CTChartOptionsDisplayForm:1
+#: of remapp.forms.CTChartOptionsDisplayForm:1
 msgid "Form for CT chart display options"
 msgstr ""
 
-#: 762c97c27b00497fb1da876d90bbd502 of
-#: remapp.forms.GeneralChartOptionsDisplayForm:1
-msgid "Form for general chart display options"
+#: of remapp.forms.CTChartOptionsForm:1
+msgid "Form for CT chart options"
 msgstr ""
 
-#: 9443527c50394b5295b391ccd9d00360 of
-#: remapp.forms.RFHighDoseFluoroAlertsForm:1
-msgid "Form for displaying and changing fluoroscopy high dose alert settings"
+#: of remapp.forms.DXChartOptionsDisplayForm:1
+msgid "Form for DX chart display options"
 msgstr ""
 
-#: 3dcb6213b42e484cb203046fd7177246 of remapp.forms.HomepageOptionsForm:1
-msgid "Form for displaying and changing the home page options"
+#: of remapp.forms.DXChartOptionsForm:1
+msgid "Form for DX chart options"
 msgstr ""
 
-#: 30174bc528494b57a814b71d1470095e of
-#: remapp.forms.MergeOnDeviceObserverUIDForm:1
-msgid ""
-"Form for displaying and changing the option for merging on Device "
-"Observer UID"
-msgstr ""
-
-#: 10d7c7bc951648918ebfcc419d498820 of remapp.forms.DicomQueryForm:1
-msgid "Form for launching DICOM Query"
-msgstr ""
-
-#: 7570c828ef384b009a1fb93add19ebff of remapp.forms.DicomQueryForm.date:1
-msgid "date(year, month, day) --> date object"
-msgstr ""
-
-#: d52bf6f45a064854bf2a652bd1237d47 of remapp.forms.DicomQueryForm.date.ctime:1
-msgid "Return ctime() style string."
-msgstr ""
-
-#: 1a78a17c2cb840baa709d448d020c8e3 of
-#: remapp.forms.DicomQueryForm.date.fromisocalendar:1
-msgid ""
-"int, int, int -> Construct a date from the ISO year, week number and "
-"weekday."
-msgstr ""
-
-#: ea9d5a7e01e8422babae59fbfa37158f of
-#: remapp.forms.DicomQueryForm.date.fromisocalendar:3
-msgid "This is the inverse of the date.isocalendar() function"
-msgstr ""
-
-#: eb54f4319d024d19a7ecc27b6035d86d of
-#: remapp.forms.DicomQueryForm.date.fromisoformat:1
-msgid "str -> Construct a date from the output of date.isoformat()"
-msgstr ""
-
-#: 5df91411249f46ef8da20cd37b9a22d1 of
-#: remapp.forms.DicomQueryForm.date.fromordinal:1
-msgid "int -> date corresponding to a proleptic Gregorian ordinal."
-msgstr ""
-
-#: 7bfecfdf1bb442b4b6936255f598fd28 of
-#: remapp.forms.DicomQueryForm.date.fromtimestamp:1
-msgid "Create a date from a POSIX timestamp."
-msgstr ""
-
-#: 281aaf9696004191aa20893cced21d21 of
-#: remapp.forms.DicomQueryForm.date.fromtimestamp:3
-msgid ""
-"The timestamp is a number, e.g. created via time.time(), that is "
-"interpreted as local time."
-msgstr ""
-
-#: 541396323a8d4ef28e65acd98c9a9cc7 of
-#: remapp.forms.DicomQueryForm.date.isocalendar:1
-msgid "Return a 3-tuple containing ISO year, week number, and weekday."
-msgstr ""
-
-#: 3bd622cdeb844755847121ea9cc6499d of
-#: remapp.forms.DicomQueryForm.date.isoformat:1
-msgid "Return string in ISO 8601 format, YYYY-MM-DD."
-msgstr ""
-
-#: c932e61217314c49a96d9154105dec21 of
-#: remapp.forms.DicomQueryForm.date.isoweekday:1
-msgid ""
-"Return the day of the week represented by the date. Monday == 1 ... "
-"Sunday == 7"
-msgstr ""
-
-#: df1b0fc05bff40cba9aad42950eee489 of
-#: remapp.forms.DicomQueryForm.date.replace:1
-msgid "Return date with new specified fields."
-msgstr ""
-
-#: 62e5d5c813154337a37f5d2309133ef1 of
-#: remapp.forms.DicomQueryForm.date.strftime:1
-msgid "format -> strftime() style string."
-msgstr ""
-
-#: 6fb6752b7c8147e0b0641e5932342b40 of
-#: remapp.forms.DicomQueryForm.date.timetuple:1
-msgid "Return time tuple, compatible with time.localtime()."
-msgstr ""
-
-#: f589fae5d949441386c4ef091611912b of remapp.forms.DicomQueryForm.date.today:1
-msgid ""
-"Current date or datetime:  same as "
-"self.__class__.fromtimestamp(time.time())."
-msgstr ""
-
-#: 544369861ba246339cfd589acc0b380d of
-#: remapp.forms.DicomQueryForm.date.toordinal:1
-msgid "Return proleptic Gregorian ordinal.  January 1 of year 1 is day 1."
-msgstr ""
-
-#: 825b6c2eaaae4cbf9157119eb6e3f6ca of
-#: remapp.forms.DicomQueryForm.date.weekday:1
-msgid ""
-"Return the day of the week represented by the date. Monday == 0 ... "
-"Sunday == 6"
-msgstr ""
-
-#: acd3602c519547189769ea7cd47d74a3 of remapp.forms.DicomQueryForm.clean:1
-msgid ""
-"Validate the form data to clear modality selections if sr_only is "
-"selected. :return: Form with modalities _or_ sr_only selected"
-msgstr ""
-
-#: c2032c1306fc4715b84a7babbfa15059 of remapp.forms.DicomDeleteSettingsForm:1
+#: of remapp.forms.DicomDeleteSettingsForm:1
 msgid ""
 "Form for configuring whether DICOM objects are stored or deleted once "
 "processed"
 msgstr ""
 
-#: 4084ccc7325441ea872181eb10d7fabd of remapp.forms.DicomQRForm:1
+#: of remapp.forms.DicomQRForm:1
 msgid "Form for configuring remote Query Retrieve nodes"
 msgstr ""
 
-#: fe2d0e34aece4473aa527b4b6cdccf8b of remapp.forms.DicomStoreForm:1
+#: of remapp.forms.DicomQueryForm:1
+msgid "Form for launching DICOM Query"
+msgstr ""
+
+#: of remapp.forms.DicomQueryForm.clean:1
+msgid ""
+"Validate the form data to clear modality selections if sr_only is "
+"selected. :return: Form with modalities _or_ sr_only selected"
+msgstr ""
+
+#: datetime.date:1 of
+msgid "date(year, month, day) --> date object"
+msgstr ""
+
+#: of remapp.forms.DicomQueryForm.date.ctime:1
+msgid "Return ctime() style string."
+msgstr ""
+
+#: of remapp.forms.DicomQueryForm.date.fromisocalendar:1
+msgid ""
+"int, int, int -> Construct a date from the ISO year, week number and "
+"weekday."
+msgstr ""
+
+#: of remapp.forms.DicomQueryForm.date.fromisocalendar:3
+msgid "This is the inverse of the date.isocalendar() function"
+msgstr ""
+
+#: of remapp.forms.DicomQueryForm.date.fromisoformat:1
+msgid "str -> Construct a date from the output of date.isoformat()"
+msgstr ""
+
+#: of remapp.forms.DicomQueryForm.date.fromordinal:1
+msgid "int -> date corresponding to a proleptic Gregorian ordinal."
+msgstr ""
+
+#: of remapp.forms.DicomQueryForm.date.fromtimestamp:1
+msgid "Create a date from a POSIX timestamp."
+msgstr ""
+
+#: of remapp.forms.DicomQueryForm.date.fromtimestamp:3
+msgid ""
+"The timestamp is a number, e.g. created via time.time(), that is "
+"interpreted as local time."
+msgstr ""
+
+#: of remapp.forms.DicomQueryForm.date.isocalendar:1
+msgid "Return a named tuple containing ISO year, week number, and weekday."
+msgstr ""
+
+#: of remapp.forms.DicomQueryForm.date.isoformat:1
+msgid "Return string in ISO 8601 format, YYYY-MM-DD."
+msgstr ""
+
+#: of remapp.forms.DicomQueryForm.date.isoweekday:1
+msgid ""
+"Return the day of the week represented by the date. Monday == 1 ... "
+"Sunday == 7"
+msgstr ""
+
+#: of remapp.forms.DicomQueryForm.date.replace:1
+msgid "Return date with new specified fields."
+msgstr ""
+
+#: of remapp.forms.DicomQueryForm.date.strftime:1
+msgid "format -> strftime() style string."
+msgstr ""
+
+#: of remapp.forms.DicomQueryForm.date.timetuple:1
+msgid "Return time tuple, compatible with time.localtime()."
+msgstr ""
+
+#: of remapp.forms.DicomQueryForm.date.today:1
+msgid ""
+"Current date or datetime:  same as "
+"self.__class__.fromtimestamp(time.time())."
+msgstr ""
+
+#: of remapp.forms.DicomQueryForm.date.toordinal:1
+msgid "Return proleptic Gregorian ordinal.  January 1 of year 1 is day 1."
+msgstr ""
+
+#: of remapp.forms.DicomQueryForm.date.weekday:1
+msgid ""
+"Return the day of the week represented by the date. Monday == 0 ... "
+"Sunday == 6"
+msgstr ""
+
+#: of remapp.forms.DicomStoreForm:1
 msgid "Form for configuring local Store nodes"
 msgstr ""
 
-#: 786098b421a64397b5b83b8df9152386 of
-#: remapp.forms.SkinDoseMapCalcSettingsForm:1
-msgid "Form for configuring whether skin dose maps are shown / calculated"
+#: of remapp.forms.GeneralChartOptionsDisplayForm:1
+msgid "Form for general chart display options"
 msgstr ""
 
-#: a7328b481ecd4f4bb379014630b91252 of remapp.forms.NotPatientNameForm:1
+#: of remapp.forms.HomepageOptionsForm:1
+msgid "Form for displaying and changing the home page options"
+msgstr ""
+
+#: of remapp.forms.MGChartOptionsDisplayForm:1
+msgid "Form for MG chart display options"
+msgstr ""
+
+#: of remapp.forms.MGChartOptionsForm:1
+msgid "Form for MG chart options"
+msgstr ""
+
+#: of remapp.forms.MergeOnDeviceObserverUIDForm:1
+msgid ""
+"Form for displaying and changing the option for merging on Device "
+"Observer UID"
+msgstr ""
+
+#: of remapp.forms.NMChartOptionsDisplayForm:1
+msgid "Form for NM chart display options"
+msgstr ""
+
+#: of remapp.forms.NMChartOptionsForm:1
+msgid "Form for NM chart options"
+msgstr ""
+
+#: of remapp.forms.NotPatientIDForm:1
+msgid "Form for configuring not-patient ID patterns"
+msgstr ""
+
+#: of remapp.forms.NotPatientNameForm:1
 msgid "Form for configuring not-patient name patterns"
 msgstr ""
 
-#: 6d4e7f2c3b3c4c8b820a3abd1ecf6aca of remapp.forms.NotPatientIDForm:1
-msgid "Form for configuring not-patient ID patterns"
+#: of remapp.forms.RFChartOptionsDisplayForm:1
+msgid "Form for RF chart display options"
 msgstr ""
+
+#: of remapp.forms.RFChartOptionsForm:1
+msgid "Form for RF chart options"
+msgstr ""
+
+#: of remapp.forms.RFHighDoseFluoroAlertsForm:1
+msgid "Form for displaying and changing fluoroscopy high dose alert settings"
+msgstr ""
+
+#: of remapp.forms.SizeHeadersForm:1
+msgid "Form for csv column header patient size imports through the web interface"
+msgstr ""
+
+#: of remapp.forms.SizeUploadForm:1
+msgid "Form for patient size csv file upload"
+msgstr ""
+
+#: of remapp.forms.SkinDoseMapCalcSettingsForm:1
+msgid "Form for configuring whether skin dose maps are shown / calculated"
+msgstr ""
+
+#: of remapp.forms.SkinSafeListForm:1
+msgid "Form for adding/updating/removing system from openSkin safe list"
+msgstr ""
+
+#: of remapp.forms.StandardNameFormBase:1
+msgid ""
+"For configuring standard names for study description, requested "
+"procedure, procedure and acquisition name."
+msgstr ""
+
+#: of remapp.forms.StandardNameFormCT:1 remapp.forms.StandardNameFormDX:1
+#: remapp.forms.StandardNameFormMG:1 remapp.forms.StandardNameFormRF:1
+msgid ""
+"Form for configuring standard names for study description, requested "
+"procedure, procedure and acquisition name"
+msgstr ""
+
+#: of remapp.forms.StandardNameSettingsForm:1
+msgid "Form for configuring whether standard names are shown / used"
+msgstr ""
+
+#~ msgid "Return a 3-tuple containing ISO year, week number, and weekday."
+#~ msgstr ""
 

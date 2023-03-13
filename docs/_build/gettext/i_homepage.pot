@@ -1,5 +1,5 @@
 # SOME DESCRIPTIVE TITLE.
-# Copyright (C) 2013-2020, The Royal Marsden NHS Foundation Trust
+# Copyright (C) 2013-2022, The Royal Marsden NHS Foundation Trust
 # This file is distributed under the same license as the OpenREM package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-01 18:30+0100\n"
+"POT-Creation-Date: 2023-03-05 17:21+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -33,6 +33,10 @@ msgid "Display of workload information"
 msgstr ""
 
 #: ../../i_homepage.rst:15
+msgid "Config options"
+msgstr ""
+
+#: ../../i_homepage.rst:15
 msgid "Figure 1: The ``Config`` menu (user and admin)"
 msgstr ""
 
@@ -41,11 +45,19 @@ msgid "The home page can be configured to show the number of studies carried out
 msgstr ""
 
 #: ../../i_homepage.rst:30
+msgid "The home page options form"
+msgstr ""
+
+#: ../../i_homepage.rst:30
 msgid "Figure 2: The home page options form"
 msgstr ""
 
 #: ../../i_homepage.rst:32
 msgid "By default the display of workload information is disabled; this can be changed by an OpenREM administrator via the ``Home page options``. When an OpenREM administrator views the home page options a tick box is included that enables or disables the display of workload data on the home page (figure 3)."
+msgstr ""
+
+#: ../../i_homepage.rst:42
+msgid "The home page options admin form"
 msgstr ""
 
 #: ../../i_homepage.rst:42

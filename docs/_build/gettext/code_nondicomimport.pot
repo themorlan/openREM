@@ -1,5 +1,5 @@
 # SOME DESCRIPTIVE TITLE.
-# Copyright (C) 2013-2020, The Royal Marsden NHS Foundation Trust
+# Copyright (C) 2013-2022, The Royal Marsden NHS Foundation Trust
 # This file is distributed under the same license as the OpenREM package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-01 18:30+0100\n"
+"POT-Creation-Date: 2023-03-05 17:21+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -38,7 +38,6 @@ msgstr ""
 
 #: ../../../openrem/remapp/extractors/ptsizecsv2db.py:docstring of openrem.remapp.extractors.ptsizecsv2db.csv2db:0
 #: ../../../openrem/remapp/extractors/ptsizecsv2db.py:docstring of openrem.remapp.extractors.ptsizecsv2db.websizeimport:0
-#: ../../../openrem/remapp/extractors/ptsizecsv2db.py:docstring of openrem.remapp.extractors.ptsizecsv2db.websizeimport:0
 msgid "Parameters"
 msgstr ""
 
@@ -51,11 +50,9 @@ msgid "Example::"
 msgstr ""
 
 #: ../../../openrem/remapp/extractors/ptsizecsv2db.py:docstring of openrem.remapp.extractors.ptsizecsv2db.websizeimport:1
-#: ../../../openrem/remapp/extractors/ptsizecsv2db.py:docstring of openrem.remapp.extractors.ptsizecsv2db.websizeimport:1
 msgid "Task to import patient size data from the OpenREM web interface."
 msgstr ""
 
-#: ../../../openrem/remapp/extractors/ptsizecsv2db.py:docstring of openrem.remapp.extractors.ptsizecsv2db.websizeimport:3
 #: ../../../openrem/remapp/extractors/ptsizecsv2db.py:docstring of openrem.remapp.extractors.ptsizecsv2db.websizeimport:3
 msgid "Database index key for the import record, containing the path to the import csv file and the field header details."
 msgstr ""

@@ -8,30 +8,30 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-04 12:05+0100\n"
+"POT-Creation-Date: 2023-03-05 17:21+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.8.0\n"
+"Generated-By: Babel 2.12.1\n"
 
-#: ../../skindosemap.rst:3 9bc09465b1b444659ef5a0420fbfb564
+#: ../../skindosemap.rst:3
 msgid "Skin dose maps"
 msgstr ""
 
-#: ../../skindosemap.rst:7 b4aa183f17ca4835abbada9511bbbe31
+#: ../../skindosemap.rst:7
 msgid "Functionality that is available"
 msgstr ""
 
-#: ../../skindosemap.rst:9 d2a0e037bf204de6ae03dee884db1fb4
+#: ../../skindosemap.rst:9
 msgid ""
 "Skin dose map data is calculated to the surface of a simple geometric "
 "phantom using the in-built `openSkin`_ routines (3D phantom)"
 msgstr ""
 
-#: ../../skindosemap.rst:11 6bfd00553e6c4ebea1baf8ca4089455f
+#: ../../skindosemap.rst:11
 msgid ""
 "The calculated doses include kVp-dependent backscatter factors and "
 "account for any copper filters using data from `this paper`_ for each "
@@ -40,22 +40,20 @@ msgid ""
 "calculated, excluding any zero values."
 msgstr ""
 
-#: ../../skindosemap.rst:16 6cf12cf72b204e5da09f432a89082914
+#: ../../skindosemap.rst:16
 msgid ""
 "The phantom dimensions are calculated from the height and mass of the "
 "patient; defaults of 1.786 m and 73.2 kg are used when patient height and"
 " mass are not available"
 msgstr ""
 
-#: ../../skindosemap.rst:19 88a39a43721145899625b943be3c997b
+#: ../../skindosemap.rst:19
 msgid ""
 "Data can be calculated on import to OpenREM, or on demand when a study is"
-" viewed. Calculating the skin dose map can take several minutes, so "
-"calculating on import may tie up your server for that time, depending on "
-"how you have configured the :ref:`celery-task-queue`"
+" viewed. Calculating the skin dose map can take several minutes."
 msgstr ""
 
-#: ../../skindosemap.rst:23 166e390ee8d64311a99d2445d6d6b3e2
+#: ../../skindosemap.rst:21
 msgid ""
 "Data is recalculated automatically if the patient height or mass stored "
 "in the database differs from the values stored in the skin dose map data "
@@ -63,154 +61,178 @@ msgid ""
 "to OpenREM after the initial skin dose map data has been calculated"
 msgstr ""
 
-#: ../../skindosemap.rst:27 b2c8ca0287704cdbb331c2fb847afa60
+#: ../../skindosemap.rst:25
 msgid "3D skin dose map data is shown graphically as a 2D image and a 3D model"
 msgstr ""
 
-#: ../../skindosemap.rst:28 a528811b1f7948aebe8729bc90824b34
+#: ../../skindosemap.rst:26
 msgid "The 3D model can be manipulated using a touch screen"
 msgstr ""
 
-#: ../../skindosemap.rst:29 213821c4d2f0467fa4533eef8d2c4d20
+#: ../../skindosemap.rst:27
 msgid ""
 "The user can change the maximum and minimum displayed dose; "
 "alternatively, window level and width can be adjusted"
 msgstr ""
 
-#: ../../skindosemap.rst:31 b8af7a85c79640818032760c2aee7a0c
+#: ../../skindosemap.rst:29
 msgid "A colour dose scale is shown with a selection of colour schemes"
 msgstr ""
 
-#: ../../skindosemap.rst:32 9c60149e30374595872262d757ec8a28
+#: ../../skindosemap.rst:30
 msgid "The skin dose map section can be displayed full-screen"
 msgstr ""
 
-#: ../../skindosemap.rst:33 003b7931fd6144c69d92d9e24216d335
+#: ../../skindosemap.rst:31
 msgid ""
 "The calculated peak skin dose, phantom dimensions, patient height, mass "
 "and orientation used for the calculations are shown in the top left hand "
 "corner of the skin dose map"
 msgstr ""
 
-#: ../../skindosemap.rst:36 4c990bafaedd40dfb0f627634ebc0416
+#: ../../skindosemap.rst:34
+msgid ""
+"Additionally the percentage of exposures that interact with the phantom "
+"and therefore contribute to the skin dose is shown as DAP percentage "
+"contributed, enhancing the interpretability of the skin dose calculation."
+msgstr ""
+
+#: ../../skindosemap.rst:37
 msgid ""
 "If skin dose map display is disabled then fluoroscopy study data can be "
 "exported in a format suitable for the stand-alone openSkin routines"
 msgstr ""
 
-#: ../../skindosemap.rst:39 53a30dcfbc9d46508d9471b0781dbed0
+#: ../../skindosemap.rst:40
 msgid ""
 "The phantom consists of a cuboid with one semi-cylinder on each side (see"
 " 3D phantom section of `phantom design`_ on the openSkin website for "
 "details)."
 msgstr ""
 
-#: ../../skindosemap.rst:43 f3151e84bfca47e08a2c57f6e12279a3
+#: ../../skindosemap.rst:44
 msgid "2D visualisation of the 3D data"
 msgstr ""
 
-#: ../../skindosemap.rst:51 7e3f1649d1dd430397a18f36ba36dd09
+#: ../../skindosemap.rst
+msgid "2D visualisation of the 3D skin dose map data"
+msgstr ""
+
+#: ../../skindosemap.rst:52
 msgid "Figure 1: 2D visualisation of the 3D data"
 msgstr ""
 
-#: ../../skindosemap.rst:53 2785396e19cb4df7b1f7c09c58cecb5f
+#: ../../skindosemap.rst:54
 msgid ""
 "This is a 2D view of the whole surface of the 3D phantom, as though the "
 "phantom surface has been peeled off and laid out flat (figure 1). The 2D "
 "visualisation includes the following features:"
 msgstr ""
 
-#: ../../skindosemap.rst:57 331202973a574a0a909d6dd9418a70c1
+#: ../../skindosemap.rst:58
 msgid "The skin dose at the mouse pointer is shown as a tool-tip"
 msgstr ""
 
-#: ../../skindosemap.rst:58 c6ad1b67149244c59f4160b2efc9cff0
+#: ../../skindosemap.rst:59
 msgid ""
 "Moving the mouse whilst holding down the left-hand mouse button changes "
 "the window level and width of the displayed skin dose map"
 msgstr ""
 
-#: ../../skindosemap.rst:60 5df89a55a30c458ab1ba4e55abd0cd3b
+#: ../../skindosemap.rst:61
 msgid ""
 "An overlay indicating the phantom regions and orientation can be toggled "
 "on and off. This indicates the phantom anterior, left, posterior and "
 "right sides, and also shows the superior and inferior ends (figure 2)"
 msgstr ""
 
-#: ../../skindosemap.rst:70 6873c574dad842a3b4e5adcb7870fae6
+#: ../../skindosemap.rst
+msgid "2D visualisation of the 3D skin dose map including phantom region overlay"
+msgstr ""
+
+#: ../../skindosemap.rst:71
 msgid "Figure 2: Phantom region overlay"
 msgstr ""
 
-#: ../../skindosemap.rst:72 ../../skindosemap.rst:97
-#: 34193255b9ac47338c3367a574a87f15 c575c704dd024f1782ed702f4b5b3128
+#: ../../skindosemap.rst:73 ../../skindosemap.rst:98
 msgid "The current view can be saved as a png file"
 msgstr ""
 
-#: ../../skindosemap.rst:75 7153a66fe87a42ba942caa3fa85e9e1b
+#: ../../skindosemap.rst:76
 msgid "3D visualisation"
 msgstr ""
 
-#: ../../skindosemap.rst:77 156256dad9a4472d9684733247a669cf
+#: ../../skindosemap.rst:78
 msgid ""
 "This is a 3D view of the phantom that was used for the calculations, with"
 " the skin dose map overlaid onto the surface. The 3D visualisation "
 "includes the following features:"
 msgstr ""
 
-#: ../../skindosemap.rst:81 e4b85ec5643a47f9a2e35822fce3ab06
+#: ../../skindosemap.rst:82
 msgid ""
 "Moving the mouse whilst holding down the left-hand mouse button rotates "
 "the 3D model"
 msgstr ""
 
-#: ../../skindosemap.rst:83 5a5d523c459e4df6ade80266c90cf00e
+#: ../../skindosemap.rst:84
 msgid "Using the mouse wheel zooms in and out"
 msgstr ""
 
-#: ../../skindosemap.rst:91 36ceb2d6bab649c4ab7b6d67087069a2
+#: ../../skindosemap.rst
+msgid "3D visualisation of the skin dose map data"
+msgstr ""
+
+#: ../../skindosemap.rst:92
 msgid "Figure 3: 3D visualisation of the data"
 msgstr ""
 
-#: ../../skindosemap.rst:94 95b200e4ac63443a935dc311ad961196
+#: ../../skindosemap.rst:95
 msgid ""
 "A simple 3D model of a person is displayed in the bottom left corner. "
 "This is to enable the viewer to orientate themselves when viewing the 3D "
 "skin dose map"
 msgstr ""
 
-#: ../../skindosemap.rst:101 810c06dd535e4cc190276d3dc16e1e52
+#: ../../skindosemap.rst:102
 msgid "Skin dose map settings"
 msgstr ""
 
-#: ../../skindosemap.rst:103 e457abd72e29482cb7d975d18d7e163d
+#: ../../skindosemap.rst:104
 msgid ""
 "There are two skin dose map options that can be set by an OpenREM "
 "administrator via the ``Skin dose map settings`` option in the ``Config "
 "menu``:"
 msgstr ""
 
-#: ../../skindosemap.rst:106 3323ed5025e64ded84170686ad7e28dd
+#: ../../skindosemap.rst:107
 msgid "Enable skin dose maps"
 msgstr ""
 
-#: ../../skindosemap.rst:107 2f8132b012004ea2a0153e216d3bd4ab
+#: ../../skindosemap.rst:108
 msgid "Calculate skin dose maps on import"
 msgstr ""
 
-#: ../../skindosemap.rst:109 d9dc9e9cc31540b0873774c3553f573a
+#: ../../skindosemap.rst:109
+msgid "Ignore systems safelist"
+msgstr ""
+
+#: ../../skindosemap.rst:111
 msgid ""
 "The first of these sets whether skin dose map data is calculated, and "
 "also switches the display of skin dose maps on or off. The second option "
 "controls whether the skin dose map data is calculated at the point when a"
 " new study is imported into OpenREM, or calculated when a user first "
-"views the details of that particular study in the OpenREM interface."
+"views the details of that particular study in the OpenREM interface. The "
+"third option allows the user to enables skin dose maps for systems that "
+"are not validated for OpenSkin."
 msgstr ""
 
-#: ../../skindosemap.rst:115 4cec6a471fc04daa9d7d8dd7dd0804a0
+#: ../../skindosemap.rst:119
 msgid "When skin dose maps are enabled:"
 msgstr ""
 
-#: ../../skindosemap.rst:117 cec1e980bc604134a6d4be9bae8b04e3
+#: ../../skindosemap.rst:121
 msgid ""
 "When a user views the details of a fluoroscopy study OpenREM looks for a "
 "skin dose map pickle file on the OpenREM server in the ``skin_maps`` "
@@ -219,7 +241,7 @@ msgid ""
 "displayed. The ``skin_maps`` folder is created if it does not exist"
 msgstr ""
 
-#: ../../skindosemap.rst:122 c7b88fa32dd94eeab89148d7a55fad03
+#: ../../skindosemap.rst:126
 msgid ""
 "If a pickle file is not found then OpenREM calculates skin dose map data."
 " These calculations can take some time. They are carried out in the "
@@ -231,40 +253,40 @@ msgid ""
 "study"
 msgstr ""
 
-#: ../../skindosemap.rst:129 c4e5013d5a5d4ff595cc1936dcad0be3
+#: ../../skindosemap.rst:133
 msgid ""
 "For subsequent views of the same study the data in the pickle file is "
 "loaded, rather than re-calculating the data, making the display of the "
 "skin dose map much quicker"
 msgstr ""
 
-#: ../../skindosemap.rst:133 ee672884092b4a39b88a8c0f9b8d1762
+#: ../../skindosemap.rst:137
 msgid "When calculation on import is enabled:"
 msgstr ""
 
-#: ../../skindosemap.rst:135 11362fe36dee4b59a9a34082c0086025
+#: ../../skindosemap.rst:139
 msgid ""
 "OpenREM calculates the skin dose map data for a fluoroscopy study as soon"
 " as it arrives in the system"
 msgstr ""
 
-#: ../../skindosemap.rst:137 31dfb8c81d464bc284b9005cb01726a5
+#: ../../skindosemap.rst:141
 msgid ""
 "A pickle file containing the data is saved in the ``skin_maps`` subfolder"
 " of ``MEDIA_ROOT``"
 msgstr ""
 
-#: ../../skindosemap.rst:139 b9c81ea5c9a84279a2403dd69e314e10
+#: ../../skindosemap.rst:143
 msgid ""
 "Users viewing the details of a study won't have to wait for the skin dose"
 " map data to be calculated"
 msgstr ""
 
-#: ../../skindosemap.rst:145 0fc57229bcb648be905276923cc15a7e
+#: ../../skindosemap.rst:149
 msgid "Exporting data to openSkin"
 msgstr ""
 
-#: ../../skindosemap.rst:147 d796d005e57f4f85b213f94fff011ea1
+#: ../../skindosemap.rst:151
 msgid ""
 "If skin dose maps are disabled, and the user has export rights, the user "
 "is presented with the option of exporting the study data as a csv file "
@@ -274,56 +296,60 @@ msgid ""
 "OpenSkin export (figure 4)."
 msgstr ""
 
-#: ../../skindosemap.rst:159 40dd37b5289d44169053e5bf7b9f7f25
+#: ../../skindosemap.rst
+msgid "Export from OpenREM to openSkin"
+msgstr ""
+
+#: ../../skindosemap.rst:163
 msgid "Figure 4: Export from OpenREM to openSkin"
 msgstr ""
 
-#: ../../skindosemap.rst:163 92a47b2f7edb48b9bc1f39f2c03bfe43
+#: ../../skindosemap.rst:167
 msgid "Instructions for openSkin"
 msgstr ""
 
-#: ../../skindosemap.rst:165 1095cb6d70d94ce58a6a1392c354ace4
+#: ../../skindosemap.rst:169
 msgid ""
 "Download the openSkin repository as a zip file from `openSkin "
 "downloads`_. To use openSkin as a stand-alone application you need python"
 " 2.x and the pypng python library."
 msgstr ""
 
-#: ../../skindosemap.rst:169 16589cca90a84a649631efa79777798a
+#: ../../skindosemap.rst:173
 msgid ""
 "Extract the contents of the zip file into a folder on your computer and "
 "run `python main.py` from a command line and answer each question."
 msgstr ""
 
-#: ../../skindosemap.rst:171 51093c02d19d4f1e93e1beb789e69596
+#: ../../skindosemap.rst:175
 msgid "See `phantom design`_ for details of the 2D and 3D phantoms."
 msgstr ""
 
-#: ../../skindosemap.rst:172 b7c0d946ef1543daa0fbaffecb46afb6
+#: ../../skindosemap.rst:176
 msgid "When asked for the source csv file use the one exported from OpenREM"
 msgstr ""
 
-#: ../../skindosemap.rst:173 0a0b47b86c004804b56a95626f7947fa
+#: ../../skindosemap.rst:177
 msgid ""
 "Depending on the number of events in the export and the power of your "
 "computer the calculations can take a few minutes"
 msgstr ""
 
-#: ../../skindosemap.rst:176 68b5f18fdbbe43398a09add36731e7f4
+#: ../../skindosemap.rst:180
 msgid ""
 "Two files will be produced - a textfile called ``skin_dose_results.txt`` "
 "and a small image called ``skin_dose_map.png``"
 msgstr ""
 
-#: ../../skindosemap.rst:180 a2ced5301b004a3395853f2687e4b981
+#: ../../skindosemap.rst:184
 msgid "Results text file"
 msgstr ""
 
-#: ../../skindosemap.rst:182 60df5485f73f4acb88a00a0fa77267b9
+#: ../../skindosemap.rst:186
 msgid "It should look something like this::"
 msgstr ""
 
-#: ../../skindosemap.rst:192 86efc1f8e9894688b6e522a698cefab2
+#: ../../skindosemap.rst:196
 msgid ""
 "The peak dose is the peak incident dose delivered to any one-cm-square "
 "area. If any of these 1 cm\\ :sup:`2` areas (referred to as cells) are "
@@ -331,18 +357,18 @@ msgid ""
 "dose categories, are listed in the table accordingly."
 msgstr ""
 
-#: ../../skindosemap.rst:198 93aa69d4acd148d8a025cf46b305dba1
+#: ../../skindosemap.rst:202
 msgid "Incidence map image file"
 msgstr ""
 
-#: ../../skindosemap.rst:200 866b9fb1c3634378b920f53573a519e1
+#: ../../skindosemap.rst:204
 msgid ""
 "The image file will be a small 70x90 px PNG image if you used the 3D "
 "phantom, or 150 x 50 px PNG if you used the 2D phantom. With both, the "
 "head end of the table is on the left."
 msgstr ""
 
-#: ../../skindosemap.rst:204 3a42024442dd4fe895ae220e28e78b07
+#: ../../skindosemap.rst:208
 msgid ""
 "The image is scaled so that black is 0 Gy and white is 10 Gy. For most "
 "studies, this results in an incidence map that is largely black. However,"
@@ -350,27 +376,60 @@ msgid ""
 " will find that the required map is there."
 msgstr ""
 
-#: ../../skindosemap.rst:209 9939787272de47c0b0b04535e79206b9
+#: ../../skindosemap.rst:213
 msgid ""
 "A native and 'colour equalised' version of the same export are shown "
 "below:"
 msgstr ""
 
-#: ../../skindosemap.rst:233 9253901425034878b522a9946a2d64f4
+#: ../../skindosemap.rst:-1
+msgid "OpenSkin incidence map, unscaled"
+msgstr ""
+
+#: ../../skindosemap.rst:-1
+msgid "OpenSkin incidence map, scaled"
+msgstr ""
+
+#: ../../skindosemap.rst:237
 msgid "Limitations"
 msgstr ""
 
-#: ../../skindosemap.rst:235 72fb5c512e424cc4af9eeafebe61d6d4
+#: ../../skindosemap.rst:239
 msgid ""
 "Skin dose map calculations do not currently work for all systems. Siemens"
 " Artis Zee data is known to work. If skin dose maps do not work for your "
 "systems then please let us know via the `OpenREM Google Group`_."
 msgstr ""
 
-#: ../../skindosemap.rst:239 9bbd37c0ea4149438747566f23c97d28
+#: ../../skindosemap.rst:243
 msgid ""
 "`openSkin`_ is yet to be validated independently - if this is something "
 "you want to do, please do go ahead and feed back your findings to "
 "Jonathan Cole at `jacole`_."
 msgstr ""
+
+#~ msgid ""
+#~ "Data can be calculated on import "
+#~ "to OpenREM, or on demand when a"
+#~ " study is viewed. Calculating the "
+#~ "skin dose map can take several "
+#~ "minutes, so calculating on import may"
+#~ " tie up your server for that "
+#~ "time, depending on how you have "
+#~ "configured the :ref:`celery-task-queue`"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "The first of these sets whether "
+#~ "skin dose map data is calculated, "
+#~ "and also switches the display of "
+#~ "skin dose maps on or off. The "
+#~ "second option controls whether the skin"
+#~ " dose map data is calculated at "
+#~ "the point when a new study is "
+#~ "imported into OpenREM, or calculated "
+#~ "when a user first views the "
+#~ "details of that particular study in "
+#~ "the OpenREM interface."
+#~ msgstr ""
 

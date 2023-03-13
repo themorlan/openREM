@@ -8,31 +8,31 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-04 12:05+0100\n"
+"POT-Creation-Date: 2023-03-05 17:21+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.8.0\n"
+"Generated-By: Babel 2.12.1\n"
 
-#: ../../i_not_patient_indicator.rst:3 11db890e8aff49eb883ae59069d3d3a8
+#: ../../i_not_patient_indicator.rst:3
 msgid "Not-patient indicator settings"
 msgstr ""
 
-#: ../../i_not_patient_indicator.rst:5 7d1e08d2f0864af78125b58e7082f074
+#: ../../i_not_patient_indicator.rst:5
 msgid ""
 "The standard configuration for OpenREM is to not store any patient "
 "identifiable information.  Therefore it can be difficult to distinguish "
 "between real patients and test or quality assurance exposures."
 msgstr ""
 
-#: ../../i_not_patient_indicator.rst:8 911c2d0969af4c6290271b617c92c0ae
+#: ../../i_not_patient_indicator.rst:8
 msgid "*Changed in 0.8.0*"
 msgstr ""
 
-#: ../../i_not_patient_indicator.rst:10 80124225a78c4beeaca2c92a7144d40e
+#: ../../i_not_patient_indicator.rst:10
 msgid ""
 "To aid identification of non-patient exposures, the patient name and the "
 "patient ID are checked against a set of patterns, and if a match is found"
@@ -41,66 +41,70 @@ msgid ""
 "details)."
 msgstr ""
 
-#: ../../i_not_patient_indicator.rst:16 56bb7dd198f4453993438cdbfdfd9a56
+#: ../../i_not_patient_indicator.rst:16
 msgid "Setting the patterns to identify non-patient studies"
 msgstr ""
 
-#: ../../i_not_patient_indicator.rst:23 48e5c27c3356491689d3372b3f8ea1ea
+#: ../../i_not_patient_indicator.rst:23
+msgid "Config menu"
+msgstr ""
+
+#: ../../i_not_patient_indicator.rst:23
 msgid "The ``Config`` menu"
 msgstr ""
 
-#: ../../i_not_patient_indicator.rst:25 47d8898fdc174eff80844c02403048d8
+#: ../../i_not_patient_indicator.rst:25
 msgid "Use the ``Config`` menu and select ``Not-patient indicators``:"
 msgstr ""
 
-#: ../../i_not_patient_indicator.rst:27 aa544bcc09c647e4b447b22b2b775667
+#: ../../i_not_patient_indicator.rst:27
 msgid ""
 "The patient name and the ID are matched against the patterns you "
 "configure. The patterns make use of wildcards as per the following table,"
 " and are case insensitive:"
 msgstr ""
 
-#: ../../i_not_patient_indicator.rst:31 5e159fb6c418495a9ba62d0df0e968fc
+#: ../../i_not_patient_indicator.rst:31
 msgid "Pattern"
 msgstr ""
 
-#: ../../i_not_patient_indicator.rst:31 44b31141af5c426b8a4d26ad5891d90a
+#: ../../i_not_patient_indicator.rst:31
 msgid "Meaning"
 msgstr ""
 
-#: ../../i_not_patient_indicator.rst:33 d9bcee6e1d5a4d6b93c21211d2bcbafe
+#: ../../i_not_patient_indicator.rst:33
 msgid "\\*"
 msgstr ""
 
-#: ../../i_not_patient_indicator.rst:33 9081d731badd4a6dac67f547adbfc1bb
+#: ../../i_not_patient_indicator.rst:33
 msgid "matches everything"
 msgstr ""
 
-#: ../../i_not_patient_indicator.rst:34 f591c89fc5424846a31c44d56e92ee01
+#: ../../i_not_patient_indicator.rst:34
 msgid "?"
 msgstr ""
 
-#: ../../i_not_patient_indicator.rst:34 d0c64d62ee6547db8db268b324cb09a9
+#: ../../i_not_patient_indicator.rst:34
 msgid "matches any single character"
 msgstr ""
 
-#: ../../i_not_patient_indicator.rst:35 fa81cfeb412849319233bf73ff68a63f
+#: ../../i_not_patient_indicator.rst:35
 msgid "[seq]"
 msgstr ""
 
-#: ../../i_not_patient_indicator.rst:35 cea8e298c7d146de980fd2e0aecd4b16
+#: ../../i_not_patient_indicator.rst:35
 msgid "matches any character in seq"
 msgstr ""
 
-#: ../../i_not_patient_indicator.rst:36 5197d2bc4dad46a7a71797fb116c53a1
+#: ../../i_not_patient_indicator.rst:36
 msgid "[!seq]"
 msgstr ""
 
-#: ../../i_not_patient_indicator.rst:36 5087768f5cc8496681dc47a6b4450bae
+#: ../../i_not_patient_indicator.rst:36
 msgid "matches any character not in seq"
 msgstr ""
 
-#: ../../i_not_patient_indicator.rst:39 f6b860dca8994d79bc491b6cb6807358
+#: ../../i_not_patient_indicator.rst:39
 msgid ""
 "To match all studies where the patient name begins with  ``physics``, the"
 " pattern should be set to ``physics*``. This would match "
@@ -110,7 +114,7 @@ msgid ""
 " is ``Test``, you would set the pattern to be ``*^test*``."
 msgstr ""
 
-#: ../../i_not_patient_indicator.rst:44 9349ae217c874fb4a2c952c14509a0d7
+#: ../../i_not_patient_indicator.rst:44
 msgid ""
 "If your test patient name always starts with ``PHY`` and then a number, "
 "you might use this pattern: ``phy[0-9]*``. Here we have used a range for "
@@ -120,45 +124,45 @@ msgid ""
 "but not ``Phyliss``."
 msgstr ""
 
-#: ../../i_not_patient_indicator.rst:49 94451434535b4ea399ce44077be5473a
+#: ../../i_not_patient_indicator.rst:49
 msgid ""
 "The pattern list for patient name and the list for patient ID are "
 "separate, so both need to be populated to meet your requirements."
 msgstr ""
 
-#: ../../i_not_patient_indicator.rst:53 cb37f7f5b18840d4b3e3649b66c9c84e
+#: ../../i_not_patient_indicator.rst:53
 msgid "Creating new patterns"
 msgstr ""
 
-#: ../../i_not_patient_indicator.rst:55 529404c25c034916aef56210ca299592
+#: ../../i_not_patient_indicator.rst:55
 msgid ""
 "Click on ``Add ID patterns`` or ``Add name patterns`` in the panel title "
 "bar and follow the instructions."
 msgstr ""
 
-#: ../../i_not_patient_indicator.rst:58 4a0e8794760246eba8eca3e654b02704
+#: ../../i_not_patient_indicator.rst:58
 msgid "Modifying patterns"
 msgstr ""
 
-#: ../../i_not_patient_indicator.rst:60 8bb882ad94ec4ca8986a980708bc64a2
+#: ../../i_not_patient_indicator.rst:60
 msgid "Click the ``Modify`` link in the row of the pattern you wish to modify."
 msgstr ""
 
-#: ../../i_not_patient_indicator.rst:63 53126ca19b564094ba0b073737791d06
+#: ../../i_not_patient_indicator.rst:63
 msgid "Deleting patterns"
 msgstr ""
 
-#: ../../i_not_patient_indicator.rst:65 ccdea101daa545abb73178b7e400d5e8
+#: ../../i_not_patient_indicator.rst:65
 msgid ""
 "Click the ``Delete`` link in the row of the pattern you wish to delete. "
 "You will be asked to confirm the deletion."
 msgstr ""
 
-#: ../../i_not_patient_indicator.rst:69 677af68e6dd44500b808a9dcfd962ef2
+#: ../../i_not_patient_indicator.rst:69
 msgid "Replicating behaviour of release 0.7.4 and earlier"
 msgstr ""
 
-#: ../../i_not_patient_indicator.rst:72 21774445c80c450894087f9a11ab9019
+#: ../../i_not_patient_indicator.rst:72
 msgid ""
 "OpenREM releases before 0.8 had the not-patient identification patterns "
 "hard-coded. From release 0.8.0 the patterns are (admin) user "
