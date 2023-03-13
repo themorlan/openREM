@@ -953,14 +953,14 @@ class DiagnosticReferenceLevels(models.Model):
 
     standard_name = models.ManyToManyField(StandardNames)
     lower_bound = models.DecimalField(
-        max_digits=16, decimal_places=8, blank=True, null=True
+        max_digits=16, decimal_places=8
     )
     upper_bound = models.DecimalField(
-        max_digits=16, decimal_places=8, blank=True, null=True
+        max_digits=16, decimal_places=8
     )
     # DRL can be either a DLP (unit: [mGy.cm]) or DAP (unit: [cGy.cm^2]) reference value
     diagnostic_reference_level = models.DecimalField(
-        max_digits=16, decimal_places=8, blank=True, null=True
+        max_digits=16, decimal_places=8
     )
 
 
@@ -972,14 +972,14 @@ class KFactors(models.Model):
 
     standard_name = models.ManyToManyField(StandardNames)
     lower_bound = models.DecimalField(
-        max_digits=16, decimal_places=8, blank=True, null=True
+        max_digits=16, decimal_places=8
     )
     upper_bound = models.DecimalField(
-        max_digits=16, decimal_places=8, blank=True, null=True
+        max_digits=16, decimal_places=8
     )
     # k factor has one of the following units: [mSv/(mGy.cm)] or [mSv/(cGy.cm^2)]
     k_factor = models.DecimalField(
-        max_digits=16, decimal_places=8, blank=True, null=True
+        max_digits=16, decimal_places=8
     )
 
 
