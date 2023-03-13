@@ -259,13 +259,17 @@ class Phantom3:
                     round_properly(transition1)
                     - 1
                     + radius
-                    * math.sin(angle_step * (row_index - round_properly(transition1) + 1))
+                    * math.sin(
+                        angle_step * (row_index - round_properly(transition1) + 1)
+                    )
                 )
                 my_z = (
                     2.0 * radius
                     + z_offset
                     + radius
-                    * math.cos(angle_step * (row_index - round_properly(transition1) + 1))
+                    * math.cos(
+                        angle_step * (row_index - round_properly(transition1) + 1)
+                    )
                     - radius
                 ) * pat_pos_z
 
@@ -287,11 +291,12 @@ class Phantom3:
             ):
                 my_z = z_offset * pat_pos_z
                 my_x = (
-                        round_flat / 2.0
-                        - (row_index - round_circumference)
-                        + round_flat / 2.0
-                        * (row_index - round_circumference)
-                        / abs(row_index - round_circumference)
+                    round_flat / 2.0
+                    - (row_index - round_circumference)
+                    + round_flat
+                    / 2.0
+                    * (row_index - round_circumference)
+                    / abs(row_index - round_circumference)
                 )
                 my_y = col_index * pat_pos_y
 
@@ -307,15 +312,15 @@ class Phantom3:
                 and col_index > self.phantom_head_height - origin[1]
             ):
                 my_y = col_index * pat_pos_y
-                my_x = (
-                    - round_properly(round_flat / 2)
-                    - radius
-                    * math.sin(angle_step * (row_index - round_properly(transition3) + 1))
+                my_x = -round_properly(round_flat / 2) - radius * math.sin(
+                    angle_step * (row_index - round_properly(transition3) + 1)
                 )
                 my_z = (
                     z_offset
                     - radius
-                    * math.cos(angle_step * (row_index - round_properly(transition3) + 1))
+                    * math.cos(
+                        angle_step * (row_index - round_properly(transition3) + 1)
+                    )
                     + radius
                 ) * pat_pos_z
 
@@ -448,6 +453,7 @@ class SkinDose:
 
         if np.sum(skin_map):
             self.dap_count += dap
+
 
 def round_properly(value):
     """This method returns a rounded version of a value which is rounded using the method we're all

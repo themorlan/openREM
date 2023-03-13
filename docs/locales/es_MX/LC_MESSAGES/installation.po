@@ -7,106 +7,206 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-13 20:31+0100\n"
+"POT-Creation-Date: 2023-03-05 17:21+0000\n"
 "PO-Revision-Date: 2020-10-14 20:26+0000\n"
 "Last-Translator: Ed McDonagh <ed@mcdonagh.org.uk>\n"
-"Language-Team: Spanish (Mexico) <https://hosted.weblate.org/projects/openrem/"
-"rtd-installation/es_MX/>\n"
 "Language: es_MX\n"
+"Language-Team: Spanish (Mexico) "
+"<https://hosted.weblate.org/projects/openrem/rtd-installation/es_MX/>\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.3-dev\n"
-"Generated-By: Babel 2.8.0\n"
+"Generated-By: Babel 2.12.1\n"
 
 #: ../../installation.rst:3
 msgid "Installation"
 msgstr "Instalación"
 
-#: ../../installation.rst:6
-msgid "Windows or Linux: Docker install"
-msgstr "Windows o Linux: Instalación de Docker"
+#: ../../installation.rst:5
+msgid "**Document not ready for translation**"
+msgstr ""
 
-#: ../../installation.rst:9
-msgid "Preparation"
-msgstr "Preparación"
+#: ../../installation.rst:8
+#, fuzzy
+msgid "Installation options"
+msgstr "Instalación"
 
 #: ../../installation.rst:10
-msgid "Install Docker"
+msgid "There are three supported installation options for OpenREM v1.0:"
+msgstr ""
+
+#: ../../installation.rst:12 ../../installation.rst:17
+#, fuzzy
+msgid "Docker"
 msgstr "Instalación de Docker"
 
-#: ../../installation.rst:11
-msgid "Download https://bitbucket.org/openrem/docker/get/develop.zip"
-msgstr "Descargar https://bitbucket.org/openrem/docker/get/develop.zip"
-
-#: ../../installation.rst:16
-msgid "Install"
-msgstr "Instalar"
-
-#: ../../installation.rst:17
-msgid "Extract the ZIP file and open a shell (command prompt) in the new folder"
+#: ../../installation.rst:13 ../../installation.rst:41
+msgid "Native install on Linux"
 msgstr ""
-"Extraer el archivo ZIP y abrir shell (símbolo de sistema) en la nueva "
-"carpeta"
 
-#: ../../installation.rst:18
+#: ../../installation.rst:14 ../../installation.rst:60
+msgid "Native install on Windows"
+msgstr ""
+
+#: ../../installation.rst:19
 msgid ""
-"Customise any variables in ``.env.prod`` and in the ``orthanc_1`` section"
-" in ``docker-compose.yml`` as necessary. A full description of the "
-"options are found in:"
+"This is the quickest and easiest way of installing a fully functioning "
+"OpenREM instance, complete with database, web server and DICOM server, on"
+" any operating system that supports Docker with Linux containers. This "
+"includes Windows 10 with Docker Desktop, but currently excludes Windows "
+"Server, though this may change with availability of WSL2 for Windows "
+"Server 2022."
 msgstr ""
-"Personalizar cualquier variable en ``.env.prod`` y en la ``orthanc_1`` "
-"sección en ``docker-compose.yml`` como sea necesario. Una descripción "
-"completa de las opciones puede ser encontrada en:"
+
+#: ../../installation.rst:24
+msgid ""
+"The Docker installation has mostly been tested with Ubuntu server, but "
+"has also been used successfully with Podman on Redhat Enterprise Linux "
+"and other distributions."
+msgstr ""
 
 #: ../../installation.rst:27
-msgid "Start the containers with:"
-msgstr "Iniciar los contenedores con:"
+msgid ""
+"Existing Windows or Linux installations of OpenREM 0.10 can be upgraded "
+"to run in a Docker installation."
+msgstr ""
 
-#: ../../installation.rst:33
-msgid "Get the database and translations ready:"
-msgstr "Tener las bases de datos y las traducciones listas:"
+#: ../../installation.rst:29
+msgid ""
+"It is advisable that the server OpenREM is installed on has access to the"
+" internet to get images from Docker and security updates for the "
+"operating system. However, if this is not possible the Docker images can "
+"be obtained on a computer that does have access to the internet and "
+"transferred to the 'offline' server for installation."
+msgstr ""
 
 #: ../../installation.rst:43
-msgid "Open a web browser and go to http://localhost/"
-msgstr "Abrir un navegador web e ir a http://localhost/"
+msgid ""
+"A native installation on Linux requires Python, a webserver (eg Nginx) a "
+"database (ideally PostgreSQL) and a DICOM server (ideally Orthanc) to be "
+"installed, with OpenREM and all the other dependencies being installed "
+"via Pip."
+msgstr ""
 
 #: ../../installation.rst:46
-msgid "Non-Docker alternative - Linux only"
-msgstr "Alternativa sin Docker - Solo Linux"
-
-#: ../../installation.rst:48
 msgid ""
-"We recommend all installations to use the Docker method described above. "
-"However, it is possible to install without Docker, but only on Linux. The"
-" instructions are a prescriptive install on Ubuntu:"
+"Existing installations of OpenREM 0.10 can be upgraded, but this release "
+"requires a different version of Python to the older releases, and some "
+"services that were previously required are no longer needed. Full upgrade"
+" instructions are provided, based on an Ubuntu Server installation."
 msgstr ""
-"Se recomienda que todas las instalaciones utilicen el método Docker como "
-"se describe mas arriba. Sin embargo, es posible realizar una instalación "
-"sin Docker, solo en Linux. Las instrucciones son una instalación "
-"prescriptiva en Ubuntu:"
 
-#: ../../installation.rst:58
-msgid "Offline Docker installations"
-msgstr "Instalación de Docker sin conexión"
+#: ../../installation.rst:62
+msgid ""
+"A native installation on Windows Server requires Python, a database "
+"(ideally PostgreSQL) and a DICOM server (ideally Orthanc) to be "
+"installed, with OpenREM and all the other dependencies being installed "
+"via Pip. IIS is the recommended webserver to use on Windows."
+msgstr ""
 
-#: ../../installation.rst:67
-msgid "Upgrading an existing installation"
-msgstr "Actualizando una instalación existente"
+#: ../../installation.rst:66
+msgid ""
+"This installation process can be used with Windows 10 (and probably 11), "
+"but this is not advised for production use as Windows 10 and 11 are not "
+"designed to be servers."
+msgstr ""
 
-#: ../../installation.rst:78
+#: ../../installation.rst:69
+msgid ""
+"As for native Linux installs, existing installations of OpenREM 0.10 can "
+"be upgraded, but this release requires a different version of Python to "
+"the older releases, and some services that were previously required are "
+"no longer needed. Full upgrade instructions are provided, based on a "
+"Windows Server 2019 installation."
+msgstr ""
+
+#: ../../installation.rst:85
 msgid "Databases"
 msgstr "Bases de dato"
 
-#: ../../installation.rst:80
-msgid ""
-"To be removed here, but we need some of the content in other pages, so "
-"leaving for now"
+#: ../../installation.rst:95
+msgid "Advanced server configuration"
 msgstr ""
-"A ser removido aquí, pero necesitamos parte del contenido en otras "
-"paginas, entonces lo dejamos por ahora"
 
-#: ../../installation.rst:93
-msgid "Web servers"
-msgstr "Servidores Web"
+#~ msgid "Windows or Linux: Docker install"
+#~ msgstr "Windows o Linux: Instalación de Docker"
+
+#~ msgid "Preparation"
+#~ msgstr "Preparación"
+
+#~ msgid "Download https://bitbucket.org/openrem/docker/get/develop.zip"
+#~ msgstr "Descargar https://bitbucket.org/openrem/docker/get/develop.zip"
+
+#~ msgid "Install"
+#~ msgstr "Instalar"
+
+#~ msgid ""
+#~ "Extract the ZIP file and open a"
+#~ " shell (command prompt) in the new"
+#~ " folder"
+#~ msgstr ""
+#~ "Extraer el archivo ZIP y abrir "
+#~ "shell (símbolo de sistema) en la "
+#~ "nueva carpeta"
+
+#~ msgid ""
+#~ "Customise any variables in ``.env.prod`` "
+#~ "and in the ``orthanc_1`` section in "
+#~ "``docker-compose.yml`` as necessary. A "
+#~ "full description of the options are "
+#~ "found in:"
+#~ msgstr ""
+#~ "Personalizar cualquier variable en "
+#~ "``.env.prod`` y en la ``orthanc_1`` "
+#~ "sección en ``docker-compose.yml`` como "
+#~ "sea necesario. Una descripción completa "
+#~ "de las opciones puede ser encontrada "
+#~ "en:"
+
+#~ msgid "Start the containers with:"
+#~ msgstr "Iniciar los contenedores con:"
+
+#~ msgid "Get the database and translations ready:"
+#~ msgstr "Tener las bases de datos y las traducciones listas:"
+
+#~ msgid "Open a web browser and go to http://localhost/"
+#~ msgstr "Abrir un navegador web e ir a http://localhost/"
+
+#~ msgid "Non-Docker alternative - Linux only"
+#~ msgstr "Alternativa sin Docker - Solo Linux"
+
+#~ msgid ""
+#~ "We recommend all installations to use"
+#~ " the Docker method described above. "
+#~ "However, it is possible to install "
+#~ "without Docker, but only on Linux. "
+#~ "The instructions are a prescriptive "
+#~ "install on Ubuntu:"
+#~ msgstr ""
+#~ "Se recomienda que todas las "
+#~ "instalaciones utilicen el método Docker "
+#~ "como se describe mas arriba. Sin "
+#~ "embargo, es posible realizar una "
+#~ "instalación sin Docker, solo en Linux."
+#~ " Las instrucciones son una instalación "
+#~ "prescriptiva en Ubuntu:"
+
+#~ msgid "Offline Docker installations"
+#~ msgstr "Instalación de Docker sin conexión"
+
+#~ msgid "Upgrading an existing installation"
+#~ msgstr "Actualizando una instalación existente"
+
+#~ msgid ""
+#~ "To be removed here, but we need"
+#~ " some of the content in other "
+#~ "pages, so leaving for now"
+#~ msgstr ""
+#~ "A ser removido aquí, pero necesitamos"
+#~ " parte del contenido en otras "
+#~ "paginas, entonces lo dejamos por ahora"
+
+#~ msgid "Web servers"
+#~ msgstr "Servidores Web"
+

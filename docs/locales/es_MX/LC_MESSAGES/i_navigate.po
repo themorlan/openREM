@@ -8,14 +8,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-01 18:30+0100\n"
+"POT-Creation-Date: 2023-03-05 17:21+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.8.0\n"
+"Generated-By: Babel 2.12.1\n"
 
 #: ../../i_navigate.rst:2
 msgid "Navigating, filtering and study details"
@@ -38,15 +38,15 @@ msgid ""
 "populated with studies:"
 msgstr ""
 
-#: ../../i_navigate.rst:21
+#: ../../i_navigate.rst ../../i_navigate.rst:21
 msgid "OpenREM homepage screenshot"
 msgstr ""
 
 #: ../../i_navigate.rst:23
 msgid ""
 "By selecting the links in the navigation bar at the top, you can view all"
-" of the CT, fluoroscopy, mammography or radiographic studies. "
-"Alternatively, click on any row to filter by that system."
+" of the CT, fluoroscopy, mammography, radiographic or nuclear medicine "
+"studies. Alternatively, click on any row to filter by that system."
 msgstr ""
 
 #: ../../i_navigate.rst:26
@@ -73,7 +73,7 @@ msgid ""
 "'Siemens':"
 msgstr ""
 
-#: ../../i_navigate.rst:44
+#: ../../i_navigate.rst ../../i_navigate.rst:44
 msgid "Filtering CT studies"
 msgstr ""
 
@@ -92,62 +92,17 @@ msgid "The last box below the filtering search boxes is the ordering preference.
 msgstr ""
 
 #: ../../i_navigate.rst:56
-msgid "CT: acquisition type restriction"
+msgid "CT: specifying number of event types"
 msgstr ""
 
 #: ../../i_navigate.rst:58
 msgid ""
-"The CT study filters includes the ability to restrict the displayed "
-"studies by acquisition type, such as ``Spiral`` or ``Axial``. By default "
-"none of these are selected, and studies containing all acquisition types "
-"are shown. Ticking one of the acquisition type restrictions and clicking "
-"submit will filter the displayed studies to only include those which have"
-" at least one acquisition of the selected type. Ticking more than one "
-"acquisition type restriction will show studies that contain at least one "
-"acquisition of any of the selected acquisition types."
+"It is possible to filter for studies that have specific numbers of each "
+"acquisition type, or to only include studies have at least some (>0), or "
+"to include only studies that have zero acquisitions of a specific type."
 msgstr ""
 
-#: ../../i_navigate.rst:67
-msgid ""
-"Acquisition-level charts will only show acquisition protocols that "
-"correspond to the chosen acquisition type restrictions. Acquisitions of "
-"any other type present within the study data will not be shown on these "
-"charts."
-msgstr ""
-
-#: ../../i_navigate.rst:71
-msgid ""
-"Study- and request-level charts will show studies that have at least one "
-"acquisition of a type matching the selected restrictions: these studies "
-"and requests may contain acquisition types other than those chosen in the"
-" restrictions."
-msgstr ""
-
-#: ../../i_navigate.rst:76
-msgid ""
-"For example, if all studies contain a mixture of ``Axial`` and ``Spiral``"
-" acquisitions and the user ticks the ``Axial`` acquisition type "
-"restriction then all studies will still be displayed in the filtered "
-"list. However, any acquisition-level charts will only show ``Axial`` "
-"acquisitions: the ``Spiral`` acquisitions present in the studies will not"
-" be shown in the chart. Any study- or request-level chart will show all "
-"the data as every one of them includes at least one ``Axial`` "
-"acquisition."
-msgstr ""
-
-#: ../../i_navigate.rst:85
-msgid "CT: specifying number of event types"
-msgstr ""
-
-#: ../../i_navigate.rst:87
-msgid ""
-"In addition (or as an alternative) to specifying that studies must have "
-"at least one of one of the acquisition type restrictions, if any are "
-"selected, it is also possible to filter for studies that have specific "
-"numbers of each acquisition type."
-msgstr ""
-
-#: ../../i_navigate.rst:91
+#: ../../i_navigate.rst:61
 msgid ""
 "For example, if the standard ``CT Abdomen`` on a particular scanner has "
 "two localisers and one spiral scan, then to filter for all the studies "
@@ -158,43 +113,43 @@ msgid ""
 "data to process for a dose audit."
 msgstr ""
 
-#: ../../i_navigate.rst:98
+#: ../../i_navigate.rst:68
 msgid "Setting the number of studies displayed per page"
 msgstr ""
 
-#: ../../i_navigate.rst:100
+#: ../../i_navigate.rst:70
 msgid ""
 "The number of studies displayed per page can be controlled by changing "
 "the value selected in the ``Items per page`` drop down box, located "
 "beneath the chart options:"
 msgstr ""
 
-#: ../../i_navigate.rst:110
+#: ../../i_navigate.rst ../../i_navigate.rst:80
 msgid "Setting the number of studies per page"
 msgstr ""
 
-#: ../../i_navigate.rst:113
+#: ../../i_navigate.rst:83
 msgid "Viewing study details"
 msgstr ""
 
-#: ../../i_navigate.rst:115
+#: ../../i_navigate.rst:85
 msgid ""
 "By clicking on the study description link (in blue), you can see more "
 "details for an individual study:"
 msgstr ""
 
-#: ../../i_navigate.rst:124
+#: ../../i_navigate.rst ../../i_navigate.rst:94
 msgid "Individual CT study"
 msgstr ""
 
-#: ../../i_navigate.rst:126
+#: ../../i_navigate.rst:96
 msgid ""
 "Not all the details stored for any one study are displayed, just those "
 "thought to be most useful. If there are others you'd like to see, add an "
 "issue to the tracker."
 msgstr ""
 
-#: ../../i_navigate.rst:129
+#: ../../i_navigate.rst:99
 msgid ""
 "The final field in the summary at the top is called 'Test patient "
 "indicators?' When studies are imported the ID and patient name fields are"
@@ -209,24 +164,24 @@ msgid ""
 " an Accession Number and an unusual patient age."
 msgstr ""
 
-#: ../../i_navigate.rst:142
+#: ../../i_navigate.rst:112
 msgid ""
 "For fluoroscopy the table showing details of each exposure can be sorted "
 "by clicking on the table headings."
 msgstr ""
 
-#: ../../i_navigate.rst:146
+#: ../../i_navigate.rst:116
 msgid "A note on time data for fluoroscopy studies"
 msgstr ""
 
-#: ../../i_navigate.rst:148
+#: ../../i_navigate.rst:118
 msgid ""
 "On the page showing a specific fluoroscopy study there is a table that "
 "shows the details of each irradiation event in the study. This table "
 "includes a column labelled as::"
 msgstr ""
 
-#: ../../i_navigate.rst:155
+#: ../../i_navigate.rst:125
 msgid ""
 "The ``Duration`` value is the amount of time that the exposure switch or "
 "pedal was pressed (technically, this should be the time from the loading "
@@ -237,7 +192,7 @@ msgid ""
 "the ``Exposure time`` will be (much) shorter than the ``Duration``."
 msgstr ""
 
-#: ../../i_navigate.rst:163
+#: ../../i_navigate.rst:133
 msgid ""
 "Near the top of each fluoroscopy study in the detail view is a table "
 "summarising the DAP, dose at reference point and duration for each "
@@ -245,4 +200,82 @@ msgid ""
 "duration`` values in this table show the amount of time that the exposure"
 " switch or pedal was pressed."
 msgstr ""
+
+#~ msgid ""
+#~ "By selecting the links in the "
+#~ "navigation bar at the top, you can"
+#~ " view all of the CT, fluoroscopy, "
+#~ "mammography or radiographic studies. "
+#~ "Alternatively, click on any row to "
+#~ "filter by that system."
+#~ msgstr ""
+
+#~ msgid "CT: acquisition type restriction"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "The CT study filters includes the "
+#~ "ability to restrict the displayed "
+#~ "studies by acquisition type, such as "
+#~ "``Spiral`` or ``Axial``. By default none"
+#~ " of these are selected, and studies"
+#~ " containing all acquisition types are "
+#~ "shown. Ticking one of the acquisition"
+#~ " type restrictions and clicking submit "
+#~ "will filter the displayed studies to "
+#~ "only include those which have at "
+#~ "least one acquisition of the selected"
+#~ " type. Ticking more than one "
+#~ "acquisition type restriction will show "
+#~ "studies that contain at least one "
+#~ "acquisition of any of the selected "
+#~ "acquisition types."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Acquisition-level charts will only show"
+#~ " acquisition protocols that correspond to"
+#~ " the chosen acquisition type restrictions."
+#~ " Acquisitions of any other type "
+#~ "present within the study data will "
+#~ "not be shown on these charts."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Study- and request-level charts will "
+#~ "show studies that have at least "
+#~ "one acquisition of a type matching "
+#~ "the selected restrictions: these studies "
+#~ "and requests may contain acquisition "
+#~ "types other than those chosen in "
+#~ "the restrictions."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "For example, if all studies contain "
+#~ "a mixture of ``Axial`` and ``Spiral``"
+#~ " acquisitions and the user ticks the"
+#~ " ``Axial`` acquisition type restriction "
+#~ "then all studies will still be "
+#~ "displayed in the filtered list. However,"
+#~ " any acquisition-level charts will "
+#~ "only show ``Axial`` acquisitions: the "
+#~ "``Spiral`` acquisitions present in the "
+#~ "studies will not be shown in the"
+#~ " chart. Any study- or request-level"
+#~ " chart will show all the data "
+#~ "as every one of them includes at"
+#~ " least one ``Axial`` acquisition."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "In addition (or as an alternative) "
+#~ "to specifying that studies must have "
+#~ "at least one of one of the "
+#~ "acquisition type restrictions, if any "
+#~ "are selected, it is also possible "
+#~ "to filter for studies that have "
+#~ "specific numbers of each acquisition "
+#~ "type."
+#~ msgstr ""
 

@@ -1,0 +1,336 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2013-2022, The Royal Marsden NHS Foundation Trust
+# This file is distributed under the same license as the OpenREM package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2023.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: OpenREM 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-03-05 17:21+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: de\n"
+"Language-Team: de <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.12.1\n"
+
+#: ../../upgrade_linux.rst:3
+msgid "Upgrading a native Linux install"
+msgstr ""
+
+#: ../../upgrade_linux.rst:5
+msgid ""
+"These instructions assume a configuration similar to the 'One page "
+"complete Ubuntu install' provided with release 0.8.1 and later. If you "
+"are running an older distribution, consider upgrading the operating "
+"system or migrating the service to a new host. The test system for these "
+"upgrade instructions was upgraded from 18.04 to 20.04 and then 22.04 "
+"before the OpenREM upgrade was started. If you are using a different "
+"distribution or have set up your system differently, it might be better "
+"to start afresh following or adapting the :doc:`upgrade_linux_new_server`"
+" docs instead."
+msgstr ""
+
+#: ../../upgrade_linux.rst:11
+msgid ""
+"If upgrading to a new host, follow the :doc:`upgrade_linux_new_server` "
+"docs."
+msgstr ""
+
+#: ../../upgrade_linux.rst:13
+msgid ""
+"This release will run on Python 3.8 or 3.9, but Python 3.10 is "
+"recommended. If a different release of Python is being used, substitute "
+"3.10 for that version where necessary below."
+msgstr ""
+
+#: ../../upgrade_linux.rst:16
+msgid ""
+"If you are upgrading OpenREM on a Linux server with limited internet "
+"access, go to the :doc:`install_offline` docs."
+msgstr ""
+
+#: ../../upgrade_linux.rst:18
+msgid ""
+"**Upgrades from 0.9.1 or earlier should review** "
+":doc:`upgrade_previous_0.10.0` first. Upgrading to 1.0 is only possible "
+"from 0.10.0."
+msgstr ""
+
+#: ../../upgrade_linux.rst:22
+msgid "Preparation"
+msgstr ""
+
+#: ../../upgrade_linux.rst:24
+msgid ""
+"Back up the database - you will need the password for ``openremuser`` "
+"that will be in your ``local_settings.py`` file. You'll need this file "
+"again later so open it in a different window:"
+msgstr ""
+
+#: ../../upgrade_linux.rst:31
+msgid "Backup the database, in the main window:"
+msgstr ""
+
+#: ../../upgrade_linux.rst:37
+msgid ""
+"Stop any Celery workers, Flower, RabbitMQ, Gunicorn, NGINX, and Orthanc "
+"(OpenREM service names will be reversed if they weren't changed with the "
+"0.9.1 upgrade):"
+msgstr ""
+
+#: ../../upgrade_linux.rst:49
+msgid "Update apt and install any updates:"
+msgstr ""
+
+#: ../../upgrade_linux.rst:55
+msgid "Install Python 3.10 and other packages:"
+msgstr ""
+
+#: ../../upgrade_linux.rst:62
+msgid "Reset the permissions for the ``/var/dose`` folder:"
+msgstr ""
+
+#: ../../upgrade_linux.rst:70
+msgid ""
+"Now find the ``uid`` of your user and the ``gid`` of the ``openrem`` "
+"group:"
+msgstr ""
+
+#: ../../upgrade_linux.rst:77
+msgid ""
+"Take note of the ``uid`` number and the ``gid`` in the third field of the"
+" group information and use it in the next command, replacing ``1001`` "
+"(user ``uid``) and ``1002`` (``openrem`` group ``gid``) as appropriate:"
+msgstr ""
+
+#: ../../upgrade_linux.rst:84
+msgid "What are we doing with the permissions?"
+msgstr ""
+
+#: ../../upgrade_linux.rst:86
+msgid ""
+"These settings enable the web server user ``www-data``, the DICOM server "
+"user ``orthanc`` and the OpenREM server users (you and your colleagues) "
+"to all read, write and execute the OpenREM files. The ``setfacl`` command"
+" relies on Access Control Lists being available on your system - they are"
+" usually enabled on ext4 and can be enabled on others. See "
+":ref:`add_linux_user` for adding colleagues access to the Linux folders."
+msgstr ""
+
+#: ../../upgrade_linux.rst:91
+msgid "Create a new Python virtual environment:"
+msgstr ""
+
+#: ../../upgrade_linux.rst:97
+msgid "Activate the virtualenv:"
+msgstr ""
+
+#: ../../upgrade_linux.rst:104
+msgid "Install the new version of OpenREM"
+msgstr ""
+
+#: ../../upgrade_linux.rst:106
+msgid "Ensure the new virtualenv is active — prompt will look like"
+msgstr ""
+
+#: ../../upgrade_linux.rst:112
+msgid "Upgrade Pip and install OpenREM"
+msgstr ""
+
+#: ../../upgrade_linux.rst:125
+msgid "Configure the local_settings.py file"
+msgstr ""
+
+#: ../../upgrade_linux.rst:127
+msgid ""
+"Navigate to the Python openrem folder and copy the example "
+"``local_settings.py`` and ``wsgi.py`` files to remove the ``.linux`` and "
+"``.example`` suffixes:"
+msgstr ""
+
+#: ../../upgrade_linux.rst:136
+msgid ""
+"Review the old ``local_settings.py`` file that was opened earlier - see "
+"the first part of the Preparation section. Edit the new "
+"``local_settings.py`` as needed - make sure you update the database "
+"``NAME``, ``USER`` and ``PASSWORD``, the ``ALLOWED_HOSTS`` list and the "
+"``EMAIL`` configuration and check all the other settings. Change the "
+"``SECRET_KEY`` from the default:"
+msgstr ""
+
+#: ../../upgrade_linux.rst:227
+msgid "Migrate the database"
+msgstr ""
+
+#: ../../upgrade_linux.rst:229
+msgid "In a shell/command window, move into the ``openrem`` folder:"
+msgstr ""
+
+#: ../../upgrade_linux.rst:235
+msgid "Prepare the migrations folder:"
+msgstr ""
+
+#: ../../upgrade_linux.rst:237
+msgid "Rename ``0001_initial.py.1-0-upgrade`` to ``0001_initial.py``"
+msgstr ""
+
+#: ../../upgrade_linux.rst:243
+msgid "Migrate the database:"
+msgstr ""
+
+#: ../../upgrade_linux.rst:257
+msgid "Rename questions"
+msgstr ""
+
+#: ../../upgrade_linux.rst:259
+msgid ""
+"There will be some questions about fields being renamed - answer ``N`` to"
+" all of them."
+msgstr ""
+
+#: ../../upgrade_linux.rst:271
+msgid "Update static files and translations"
+msgstr ""
+
+#: ../../upgrade_linux.rst:277
+msgid "Warning about deleting all files"
+msgstr ""
+
+#: ../../upgrade_linux.rst:279
+msgid ""
+"You will get a warning about all files in the static files location being"
+" deleted. As long as the folder is correct, type ``yes`` to continue."
+msgstr ""
+
+#: ../../upgrade_linux.rst:282
+msgid "Virtual directory users"
+msgstr ""
+
+#: ../../upgrade_linux.rst:284
+msgid ""
+"If you are running your website in a virtual directory, you also have to "
+"update the reverse.js file. To get the file in the correct path, take "
+"care that you insert just after the declaration of ``STATIC_ROOT`` the "
+"following line in your ``local_settings.py`` (see also the sample "
+"``local_settings.py.example``):"
+msgstr ""
+
+#: ../../upgrade_linux.rst:292
+msgid "To update the reverse.js file execute the following command:"
+msgstr ""
+
+#: ../../upgrade_linux.rst:298
+msgid "See  :doc:`virtual_directory` for more details."
+msgstr ""
+
+#: ../../upgrade_linux.rst:300
+msgid "Generate translation binary files"
+msgstr ""
+
+#: ../../upgrade_linux.rst:307
+msgid "Update all the services configurations"
+msgstr ""
+
+#: ../../upgrade_linux.rst:309
+msgid "Edit the Gunicorn systemd file ``WorkingDirectory`` and ``ExecStart``:"
+msgstr ""
+
+#: ../../upgrade_linux.rst:324
+msgid ""
+"Celery, Flower and RabbitMQ are no longer required for this release, so "
+"their Systemd control files can be disabled, and RabbitMQ can be removed "
+"(assuming it is not in use for any other services on this server):"
+msgstr ""
+
+#: ../../upgrade_linux.rst:339
+msgid "Reload systemd and restart the services"
+msgstr ""
+
+#: ../../upgrade_linux.rst:345
+msgid "Start and check Gunicorn:"
+msgstr ""
+
+#: ../../upgrade_linux.rst:352
+msgid "Start and check NGINX:"
+msgstr ""
+
+#: ../../upgrade_linux.rst:359
+msgid "Start and check Orthanc:"
+msgstr ""
+
+#: ../../upgrade_linux.rst:366
+msgid "Registered Users error"
+msgstr ""
+
+#: ../../upgrade_linux.rst:368
+msgid "If Orthanc fails to start, check the Orthanc log file:"
+msgstr ""
+
+#: ../../upgrade_linux.rst:374
+msgid ""
+"If there is an error: ``Bad file format: The configuration section "
+"\"RegisteredUsers\" is defined in 2 different configuration files`` this "
+"might be due to changes in the installed version of Orthanc."
+msgstr ""
+
+#: ../../upgrade_linux.rst:377
+msgid ""
+"Edit the main Orthanc configuration file to remove the setting, as it is "
+"now in a ``credentials.json`` configuration file."
+msgstr ""
+
+#: ../../upgrade_linux.rst:384
+msgid "Remove the ``RegisteredUsers`` setting and try again:"
+msgstr ""
+
+#: ../../upgrade_linux.rst:391
+msgid ""
+"If there is still an issue, check the log again. If the problem this time"
+" is due to the ``TCP port of the DICOM server``, you might need to give "
+"it permission again:"
+msgstr ""
+
+#: ../../upgrade_linux.rst:398
+msgid "And restart Orthanc once more."
+msgstr ""
+
+#: ../../upgrade_linux.rst:401
+msgid "Test the webserver"
+msgstr ""
+
+#: ../../upgrade_linux.rst:403
+msgid ""
+"You should now be able to browse to the web interface of your upgraded "
+"OpenREM system and have a look around."
+msgstr ""
+
+#: ../../upgrade_linux.rst:406
+msgid "Update the DICOM Store settings"
+msgstr ""
+
+#: ../../upgrade_linux.rst:408
+msgid ""
+"Log in to the web interface, and navigate to ``Config``, ``DICOM "
+"networking``."
+msgstr ""
+
+#: ../../upgrade_linux.rst:410
+msgid ""
+"The remote nodes should be correct from the old system, but the DICOM "
+"Store SCP settings will need updating. Modify the store, and add the "
+"hostname ``localhost``."
+msgstr ""
+
+#: ../../upgrade_linux.rst:413
+msgid ""
+"After you have clicked ``Submit``, the status page should show the server"
+" is alive. If it isn't, go and check the status of Orthanc again (we may "
+"have checked it too quickly before)."
+msgstr ""
+

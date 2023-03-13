@@ -8,14 +8,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-01 18:30+0100\n"
+"POT-Creation-Date: 2023-03-05 17:21+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.8.0\n"
+"Generated-By: Babel 2.12.1\n"
 
 #: ../../code_exportviews.rst:2
 msgid "Export Views"
@@ -23,8 +23,8 @@ msgstr ""
 
 #: of remapp.exports.exportviews.ct_xlsx_phe2019:1
 msgid ""
-"View to launch celery task to export CT studies to xlsx file in PHE 2019 "
-"CT survey format"
+"View to launch  task to export CT studies to xlsx file in PHE 2019 CT "
+"survey format"
 msgstr ""
 
 #: of remapp.exports.exportviews.ct_xlsx_phe2019
@@ -32,12 +32,15 @@ msgstr ""
 #: remapp.exports.exportviews.deletefile remapp.exports.exportviews.download
 #: remapp.exports.exportviews.dx_xlsx_phe2019 remapp.exports.exportviews.dxcsv1
 #: remapp.exports.exportviews.dxxlsx1 remapp.exports.exportviews.export
-#: remapp.exports.exportviews.export_abort remapp.exports.exportviews.flcsv1
-#: remapp.exports.exportviews.mgnhsbsp
+#: remapp.exports.exportviews.export_abort
+#: remapp.exports.exportviews.export_remove remapp.exports.exportviews.flcsv1
+#: remapp.exports.exportviews.mgnhsbsp remapp.exports.exportviews.nmcsv1
+#: remapp.exports.exportviews.nmxlsx1
 #: remapp.exports.exportviews.rf_xlsx_phe2019
 #: remapp.exports.exportviews.rfxlsx1 remapp.exports.exportviews.update_active
 #: remapp.exports.exportviews.update_complete
 #: remapp.exports.exportviews.update_error
+#: remapp.exports.exportviews.update_queue
 msgid "Parameters"
 msgstr ""
 
@@ -48,30 +51,33 @@ msgid "Contains the database filtering parameters and user details."
 msgstr ""
 
 #: of remapp.exports.exportviews.ctcsv1:1
-msgid "View to launch celery task to export CT studies to csv file"
+msgid "View to launch  task to export CT studies to csv file"
 msgstr ""
 
 #: of remapp.exports.exportviews.ctcsv1:3 remapp.exports.exportviews.ctxlsx1:3
 #: remapp.exports.exportviews.dxcsv1:3 remapp.exports.exportviews.dxxlsx1:3
 #: remapp.exports.exportviews.flcsv1:3 remapp.exports.exportviews.mgnhsbsp:3
+#: remapp.exports.exportviews.nmcsv1:3 remapp.exports.exportviews.nmxlsx1:3
 #: remapp.exports.exportviews.rfxlsx1:3
 msgid "Contains the database filtering parameters. Also used to get user group."
 msgstr ""
 
 #: of remapp.exports.exportviews.ctcsv1:4 remapp.exports.exportviews.ctxlsx1:4
 #: remapp.exports.exportviews.dxcsv1:4 remapp.exports.exportviews.dxxlsx1:4
-#: remapp.exports.exportviews.flcsv1:4 remapp.exports.exportviews.rfxlsx1:4
+#: remapp.exports.exportviews.flcsv1:4 remapp.exports.exportviews.nmcsv1:4
+#: remapp.exports.exportviews.nmxlsx1:4 remapp.exports.exportviews.rfxlsx1:4
 msgid "string, 0 or 1 from URL indicating if names should be exported"
 msgstr ""
 
 #: of remapp.exports.exportviews.ctcsv1:5 remapp.exports.exportviews.ctxlsx1:5
 #: remapp.exports.exportviews.dxcsv1:5 remapp.exports.exportviews.dxxlsx1:5
-#: remapp.exports.exportviews.flcsv1:5 remapp.exports.exportviews.rfxlsx1:5
+#: remapp.exports.exportviews.flcsv1:5 remapp.exports.exportviews.nmcsv1:5
+#: remapp.exports.exportviews.nmxlsx1:5 remapp.exports.exportviews.rfxlsx1:5
 msgid "string, 0 or 1 from URL indicating if patient ID should be exported"
 msgstr ""
 
 #: of remapp.exports.exportviews.ctxlsx1:1
-msgid "View to launch celery task to export CT studies to xlsx file"
+msgid "View to launch  task to export CT studies to xlsx file"
 msgstr ""
 
 #: of remapp.exports.exportviews.deletefile:1
@@ -102,8 +108,8 @@ msgstr ""
 
 #: of remapp.exports.exportviews.dx_xlsx_phe2019:1
 msgid ""
-"View to launch celery task to export DX studies to xlsx file in PHE 2019 "
-"DX survey format"
+"View to launch  task to export DX studies to xlsx file in PHE 2019 DX "
+"survey format"
 msgstr ""
 
 #: of remapp.exports.exportviews.dx_xlsx_phe2019:4
@@ -111,11 +117,11 @@ msgid "string, 'projection' or 'exam'"
 msgstr ""
 
 #: of remapp.exports.exportviews.dxcsv1:1
-msgid "View to launch celery task to export DX and CR studies to csv file"
+msgid "View to launch  task to export DX and CR studies to csv file"
 msgstr ""
 
 #: of remapp.exports.exportviews.dxxlsx1:1
-msgid "View to launch celery task to export DX and CR studies to xlsx file"
+msgid "View to launch  task to export DX and CR studies to xlsx file"
 msgstr ""
 
 #: of remapp.exports.exportviews.export:1
@@ -129,11 +135,20 @@ msgid "View to abort current export job"
 msgstr ""
 
 #: of remapp.exports.exportviews.export_abort:3
+#: remapp.exports.exportviews.export_remove:3
 msgid "Contains the task primary key"
 msgstr ""
 
+#: of remapp.exports.exportviews.export_remove:1
+msgid "Function to remove export task from queue"
+msgstr ""
+
+#: of remapp.exports.exportviews.export_remove:4
+msgid "UUID of task in question"
+msgstr ""
+
 #: of remapp.exports.exportviews.flcsv1:1
-msgid "View to launch celery task to export fluoroscopy studies to csv file"
+msgid "View to launch  task to export fluoroscopy studies to csv file"
 msgstr ""
 
 #: of remapp.exports.exportviews.include_pid:1
@@ -157,8 +172,8 @@ msgstr ""
 
 #: of remapp.exports.exportviews.mgnhsbsp:1
 msgid ""
-"View to launch celery task to export mammography studies to csv file "
-"using a NHSBSP template"
+"View to launch  task to export mammography studies to csv file using a "
+"NHSBSP template"
 msgstr ""
 
 #: of remapp.exports.exportviews.mgxlsx1:1
@@ -170,10 +185,18 @@ msgid ""
 "exported :return:"
 msgstr ""
 
+#: of remapp.exports.exportviews.nmcsv1:1
+msgid "View to launch task to export NM studies to csv file"
+msgstr ""
+
+#: of remapp.exports.exportviews.nmxlsx1:1
+msgid "View to launch celery task to export NM studies to excel file"
+msgstr ""
+
 #: of remapp.exports.exportviews.rf_xlsx_phe2019:1
 msgid ""
-"View to launch celery task to export fluoro studies to xlsx file in PHE "
-"2019 IR/fluoro survey format"
+"View to launch  task to export fluoro studies to xlsx file in PHE 2019 "
+"IR/fluoro survey format"
 msgstr ""
 
 #: of remapp.exports.exportviews.rfopenskin:1
@@ -184,7 +207,7 @@ msgid ""
 msgstr ""
 
 #: of remapp.exports.exportviews.rfxlsx1:1
-msgid "View to launch celery task to export fluoroscopy studies to xlsx file"
+msgid "View to launch  task to export fluoroscopy studies to xlsx file"
 msgstr ""
 
 #: of remapp.exports.exportviews.update_active:1
@@ -193,16 +216,19 @@ msgstr ""
 
 #: of remapp.exports.exportviews.update_active:3
 #: remapp.exports.exportviews.update_error:3
+#: remapp.exports.exportviews.update_queue:3
 msgid "Request object"
 msgstr ""
 
 #: of remapp.exports.exportviews.update_active
 #: remapp.exports.exportviews.update_complete
 #: remapp.exports.exportviews.update_error
+#: remapp.exports.exportviews.update_queue
 msgid "Returns"
 msgstr ""
 
 #: of remapp.exports.exportviews.update_active:4
+#: remapp.exports.exportviews.update_queue:4
 msgid "HTML table of active exports"
 msgstr ""
 
@@ -227,4 +253,50 @@ msgstr ""
 #: of remapp.exports.exportviews.update_error:4
 msgid "HTML table of exports in error state"
 msgstr ""
+
+#: of remapp.exports.exportviews.update_queue:1
+msgid "AJAX function to return queued exports"
+msgstr ""
+
+#~ msgid ""
+#~ "View to launch celery task to "
+#~ "export CT studies to xlsx file in"
+#~ " PHE 2019 CT survey format"
+#~ msgstr ""
+
+#~ msgid "View to launch celery task to export CT studies to csv file"
+#~ msgstr ""
+
+#~ msgid "View to launch celery task to export CT studies to xlsx file"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "View to launch celery task to "
+#~ "export DX studies to xlsx file in"
+#~ " PHE 2019 DX survey format"
+#~ msgstr ""
+
+#~ msgid "View to launch celery task to export DX and CR studies to csv file"
+#~ msgstr ""
+
+#~ msgid "View to launch celery task to export DX and CR studies to xlsx file"
+#~ msgstr ""
+
+#~ msgid "View to launch celery task to export fluoroscopy studies to csv file"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "View to launch celery task to "
+#~ "export mammography studies to csv file"
+#~ " using a NHSBSP template"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "View to launch celery task to "
+#~ "export fluoro studies to xlsx file "
+#~ "in PHE 2019 IR/fluoro survey format"
+#~ msgstr ""
+
+#~ msgid "View to launch celery task to export fluoroscopy studies to xlsx file"
+#~ msgstr ""
 

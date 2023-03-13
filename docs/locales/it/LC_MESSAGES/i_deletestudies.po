@@ -8,16 +8,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-01 18:30+0100\n"
+"POT-Creation-Date: 2023-03-05 17:21+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.8.0\n"
+"Generated-By: Babel 2.12.1\n"
 
-#: ../../i_deletestudies.rst:3
+#: ../../i_deletestudies.rst:-1 ../../i_deletestudies.rst:3
 msgid "Deleting studies"
 msgstr ""
 
@@ -40,6 +40,10 @@ msgstr ""
 
 #: ../../i_deletestudies.rst:20
 msgid "All studies from one source"
+msgstr ""
+
+#: ../../i_deletestudies.rst:27
+msgid "Admin menu"
 msgstr ""
 
 #: ../../i_deletestudies.rst:27
@@ -66,6 +70,10 @@ msgid ""
 "In the last column is a link to ``Review`` the studies from that source. "
 "This can be useful for troubleshooting a particular source, or you can "
 "use it to delete all the studies from one source in one go."
+msgstr ""
+
+#: ../../i_deletestudies.rst:44
+msgid "Source study review"
 msgstr ""
 
 #: ../../i_deletestudies.rst:44
