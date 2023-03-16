@@ -116,9 +116,10 @@ definitions:
           - coverage run openrem/manage.py test remapp --parallel --tag=slow
           - coverage combine
           - coveralls
-          - coverage xml
+          - coverage xml-o cobertura.xml
+          - bash <(curl -Ls https://coverage.codacy.com/get.sh)
         artifacts:
-          - coverage.xml
+          - cobertura.xml
         services:
           - postgres
         caches:
@@ -153,9 +154,10 @@ definitions:
           - coverage run openrem/manage.py test remapp --parallel
           - coverage combine
           - coveralls
-          - coverage xml
+          - coverage xml-o cobertura.xml
+          - bash <(curl -Ls https://coverage.codacy.com/get.sh)
         artifacts:
-          - coverage.xml
+          - cobertura.xml
         services:
           - postgres
         caches:
@@ -192,9 +194,10 @@ definitions:
           - coverage run openrem/manage.py test remapp --parallel
           - coverage combine
           - coveralls
-          - coverage xml
+          - coverage xml-o cobertura.xml
+          - bash <(curl -Ls https://coverage.codacy.com/get.sh)
         artifacts:
-          - coverage.xml
+          - cobertura.xml
         services:
           - postgres
         caches:
@@ -230,9 +233,10 @@ definitions:
           - coverage run openrem/manage.py test remapp --parallel
           - coverage combine
           - coveralls
-          - coverage xml
+          - coverage xml-o cobertura.xml
+          - bash <(curl -Ls https://coverage.codacy.com/get.sh)
         artifacts:
-          - coverage.xml
+          - cobertura.xml
         services:
           - postgres
         caches:
