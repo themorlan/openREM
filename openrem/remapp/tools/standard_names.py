@@ -33,6 +33,7 @@ from django.db import IntegrityError
 from django.contrib import messages
 from django.utils.safestring import mark_safe
 from django.db.models import Q
+from django.core.exceptions import ObjectDoesNotExist
 import numpy as np
 from remapp.forms import DiagnosticReferenceLevelsFormSet, KFactorsFormSet
 from remapp.models import (
@@ -56,6 +57,74 @@ STANDARD_STUDY_NAME_MAPPING_FIELDS = [
 STANDARD_ACQUISITION_NAME_FIELDS = [
     "acquisition_protocol",
 ]
+
+
+def assign_standard_names_to_study(study: GeneralStudyModuleAttr):
+    """Add references to any matching standard name entries
+
+    :param g: GeneralStudyModuleAttr database table
+    """
+
+    modality = study.modality_type
+    if modality in ["CR", "PX"]:
+        modality = "DX"
+
+    std_names = StandardNames.objects.filter(modality=modality)
+
+    # Obtain a list of standard name IDs that match this GeneralStudyModuleAttr
+    matching_std_name_ids = std_names.filter(
+        (Q(study_description=study.study_description) & Q(study_description__isnull=False))
+        | (
+            Q(requested_procedure_code_meaning=study.requested_procedure_code_meaning)
+            & Q(requested_procedure_code_meaning__isnull=False)
+        )
+        | (
+            Q(procedure_code_meaning=study.procedure_code_meaning)
+            & Q(procedure_code_meaning__isnull=False)
+        )
+    ).values_list("pk", flat=True)
+
+    # Obtain a list of standard name IDs that are already associated with this GeneralStudyModuleAttr
+    std_name_ids_already_in_study = study.standard_names.values_list("pk", flat=True)
+
+    # Names that are in the new list, but not in the existing list
+    std_name_ids_to_add = np.setdiff1d(
+        matching_std_name_ids, std_name_ids_already_in_study
+    )
+
+    if std_name_ids_to_add.size:
+        study.standard_names.add(*std_name_ids_to_add)
+
+    # Add standard name references to the study irradiation events where the acquisition_protocol values match.
+    # Some events will already exist if the new data is adding to an existing study
+    try:
+        if modality == "CT":
+            for event in study.ctradiationdose_set.get().ctirradiationeventdata_set.all():
+                # Only add matching standard name if the event doesn't already have one
+                if not event.standard_protocols.values_list("pk", flat=True):
+                    pk_value = list(
+                        std_names.filter(
+                            Q(acquisition_protocol=event.acquisition_protocol)
+                            & Q(acquisition_protocol__isnull=False)
+                        ).values_list("pk", flat=True)
+                    )
+                    event.standard_protocols.add(*pk_value)
+        else:
+            for (
+                event
+            ) in study.projectionxrayradiationdose_set.get().irradeventxraydata_set.all():
+                # Only add matching standard name if the event doesn't already have one
+                if not event.standard_protocols.values_list("pk", flat=True):
+                    pk_value = list(
+                        std_names.filter(
+                            Q(acquisition_protocol=event.acquisition_protocol)
+                            & Q(acquisition_protocol__isnull=False)
+                        ).values_list("pk", flat=True)
+                    )
+                    event.standard_protocols.add(*pk_value)
+
+    except ObjectDoesNotExist:
+        pass
 
 
 def add_standard_name(request, form):

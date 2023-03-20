@@ -106,7 +106,6 @@ from .models import (
     HomePageAdminSettings,
     UpgradeStatus,
     StandardNameSettings,
-    StandardNames,
 )
 from .version import __version__, __docs_version__, __skin_map_version__
 
