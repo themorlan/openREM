@@ -66,6 +66,8 @@ from ..tools.not_patient_indicators import get_not_pt
 from ..tools.hash_id import hash_id
 from ..tools.check_uid import record_sop_instance_uid
 from ..tools.standard_names import assign_standard_names_to_study
+from ..tools.alert_controller import check_for_new_drl_alerts_in_study
+
 
 def get_study_check_dup(dataset, modality="DX"):
     """
@@ -434,7 +436,7 @@ def add_standard_names(g):
     """
 
     assign_standard_names_to_study(g)
-    # TODO: check for new DRL alerts
+    check_for_new_drl_alerts_in_study(g)
 
 
 def observercontext(dataset, obs):  # TID 1002
