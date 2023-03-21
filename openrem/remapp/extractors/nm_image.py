@@ -78,6 +78,7 @@ from .extract_common import (
     generalstudymoduleattributes,
     patientstudymoduleattributes,
     patient_module_attributes,
+    add_standard_names
 )
 from openrem.remapp.tools.background import (
     record_task_error_exit,
@@ -400,6 +401,9 @@ def _nm2db(dataset):
         radiopharmaceutical_radiation_dose=t
     ).save()
     _nm_specific_imports(study, dataset, is_nm_img)
+
+    # Add standard names
+    add_standard_names(study)
 
 
 def nm_image(filename: str):

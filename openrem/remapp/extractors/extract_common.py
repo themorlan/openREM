@@ -481,6 +481,8 @@ def add_standard_names(g):
                         ).values_list("pk", flat=True)
                     )
                     event.standard_protocols.add(*pk_value)
+        elif modality == "NM":
+            pass
         else:
             for (
                 event
