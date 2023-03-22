@@ -54,6 +54,7 @@ from .extract_common import (  # pylint: disable=wrong-import-order, wrong-impor
     patient_module_attributes,
     add_standard_names,
 )
+from ..tools.patient_controller import add_or_update_patient_from_study
 
 
 def _xrayfilters(dataset, source):
@@ -501,6 +502,7 @@ def _generalstudymoduleattributes(dataset, g):
 
     # Add standard names
     add_standard_names(g)
+    add_or_update_patient_from_study(g)
 
 
 def _test_if_mammo(dataset):

@@ -81,6 +81,7 @@ from remapp.models import (  # pylint: disable=wrong-import-order, wrong-import-
     ScanningLength,
     UniqueEquipmentNames,
 )
+from ..tools.patient_controller import add_or_update_patient_from_study
 
 logger = logging.getLogger(__name__)
 
@@ -375,6 +376,7 @@ def _philips_ct2db(dataset):
 
     # Add standard names
     add_standard_names(g)
+    add_or_update_patient_from_study(g)
 
 
 def ct_philips(philips_file):

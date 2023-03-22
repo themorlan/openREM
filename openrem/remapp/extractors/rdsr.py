@@ -80,6 +80,7 @@ from remapp.models import (  # pylint: disable=wrong-import-order, wrong-import-
     PKsForSummedRFDoseStudiesInDeltaWeeks,
     SkinDoseMapCalcSettings,
 )
+from ..tools.patient_controller import add_or_update_patient_from_study
 
 logger = logging.getLogger(
     "remapp.extractors.rdsr"
@@ -549,6 +550,7 @@ def _rdsr2db(dataset):
 
     # Add standard names
     add_standard_names(g)
+    add_or_update_patient_from_study(g)
 
 
 def _fix_toshiba_vhp(dataset):

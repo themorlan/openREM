@@ -98,6 +98,7 @@ from remapp.models import (  # pylint: disable=wrong-import-order, wrong-import-
     XrayFilters,
     XrayGrid,
 )
+from ..tools.patient_controller import add_or_update_patient_from_study
 
 logger = logging.getLogger(
     "remapp.extractors.dx"
@@ -749,6 +750,7 @@ def _generalstudymoduleattributes(dataset, g):
 
     # Add standard names
     add_standard_names(g)
+    add_or_update_patient_from_study(g)
 
 
 # The routine will accept three types of image:
