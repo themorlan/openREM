@@ -127,7 +127,7 @@ from .tools.populate_summary import (
     populate_summary_dx,
     populate_summary_rf,
 )
-from openrem.remapp.tools.standard_names import add_standard_name, delete_standard_name, update_all, update_standard_name
+from openrem.remapp.tools.standard_names import add_standard_name, delete_standard_name, update_all_standard_names_for_modality, update_standard_name
 from openrem.remapp.tools.background import (
     run_in_background,
     terminate_background,
@@ -3328,7 +3328,7 @@ def standard_name_update_all(request, modality=None):
         return redirect(reverse_lazy("standard_names_view"))
 
     if request.method == "GET":
-        update_all(modality)
+        update_all_standard_names_for_modality(modality)
 
         messages.success(
             request, "All {0} standard name entries refreshed".format(modality)
