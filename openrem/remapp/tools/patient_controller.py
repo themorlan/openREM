@@ -38,12 +38,15 @@ def add_or_update_patients():
 
 
 def add_or_update_patient_from_study(study: GeneralStudyModuleAttr):
-    patient_module_attr = PatientModuleAttr.objects.get(general_study_module_attributes=study)
-    patient_study_module_attr = PatientStudyModuleAttr.objects.get(general_study_module_attributes=study)
+    try:
+        patient_module_attr = PatientModuleAttr.objects.get(general_study_module_attributes=study)
+        patient_study_module_attr = PatientStudyModuleAttr.objects.get(general_study_module_attributes=study)
+    except ObjectDoesNotExist:
+        return
 
     if not patient_module_attr.patient_id or not patient_module_attr.patient_birth_date:
         # Patient has no ID and/or birth date, thus the given data cannot be identified uniquely - aborting
-        return
+        return  
     
     try:
         # Patient object already exists, thus we update missing data points
