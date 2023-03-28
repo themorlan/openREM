@@ -1,9 +1,13 @@
 {% extends "remapp/base.html" %}
 
 {% block headextras %}
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}admin/css/base.css" />
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}admin/css/forms.css" />
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}admin/css/widgets.css" />
     <!--[if lte IE 7]><link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}admin/css/ie.css" /><![endif]-->
+    <style>
+        .selector h2 {
+            font-size: 1.25em;
+        }
+    </style>
 {% endblock %}
 
 {% block navhelp %}
