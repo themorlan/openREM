@@ -153,10 +153,14 @@
                             </a>
                         </td>
                         <td>
-                            {{ alert.general_study_module_attributes.study_date }}
+                            <a>
+                                {{ alert.general_study_module_attributes.study_date }}
+                            </a>
                         </td>
                         <td>
-                            {{ alert.standard_name.standard_name }}
+                            <a>
+                                {{ alert.standard_name.standard_name }}
+                            </a>
                         </td>
                     </tr>
                     {% endfor %}
@@ -180,7 +184,9 @@
                             </a>
                         </td>
                         <td>
-                            {{ alert.first_study_date }} - {{ alert.last_study_date }}
+                            <a>
+                                {{ alert.first_study_date }} - {{ alert.last_study_date }}
+                            </a>
                         </td>
                     </tr>
                     {% endfor %}
