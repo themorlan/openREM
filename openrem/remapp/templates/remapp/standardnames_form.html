@@ -18,32 +18,36 @@
 
 {% block confnav %}<li class="dropdown active">{% endblock %}
 
-{% block mainblock %}		
+{% block mainblock %}
 
-      <div class="row col-md-offset-2">
+    <div class="row col-md-offset-2">
         <h1>Create or modify a standard name for {{ form.modality.value }} systems</h1>
-      </div>
+    </div>
 
     <div class="row">
-        <div class="col-md-8 col-md-offset-2 ">
+        <div class="col-md-8 col-md-offset-2">
             <div class="panel panel-info">
                 <div class="panel-heading">
-                    Enter the standard name and select the required options.
+                    Enter the
+                    {% if form.modality.value == "CT" %}CT
+                    {% elif form.modality.value == "RF" %}fluoroscopy
+                    {% elif form.modality.value == "MG" %}mammography
+                    {% elif form.modality.value == "DX" %}radiography
+                    {% endif %}
+                    standard name and select the required options.
                 </div>
 
                 {% if admin.admingroup %}
                 <div class="panel-body">
                     <p>Any study description, requested procedure, procedure or acquisition protocol name already
                        present in another standard name mapping are excluded from the options on this form.</p>
-
-
                     <div id="frame">
                         <form action="" method="post" id="standard_name_form">
                             <div id="sk_body">
                                 <fieldset>
                                     <form>
                                         {% csrf_token %}
-                                        <table>
+                                        <table class="table">
                                             {{ form.media }}
                                             {{ form.as_table }}
                                             <script type="text/javascript" src="{% url 'jsi18n' %}"></script>
@@ -111,12 +115,15 @@
                             </div>
                         </form>
                     </div>
+                </div>
 
                 {% else %}
                 <div class="row col-md-offset-2">
                     <p>Only users in the Admin group can create or modify standard names.</p>
                 </div>
+
                 {% endif %}
+
             </div>
         </div>
     </div>
