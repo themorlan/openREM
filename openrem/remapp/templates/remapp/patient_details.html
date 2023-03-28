@@ -82,13 +82,60 @@
                         <th>Sex</th>
                     </tr>
                     <tr>
-                        <td>{{ patient_details.patient_id }}</td>
-                        <td>{{ patient_details.patient_name }}</td>
-                        <td>{{ patient_details.patient_birth_date }}</td>
-                        <td>{{ patient_details.patient_sex }}</td>
+                        <td>
+                            <a>
+                                {{ patient_details.patient_id }}
+                            </a>
+                        </td>
+                        <td>
+                            <a>
+                                {{ patient_details.patient_name }}
+                            </a>
+                        </td>
+                        <td>
+                            <a>
+                                {{ patient_details.patient_birth_date }}
+                            </a>
+                        </td>
+                        <td>
+                            <a>
+                                {{ patient_details.patient_sex }}
+                            </a>
+                        </td>
                     </tr>
                 </table>
 
+                <h2>Studies</h2>
+                {% if studies %}
+                <table class="table table-bordered table-hover row-clickable small" aria-describedby="Study summary table">
+                    <tr>
+                        <th>Study Description</th>
+                        <th>Study date</th>
+                        <th>Standard name</th>
+                    </tr>
+                    {% for study in studies %}
+                    <tr>
+                        <td>
+                            <a href="">
+                                {{ study.study_description }}
+                            </a>
+                        </td>
+                        <td>
+                            <a>
+                                {{ study.study_date }}
+                            </a>
+                        </td>
+                        <td>
+                            <a>
+                                {{ study.standard_name.standard_name }}
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </table>
+                {% else %}
+                <p>No studies related to this patient yet</p>
+                {% endif %}
 
                 <h2>DRL Alerts</h2>
                 {% if drl_alerts %}

@@ -87,11 +87,31 @@
                     </tr>
                     {% for patient in patients %}
                         <tr>
-                            <td>{{ patient.patient_id }}</td>
-                            <td>{{ patient.patient_name }}</td>
-                            <td>{{ patient.patient_birth_date }}</td>
-                            <td>{{ patient.patient_sex }}</td>
-                            <td>{{ patient.general_study_module_attr.count }}</td>
+                            <td>
+                                <a>
+                                    {{ patient.patient_id }}</td>
+                                </a>
+                            </td>
+                            <td>
+                                <a>
+                                    {{ patient.patient_name }}</td>
+                                </a>
+                            </td>
+                            <td>
+                                <a>
+                                    {{ patient.patient_birth_date }}</td>
+                                </a>
+                            </td>
+                            <td>
+                                <a>
+                                    {{ patient.patient_sex }}</td>
+                                </a>
+                            </td>
+                            <td>
+                                <a>
+                                    {{ patient.general_study_module_attr.count }}</td>
+                                </a>
+                            </td>
                             {% if admin.admingroup %}
                                 <td>
                                     <a href="{% url 'patient_details' patient.id %}">DETAILS</a>

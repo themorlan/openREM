@@ -879,6 +879,7 @@ def patient_details(request, id):
     context = {
         "admin": admin,
         "patient_details": patient,
+        "studies": studies,
         "drl_alerts": drl_alerts,
         "effective_dose_alerts": effective_dose_alerts,
     }
