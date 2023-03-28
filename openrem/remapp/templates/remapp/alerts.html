@@ -91,12 +91,26 @@
                     </tr>
                     {% for alert in drl_alerts %}
                         <tr>
-                            <td>{{ alert.general_study_module_attributes.modality_type }}</td>
-                            <td>{{ alert.standard_name.standard_name }}</td>
-                            <td>{{ alert.general_study_module_attributes.total_dlp }} >> {{ alert.diagnostic_reference_level.diagnostic_reference_level }}</td>
-                            <td>{{ alert.date_of_issue }}</td>
                             <td>
-                                <a href="{% url 'ct_detail_view' pk=alert.general_study_module_attributes.id %}">Study details</a>
+                                <a>
+                                    {{ alert.general_study_module_attributes.modality_type }}</td>
+                                </a>
+                            <td>
+                                <a>
+                                    {{ alert.standard_name.standard_name }}</td>
+                                </a>
+                            <td>
+                                <a>
+                                    {{ alert.general_study_module_attributes.total_dlp }} >> {{ alert.diagnostic_reference_level.diagnostic_reference_level }}</td>
+                                </a>
+                            <td>
+                                <a>
+                                    {{ alert.date_of_issue }}</td>
+                                </a>
+                            <td>
+                                <a href="{% url 'ct_detail_view' pk=alert.general_study_module_attributes.id %}">
+                                    Study details
+                                </a>
                             </td>
                         </tr>
                     {% endfor %}
@@ -112,13 +126,19 @@
                     {% for alert in effective_dose_alerts %}
                         <tr>
                             <td>
-                                <a href="{% url 'patient_details' id=alert.patient.id %}">{{ alert.patient.patient_id }} ({{ alert.patient.patient_name }})</a>
+                                <a href="{% url 'patient_details' id=alert.patient.id %}">
+                                    {{ alert.patient.patient_id }} ({{ alert.patient.patient_name }})
+                                </a>
                             </td>
                             <td>
-                                {{ alert.cumulative_dose }}
+                                <a>
+                                    {{ alert.cumulative_dose }}
+                                </a>
                             </td>
                             <td>
-                                {{ alert.first_study_date }} - {{ alert.last_study_date }}
+                                <a>
+                                    {{ alert.first_study_date }} - {{ alert.last_study_date }}
+                                </a>
                             </td>
                         </tr>
                     {% endfor %}
