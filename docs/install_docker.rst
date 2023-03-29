@@ -4,7 +4,7 @@ Docker install
 Preparation
 -----------
 * Install Docker and Docker Compose (may be installed automatically with Docker)
-* Download https://bitbucket.org/openrem/docker/get/develop.zip
+* Download https://bitbucket.org/openrem/docker/get/1.0.0b1.zip
 
 .. _dockerinstall:
 
