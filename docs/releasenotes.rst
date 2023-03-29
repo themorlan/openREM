@@ -74,5 +74,11 @@ Many people have contributed to OpenREM - either with code, documentation, bugs,
 * `David Platten <https://bitbucket.org/dplatten/>`_
 * `Richard Raynor <https://bitbucket.org/RaynorR/>`_
 * `Erik-Jan Rijkhorst <https://bitbucket.org/rijkhorst/>`_
+* Kevin Schärer - Kantonsspital Aarau AG
 * `Arnold Schilham <https://bitbucket.org/asch99/>`_
+* Jannis Widmer - Kantonsspital Aarau AG
 * `Tim de Wit <https://bitbucket.org/tcdewit/>`_
+
+Special thanks go to Gerd Lutters of
+`Kantonsspital Aarau AG <https://www.ksa.ch/zentren-kliniken/strahlenschutz-und-medizinphysik>`_ for providing ideas and
+and civil service computer science students to work on OpenREM (Jannis and Kevin).
