@@ -54,7 +54,8 @@ Previous releases:
 Contributing authors
 ********************
 
-Many people have contributed to OpenREM - either with code, documentation, bugs, examples or ideas, including:
+Many people have contributed to OpenREM - either with code, documentation, translations, bugs, examples or ideas,
+including:
 
 * `BjörnAlbers <https://bitbucket.org/bjoernalbers/>`_
 * `Erlend Andersen <https://bitbuckeet.org/erlend_andersen/>`_
@@ -63,21 +64,28 @@ Many people have contributed to OpenREM - either with code, documentation, bugs,
 * `Jonathan Cole <https://bitbucket.org/jacole/>`_
 * `Jamie Dormand <https://bitbucket.org/jamiedormand/>`_
 * `Ben Earner <https://bitbucket.org/bearner/>`_
+* Louise Giansante Martins
 * `Daniel Gordon <https://bitbucket.org/dan_gordon/>`_
 * `Hamid Khosravi <https://bitbucket.org/hrkhosravi/>`_
 * `Laurence King <https://bitbucket.org/LaurenceKing/>`_
+* `Wens Kong <https://bitbucket.org/wens/>`_
 * `Eivind Larsen <https://bitbucket.org/leivind/>`_
 * `John Loveland <https://bitbucket.org/JLMPO/>`_
+* `Paolo Marcheschi <https://hosted.weblate.org/user/paolo.marcheschi/>`_
 * `Ed McDonagh <https://bitbucket.org/edmcdonagh/>`_
 * `Richard Miles <https://bitbucket.org/r89m/>`_
+* Allan Nordhøy
 * `Luuk Oostveen <https://bitbucket.org/LuukO/>`_
 * `David Platten <https://bitbucket.org/dplatten/>`_
 * `Richard Raynor <https://bitbucket.org/RaynorR/>`_
 * `Erik-Jan Rijkhorst <https://bitbucket.org/rijkhorst/>`_
 * Kevin Schärer - Kantonsspital Aarau AG
 * `Arnold Schilham <https://bitbucket.org/asch99/>`_
+* `Marcelo Sosa <https://hosted.weblate.org/user/Msosa/>`_
+* `Georg Stamm <https://hosted.weblate.org/user/stamm.georg/>`_
 * Jannis Widmer - Kantonsspital Aarau AG
 * `Tim de Wit <https://bitbucket.org/tcdewit/>`_
+* Daniel Wyatt
 
 Special thanks go to Gerd Lutters of
 `Kantonsspital Aarau AG <https://www.ksa.ch/zentren-kliniken/strahlenschutz-und-medizinphysik>`_ for providing ideas and
