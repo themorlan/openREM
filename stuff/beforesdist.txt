@@ -3,7 +3,7 @@ Change the version number in
 	openrem/remapp/version.py - append '-docs' to version tag name for docs branch
 	install instructions in the release notes where applicable
         install_linux.rst - set to version for beta or versionless for release
-	    install-offline.rst (twice)
+	    install-offline.rst
         install_windows.rst - set to version for beta or versionless for release
         upgrade_windows.rst ?
 	date and other details in changes.rst
@@ -13,7 +13,9 @@ Change the version number in
 Clean the existing distribute folder - instructions assume the following layout:
     bbOpenREM # bitbucket repo of openrem/openrem
     distribute # empty folder at the same level as bbOpenREM
-	rm -r *
+
+cd distribute
+rm -r *
 
 Then get the new contents:
 rsync -av --exclude-from='../bbOpenREM/stuff/distexclude.txt' ../bbOpenREM/ .
@@ -21,6 +23,8 @@ cp ../bbOpenREM/stuff/v1initial.py openrem/remapp/migrations/0001_initial.py.1-0
 
 Build:
     Activate the venv you are using, then
+    Make sure wheel and build are installed (wheel might not be needed):
+    python3 -m pip install --upgrade wheel
     python3 -m pip install --upgrade build
 	python3 -m build
 

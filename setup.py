@@ -30,7 +30,7 @@ setup(
     ],
     license="GPLv3 with additional permissions",
     # description="Open source patient radiation dose monitoring software",
-    description='Developer alpha only',
+    description='Developer beta only',
     long_description=README,
     url="https://openrem.org/",
     author="Ed McDonagh",
