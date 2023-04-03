@@ -81,22 +81,36 @@
                         </a>
                         <ul class="dropdown-menu">
                             {% if admin.importsizegroup %}
+                                <li class="dropdown-header">{% trans "Patient size imports" %}</li>
                             <li><a href="{% url 'size_upload' %}">{% trans "Import patient size info" %}</a></li>
                             {% endif %}
                             {% if admin.importsizegroup or admin.admingroup %}
                             <li><a href="{% url 'size_imports' %}">{% trans "Previous patient size imports" %}</a></li>
                             {% endif %}
                             {% if admin.importqrgroup %}
-                            <li><a href="{% url 'dicom_qr_page' %}">{% trans "Query remote server" %}</a> </li>
+                                <li role="separator" class="divider"></li>
+                                <li class="dropdown-header">{% trans "DICOM query-retrieve" %}</li>
+                                <li><a href="{% url 'dicom_qr_page' %}">{% trans "Query remote server" %}</a> </li>
+                                <li><a href="{% url 'get_query_summary' %}">{% trans "Previous queries" %}</a></li>
                             {% endif %}
                         </ul>
                     </li>
                 {% endif %}
-                {% if admin.exportgroup %}
+                {% if admin.exportgroup or admin.admingroup %}
                     {% block exportnav %}
-                        <li>
+                        <li class="dropdown">
                     {% endblock %}
-                        <a href="{% url 'export' %}">{% trans "Exports" %}</a></li>
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                        {% trans "Tasks" %} <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        {% if admin.exportgroup %}
+                            <li><a href="{% url 'export' %}">{% trans "Exports" %}</a></li>
+                        {% endif %}
+                        {% if admin.admingroup %}
+                            <li><a href="{% url 'task_admin' %}">{% trans "Tasks" %}</a></li>
+                        {% endif %}
+                    </ul>
                 {% endif %}
 
                 {% block confnav %}
@@ -131,7 +145,6 @@
                         <li><a href="{% url 'display_names_view' %}">{% trans "Display names & modality" %}</a></li>
                         <li><a href="{% url 'dicom_delete_settings_update' 1 %}">{% trans "DICOM object deletion" %}</a> </li>
                         <li><a href="{% url 'dicom_summary' %}">{% trans "DICOM networking" %}</a></li>
-                        <li><a href="{% url 'get_query_summary' %}">{% trans "DICOM query summary" %}</a></li>
                         <li><a href="{% url 'patient_id_settings_update' 1 %}">{% trans "Patient ID" %}</a> </li>
                         <li><a href="{% url 'not_patient_indicators' %}">{% trans "Not-patient indicators" %}</a> </li>
                         <li><a href="{% url 'skin_dose_map_settings_update' 1 %}">{% trans "Skin dose map" %}</a> </li>
@@ -141,7 +154,6 @@
                       {% endif %}
                       <li><a href="{% url 'standard_names_view' %}">{% trans "Standard name mapping" %}</a></li>
                       {% if admin.admingroup %}
-                          <li><a href="{% url 'task_admin' %}">{% trans "Tasks" %}</a></li>
                           <li><a href="{% url 'background_task_settings' 1 %}">{% trans "Task settings" %}</a></li>
                       {% endif %}
                     </ul>
