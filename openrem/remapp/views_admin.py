@@ -44,7 +44,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User  # pylint: disable=all
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.db.models import Q, Sum
+from django.db.models import Q, Sum, Count, Max
 from django.db.utils import OperationalError as AvoidDataMigrationErrorSQLite
 from django.db.utils import ProgrammingError as AvoidDataMigrationErrorPostgres
 from django.db.utils import IntegrityError
@@ -381,8 +381,9 @@ def display_name_populate(request):
             admin[group.name] = True
         if modality in ["MG", "CT", "NM"]:
             name_set = f.filter(
-                generalequipmentmoduleattr__general_study_module_attributes__modality_type=modality
-            ).distinct()
+                generalequipmentmoduleattr__general_study_module_attributes__modality_type=modality).distinct().annotate(
+                num_entries=Count("generalequipmentmoduleattr"),
+                latest_entry_date=Max("generalequipmentmoduleattr__general_study_module_attributes__study_date"))
             dual = False
         elif modality == "DX":
             name_set = f.filter(
@@ -402,7 +403,11 @@ def display_name_populate(request):
                         )
                     )
                 )
-            ).distinct()
+            ).distinct().annotate(
+                num_entries=Count("generalequipmentmoduleattr"),
+                latest_entry_date=Max("generalequipmentmoduleattr__general_study_module_attributes__study_date")
+            )
+
             dual = True
         elif modality == "RF":
             name_set = f.filter(
@@ -414,7 +419,10 @@ def display_name_populate(request):
                         generalequipmentmoduleattr__general_study_module_attributes__modality_type="RF"
                     )
                 )
-            ).distinct()
+            ).distinct().annotate(
+                num_entries=Count("generalequipmentmoduleattr"),
+                latest_entry_date=Max("generalequipmentmoduleattr__general_study_module_attributes__study_date")
+            )
             dual = True
         elif modality == "OT":
             name_set = f.filter(  # ~Q(user_defined_modality__isnull=True) | (
@@ -439,7 +447,10 @@ def display_name_populate(request):
                 & ~Q(
                     generalequipmentmoduleattr__general_study_module_attributes__modality_type="NM"
                 )
-            ).distinct()
+            ).distinct().annotate(
+                num_entries=Count("generalequipmentmoduleattr"),
+                latest_entry_date=Max("generalequipmentmoduleattr__general_study_module_attributes__study_date")
+            )
             dual = False
         else:
             name_set = None
