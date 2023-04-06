@@ -5,23 +5,23 @@
   </tr>
   <tr class="clickable-row">
     <td><a href="{% url 'review_failed_imports' 'CT' %}" style="text-decoration: none">CT</a></td>
-    <td><a href="{% url 'review_failed_imports' 'CT' %}" style="text-decoration: none">{{ failed.CT }}</a></td>
+    <td><a href="{% url 'review_failed_imports' 'CT' %}" style="text-decoration: none">{{ failed.broken_ct }}</a></td>
   </tr>
   <tr class="row-clickable">
     <td><a href="{% url 'review_failed_imports' 'RF' %}" style="text-decoration: none">Fluoro</a></td>
-    <td><a href="{% url 'review_failed_imports' 'RF' %}" style="text-decoration: none">{{ failed.RF }}</a></td>
+    <td><a href="{% url 'review_failed_imports' 'RF' %}" style="text-decoration: none">{{ failed.broken_rf }}</a></td>
   </tr>
   <tr>
     <td><a href="{% url 'review_failed_imports' 'MG' %}" style="text-decoration: none">Mammography</a></td>
-    <td><a href="{% url 'review_failed_imports' 'MG' %}" style="text-decoration: none">{{ failed.MG }}</a></td>
+    <td><a href="{% url 'review_failed_imports' 'MG' %}" style="text-decoration: none">{{ failed.broken_mg }}</a></td>
   </tr>
   <tr class="row-clickable">
     <td><a href="{% url 'review_failed_imports' 'DX' %}" style="text-decoration: none">Radiography</a></td>
-    <td><a href="{% url 'review_failed_imports' 'DX' %}" style="text-decoration: none">{{ failed.DX }}</a></td>
+    <td><a href="{% url 'review_failed_imports' 'DX' %}" style="text-decoration: none">{{ failed.broken_dx }}</a></td>
   </tr>
   <tr class="row-clickable">
     <td><a href="{% url 'review_failed_imports' 'NM' %}" style="text-decoration: none">Nuclear Medicine</a></td>
-    <td><a href="{% url 'review_failed_imports' 'NM' %}" style="text-decoration: none">{{ failed.NM }}</a></td>
+    <td><a href="{% url 'review_failed_imports' 'NM' %}" style="text-decoration: none">{{ failed.broken_nm }}</a></td>
   </tr>
 </table>
 

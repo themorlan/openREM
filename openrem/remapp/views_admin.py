@@ -1200,6 +1200,25 @@ def _get_broken_studies(modality=None):
     )
 
 
+def _get_broken_studies_count():
+    """Filter studies with no unique_equipment_name table entry
+    :return: Query filter of study counts
+    """
+    all_mod = GeneralStudyModuleAttr.objects.filter(
+        generalequipmentmoduleattr__unique_equipment_name__display_name__isnull=True).aggregate(
+        broken_dx=Count("pk", filter=Q(modality_type__exact="DX")
+                                     | Q(modality_type__exact="CR")
+                                     | Q(modality_type__exact="PX")
+                     ),
+        broken_ct=Count("pk", filter=Q(modality_type__exact="CT")),
+        broken_rf=Count("pk", filter=Q(modality_type__exact="RF")),
+        broken_mg=Count("pk", filter=Q(modality_type__exact="MG")),
+        broken_nm=Count("pk", filter=Q(modality_type__exact="NM")),
+    )
+
+    return all_mod
+
+
 def failed_list_populate(request):
     """View for failed import section of display name view
 
@@ -1207,9 +1226,7 @@ def failed_list_populate(request):
     """
 
     if request.is_ajax():
-        failed = {}
-        for modality in ["CT", "RF", "MG", "DX", "NM"]:
-            failed[modality] = _get_broken_studies(modality).count()
+        failed = _get_broken_studies_count()
         template = "remapp/failed_summary_list.html"
         return render(request, template, {"failed": failed})
 
