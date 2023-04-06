@@ -382,7 +382,7 @@ def display_name_populate(request):
         if modality in ["MG", "CT", "NM"]:
             name_set = f.filter(
                 generalequipmentmoduleattr__general_study_module_attributes__modality_type=modality).distinct().annotate(
-                num_entries=Count("generalequipmentmoduleattr"),
+                num_entries=Count("generalequipmentmoduleattr__pk"),
                 latest_entry_date=Max("generalequipmentmoduleattr__general_study_module_attributes__study_date"))
             dual = False
         elif modality == "DX":
@@ -404,7 +404,7 @@ def display_name_populate(request):
                     )
                 )
             ).distinct().annotate(
-                num_entries=Count("generalequipmentmoduleattr"),
+                num_entries=Count("generalequipmentmoduleattr__pk"),
                 latest_entry_date=Max("generalequipmentmoduleattr__general_study_module_attributes__study_date")
             )
 
@@ -420,35 +420,17 @@ def display_name_populate(request):
                     )
                 )
             ).distinct().annotate(
-                num_entries=Count("generalequipmentmoduleattr"),
+                num_entries=Count("generalequipmentmoduleattr__pk"),
                 latest_entry_date=Max("generalequipmentmoduleattr__general_study_module_attributes__study_date")
             )
             dual = True
         elif modality == "OT":
             name_set = f.filter(  # ~Q(user_defined_modality__isnull=True) | (
-                ~Q(
-                    generalequipmentmoduleattr__general_study_module_attributes__modality_type="RF"
-                )
-                & ~Q(
-                    generalequipmentmoduleattr__general_study_module_attributes__modality_type="MG"
-                )
-                & ~Q(
-                    generalequipmentmoduleattr__general_study_module_attributes__modality_type="CT"
-                )
-                & ~Q(
-                    generalequipmentmoduleattr__general_study_module_attributes__modality_type="DX"
-                )
-                & ~Q(
-                    generalequipmentmoduleattr__general_study_module_attributes__modality_type="CR"
-                )
-                & ~Q(
-                    generalequipmentmoduleattr__general_study_module_attributes__modality_type="PX"
-                )
-                & ~Q(
-                    generalequipmentmoduleattr__general_study_module_attributes__modality_type="NM"
-                )
+                ~Q(generalequipmentmoduleattr__general_study_module_attributes__modality_type__in=[
+                    "RF", "MG", "CT", "DX", "CR", "PX", "NM"
+                ])
             ).distinct().annotate(
-                num_entries=Count("generalequipmentmoduleattr"),
+                num_entries=Count("generalequipmentmoduleattr__pk"),
                 latest_entry_date=Max("generalequipmentmoduleattr__general_study_module_attributes__study_date")
             )
             dual = False
