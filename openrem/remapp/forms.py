@@ -1807,9 +1807,7 @@ class StandardNameFormDX(StandardNameFormBase):
         self.fields["modality"].initial = "DX"
 
         all_studies = GeneralStudyModuleAttr.objects.filter(
-            Q(modality_type__iexact="DX")
-            | Q(modality_type__iexact="CR")
-            | Q(modality_type__iexact="PX")
+            Q(modality_type__in=["DX", "CR", "PX"])
         )
 
         field_names = [

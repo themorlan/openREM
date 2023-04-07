@@ -65,7 +65,7 @@ class ChartsDX(TestCase):
         f = DXSummaryListFilter(
             filter_set,
             queryset=GeneralStudyModuleAttr.objects.filter(
-                Q(modality_type__exact="DX") | Q(modality_type__exact="CR")
+                Q(modality_type__in=["DX", "CR"])
             )
             .order_by()
             .distinct(),

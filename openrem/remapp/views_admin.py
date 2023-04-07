@@ -387,8 +387,7 @@ def display_name_populate(request):
             dual = False
         elif modality == "DX":
             name_set = f.filter(
-                Q(user_defined_modality="DX")
-                | Q(user_defined_modality="dual")
+                Q(user_defined_modality__in=["DX", "dual"])
                 | (
                     Q(user_defined_modality__isnull=True)
                     & (
@@ -404,8 +403,7 @@ def display_name_populate(request):
             dual = True
         elif modality == "RF":
             name_set = f.filter(
-                Q(user_defined_modality="RF")
-                | Q(user_defined_modality="dual")
+                Q(user_defined_modality__in=["RF", "dual"])
                 | (
                     Q(user_defined_modality__isnull=True)
                     & Q(
@@ -3036,7 +3034,6 @@ class StandardNameAddCore(CreateView):
                 elif form.cleaned_data["modality"] == "RF":
                     q = ["RF"]
 
-                # I think the below lines can be replaced with:
                 acquisitions = IrradEventXRayData.objects.filter(
                     Q(projection_xray_radiation_dose__general_study_module_attributes__modality_type__in=q)
                 )
