@@ -282,7 +282,7 @@ def rf_summary_list_filter(request):
 
     enable_standard_names = standard_name_settings()
     queryset = (
-        GeneralStudyModuleAttr.objects.filter(modality_type__exact="RF")
+        GeneralStudyModuleAttr.objects.filter(modality_type="RF")
         .order_by("-study_date", "-study_time")
         .distinct()
     )
@@ -505,8 +505,8 @@ def rf_detail_view(request, pk=None):
             )[0]
             oldest_date = study_date - timedelta(weeks=week_delta)
             included_studies = GeneralStudyModuleAttr.objects.filter(
-                modality_type__exact="RF",
-                patientmoduleattr__patient_id__exact=patient_id,
+                modality_type="RF",
+                patientmoduleattr__patient_id=patient_id,
                 study_date__range=[oldest_date, study_date],
             )
         else:
@@ -659,8 +659,8 @@ def nm_detail_view(request, pk=None):
         return redirect(reverse_lazy("nm_summary_list_filter"))
 
     associated_ct = GeneralStudyModuleAttr.objects.filter(
-        Q(study_instance_uid__exact=study.study_instance_uid)
-        & Q(modality_type__exact="CT")
+        Q(study_instance_uid=study.study_instance_uid)
+        & Q(modality_type="CT")
     ).first()
 
     admin = create_admin_info(request)
@@ -717,8 +717,8 @@ def ct_detail_view(request, pk=None):
     )
 
     associated_nm = GeneralStudyModuleAttr.objects.filter(
-        Q(study_instance_uid__exact=study.study_instance_uid)
-        & Q(modality_type__exact="NM")
+        Q(study_instance_uid=study.study_instance_uid)
+        & Q(modality_type="NM")
     ).first()
 
     admin = create_admin_info(request)
@@ -746,7 +746,7 @@ def mg_summary_list_filter(request):
         del filter_data["page"]
 
     queryset = (
-        GeneralStudyModuleAttr.objects.filter(modality_type__exact="MG")
+        GeneralStudyModuleAttr.objects.filter(modality_type="MG")
         .order_by("-study_date", "-study_time")
         .distinct()
     )
@@ -880,27 +880,23 @@ def openrem_home(request):
     modalities = OrderedDict()
     modalities["CT"] = {
         "name": _("CT"),
-        "count": allstudies.filter(modality_type__exact="CT").count(),
+        "count": allstudies.filter(modality_type="CT").count(),
     }
     modalities["RF"] = {
         "name": _("Fluoroscopy"),
-        "count": allstudies.filter(modality_type__exact="RF").count(),
+        "count": allstudies.filter(modality_type="RF").count(),
     }
     modalities["MG"] = {
         "name": _("Mammography"),
-        "count": allstudies.filter(modality_type__exact="MG").count(),
+        "count": allstudies.filter(modality_type="MG").count(),
     }
     modalities["DX"] = {
         "name": _("Radiography"),
-        "count": allstudies.filter(
-            Q(modality_type__exact="DX")
-            | Q(modality_type__exact="CR")
-            | Q(modality_type__exact="PX")
-        ).count(),
+        "count": allstudies.filter(Q(modality_type__in=["DX", "CR", "PX"])).count(),
     }
     modalities["NM"] = {
         "name": _("Nuclear Medicine"),
-        "count": allstudies.filter(modality_type__exact="NM").count(),
+        "count": allstudies.filter(modality_type="NM").count(),
     }
 
     mods_to_delete = []
@@ -978,7 +974,7 @@ def openrem_home(request):
     # )[0]
     # if send_alert_emails:
     #     recipients = User.objects.filter(
-    #         highdosemetricalertrecipients__receive_high_dose_metric_alerts__exact=True
+    #         highdosemetricalertrecipients__receive_high_dose_metric_alerts=True
     #     ).values_list('email', flat=True)
     #     send_mail('OpenREM high dose alert test',
     #               'This is a test for high dose alert e-mails from OpenREM',
@@ -1015,14 +1011,10 @@ def update_modality_totals(request):
         allstudies = GeneralStudyModuleAttr.objects.all()
         resp = {
             "total": allstudies.count(),
-            "total_mg": allstudies.filter(modality_type__exact="MG").count(),
-            "total_ct": allstudies.filter(modality_type__exact="CT").count(),
+            "total_mg": allstudies.filter(modality_type="MG").count(),
+            "total_ct": allstudies.filter(modality_type="CT").count(),
             "total_rf": allstudies.filter(modality_type__contains="RF").count(),
-            "total_dx": allstudies.filter(
-                Q(modality_type__exact="DX")
-                | Q(modality_type__exact="CR")
-                | Q(modality_type__exact="PX")
-            ).count(),
+            "total_dx": allstudies.filter(Q(modality_type__in=["DX", "CR", "PX"])).count(),
         }
 
         return HttpResponse(json.dumps(resp), content_type="application/json")
@@ -1041,13 +1033,11 @@ def update_latest_studies(request):
         modality = data.get("modality")
         if modality == "DX":
             studies = GeneralStudyModuleAttr.objects.filter(
-                Q(modality_type__exact="DX")
-                | Q(modality_type__exact="CR")
-                | Q(modality_type__exact="PX")
+                Q(modality_type__in=["DX", "CR", "PX"])
             ).all()
         else:
             studies = GeneralStudyModuleAttr.objects.filter(
-                modality_type__exact=modality
+                modality_type=modality
             ).all()
 
         display_names = (
@@ -1071,11 +1061,11 @@ def update_latest_studies(request):
 
         for display_name, pk in display_names:
             display_name_studies = studies.filter(
-                generalequipmentmoduleattr__unique_equipment_name__display_name__exact=display_name
+                generalequipmentmoduleattr__unique_equipment_name__display_name=display_name
             )
             latestdate = display_name_studies.latest("study_date").study_date
             latestuid = display_name_studies.filter(
-                study_date__exact=latestdate
+                study_date=latestdate
             ).latest("study_time")
             try:
                 latestdatetime = datetime.combine(
@@ -1146,13 +1136,11 @@ def update_study_workload(request):
         modality = data.get("modality")
         if modality == "DX":
             studies = GeneralStudyModuleAttr.objects.filter(
-                Q(modality_type__exact="DX")
-                | Q(modality_type__exact="CR")
-                | Q(modality_type__exact="PX")
+                Q(modality_type__in=["DX", "CR", "PX"])
             ).all()
         else:
             studies = GeneralStudyModuleAttr.objects.filter(
-                modality_type__exact=modality
+                modality_type=modality
             ).all()
 
         display_names = (
@@ -1180,7 +1168,7 @@ def update_study_workload(request):
 
         for display_name, pk in display_names:
             display_name_studies = studies.filter(
-                generalequipmentmoduleattr__unique_equipment_name__display_name__exact=display_name
+                generalequipmentmoduleattr__unique_equipment_name__display_name=display_name
             )
 
             try:
