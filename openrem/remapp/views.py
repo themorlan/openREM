@@ -45,6 +45,11 @@ from django.db.models import (
     Sum,
     Q,
     Min,
+    Max,
+    Count,
+    F,
+    ExpressionWrapper,
+    DurationField,
     Subquery,
     OuterRef,
 )
@@ -1060,8 +1065,6 @@ def update_latest_studies(request):
             )
         )
 
-        modalitydata = {}
-
         if request.user.is_authenticated:
             day_delta_a = request.user.userprofile.summaryWorkloadDaysA
             day_delta_b = request.user.userprofile.summaryWorkloadDaysB
@@ -1069,43 +1072,18 @@ def update_latest_studies(request):
             day_delta_a = 7
             day_delta_b = 28
 
-        for display_name, pk in display_names:
-            display_name_studies = studies.filter(
-                generalequipmentmoduleattr__unique_equipment_name__display_name__exact=display_name
-            )
-            latestdate = display_name_studies.latest("study_date").study_date
-            latestuid = display_name_studies.filter(
-                study_date__exact=latestdate
-            ).latest("study_time")
-            try:
-                latestdatetime = datetime.combine(
-                    latestuid.study_date, latestuid.study_time
-                )
-            except TypeError:
-                latestdatetime = datetime.combine(
-                    date(year=1900, month=1, day=1), time(hour=0, minute=0)
-                )
-            deltaseconds = int((datetime.now() - latestdatetime).total_seconds())
-
-            modalitydata[display_name] = {
-                "total": display_name_studies.count(),
-                "latest": latestdatetime,
-                "deltaseconds": deltaseconds,
-                "displayname": display_name,
-                "displayname_pk": modality.lower() + str(pk),
-            }
-        ordereddata = OrderedDict(
-            sorted(
-                list(modalitydata.items()), key=lambda t: t[1]["latest"], reverse=True
-            )
-        )
+        now = datetime.now()
+        test_data_new = studies.values("generalequipmentmoduleattr__unique_equipment_name__display_name").annotate(
+            num_studies=Count("pk"),
+            latest_entry_date_time=Max("test_date_time"),
+            timedelta=ExpressionWrapper(now - F("latest_entry_date_time"), output_field=DurationField()),
+        ).order_by("-latest_entry_date_time")
 
         admin = {}
         for group in request.user.groups.all():
             admin[group.name] = True
 
         template = "remapp/home-list-modalities.html"
-        data = ordereddata
 
         display_workload_stats = HomePageAdminSettings.objects.values_list(
             "enable_workload_stats", flat=True
@@ -1125,7 +1103,7 @@ def update_latest_studies(request):
             request,
             template,
             {
-                "data": data,
+                "test_data": test_data_new,
                 "modality": modality.lower(),
                 "home_config": home_config,
                 "admin": admin,
@@ -1196,7 +1174,7 @@ def update_study_workload(request):
                     study_date__range=[date_b, today]
                 ).count(),
                 "displayname": displayname,
-                "displayname_pk": modality.lower() + str(pk),
+                "displayname_pk": modality.lower() + displayname.decode("UTF-8").replace(" ", ""),
             }
         data = OrderedDict(
             sorted(
