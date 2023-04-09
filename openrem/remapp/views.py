@@ -49,7 +49,6 @@ from django.db.models import (
     Count,
     F,
     ExpressionWrapper,
-    DurationField,
     Subquery,
     OuterRef,
 )
@@ -1059,7 +1058,7 @@ def update_latest_studies(request):
         study_data = studies.values("generalequipmentmoduleattr__unique_equipment_name__display_name").annotate(
             num_studies=Count("pk"),
             latest_entry_date_time=Max("test_date_time"),
-            timedelta=ExpressionWrapper(today - F("latest_entry_date_time"), output_field=DurationField())
+            #timedelta=ExpressionWrapper(today - F("latest_entry_date_time"), output_field=DurationField()),
         ).order_by("-latest_entry_date_time")
 
         display_workload_stats = HomePageAdminSettings.objects.values_list("enable_workload_stats", flat=True)[0]

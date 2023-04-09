@@ -175,6 +175,8 @@
                             type: "POST",
                             success: function (data) {
                                 $('#{{ modality }}-table').html(data);
+                                var summary_table_{{ modality }} = document.getElementById("summary_table_{{ modality|lower }}");
+                                sorttable.makeSortable(summary_table_{{ modality }});
                             }
                         }
                     )
