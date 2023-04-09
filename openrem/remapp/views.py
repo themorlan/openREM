@@ -36,7 +36,7 @@ import os
 import gzip
 import json
 import logging
-from datetime import datetime, timedelta, date, time
+from datetime import datetime, timedelta
 from decimal import Decimal
 import pickle  # nosec
 from collections import OrderedDict
@@ -44,13 +44,8 @@ from collections import OrderedDict
 from django.db.models import (
     Sum,
     Q,
-    Min,
     Max,
     Count,
-    F,
-    ExpressionWrapper,
-    Subquery,
-    OuterRef,
 )
 from django.contrib import messages
 from django.contrib.auth import logout
@@ -110,7 +105,6 @@ from .models import (
     HomePageAdminSettings,
     UpgradeStatus,
     StandardNameSettings,
-    StandardNames,
 )
 from .version import __version__, __docs_version__, __skin_map_version__
 
@@ -1058,7 +1052,7 @@ def update_latest_studies(request):
         study_data = studies.values("generalequipmentmoduleattr__unique_equipment_name__display_name").annotate(
             num_studies=Count("pk"),
             latest_entry_date_time=Max("test_date_time"),
-            #timedelta=ExpressionWrapper(today - F("latest_entry_date_time"), output_field=DurationField()),
+            # timedelta=ExpressionWrapper(today - F("latest_entry_date_time"), output_field=DurationField()),
         ).order_by("-latest_entry_date_time")
 
         display_workload_stats = HomePageAdminSettings.objects.values_list("enable_workload_stats", flat=True)[0]
