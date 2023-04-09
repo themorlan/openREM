@@ -1062,8 +1062,8 @@ def update_latest_studies(request):
         else:
             day_delta_a = 7
             day_delta_b = 28
-        date_a = today - timedelta(days=day_delta_a)
-        date_b = today - timedelta(days=day_delta_b)
+        date_a = today.date() - timedelta(days=day_delta_a)
+        date_b = today.date() - timedelta(days=day_delta_b)
         if display_workload_stats:
             study_data = study_data.annotate(
                 studies_since_delta_a=Count("pk", filter=Q(test_date_time__gte=date_a)),
