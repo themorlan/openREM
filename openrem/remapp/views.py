@@ -1055,29 +1055,27 @@ def update_latest_studies(request):
                 modality_type__exact=modality
             ).all()
 
-        display_names = (
-            studies.values_list(
-                "generalequipmentmoduleattr__unique_equipment_name__display_name"
-            )
-            .distinct()
-            .annotate(
-                pk_value=Min("generalequipmentmoduleattr__unique_equipment_name__pk")
-            )
-        )
+        today = datetime.now()
+        study_data = studies.values("generalequipmentmoduleattr__unique_equipment_name__display_name").annotate(
+            num_studies=Count("pk"),
+            latest_entry_date_time=Max("test_date_time"),
+            timedelta=ExpressionWrapper(today - F("latest_entry_date_time"), output_field=DurationField())
+        ).order_by("-latest_entry_date_time")
 
+        display_workload_stats = HomePageAdminSettings.objects.values_list("enable_workload_stats", flat=True)[0]
         if request.user.is_authenticated:
             day_delta_a = request.user.userprofile.summaryWorkloadDaysA
             day_delta_b = request.user.userprofile.summaryWorkloadDaysB
         else:
             day_delta_a = 7
             day_delta_b = 28
-
-        now = datetime.now()
-        test_data_new = studies.values("generalequipmentmoduleattr__unique_equipment_name__display_name").annotate(
-            num_studies=Count("pk"),
-            latest_entry_date_time=Max("test_date_time"),
-            timedelta=ExpressionWrapper(now - F("latest_entry_date_time"), output_field=DurationField()),
-        ).order_by("-latest_entry_date_time")
+        date_a = today - timedelta(days=day_delta_a)
+        date_b = today - timedelta(days=day_delta_b)
+        if display_workload_stats:
+            study_data = study_data.annotate(
+                studies_since_delta_a=Count("pk", filter=Q(test_date_time__gte=date_a)),
+                studies_since_delta_b=Count("pk", filter=Q(test_date_time__gte=date_b))
+            ).order_by("-latest_entry_date_time")
 
         admin = {}
         for group in request.user.groups.all():
@@ -1085,12 +1083,6 @@ def update_latest_studies(request):
 
         template = "remapp/home-list-modalities.html"
 
-        display_workload_stats = HomePageAdminSettings.objects.values_list(
-            "enable_workload_stats", flat=True
-        )[0]
-        today = datetime.now()
-        date_a = today - timedelta(days=day_delta_a)
-        date_b = today - timedelta(days=day_delta_b)
         home_config = {
             "display_workload_stats": display_workload_stats,
             "day_delta_a": day_delta_a,
@@ -1103,87 +1095,9 @@ def update_latest_studies(request):
             request,
             template,
             {
-                "test_data": test_data_new,
+                "study_data": study_data,
                 "modality": modality.lower(),
                 "home_config": home_config,
                 "admin": admin,
             },
         )
-
-
-@csrf_exempt
-def update_study_workload(request):
-    """
-    AJAX function to calculate the number of studies in two user-defined time periods for a particular modality.
-
-    :param request: Request object
-    :return: HTML table of modalities
-    """
-    if request.is_ajax():
-        data = request.POST
-        modality = data.get("modality")
-        if modality == "DX":
-            studies = GeneralStudyModuleAttr.objects.filter(
-                Q(modality_type__exact="DX")
-                | Q(modality_type__exact="CR")
-                | Q(modality_type__exact="PX")
-            ).all()
-        else:
-            studies = GeneralStudyModuleAttr.objects.filter(
-                modality_type__exact=modality
-            ).all()
-
-        display_names = (
-            studies.values_list(
-                "generalequipmentmoduleattr__unique_equipment_name__display_name"
-            )
-            .distinct()
-            .annotate(
-                pk_value=Min("generalequipmentmoduleattr__unique_equipment_name__pk")
-            )
-        )
-
-        modalitydata = {}
-
-        if request.user.is_authenticated:
-            day_delta_a = request.user.userprofile.summaryWorkloadDaysA
-            day_delta_b = request.user.userprofile.summaryWorkloadDaysB
-        else:
-            day_delta_a = 7
-            day_delta_b = 28
-
-        today = datetime.now()
-        date_a = today - timedelta(days=day_delta_a)
-        date_b = today - timedelta(days=day_delta_b)
-
-        for display_name, pk in display_names:
-            display_name_studies = studies.filter(
-                generalequipmentmoduleattr__unique_equipment_name__display_name__exact=display_name
-            )
-
-            try:
-                displayname = display_name.encode("utf-8")
-            except AttributeError:
-                displayname = "Unexpected display name non-ASCII issue"
-
-            modalitydata[display_name] = {
-                "studies_in_past_days_a": display_name_studies.filter(
-                    study_date__range=[date_a, today]
-                ).count(),
-                "studies_in_past_days_b": display_name_studies.filter(
-                    study_date__range=[date_b, today]
-                ).count(),
-                "displayname": displayname,
-                "displayname_pk": modality.lower() + displayname.decode("UTF-8").replace(" ", ""),
-            }
-        data = OrderedDict(
-            sorted(
-                list(modalitydata.items()),
-                key=lambda t: t[1]["displayname_pk"],
-                reverse=True,
-            )
-        )
-
-        template = "remapp/home-modality-workload.html"
-
-        return render(request, template, {"data": data, "modality": modality.lower()})

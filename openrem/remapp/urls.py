@@ -52,7 +52,6 @@ main_patterns = [
     path("", views.openrem_home, name="home"),
     path("hometotals/", views.update_modality_totals, name="update_modality_totals"),
     path("homestudies/", views.update_latest_studies, name="update_latest_studies"),
-    path("homeworkload/", views.update_study_workload, name="update_study_workload"),
     path("rf/", views.rf_summary_list_filter, name="rf_summary_list_filter"),
     path(
         "rf/chart/", views_charts_rf.rf_summary_chart_data, name="rf_summary_chart_data"

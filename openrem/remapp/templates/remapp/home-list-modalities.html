@@ -14,7 +14,7 @@
             Number in last {{ day_delta }} days{% endblocktrans %}</th>
       {% endif %}
     </tr>
-    {% for details in test_data %}
+    {% for details in study_data %}
       <tr>
         <td style="width:25%">
           <a href="{% url url_name %}?generalequipmentmoduleattr__unique_equipment_name__display_name={{ details.generalequipmentmoduleattr__unique_equipment_name__display_name }}&o=-study_date">
@@ -33,10 +33,10 @@
         </td>
         {% if home_config.display_workload_stats %}
           <td style="width:12.5%">
-            <a href="{% url url_name %}?generalequipmentmoduleattr__unique_equipment_name__display_name={{ details.generalequipmentmoduleattr__unique_equipment_name__display_name }}&o=-study_date&study_date__gt={{ home_config.date_a }}" id="{{ modality }}{{ details.generalequipmentmoduleattr__unique_equipment_name__display_name|cut:" " }}_a"></a>
+            <a href="{% url url_name %}?generalequipmentmoduleattr__unique_equipment_name__display_name={{ details.generalequipmentmoduleattr__unique_equipment_name__display_name }}&o=-study_date&study_date__gt={{ home_config.date_a }}">{{ details.studies_since_delta_a }}</a>
           </td>
           <td style="width:12.5%">
-            <a href="{% url url_name %}?generalequipmentmoduleattr__unique_equipment_name__display_name={{ details.generalequipmentmoduleattr__unique_equipment_name__display_name }}&o=-study_date&study_date__gt={{ home_config.date_b }}" id="{{ modality }}{{ details.generalequipmentmoduleattr__unique_equipment_name__display_name|cut:" " }}_b"></a>
+            <a href="{% url url_name %}?generalequipmentmoduleattr__unique_equipment_name__display_name={{ details.generalequipmentmoduleattr__unique_equipment_name__display_name }}&o=-study_date&study_date__gt={{ home_config.date_b }}">{{ details.studies_since_delta_b }}</a>
           </td>
         {% endif %}
       </tr>
