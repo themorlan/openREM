@@ -875,48 +875,29 @@ def openrem_home(request):
             user_profile = request.user.userprofile
 
     allstudies = GeneralStudyModuleAttr.objects.all()
+
+    study_counts = allstudies.aggregate(
+        all_count=Count("pk"),
+        ct_count=Count("pk", filter=Q(modality_type="CT")),
+        rf_count=Count("pk", filter=Q(modality_type="RF")),
+        mg_count=Count("pk", filter=Q(modality_type="MG")),
+        nm_count=Count("pk", filter=Q(modality_type="NM")),
+        dx_count=Count("pk", filter=Q(modality_type__in=["DX", "CR", "PX"])),
+    )
+
     modalities = OrderedDict()
-    modalities["CT"] = {
-        "name": _("CT"),
-        "count": allstudies.filter(modality_type__exact="CT").count(),
-    }
-    modalities["RF"] = {
-        "name": _("Fluoroscopy"),
-        "count": allstudies.filter(modality_type__exact="RF").count(),
-    }
-    modalities["MG"] = {
-        "name": _("Mammography"),
-        "count": allstudies.filter(modality_type__exact="MG").count(),
-    }
-    modalities["DX"] = {
-        "name": _("Radiography"),
-        "count": allstudies.filter(
-            Q(modality_type__exact="DX")
-            | Q(modality_type__exact="CR")
-            | Q(modality_type__exact="PX")
-        ).count(),
-    }
-    modalities["NM"] = {
-        "name": _("Nuclear Medicine"),
-        "count": allstudies.filter(modality_type__exact="NM").count(),
-    }
+    if study_counts["ct_count"]:
+        modalities["CT"] = {"name": _("CT"), "count": study_counts["ct_count"]}
+    if study_counts["rf_count"]:
+        modalities["RF"] = {"name": _("Fluoroscopy"), "count": study_counts["rf_count"]}
+    if study_counts["mg_count"]:
+        modalities["MG"] = {"name": _("Mammography"), "count": study_counts["mg_count"]}
+    if study_counts["dx_count"]:
+        modalities["DX"] = {"name": _("Radiography"), "count": study_counts["dx_count"]}
+    if study_counts["nm_count"]:
+        modalities["NM"] = {"name": _("Nuclear Medicine"), "count": study_counts["nm_count"]}
 
-    mods_to_delete = []
-    for modality in modalities:
-        if not modalities[modality]["count"]:
-            mods_to_delete += [modality]
-            if request.user.is_authenticated:
-                setattr(user_profile, "display{0}".format(modality), False)
-        else:
-            if request.user.is_authenticated:
-                setattr(user_profile, "display{0}".format(modality), True)
-    if request.user.is_authenticated:
-        user_profile.save()
-
-    for modality in mods_to_delete:
-        del modalities[modality]
-
-    homedata = {"total": allstudies.count()}
+    homedata = {"total": study_counts["all_count"]}
 
     # Determine whether to calculate workload settings
     display_workload_stats = HomePageAdminSettings.objects.values_list(
@@ -999,31 +980,6 @@ def openrem_home(request):
             "migration_complete": migration_complete,
         },
     )
-
-
-@csrf_exempt
-def update_modality_totals(request):
-    """
-    AJAX function to update study numbers automatically.
-
-    :param request: request object
-    :return: dictionary of totals
-    """
-    if request.is_ajax():
-        allstudies = GeneralStudyModuleAttr.objects.all()
-        resp = {
-            "total": allstudies.count(),
-            "total_mg": allstudies.filter(modality_type__exact="MG").count(),
-            "total_ct": allstudies.filter(modality_type__exact="CT").count(),
-            "total_rf": allstudies.filter(modality_type__contains="RF").count(),
-            "total_dx": allstudies.filter(
-                Q(modality_type__exact="DX")
-                | Q(modality_type__exact="CR")
-                | Q(modality_type__exact="PX")
-            ).count(),
-        }
-
-        return HttpResponse(json.dumps(resp), content_type="application/json")
 
 
 @csrf_exempt

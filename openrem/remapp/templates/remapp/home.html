@@ -126,23 +126,6 @@
                 )
             }
         ); {% endif %}
-        $(document).ready(
-            function get_modality_numbers(json) {
-                $.ajax(
-                    {
-                        url: "{% url 'update_modality_totals' %}",
-                        type: "POST",
-                        dataType: "json",
-                        success: function (json) {
-                            $('#total-ct').html(json.total_ct);
-                            $('#total-rf').html(json.total_rf);
-                            $('#total-mg').html(json.total_mg);
-                            $('#total-dx').html(json.total_dx);
-                        }
-                    }
-                )
-            }
-        )
     </script>
     <p>
     <p id="summary-progress"></p>
