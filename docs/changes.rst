@@ -5,6 +5,7 @@ OpenREM version history
 
 1.0.0b1 (2023-03-29)
 --------------------
+* :issue:`984`  Interface: improved performance of home page
 * :issue:`980`  Interface: improved standard name form layout
 * :issue:`977`  Documentation: fix issues preventing translations to be built
 * :issue:`976`  NM charts: Fixed bug where graphs were not displayed correctly for some chart options
