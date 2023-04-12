@@ -1,6 +1,5 @@
 Display names and user-defined modalities
 *****************************************
-*Functionality changed in 0.8.0*
 
 .. contents::
 

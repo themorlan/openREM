@@ -93,7 +93,6 @@ you can also get to using the link at the top right of the navigation bar:
 .. image:: img/Exports.png
     :align: center
     :width: 1799px
-    :height: 628px
     :alt: Exports list
 
 Whilst an export is being processed, it will be listed in the first table at the top. The current status is displayed to

@@ -116,7 +116,7 @@ Usage:
   Use Study Instance UID instead of Accession Number.
 
 ``-v, --verbose``
-  *New in 0.3.7* Print to the standard output the success or otherwise of inserting each value.
+  Print to the standard output the success or otherwise of inserting each value.
 
 ``csvfile``
   csv file containing the height and/or weight information and study identifier.
