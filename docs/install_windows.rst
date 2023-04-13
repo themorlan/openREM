@@ -93,7 +93,7 @@ Set permissions
 * Tick the ``Modify`` ``Allow`` to enable read and write permissions
 * Click ``OK`` twice to close the dialogues
 
-* Repeat for the ``E:\media`` and ``E:\task_queue`` folders
+* Repeat for the ``E:\media``, ``E:\task_queue`` and ``E:\orthanc\dicom`` folders
 
 .. _windows_install_packages:
 
@@ -674,50 +674,28 @@ Therefore, we need additional Windows services that allow us to run these tasks 
 
 To accomplish that we need to do the following:
 
-Create local service account
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Create a local service account
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 First we need to create an account that will allow the IIS worker to control the task workers. Most importantly, to kill a task if necessary.
 
-There is a difference if you are connected to an Active Directory or not. Whatever suits your setup, follow the guide
-``A`` if you are not in an Active Directory or ``B`` if you are.
-
-Guide A
--------
-
-For a Windows instance which is not associated to an Active Directory, it suffices to create a local user account:
-
-* Open the ``Search Tab``
-* Search for ``Add, edit, or remove other users``
-* In the menu, click ``Add someone else to this PC``
-* In the left pane right click on ``Users``
-* Click ``New User...``
-* Fill in all fields with the data of a new user account (see image)
+* Open the ``Server Manager``
+* In the navigation bar, click on ``Tools``
+* Click ``Computer Management``
+* In the left-hand pane under ``System Tools`` click ``Local Users and Groups``
+* In the middle pane right-hand click on ``Users`` and select ``New User...``
+* Fill in all required fields with the data of a new user account
 * Untick ``User must change password at next login``
 * Click ``Create``
 * In the left pane click on ``Groups``
 * Right click on ``IIS_IUSRS``
 * Click ``Add to Group...``
 * Click on the ``Add`` button
+* Click ``Locations`` and select the local server from the top of the list in the ``Location`` box
+* Click ``OK``
 * In the textfield, enter the username of the previously created account
+* Click ``Check Names`` - this should add the server name to the start of the name you entered
 * Click ``Ok`` twice
-
-Guide B
--------
-
-For a Windows instance that is connected to an Active Directory, or even a controller of one, follow this guide:
-
-* Open the ``Server Manager``
-* In the navigation bar, click on ``Tools``
-* Click ``Active Directory Users and Computers``
-* In the left pane, expand your domain
-* Right click on ``Users``
-* Hove over ``New``
-* Click on ``User``
-* Fill in all required fields with the data of a new user account
-* Click ``Next``
-* Enter the new user password twice and untick ``User must change password at next login``
-* Click ``Next`` and then ``Finish`` to create the service account
 
 Creating worker services
 ^^^^^^^^^^^^^^^^^^^^^^^^
@@ -727,6 +705,46 @@ Copy the file from
 * ``E:\venv\Lib\site-packages\openrem\sample-config\queue-init.bat`` to
 * ``E:\winsw\``
 
+If you have installed your Python virtual environment somewhere other than ``E:\venv`` then you must edit the
+``E:\winsw\queue-init.bat`` file to ensure that the path to ``python.exe`` in the ``^<executable^>`` line, and the
+path to manage.py in the ``^<arguments^>`` line point to the correct places for your installation as shown in the
+extract of ``queue-init.bat`` shown below.
+
+.. code-block:: console
+    :emphasize-lines: 11,12
+
+    echo ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    echo ~ Instantiating new consumers ~
+    echo ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    echo.
+    for /l %%x in (1, 1, %workers%) do (
+        (
+            echo ^<service^>
+            echo   ^<id^>huey-consumer-%%x^</id^>
+            echo   ^<name^>HUEY CONSUMER %%x^</name^>
+            echo   ^<description^>This service runs a huey consumer.^</description^>
+            echo   ^<executable^>E:\venv\Scripts\python.exe^</executable^>
+            echo   ^<arguments^>E:\venv\Lib\site-packages\openrem\manage.py run_huey^</arguments^>
+            echo   ^<onfailure action="restart" /^>
+            echo   ^<startmode^>Automatic^</startmode^>
+            echo   ^<serviceaccount^>
+            echo     ^<domain^>%domain%^</domain^>
+            echo     ^<user^>%username%^</user^>
+            echo     ^<password^>%password%^</password^>
+            echo     ^<allowservicelogon^>true^</allowservicelogon^>
+            echo   ^</serviceaccount^>
+            echo ^</service^>
+        ) > "consumer-files\huey-consumer-%%x.xml"
+        echo Preparing huey-consumer-%%x...
+        COPY WinSW.exe consumer-files\huey-consumer-%%x.exe >nul
+        start /B /W "" consumer-files\huey-consumer-%%x.exe stopwait >nul
+        start /B /W "" consumer-files\huey-consumer-%%x.exe uninstall >nul
+        echo Installing huey-consumer-%%x as service...
+        start /B /W "" consumer-files\huey-consumer-%%x.exe install >nul
+        echo Starting huey-consumer-%%x service...
+        start /B /W "" consumer-files\huey-consumer-%%x.exe start >nul
+    )
+
 Make sure that the previously downloaded and renamed ``WinSW.exe`` file is in the same folder (``E:\winsw\``).
 
 * Double click the ``queue-init.bat`` file
@@ -734,7 +752,7 @@ Make sure that the previously downloaded and renamed ``WinSW.exe`` file is in th
 * Enter the username of the previously created account
 * Enter the associated password
 * Enter the number of workers you would like to spawn, this number should no exceed the number of CPU cores available to your system
-* Wait for the services to get registered and started up (Notice: many windows may appear and disappear quickly)
+* Wait for the services to get registered and started up (Notice: many windows may appear and disappear quickly; you may also be asked to confirm that running the .exe file is safe)
 
 You should now be able to see the new workers in the list of Windows Services. Search for ``services`` on the Windows
 Start menu and you will be shown a list of installed services. The OpenREM task workers are shown as

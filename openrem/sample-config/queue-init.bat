@@ -44,7 +44,7 @@ for /l %%x in (1, 1, %workers%) do (
         echo   ^<name^>HUEY CONSUMER %%x^</name^>
         echo   ^<description^>This service runs a huey consumer.^</description^>
         echo   ^<executable^>E:\venv\Scripts\python.exe^</executable^>
-        echo   ^<arguments^>E:\openrem\openrem\manage.py run_huey^</arguments^>
+        echo   ^<arguments^>E:\venv\Lib\site-packages\openrem\manage.py run_huey^</arguments^>
         echo   ^<onfailure action="restart" /^>
         echo   ^<startmode^>Automatic^</startmode^>
         echo   ^<serviceaccount^>
