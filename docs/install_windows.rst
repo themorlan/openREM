@@ -677,7 +677,7 @@ To accomplish that we need to do the following:
 Create a local service account
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-First we need to create an account that will allow the IIS worker to control the task workers. Most importantly, to kill a task if necessary.
+First we need to create a Windows user account that will allow the IIS worker to control the task workers. Most importantly, to kill a task if necessary.
 
 * Open the ``Server Manager``
 * In the navigation bar, click on ``Tools``
@@ -707,7 +707,7 @@ Copy the file from
 
 If you have installed your Python virtual environment somewhere other than ``E:\venv`` then you must edit the
 ``E:\winsw\queue-init.bat`` file to ensure that the path to ``python.exe`` in the ``^<executable^>`` line, and the
-path to manage.py in the ``^<arguments^>`` line point to the correct places for your installation as shown in the
+path to ``manage.py`` in the ``^<arguments^>`` line point to the correct places for your installation as shown in the
 extract of ``queue-init.bat`` shown below.
 
 .. code-block:: console
@@ -748,11 +748,11 @@ extract of ``queue-init.bat`` shown below.
 Make sure that the previously downloaded and renamed ``WinSW.exe`` file is in the same folder (``E:\winsw\``).
 
 * Double click the ``queue-init.bat`` file
-* Enter your Domain name or leave empty if not applicable
+* Enter your Domain name or leave empty if you have added a local Windows user
 * Enter the username of the previously created account
 * Enter the associated password
-* Enter the number of workers you would like to spawn, this number should no exceed the number of CPU cores available to your system
-* Wait for the services to get registered and started up (Notice: many windows may appear and disappear quickly; you may also be asked to confirm that running the .exe file is safe)
+* Enter the number of workers you would like to spawn. This number should no exceed the number of CPU cores available to your system
+* Wait for the services to get registered and started up (note: many windows may appear and disappear quickly; you may also be asked to confirm that running the .exe file is safe)
 
 You should now be able to see the new workers in the list of Windows Services. Search for ``services`` on the Windows
 Start menu and you will be shown a list of installed services. The OpenREM task workers are shown as
