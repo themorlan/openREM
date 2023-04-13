@@ -2,30 +2,35 @@ Make sure develop is up to date, branch as release-version, eg release-0.9.0b5
 Change the version number in
 	openrem/remapp/version.py - append '-docs' to version tag name for docs branch
 	install instructions in the release notes where applicable
-    	quick_start_linux.rst - set to version for beta or versionless for release
-	    install.rst - set to version for beta or versionless for release (two times, title and command)
-	    release-0.x.x.rst - set to version (upgrades always need version specified)
-	    release-0.x.x.rst - make sure update_configuration link is right for upgrade-offline
-	    install-offline.rst (twice)
-	    upgrade-offline.rst (twice)
-	    upgrade-offline.rst - make user link back to release notes and previous upgrades is right
-	    upgrade_previous_0.10.0.rst - title, install command, link back to release and content generally
-	date and other details in changes and CHANGES
+        install_linux.rst - set to version for beta or versionless for release
+	    install-offline.rst
+        install_windows.rst - set to version for beta or versionless for release
+        upgrade_windows.rst ?
+	date and other details in changes.rst
     Edit README.rst including docs links
     Edit description in setup.py between beta and release
 
-Clean the existing distribute folder:
-	rm -r *
+Clean the existing distribute folder - instructions assume the following layout:
+    bbOpenREM # bitbucket repo of openrem/openrem
+    distribute # empty folder at the same level as bbOpenREM
+
+cd distribute
+rm -r *
 
 Then get the new contents:
 rsync -av --exclude-from='../bbOpenREM/stuff/distexclude.txt' ../bbOpenREM/ .
 cp ../bbOpenREM/stuff/v1initial.py openrem/remapp/migrations/0001_initial.py.1-0-upgrade
 
 Build:
-	python setup.py sdist bdist_wheel
+    Activate the venv you are using, then
+    Make sure wheel and build are installed (wheel might not be needed):
+    python3 -m pip install --upgrade wheel
+    python3 -m pip install --upgrade build
+	python3 -m build
 
 Test upload:
-    twine upload --repository-url https://test.pypi.org/legacy/ dist/*
+    python3 -m pip install --upgrade twine
+    twine upload --repository testpypi dist/*
 
     Go to https://test.pypi.org/project/OpenREM/ to review
 
@@ -74,6 +79,6 @@ Update website for full release
 
     Git statistics:
         Number of commits:
-            git rev-list 0.9.1 ^0.9.0 --count
+            git rev-list 1.0.0b1 ^0.10.0 --count
         Contributers:
-            git shortlog -s -n 0.9.1 ^0.9.0
+            git shortlog -s -n 1.0.0b1 ^0.10.0

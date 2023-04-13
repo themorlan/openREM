@@ -181,7 +181,7 @@ Install Python packages
 
 .. code-block:: console
 
-    $ pip install openrem
+    $ pip install openrem==1.0.0b1
 
 .. _Linux-DB:
 

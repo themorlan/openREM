@@ -18,7 +18,7 @@ On a computer with internet access:
 
 .. code-block:: console
 
-    $ docker pull openrem/openrem:develop
+    $ docker pull openrem/openrem:release-1.0.0a1
 
 .. code-block:: console
 

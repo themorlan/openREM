@@ -36,7 +36,7 @@ import os
 import gzip
 import json
 import logging
-from datetime import datetime, timedelta, date, time
+from datetime import datetime, timedelta
 from decimal import Decimal
 import pickle  # nosec
 from collections import OrderedDict
@@ -44,9 +44,8 @@ from collections import OrderedDict
 from django.db.models import (
     Sum,
     Q,
-    Min,
-    Subquery,
-    OuterRef,
+    Max,
+    Count,
 )
 from django.contrib import messages
 from django.contrib.auth import logout
@@ -106,7 +105,6 @@ from .models import (
     HomePageAdminSettings,
     UpgradeStatus,
     StandardNameSettings,
-    StandardNames,
 )
 from .version import __version__, __docs_version__, __skin_map_version__
 
@@ -877,48 +875,29 @@ def openrem_home(request):
             user_profile = request.user.userprofile
 
     allstudies = GeneralStudyModuleAttr.objects.all()
+
+    study_counts = allstudies.aggregate(
+        all_count=Count("pk"),
+        ct_count=Count("pk", filter=Q(modality_type="CT")),
+        rf_count=Count("pk", filter=Q(modality_type="RF")),
+        mg_count=Count("pk", filter=Q(modality_type="MG")),
+        nm_count=Count("pk", filter=Q(modality_type="NM")),
+        dx_count=Count("pk", filter=Q(modality_type__in=["DX", "CR", "PX"])),
+    )
+
     modalities = OrderedDict()
-    modalities["CT"] = {
-        "name": _("CT"),
-        "count": allstudies.filter(modality_type__exact="CT").count(),
-    }
-    modalities["RF"] = {
-        "name": _("Fluoroscopy"),
-        "count": allstudies.filter(modality_type__exact="RF").count(),
-    }
-    modalities["MG"] = {
-        "name": _("Mammography"),
-        "count": allstudies.filter(modality_type__exact="MG").count(),
-    }
-    modalities["DX"] = {
-        "name": _("Radiography"),
-        "count": allstudies.filter(
-            Q(modality_type__exact="DX")
-            | Q(modality_type__exact="CR")
-            | Q(modality_type__exact="PX")
-        ).count(),
-    }
-    modalities["NM"] = {
-        "name": _("Nuclear Medicine"),
-        "count": allstudies.filter(modality_type__exact="NM").count(),
-    }
+    if study_counts["ct_count"]:
+        modalities["CT"] = {"name": _("CT"), "count": study_counts["ct_count"]}
+    if study_counts["rf_count"]:
+        modalities["RF"] = {"name": _("Fluoroscopy"), "count": study_counts["rf_count"]}
+    if study_counts["mg_count"]:
+        modalities["MG"] = {"name": _("Mammography"), "count": study_counts["mg_count"]}
+    if study_counts["dx_count"]:
+        modalities["DX"] = {"name": _("Radiography"), "count": study_counts["dx_count"]}
+    if study_counts["nm_count"]:
+        modalities["NM"] = {"name": _("Nuclear Medicine"), "count": study_counts["nm_count"]}
 
-    mods_to_delete = []
-    for modality in modalities:
-        if not modalities[modality]["count"]:
-            mods_to_delete += [modality]
-            if request.user.is_authenticated:
-                setattr(user_profile, "display{0}".format(modality), False)
-        else:
-            if request.user.is_authenticated:
-                setattr(user_profile, "display{0}".format(modality), True)
-    if request.user.is_authenticated:
-        user_profile.save()
-
-    for modality in mods_to_delete:
-        del modalities[modality]
-
-    homedata = {"total": allstudies.count()}
+    homedata = {"total": study_counts["all_count"]}
 
     # Determine whether to calculate workload settings
     display_workload_stats = HomePageAdminSettings.objects.values_list(
@@ -1004,31 +983,6 @@ def openrem_home(request):
 
 
 @csrf_exempt
-def update_modality_totals(request):
-    """
-    AJAX function to update study numbers automatically.
-
-    :param request: request object
-    :return: dictionary of totals
-    """
-    if request.is_ajax():
-        allstudies = GeneralStudyModuleAttr.objects.all()
-        resp = {
-            "total": allstudies.count(),
-            "total_mg": allstudies.filter(modality_type__exact="MG").count(),
-            "total_ct": allstudies.filter(modality_type__exact="CT").count(),
-            "total_rf": allstudies.filter(modality_type__contains="RF").count(),
-            "total_dx": allstudies.filter(
-                Q(modality_type__exact="DX")
-                | Q(modality_type__exact="CR")
-                | Q(modality_type__exact="PX")
-            ).count(),
-        }
-
-        return HttpResponse(json.dumps(resp), content_type="application/json")
-
-
-@csrf_exempt
 def update_latest_studies(request):
     """
     AJAX function to calculate the latest studies for each display name for a particular modality.
@@ -1050,69 +1004,34 @@ def update_latest_studies(request):
                 modality_type__exact=modality
             ).all()
 
-        display_names = (
-            studies.values_list(
-                "generalequipmentmoduleattr__unique_equipment_name__display_name"
-            )
-            .distinct()
-            .annotate(
-                pk_value=Min("generalequipmentmoduleattr__unique_equipment_name__pk")
-            )
-        )
+        today = datetime.now()
+        study_data = studies.values("generalequipmentmoduleattr__unique_equipment_name__display_name").annotate(
+            num_studies=Count("pk"),
+            latest_entry_date_time=Max("test_date_time"),
+            # timedelta=ExpressionWrapper(today - F("latest_entry_date_time"), output_field=DurationField()),
+        ).order_by("-latest_entry_date_time")
 
-        modalitydata = {}
-
+        display_workload_stats = HomePageAdminSettings.objects.values_list("enable_workload_stats", flat=True)[0]
         if request.user.is_authenticated:
             day_delta_a = request.user.userprofile.summaryWorkloadDaysA
             day_delta_b = request.user.userprofile.summaryWorkloadDaysB
         else:
             day_delta_a = 7
             day_delta_b = 28
-
-        for display_name, pk in display_names:
-            display_name_studies = studies.filter(
-                generalequipmentmoduleattr__unique_equipment_name__display_name__exact=display_name
-            )
-            latestdate = display_name_studies.latest("study_date").study_date
-            latestuid = display_name_studies.filter(
-                study_date__exact=latestdate
-            ).latest("study_time")
-            try:
-                latestdatetime = datetime.combine(
-                    latestuid.study_date, latestuid.study_time
-                )
-            except TypeError:
-                latestdatetime = datetime.combine(
-                    date(year=1900, month=1, day=1), time(hour=0, minute=0)
-                )
-            deltaseconds = int((datetime.now() - latestdatetime).total_seconds())
-
-            modalitydata[display_name] = {
-                "total": display_name_studies.count(),
-                "latest": latestdatetime,
-                "deltaseconds": deltaseconds,
-                "displayname": display_name,
-                "displayname_pk": modality.lower() + str(pk),
-            }
-        ordereddata = OrderedDict(
-            sorted(
-                list(modalitydata.items()), key=lambda t: t[1]["latest"], reverse=True
-            )
-        )
+        date_a = today.date() - timedelta(days=day_delta_a)
+        date_b = today.date() - timedelta(days=day_delta_b)
+        if display_workload_stats:
+            study_data = study_data.annotate(
+                studies_since_delta_a=Count("pk", filter=Q(test_date_time__gte=date_a)),
+                studies_since_delta_b=Count("pk", filter=Q(test_date_time__gte=date_b))
+            ).order_by("-latest_entry_date_time")
 
         admin = {}
         for group in request.user.groups.all():
             admin[group.name] = True
 
         template = "remapp/home-list-modalities.html"
-        data = ordereddata
 
-        display_workload_stats = HomePageAdminSettings.objects.values_list(
-            "enable_workload_stats", flat=True
-        )[0]
-        today = datetime.now()
-        date_a = today - timedelta(days=day_delta_a)
-        date_b = today - timedelta(days=day_delta_b)
         home_config = {
             "display_workload_stats": display_workload_stats,
             "day_delta_a": day_delta_a,
@@ -1125,87 +1044,9 @@ def update_latest_studies(request):
             request,
             template,
             {
-                "data": data,
+                "study_data": study_data,
                 "modality": modality.lower(),
                 "home_config": home_config,
                 "admin": admin,
             },
         )
-
-
-@csrf_exempt
-def update_study_workload(request):
-    """
-    AJAX function to calculate the number of studies in two user-defined time periods for a particular modality.
-
-    :param request: Request object
-    :return: HTML table of modalities
-    """
-    if request.is_ajax():
-        data = request.POST
-        modality = data.get("modality")
-        if modality == "DX":
-            studies = GeneralStudyModuleAttr.objects.filter(
-                Q(modality_type__exact="DX")
-                | Q(modality_type__exact="CR")
-                | Q(modality_type__exact="PX")
-            ).all()
-        else:
-            studies = GeneralStudyModuleAttr.objects.filter(
-                modality_type__exact=modality
-            ).all()
-
-        display_names = (
-            studies.values_list(
-                "generalequipmentmoduleattr__unique_equipment_name__display_name"
-            )
-            .distinct()
-            .annotate(
-                pk_value=Min("generalequipmentmoduleattr__unique_equipment_name__pk")
-            )
-        )
-
-        modalitydata = {}
-
-        if request.user.is_authenticated:
-            day_delta_a = request.user.userprofile.summaryWorkloadDaysA
-            day_delta_b = request.user.userprofile.summaryWorkloadDaysB
-        else:
-            day_delta_a = 7
-            day_delta_b = 28
-
-        today = datetime.now()
-        date_a = today - timedelta(days=day_delta_a)
-        date_b = today - timedelta(days=day_delta_b)
-
-        for display_name, pk in display_names:
-            display_name_studies = studies.filter(
-                generalequipmentmoduleattr__unique_equipment_name__display_name__exact=display_name
-            )
-
-            try:
-                displayname = display_name.encode("utf-8")
-            except AttributeError:
-                displayname = "Unexpected display name non-ASCII issue"
-
-            modalitydata[display_name] = {
-                "studies_in_past_days_a": display_name_studies.filter(
-                    study_date__range=[date_a, today]
-                ).count(),
-                "studies_in_past_days_b": display_name_studies.filter(
-                    study_date__range=[date_b, today]
-                ).count(),
-                "displayname": displayname,
-                "displayname_pk": modality.lower() + str(pk),
-            }
-        data = OrderedDict(
-            sorted(
-                list(modalitydata.items()),
-                key=lambda t: t[1]["displayname_pk"],
-                reverse=True,
-            )
-        )
-
-        template = "remapp/home-modality-workload.html"
-
-        return render(request, template, {"data": data, "modality": modality.lower()})

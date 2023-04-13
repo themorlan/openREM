@@ -338,7 +338,7 @@ Install OpenREM
 .. code-block:: console
 
     (venv) E:\>pip install --upgrade pip
-    (venv) E:\>pip install openrem
+    (venv) E:\>pip install openrem==1.0.0b1
     (venv) E:\>pip install wfastcgi
 
 OpenREM configuration and database creation
