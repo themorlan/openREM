@@ -6,6 +6,7 @@ OpenREM version history
 1.0.0b1 (2023-03-29)
 --------------------
 * :issue:`988`  Imports: fixing hard-written DX text in MG import messages
+* :issue:`986`  SkinDose: fixed bug where a zero study dap causes a divide by zero error
 * :issue:`984`  Interface: improved performance of home page
 * :issue:`980`  Interface: improved standard name form layout
 * :issue:`977`  Documentation: fix issues preventing translations to be built
