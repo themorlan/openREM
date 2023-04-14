@@ -1,8 +1,6 @@
 DICOM store configuration (Orthanc)
 ===================================
 
-**Document not ready for translation**
-
 Orthanc provides the DICOM Store functionality to enable scanners to send directly to OpenREM, and for
 query-retrieve to function. Configuration is in the orthanc section of ``docker-compose.yml``
 

@@ -1,8 +1,6 @@
 Docker env configuration
 ========================
 
-**Document not ready for translation**
-
 Edit the ``.env.prod`` file to customise your installation. There should be no space between the variable name, the
 ``=`` and the value. Everything after the ``=`` until the end of the line is transferred as the value. These settings
 take effect when docker-compose is started or restarted.
