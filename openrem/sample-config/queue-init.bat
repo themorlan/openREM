@@ -53,6 +53,10 @@ for /l %%x in (1, 1, %workers%) do (
         echo     ^<password^>%password%^</password^>
         echo     ^<allowservicelogon^>true^</allowservicelogon^>
         echo   ^</serviceaccount^>
+        echo   ^<log mode="roll-by-size"^>
+        echo     ^<sizeThreshold^>10240^</sizeThreshold^>
+        echo     ^<keepFiles^>8^</keepFiles^>
+        echo   ^</log^>
         echo ^</service^>
     ) > "consumer-files\huey-consumer-%%x.xml"
     echo Preparing huey-consumer-%%x...
