@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-03-05 17:21+0000\n"
+"POT-Creation-Date: 2023-04-15 21:26+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -20,50 +20,46 @@ msgstr ""
 msgid "OpenREM Release Notes version 1.0.0"
 msgstr ""
 
-#: ../../release-1.0.0.rst:5
-msgid "**Document not ready for translation**"
-msgstr ""
-
-#: ../../release-1.0.0.rst:9
+#: ../../release-1.0.0.rst:7
 msgid "Headline changes"
 msgstr ""
 
-#: ../../release-1.0.0.rst:11
+#: ../../release-1.0.0.rst:9
 msgid "Python 3"
 msgstr ""
 
-#: ../../release-1.0.0.rst:12
+#: ../../release-1.0.0.rst:10
 msgid "Django 2.2"
 msgstr ""
 
-#: ../../release-1.0.0.rst:13
+#: ../../release-1.0.0.rst:11
 msgid "Docker or direct install on Windows and Linux"
 msgstr ""
 
-#: ../../release-1.0.0.rst:14
+#: ../../release-1.0.0.rst:12
 msgid "Celery, Flower and RabbitMQ removed from requirements"
 msgstr ""
 
-#: ../../release-1.0.0.rst:16
+#: ../../release-1.0.0.rst:14
 msgid "Performing physician added to standard fluoroscopy exports (:issue:`840`)"
 msgstr ""
 
-#: ../../release-1.0.0.rst:17
+#: ../../release-1.0.0.rst:15
 msgid "Station name checked at series level only, option to check at study level only instead (:issue:`772`)"
 msgstr ""
 
-#: ../../release-1.0.0.rst:20
+#: ../../release-1.0.0.rst:18
 msgid "Upgrade from 0.10.0"
 msgstr ""
 
-#: ../../release-1.0.0.rst:22
+#: ../../release-1.0.0.rst:20
 msgid "Review the :doc:`installation` doc to find the upgrade options"
 msgstr ""
 
-#: ../../release-1.0.0.rst:25
+#: ../../release-1.0.0.rst:23
 msgid "Upgrade from an older version"
 msgstr ""
 
-#: ../../release-1.0.0.rst:27
+#: ../../release-1.0.0.rst:25
 msgid ":doc:`upgrade_previous_0.10.0`"
 msgstr ""

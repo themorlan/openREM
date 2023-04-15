@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-03-05 17:21+0000\n"
+"POT-Creation-Date: 2023-04-15 21:26+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -21,11 +21,7 @@ msgstr ""
 msgid "DICOM Query Retrieve Service"
 msgstr ""
 
-#: ../../netdicom-qr.rst:5
-msgid "**Document not ready for translation**"
-msgstr ""
-
-#: ../../netdicom-qr.rst:8
+#: ../../netdicom-qr.rst:6
 msgid ""
 "To query retrieve dose related objects from a remote server, you need to "
 "review the :doc:`netdicom-nodes` documents first to make sure you have "
@@ -33,14 +29,14 @@ msgid ""
 "objects to OpenREM."
 msgstr ""
 
-#: ../../netdicom-qr.rst:11
+#: ../../netdicom-qr.rst:9
 msgid ""
 "You will also need to set up the remote server to allow you to query-"
 "retrieve using it - the remote server will need to be configured with "
 "details of the store node that you have configured."
 msgstr ""
 
-#: ../../netdicom-qr.rst:16
+#: ../../netdicom-qr.rst:14
 msgid "Query-retrieve using the web interface"
 msgstr ""
 
@@ -48,18 +44,18 @@ msgstr ""
 msgid "Import Query-Retrieve menu"
 msgstr ""
 
-#: ../../netdicom-qr.rst:24
+#: ../../netdicom-qr.rst:22
 msgid "Figure 1: Import Query-Retrieve menu"
 msgstr ""
 
-#: ../../netdicom-qr.rst:26
+#: ../../netdicom-qr.rst:24
 msgid ""
 "On the Imports menu, select ``Query remote server`` - see figure 1. If "
 "the menu isn't there, you need to check your user permissions -- see :ref"
 ":`user-settings` for details."
 msgstr ""
 
-#: ../../netdicom-qr.rst:28
+#: ../../netdicom-qr.rst:26
 msgid ""
 "Each configured query-retrieve node and each local store node is "
 "automatically tested to make sure they respond to a DICOM echo - the "
@@ -71,27 +67,27 @@ msgstr ""
 msgid "local and remote QR statuses"
 msgstr ""
 
-#: ../../netdicom-qr.rst:37
+#: ../../netdicom-qr.rst:35
 msgid "Figure 2: Local and remote QR statuses"
 msgstr ""
 
-#: ../../netdicom-qr.rst:39
+#: ../../netdicom-qr.rst:37
 msgid ""
 "Select the desired **remote host**, ie the PACS or modality you wish to "
 "query."
 msgstr ""
 
-#: ../../netdicom-qr.rst:40
+#: ../../netdicom-qr.rst:38
 msgid "Select the local **store node** you want to retrieve to."
 msgstr ""
 
-#: ../../netdicom-qr.rst:41
+#: ../../netdicom-qr.rst:39
 msgid ""
 "Select **which modalities** you want to query for - at least one must be "
 "ticked."
 msgstr ""
 
-#: ../../netdicom-qr.rst:42
+#: ../../netdicom-qr.rst:40
 msgid ""
 "Select a **date range** - the wider this is, the more stress the query "
 "will place on the remote server, and the higher the likelyhood of the "
@@ -100,7 +96,7 @@ msgid ""
 "Defaults to 'from yesterday'."
 msgstr ""
 
-#: ../../netdicom-qr.rst:45
+#: ../../netdicom-qr.rst:43
 msgid ""
 "If you wish to **exclude studies** based on their study description, "
 "enter the text here. Add several terms by separating them with a comma. "
@@ -109,14 +105,14 @@ msgid ""
 " matching is case-insensitive."
 msgstr ""
 
-#: ../../netdicom-qr.rst:48
+#: ../../netdicom-qr.rst:46
 msgid ""
 "Alternatively, you might want to only **keep studies** with particular "
 "terms in the study description. If so, enter them in the next box, comma "
 "separated."
 msgstr ""
 
-#: ../../netdicom-qr.rst:50
+#: ../../netdicom-qr.rst:48
 msgid ""
 "You can also **exclude studies by station name**, or only keep them if "
 "they match the station name. This is only effective if the remote system "
@@ -125,11 +121,11 @@ msgid ""
 "1.0)*."
 msgstr ""
 
-#: ../../netdicom-qr.rst:55
+#: ../../netdicom-qr.rst:53
 msgid "Advanced query options"
 msgstr ""
 
-#: ../../netdicom-qr.rst:57
+#: ../../netdicom-qr.rst:55
 msgid ""
 "**Attempt to get Toshiba dose images** *default not ticked*: If you have "
 "done the extra installation and configuration required for creating RDSRs"
@@ -138,7 +134,7 @@ msgid ""
 "description below for details."
 msgstr ""
 
-#: ../../netdicom-qr.rst:60
+#: ../../netdicom-qr.rst:58
 msgid ""
 "**Ignore studies already in the database** *default ticked*: By default "
 "OpenREM will attempt to avoid downloading any DICOM objects (RDSRs or "
@@ -147,7 +143,7 @@ msgid ""
 " logic description below for details."
 msgstr ""
 
-#: ../../netdicom-qr.rst:63
+#: ../../netdicom-qr.rst:61
 msgid ""
 "**Include SR only studies** *default not ticked*: If you have a DICOM "
 "store with only the radiation dose structured reports (RDSR) in, or a mix"
@@ -157,7 +153,7 @@ msgid ""
 "will be ignored."
 msgstr ""
 
-#: ../../netdicom-qr.rst:67
+#: ../../netdicom-qr.rst:65
 msgid ""
 "**Get SR series that return nothing at image level query** *default not "
 "ticked*: If you have a DICOM store with SR series that you know contain "
@@ -172,7 +168,7 @@ msgid ""
 "option should be used with caution!"
 msgstr ""
 
-#: ../../netdicom-qr.rst:74
+#: ../../netdicom-qr.rst:72
 msgid ""
 "**Check station name include/exclude at study level** *default not "
 "ticked*: Change this setting to enable checking of station name "
@@ -182,15 +178,15 @@ msgid ""
 "checked it is impossible to get the desired response."
 msgstr ""
 
-#: ../../netdicom-qr.rst:79
+#: ../../netdicom-qr.rst:77
 msgid "When you have finished the query parameters, click ``Submit``"
 msgstr ""
 
-#: ../../netdicom-qr.rst:82
+#: ../../netdicom-qr.rst:80
 msgid "Review and retrieve"
 msgstr ""
 
-#: ../../netdicom-qr.rst:84
+#: ../../netdicom-qr.rst:82
 msgid ""
 "Once all the responses have been purged of unwanted modalities, study "
 "descriptions or study UIDs, the number of studies of each type will be "
@@ -200,39 +196,39 @@ msgid ""
 "side at this stage will have no effect."
 msgstr ""
 
-#: ../../netdicom-qr.rst:89
+#: ../../netdicom-qr.rst:87
 msgid ""
 "The progress of the retrieve is displayed in the same place until the "
 "retrieve is complete. You can also see the query and start the "
 "``Retrieve`` in the  :ref:`qrquerysummary`."
 msgstr ""
 
-#: ../../netdicom-qr.rst:96
+#: ../../netdicom-qr.rst:94
 msgid "Query-retrieve using the command line interface"
 msgstr ""
 
-#: ../../netdicom-qr.rst:98
+#: ../../netdicom-qr.rst:96
 msgid "Running the command in different environments"
 msgstr ""
 
-#: ../../netdicom-qr.rst:100
+#: ../../netdicom-qr.rst:98
 msgid ""
 "**Docker:** In a command window/shell, navigate to the folder containing "
 "``docker-compose.yml`` etc. Then precede the command with ``docker-"
 "compose exec openrem``:"
 msgstr ""
 
-#: ../../netdicom-qr.rst:107
+#: ../../netdicom-qr.rst:105
 msgid "**Linux:** Activate the virtualenv - assuming default Ubuntu install:"
 msgstr ""
 
-#: ../../netdicom-qr.rst:114
+#: ../../netdicom-qr.rst:112
 msgid ""
 "**Windows:** Activate the virtualenv - **docs to be written** - and "
 "command might need the full path?:"
 msgstr ""
 
-#: ../../netdicom-qr.rst:169
+#: ../../netdicom-qr.rst:167
 msgid ""
 "As an example, if you wanted to query the PACS for DX images on the 5th "
 "and 6th April 2010 with any study descriptions containing ``imported`` "
@@ -242,20 +238,20 @@ msgid ""
 "details for each node."
 msgstr ""
 
-#: ../../netdicom-qr.rst:174
+#: ../../netdicom-qr.rst:172
 msgid ""
 "Assuming the PACS database ID is 2, and the store node ID is 1, the "
 "command would look something like:"
 msgstr ""
 
-#: ../../netdicom-qr.rst:180
+#: ../../netdicom-qr.rst:178
 msgid ""
 "If you want to do this regularly to catch new studies, you might like to "
 "use a script something like this on Linux - make sure you comment out or "
 "delete one of the options, and amend as necessary!"
 msgstr ""
 
-#: ../../netdicom-qr.rst:194
+#: ../../netdicom-qr.rst:192
 msgid ""
 "This script could be run once an hour using a cron job. By asking for the"
 " date an hour ago, you shouldn't miss exams taking place in the last hour"
@@ -265,25 +261,25 @@ msgid ""
 "compose`` on your system using ``which docker-compose``."
 msgstr ""
 
-#: ../../netdicom-qr.rst:199
+#: ../../netdicom-qr.rst:197
 msgid ""
 "A similar script could be created as a batch file or PowerShell script on"
 " Windows and run using the scheduler. An example PowerShell script is "
 "shown below:"
 msgstr ""
 
-#: ../../netdicom-qr.rst:217
+#: ../../netdicom-qr.rst:215
 msgid ""
 "The above PowerShell script could be run on a regular basis by adding a "
 "task to the Windows ``Task Scheduler`` that executes the ``powershell`` "
 "program with an argument of ``-file C:\\path\\to\\script.ps1``."
 msgstr ""
 
-#: ../../netdicom-qr.rst:221
+#: ../../netdicom-qr.rst:219
 msgid "Querying with time range"
 msgstr ""
 
-#: ../../netdicom-qr.rst:223
+#: ../../netdicom-qr.rst:221
 msgid ""
 "It is now possible to query for studies in a time window when using "
 "query-retrieve from the command line (web interface version will be "
@@ -291,51 +287,51 @@ msgid ""
 "responses are limited or null if the query matches too many studies."
 msgstr ""
 
-#: ../../netdicom-qr.rst:227
+#: ../../netdicom-qr.rst:225
 msgid ""
 "Using the ``--tfrom``/``-tf`` and/or the ``--tuntil``/``-tt`` arguments "
 "are only allowed if ``--single_date``/``-sd`` argument is used."
 msgstr ""
 
-#: ../../netdicom-qr.rst:230
+#: ../../netdicom-qr.rst:228
 msgid ""
 "Note: ``-sd 2018-03-19`` is the same as using ``-f 2018-03-19 -t "
 "2018-03-19``, and can be used without the time arguments."
 msgstr ""
 
-#: ../../netdicom-qr.rst:233
+#: ../../netdicom-qr.rst:231
 msgid "``-tf`` used without ``-tt`` will search from ``tf`` until 23.59 that day."
 msgstr ""
 
-#: ../../netdicom-qr.rst:234
+#: ../../netdicom-qr.rst:232
 msgid "``-tt`` used without ``-tf`` will search from 00.00 to ``tt`` that day."
 msgstr ""
 
-#: ../../netdicom-qr.rst:235
+#: ../../netdicom-qr.rst:233
 msgid "``-tf`` and ``-tt`` used together will search from ``tf`` to ``tt``."
 msgstr ""
 
-#: ../../netdicom-qr.rst:237
+#: ../../netdicom-qr.rst:235
 msgid ""
 "For example, to search for CT from 12 noon to 3pm on 19th March 2018, "
 "using remote QR node database ID 2 and local store database ID 1:"
 msgstr ""
 
-#: ../../netdicom-qr.rst:247
+#: ../../netdicom-qr.rst:245
 msgid "Query filtering logic"
 msgstr ""
 
-#: ../../netdicom-qr.rst:250
+#: ../../netdicom-qr.rst:248
 msgid "Study level query response processing"
 msgstr ""
 
-#: ../../netdicom-qr.rst:252
+#: ../../netdicom-qr.rst:250
 msgid ""
 "First we query for each modality chosen in turn to get matching responses"
 " at study level."
 msgstr ""
 
-#: ../../netdicom-qr.rst:253
+#: ../../netdicom-qr.rst:251
 msgid ""
 "If the optional ``ModalitiesInStudy`` has been populated in the response,"
 " and if you have ticked ``Include SR only studies``, then any studies "
@@ -343,7 +339,7 @@ msgid ""
 " list."
 msgstr ""
 
-#: ../../netdicom-qr.rst:256
+#: ../../netdicom-qr.rst:254
 msgid ""
 "If any study description filters have been added, and if the "
 "``StudyDescription`` tags are returned by the remote server, the study "
@@ -352,28 +348,28 @@ msgid ""
 "been selected."
 msgstr ""
 
-#: ../../netdicom-qr.rst:259
+#: ../../netdicom-qr.rst:257
 msgid "For the remaining study level responses, each series is queried."
 msgstr ""
 
-#: ../../netdicom-qr.rst:260
+#: ../../netdicom-qr.rst:258
 msgid ""
 "If ``ModalitiesInStudy`` was not returned, it is now built from the "
 "series level responses."
 msgstr ""
 
-#: ../../netdicom-qr.rst:261
+#: ../../netdicom-qr.rst:259
 msgid ""
 "If the remote server returned everything rather than just the modalities "
 "we asked for, the study level responses are now filtered against the "
 "modalities selected."
 msgstr ""
 
-#: ../../netdicom-qr.rst:265
+#: ../../netdicom-qr.rst:263
 msgid "Series level query processing"
 msgstr ""
 
-#: ../../netdicom-qr.rst:267
+#: ../../netdicom-qr.rst:265
 msgid ""
 "If station name filters have been added, and if the ``StationName`` tags "
 "are returned by the remote server, the series list is filtered "
@@ -381,11 +377,11 @@ msgid ""
 " been selected."
 msgstr ""
 
-#: ../../netdicom-qr.rst:270
+#: ../../netdicom-qr.rst:268
 msgid "If **mammography** exams were requested, and a study has ``MG`` in:"
 msgstr ""
 
-#: ../../netdicom-qr.rst:272
+#: ../../netdicom-qr.rst:270
 msgid ""
 "If one of the series is of type ``SR``, an image level query is done to "
 "see if it is an RDSR. If it is, all the other series responses are "
@@ -393,46 +389,46 @@ msgid ""
 "requested not the images."
 msgstr ""
 
-#: ../../netdicom-qr.rst:275 ../../netdicom-qr.rst:281
+#: ../../netdicom-qr.rst:273 ../../netdicom-qr.rst:279
 msgid ""
 "Otherwise the ``SR`` series responses are deleted and all the image "
 "series are requested."
 msgstr ""
 
-#: ../../netdicom-qr.rst:277
+#: ../../netdicom-qr.rst:275
 msgid ""
 "If **planar radiographic** exams were requested, and a study has ``DX`` "
 "or ``CR`` in:"
 msgstr ""
 
-#: ../../netdicom-qr.rst:279
+#: ../../netdicom-qr.rst:277
 msgid ""
 "Any ``SR`` series are checked at 'image' level to see if they are RDSRs. "
 "If they are, the other series level responses for that study are deleted."
 msgstr ""
 
-#: ../../netdicom-qr.rst:283
+#: ../../netdicom-qr.rst:281
 msgid ""
 "If **fluoroscopy** exams were requested, and a study has ``RF`` or ``XA``"
 " in:"
 msgstr ""
 
-#: ../../netdicom-qr.rst:285
+#: ../../netdicom-qr.rst:283
 msgid ""
 "Any ``SR`` series are checked at 'image' level to see if they are RDSRs "
 "or ESRs (Enhanced Structured Reports - not currently used but will be in "
 "the future). Any other ``SR`` series responses are deleted."
 msgstr ""
 
-#: ../../netdicom-qr.rst:287
+#: ../../netdicom-qr.rst:285
 msgid "All non-``SR`` series responses are deleted."
 msgstr ""
 
-#: ../../netdicom-qr.rst:289
+#: ../../netdicom-qr.rst:287
 msgid "If **CT** exams were requested, and a study has ``CT`` in:"
 msgstr ""
 
-#: ../../netdicom-qr.rst:291
+#: ../../netdicom-qr.rst:289
 msgid ""
 "Any ``SR`` series are checked at 'image' level to see if they are RDSRs. "
 "If they are, all other SR and image series responses are deleted. "
@@ -440,14 +436,14 @@ msgid ""
 "responses are deleted."
 msgstr ""
 
-#: ../../netdicom-qr.rst:293
+#: ../../netdicom-qr.rst:291
 msgid ""
 "If there are no RDSR or ESR series, the other series are checked to see "
 "if they are Philips 'Dose info' series. If there are, other series "
 "responses are deleted."
 msgstr ""
 
-#: ../../netdicom-qr.rst:295
+#: ../../netdicom-qr.rst:293
 msgid ""
 "If there are no RDSR, ESR or 'Dose info' series and the option to get "
 "Toshiba images has been selected, then an image level query is performed "
@@ -457,7 +453,7 @@ msgid ""
 "secondary capture, the whole series response is kept."
 msgstr ""
 
-#: ../../netdicom-qr.rst:299
+#: ../../netdicom-qr.rst:297
 msgid ""
 "If there are no RDSR or ESR, series descriptions aren't returned and the "
 "Toshiba option has been set, the image level query is performed as per "
@@ -465,7 +461,7 @@ msgid ""
 "Philips 'Dose info' series."
 msgstr ""
 
-#: ../../netdicom-qr.rst:302
+#: ../../netdicom-qr.rst:300
 msgid ""
 "If there are no RDSR, ESR, series descriptions aren't returned and the "
 "Toshiba option has not been set, each series with more than five images "
@@ -473,23 +469,23 @@ msgid ""
 " Philips 'Dose info' series."
 msgstr ""
 
-#: ../../netdicom-qr.rst:306
+#: ../../netdicom-qr.rst:304
 msgid "If **SR only studies** were requested:"
 msgstr ""
 
-#: ../../netdicom-qr.rst:308
+#: ../../netdicom-qr.rst:306
 msgid ""
 "Each series response is checked at 'image' level to see which type of SR "
 "it is. If is not RDSR or ESR, the study response is deleted."
 msgstr ""
 
-#: ../../netdicom-qr.rst:311
+#: ../../netdicom-qr.rst:309
 msgid ""
 "If **Get SR series that return nothing at image level query** were "
 "requested:"
 msgstr ""
 
-#: ../../netdicom-qr.rst:313
+#: ../../netdicom-qr.rst:311
 msgid ""
 "It is assumed that any ``SR`` series that appears to be empty actually "
 "contains an RDSR, and the other series are dealt with as above for when "
@@ -498,65 +494,65 @@ msgid ""
 "is selected or not."
 msgstr ""
 
-#: ../../netdicom-qr.rst:318
+#: ../../netdicom-qr.rst:316
 msgid "Duplicates processing"
 msgstr ""
 
-#: ../../netdicom-qr.rst:320
+#: ../../netdicom-qr.rst:318
 msgid ""
 "For each remaining study in the query response, the Study Instance UID is"
 " checked against the studies already in the OpenREM database."
 msgstr ""
 
-#: ../../netdicom-qr.rst:323
+#: ../../netdicom-qr.rst:321
 msgid ""
 "If there is a match and the series level modality is **SR** (from a CT, "
 "or RF etc):"
 msgstr ""
 
-#: ../../netdicom-qr.rst:325
+#: ../../netdicom-qr.rst:323
 msgid ""
 "The image level response will have the SOP Instance UID - this is checked"
 " against the SOP Instance UIDs recorded with the matching study. If a "
 "match is found, the 'image' level response is deleted."
 msgstr ""
 
-#: ../../netdicom-qr.rst:328
+#: ../../netdicom-qr.rst:326
 msgid ""
 "If there is a match and the series level modality is **MG**, **DX** or "
 "**CR**:"
 msgstr ""
 
-#: ../../netdicom-qr.rst:330
+#: ../../netdicom-qr.rst:328
 msgid ""
 "An image level query is made which will populate the image level "
 "responses with SOP Instance UIDs"
 msgstr ""
 
-#: ../../netdicom-qr.rst:331
+#: ../../netdicom-qr.rst:329
 msgid ""
 "Each image level response is then processed and the SOP Instance UID is "
 "checked against the SOP Instance UIDs recorded with the matching study. "
 "If a match is found, the 'image' level response is deleted."
 msgstr ""
 
-#: ../../netdicom-qr.rst:334
+#: ../../netdicom-qr.rst:332
 msgid "Once each series level response is processed:"
 msgstr ""
 
-#: ../../netdicom-qr.rst:336
+#: ../../netdicom-qr.rst:334
 msgid ""
 "If the series no longer has any image  level responses the series level "
 "response is deleted."
 msgstr ""
 
-#: ../../netdicom-qr.rst:337
+#: ../../netdicom-qr.rst:335
 msgid ""
 "If the study no longer has any series level responses the study level "
 "response is deleted."
 msgstr ""
 
-#: ../../netdicom-qr.rst:344
+#: ../../netdicom-qr.rst:342
 msgid "DICOM query summary"
 msgstr ""
 
@@ -564,11 +560,11 @@ msgstr ""
 msgid "Go to query summary"
 msgstr ""
 
-#: ../../netdicom-qr.rst:352
+#: ../../netdicom-qr.rst:350
 msgid "Figure 3: Go to query summary"
 msgstr ""
 
-#: ../../netdicom-qr.rst:354
+#: ../../netdicom-qr.rst:352
 msgid ""
 "Either by clicking on the \"Go to query details page\" when executing a "
 "query or by going to Config > DICOM query summary you can review the "
@@ -581,11 +577,11 @@ msgstr ""
 msgid "The query details page"
 msgstr ""
 
-#: ../../netdicom-qr.rst:363
+#: ../../netdicom-qr.rst:361
 msgid "Figure 4: The query details page"
 msgstr ""
 
-#: ../../netdicom-qr.rst:365
+#: ../../netdicom-qr.rst:363
 msgid ""
 "By clicking on the studies of a query you can review the discovered DICOM"
 " series as well as to some extent the individual files that are part of "
@@ -600,15 +596,15 @@ msgstr ""
 msgid "The query study details page"
 msgstr ""
 
-#: ../../netdicom-qr.rst:376
+#: ../../netdicom-qr.rst:374
 msgid "Figure 5: The query study details page"
 msgstr ""
 
-#: ../../netdicom-qr.rst:382
+#: ../../netdicom-qr.rst:380
 msgid "Troubleshooting: openrem_qr.log"
 msgstr ""
 
-#: ../../netdicom-qr.rst:384
+#: ../../netdicom-qr.rst:382
 msgid ""
 "Note that if a query does not work as expected the first location to "
 "check should be the :ref:`qrquerysummary` and the :doc:`task-management`."
@@ -616,21 +612,21 @@ msgid ""
 " good idea."
 msgstr ""
 
-#: ../../netdicom-qr.rst:387
+#: ../../netdicom-qr.rst:385
 msgid ""
 "If the default logging settings haven't been changed then there will be a"
 " log files to refer to. The default location is within your ``logs`` "
 "folder:"
 msgstr ""
 
-#: ../../netdicom-qr.rst:390
+#: ../../netdicom-qr.rst:388
 msgid ""
 "This file contains information about the query, the status of the remote "
 "node, the C-Find response, the analysis of the response, and the "
 "individual C-Move requests."
 msgstr ""
 
-#: ../../netdicom-qr.rst:393
+#: ../../netdicom-qr.rst:391
 msgid ""
 "The following is an example of the start of the log for the following "
 "query which is run once an hour (ie some responses will already have been"
@@ -736,5 +732,8 @@ msgstr ""
 #~ "If you are using an OpenREM native"
 #~ " storage node, then you might also"
 #~ " like to review :ref:`storetroubleshooting`"
+#~ msgstr ""
+
+#~ msgid "**Document not ready for translation**"
 #~ msgstr ""
 

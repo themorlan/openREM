@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-03-05 17:21+0000\n"
+"POT-Creation-Date: 2023-04-15 21:26+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -51,7 +51,6 @@ msgid "Return multiplication within Django templates"
 msgstr ""
 
 #: of remapp.views.multiply remapp.views.update_latest_studies
-#: remapp.views.update_modality_totals remapp.views.update_study_workload
 #: remapp.views_openskin.check_skin_safe_model
 #: remapp.views_openskin.get_matching_equipment_names
 msgid "Parameters"
@@ -66,7 +65,6 @@ msgid "the second value to multiply"
 msgstr ""
 
 #: of remapp.views.multiply remapp.views.update_latest_studies
-#: remapp.views.update_modality_totals remapp.views.update_study_workload
 #: remapp.views_openskin.check_skin_safe_model
 #: remapp.views_openskin.get_matching_equipment_names
 msgid "Returns"
@@ -104,30 +102,12 @@ msgid ""
 " particular modality."
 msgstr ""
 
-#: of remapp.views.update_latest_studies:3 remapp.views.update_study_workload:3
+#: of remapp.views.update_latest_studies:3
 msgid "Request object"
 msgstr ""
 
-#: of remapp.views.update_latest_studies:4 remapp.views.update_study_workload:4
+#: of remapp.views.update_latest_studies:4
 msgid "HTML table of modalities"
-msgstr ""
-
-#: of remapp.views.update_modality_totals:1
-msgid "AJAX function to update study numbers automatically."
-msgstr ""
-
-#: of remapp.views.update_modality_totals:3
-msgid "request object"
-msgstr ""
-
-#: of remapp.views.update_modality_totals:4
-msgid "dictionary of totals"
-msgstr ""
-
-#: of remapp.views.update_study_workload:1
-msgid ""
-"AJAX function to calculate the number of studies in two user-defined time"
-" periods for a particular modality."
 msgstr ""
 
 #: ../../code_views.rst:9
@@ -254,5 +234,20 @@ msgid "Return type"
 msgstr ""
 
 #~ msgid "*Will be documented in future release*"
+#~ msgstr ""
+
+#~ msgid "AJAX function to update study numbers automatically."
+#~ msgstr ""
+
+#~ msgid "request object"
+#~ msgstr ""
+
+#~ msgid "dictionary of totals"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "AJAX function to calculate the number"
+#~ " of studies in two user-defined "
+#~ "time periods for a particular modality."
 #~ msgstr ""
 

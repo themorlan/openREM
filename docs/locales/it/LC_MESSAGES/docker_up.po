@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-03-05 17:21+0000\n"
+"POT-Creation-Date: 2023-04-15 21:26+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: it\n"
@@ -23,80 +23,79 @@ msgstr ""
 msgid "Errors at docker-compose up"
 msgstr ""
 
-#: ../../docker_up.rst:4
-msgid "**Document not ready for translation**"
-msgstr ""
-
-#: ../../docker_up.rst:7
+#: ../../docker_up.rst:5
 msgid "Cannot start service nginx"
 msgstr ""
 
-#: ../../docker_up.rst:9
+#: ../../docker_up.rst:7
 msgid ""
 "Error message when running ``docker-compose up -d`` (example from "
 "Windows)::"
 msgstr ""
 
-#: ../../docker_up.rst:16
+#: ../../docker_up.rst:14
 msgid "This error indicates port 80 is not available for Docker/OpenREM. Try:"
 msgstr ""
 
-#: ../../docker_up.rst:18
+#: ../../docker_up.rst:16
 msgid "Shutting down other web servers, such as IIS"
 msgstr ""
 
-#: ../../docker_up.rst:19
+#: ../../docker_up.rst:17
 msgid "Using an alternative port temporarily for OpenREM:"
 msgstr ""
 
-#: ../../docker_up.rst:21
+#: ../../docker_up.rst:19
 msgid "Edit the ``docker-compose.yml`` file"
 msgstr ""
 
-#: ../../docker_up.rst:22
+#: ../../docker_up.rst:20
 msgid "Find the section that includes"
 msgstr ""
 
-#: ../../docker_up.rst:30
+#: ../../docker_up.rst:28
 msgid "Change the external facing port to a high number, for example:"
 msgstr ""
 
-#: ../../docker_up.rst:38
+#: ../../docker_up.rst:36
 msgid "Now stop and start the containers again:"
 msgstr ""
 
-#: ../../docker_up.rst:45
+#: ../../docker_up.rst:43
 msgid ""
 "If there are no errors, check that the containers are up and which ports "
 "are in use:"
 msgstr ""
 
-#: ../../docker_up.rst:52
+#: ../../docker_up.rst:50
 msgid "Connection was reset, Orthanc restarting"
 msgstr ""
 
-#: ../../docker_up.rst:54
+#: ../../docker_up.rst:52
 msgid ""
 "After installation, browsing to the webservice reports \"The connection "
 "was reset\"."
 msgstr ""
 
-#: ../../docker_up.rst:55
+#: ../../docker_up.rst:53
 msgid "``docker-compose ps`` reports:"
 msgstr ""
 
-#: ../../docker_up.rst:61
+#: ../../docker_up.rst:59
 msgid "Orthanc Docker logs include:"
 msgstr ""
 
-#: ../../docker_up.rst:68
+#: ../../docker_up.rst:66
 msgid ""
 "This might indicate that the bind mounts have not worked. This might be "
 "due to SELinux, particularly if you are using Red Hat or Fedora or "
 "related distributions."
 msgstr ""
 
-#: ../../docker_up.rst:71
+#: ../../docker_up.rst:69
 msgid "See :doc:`docker_selinux`"
 msgstr ""
+
+#~ msgid "**Document not ready for translation**"
+#~ msgstr ""
 
