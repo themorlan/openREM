@@ -1,0 +1,192 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2013-2022, The Royal Marsden NHS Foundation Trust
+# This file is distributed under the same license as the OpenREM package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2023.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: OpenREM 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-03-05 17:21+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: pt_BR\n"
+"Language-Team: pt_BR <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.12.1\n"
+
+#: ../../release-0.6.0.rst:3
+msgid "OpenREM Release Notes version 0.6.0"
+msgstr ""
+
+#: ../../release-0.6.0.rst:7
+msgid "Headline changes"
+msgstr ""
+
+#: ../../release-0.6.0.rst:9 ../../release-0.6.0.rst:39
+msgid "Charts"
+msgstr ""
+
+#: ../../release-0.6.0.rst:10
+msgid "Preview of DICOM Store SCP functionality"
+msgstr ""
+
+#: ../../release-0.6.0.rst:11
+msgid "Exports available to import into `openSkin`_"
+msgstr ""
+
+#: ../../release-0.6.0.rst:12
+msgid "Modalities with no data are hidden in the user interface"
+msgstr ""
+
+#: ../../release-0.6.0.rst:13
+msgid "Mammography import compression force behaviour changed"
+msgstr ""
+
+#: ../../release-0.6.0.rst:14
+msgid "Import of Toshiba planar RDSRs fixed"
+msgstr ""
+
+#: ../../release-0.6.0.rst:17
+msgid "Changes for 0.6.2"
+msgstr ""
+
+#: ../../release-0.6.0.rst:19
+msgid ""
+"Minor update due prevent new installs from installing a non-compatible "
+"version of ``django-filter``. The link to `openSkin`_ has also been "
+"updated in the fluoroscopy detail page."
+msgstr ""
+
+#: ../../release-0.6.0.rst:22
+msgid "**There is no advantage to updating to this version over 0.6.0**"
+msgstr ""
+
+#: ../../release-0.6.0.rst:24
+msgid ""
+"Release 0.6.1 was just a documentation only change to update the link to "
+"`openSkin`_."
+msgstr ""
+
+#: ../../release-0.6.0.rst:28
+msgid "Specific upgrade instructions"
+msgstr ""
+
+#: ../../release-0.6.0.rst:30
+msgid ""
+"For the original upgrade instructions, the last docs release to include "
+"them was `0.10.0-docs "
+"<https://docs.openrem.org/en/0.10.0-docs/release-0.6.0.html>`_"
+msgstr ""
+
+#: ../../release-0.6.0.rst:36
+msgid "Summary of new features"
+msgstr ""
+
+#: ../../release-0.6.0.rst:41
+msgid ""
+"Release 0.6.0 has a range of charting options available for CT and "
+"radiographic data. These charts allow visualisation of trends and "
+"frequencies to inform surveys and monitor performance. For more "
+"information, please see :doc:`charts`."
+msgstr ""
+
+#: ../../release-0.6.0.rst:46
+msgid "DICOM Store Service Class Provider"
+msgstr ""
+
+#: ../../release-0.6.0.rst:48
+msgid ""
+"OpenREM can now act as the DICOM Store service, allowing direct sending "
+"of DICOM objects from modalities to OpenREM without needing to use "
+"Conquest or any other DICOM Store SCP. This feature is a preview as it "
+"hasn't been extensively tested, but it is expected to work. For more "
+"information, please see :ref:`directfrommodalities`."
+msgstr ""
+
+#: ../../release-0.6.0.rst:54
+msgid "Exports for openSkin"
+msgstr ""
+
+#: ../../release-0.6.0.rst:56
+msgid ""
+"Fluoroscopy studies can now be exported in a format suitable for "
+"importing into Jonathan Cole's openSkin software. The export link is on "
+"the fluoroscopy study detail page. The software for creating the exposure"
+" incidence map can be downloaded from "
+"https://bitbucket.org/openskin/openskin/downloads (choose the zip file), "
+"and information about the project can be found on the `openSkin wiki`_. "
+"The software allows the user to choose between a 2D phantom that would "
+"represent the dose to a film laying on the couch surface, or a simple 3D "
+"phantom made up of a cuboid and two semi-cylinders (these can be seen on "
+"the `Phantom design`_ section of the wiki). For both options the output "
+"is an image of the dose distribution in 2D, along with calculated peak "
+"skin dose information."
+msgstr ""
+
+#: ../../release-0.6.0.rst:65
+msgid "Automatic hiding of unused modality types"
+msgstr ""
+
+#: ../../release-0.6.0.rst:67
+msgid ""
+"A fresh install of OpenREM will no longer show any of the four modality "
+"types in the tables or in the navigation bar at the top. As DICOM objects"
+" are ingested, the appropriate tables and navigation links are created."
+msgstr ""
+
+#: ../../release-0.6.0.rst:70
+msgid ""
+"Therefore a site that has no mammography for example will no longer have "
+"that table or navigation link in their interface."
+msgstr ""
+
+#: ../../release-0.6.0.rst:74
+msgid "Mammography import compression force change"
+msgstr ""
+
+#: ../../release-0.6.0.rst:76
+msgid ""
+"Prior to version 0.6, the compression force extracted from the "
+"mammography image header was divided by ten before being stored in the "
+"database. This was because the primary author only had access to GE "
+"Senograph DS units, which store the compression force in dN, despite "
+"claiming using Newtons in the DICOM conformance statement."
+msgstr ""
+
+#: ../../release-0.6.0.rst:80
+msgid ""
+"The code now checks for the term *senograph ds* contained in the model "
+"name. If it matches, then the value is divided by ten. Otherwise, the "
+"value is stored without any further change. We know that later GE units, "
+"the GE Senograph Essential for example, and other manufacturer's units "
+"store this value in N. If you have a case that acts like the Senograph "
+"DS, please let us know and we'll try and cater for that."
+msgstr ""
+
+#: ../../release-0.6.0.rst:85
+msgid ""
+"If you have existing non-GE Senograph mammography data in your database, "
+"the compression force field for those studies is likely to be incorrect "
+"by a factor of ten (it will be too small). Studies imported after the "
+"upgrade will be correct. If this is a problem for you, please let us know"
+" and we'll see about writing a script to correct the existing data."
+msgstr ""
+
+#: ../../release-0.6.0.rst:90
+msgid "Import of Toshiba Planar RDSRs fixed"
+msgstr ""
+
+#: ../../release-0.6.0.rst:92
+msgid ""
+"Toshiba include Patient Orientation and Patient Orientation Modifier "
+"information in their cath lab RDSRs. The extractor code was deficient for"
+" this as the RDSRs previously used didn't have this information. This has"
+" now been fixed. There might however be an issue with Station Name not "
+"being provided - it is not yet clear if this is a configuration issue."
+msgstr ""
+

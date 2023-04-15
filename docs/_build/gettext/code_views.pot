@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-03-05 17:21+0000\n"
+"POT-Creation-Date: 2023-04-15 21:26+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -52,8 +52,6 @@ msgstr ""
 
 #: ../../../openrem/remapp/views.py:docstring of remapp.views.multiply:0
 #: ../../../openrem/remapp/views.py:docstring of remapp.views.update_latest_studies:0
-#: ../../../openrem/remapp/views.py:docstring of remapp.views.update_modality_totals:0
-#: ../../../openrem/remapp/views.py:docstring of remapp.views.update_study_workload:0
 #: ../../../openrem/remapp/views_openskin.py:docstring of remapp.views_openskin.check_skin_safe_model:0
 #: ../../../openrem/remapp/views_openskin.py:docstring of remapp.views_openskin.get_matching_equipment_names:0
 msgid "Parameters"
@@ -69,8 +67,6 @@ msgstr ""
 
 #: ../../../openrem/remapp/views.py:docstring of remapp.views.multiply:0
 #: ../../../openrem/remapp/views.py:docstring of remapp.views.update_latest_studies:0
-#: ../../../openrem/remapp/views.py:docstring of remapp.views.update_modality_totals:0
-#: ../../../openrem/remapp/views.py:docstring of remapp.views.update_study_workload:0
 #: ../../../openrem/remapp/views_openskin.py:docstring of remapp.views_openskin.check_skin_safe_model:0
 #: ../../../openrem/remapp/views_openskin.py:docstring of remapp.views_openskin.get_matching_equipment_names:0
 msgid "Returns"
@@ -105,29 +101,11 @@ msgid "AJAX function to calculate the latest studies for each display name for a
 msgstr ""
 
 #: ../../../openrem/remapp/views.py:docstring of remapp.views.update_latest_studies:3
-#: ../../../openrem/remapp/views.py:docstring of remapp.views.update_study_workload:3
 msgid "Request object"
 msgstr ""
 
 #: ../../../openrem/remapp/views.py:docstring of remapp.views.update_latest_studies:4
-#: ../../../openrem/remapp/views.py:docstring of remapp.views.update_study_workload:4
 msgid "HTML table of modalities"
-msgstr ""
-
-#: ../../../openrem/remapp/views.py:docstring of remapp.views.update_modality_totals:1
-msgid "AJAX function to update study numbers automatically."
-msgstr ""
-
-#: ../../../openrem/remapp/views.py:docstring of remapp.views.update_modality_totals:3
-msgid "request object"
-msgstr ""
-
-#: ../../../openrem/remapp/views.py:docstring of remapp.views.update_modality_totals:4
-msgid "dictionary of totals"
-msgstr ""
-
-#: ../../../openrem/remapp/views.py:docstring of remapp.views.update_study_workload:1
-msgid "AJAX function to calculate the number of studies in two user-defined time periods for a particular modality."
 msgstr ""
 
 #: ../../code_views.rst:9

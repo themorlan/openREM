@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-03-05 17:21+0000\n"
+"POT-Creation-Date: 2023-04-15 21:26+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -124,95 +124,95 @@ msgstr ""
 msgid "Activate the development environment and move to the root of the OpenREM repository - with the ``docs`` folder and ``openrem`` folder etc:"
 msgstr ""
 
-#: ../../translations.rst:109
+#: ../../translations.rst:110
 msgid "Adding new interface strings for translation"
 msgstr ""
 
-#: ../../translations.rst:111
+#: ../../translations.rst:112
 msgid "Please refer to https://docs.djangoproject.com/en/2.2/topics/i18n/translation/ for instructions."
 msgstr ""
 
-#: ../../translations.rst:113
+#: ../../translations.rst:114
 msgid "In brief, the following will help get you started, but does not cover lazy translations, plurals and many other things!"
 msgstr ""
 
-#: ../../translations.rst:115
+#: ../../translations.rst:116
 msgid "All the Sphinx/Read The Docs strings are translatable - if a page does not appear in Weblate that is because it has not been configured as a component there yet."
 msgstr ""
 
-#: ../../translations.rst:119
+#: ../../translations.rst:120
 msgid "Python code"
 msgstr ""
 
-#: ../../translations.rst:121
+#: ../../translations.rst:122
 msgid "First, import ``gettext`` from Django:"
 msgstr ""
 
-#: ../../translations.rst:127
+#: ../../translations.rst:128
 msgid "Then wrap strings to be translated with ``_()`` so"
 msgstr ""
 
-#: ../../translations.rst:133
-#: ../../translations.rst:169
+#: ../../translations.rst:134
+#: ../../translations.rst:170
 msgid "becomes"
 msgstr ""
 
-#: ../../translations.rst:141
+#: ../../translations.rst:142
 msgid "The same is done for strings that contain variables. Unfortunately ``gettext`` cannot work with f-strings so we are stuck with ``.format()`` instead. It is easier to understand how to translate the text though if we use named variables rather than position based ones, like this:"
 msgstr ""
 
-#: ../../translations.rst:151
+#: ../../translations.rst:152
 msgid "Remember we cannot assume the grammar of the translated string so try and pass the whole sentence or paragraph to be translated."
 msgstr ""
 
-#: ../../translations.rst:155
+#: ../../translations.rst:156
 msgid "Template code"
 msgstr ""
 
-#: ../../translations.rst:157
+#: ../../translations.rst:158
 msgid "Add the following at the top of the template file, just after any ``extends`` code:"
 msgstr ""
 
-#: ../../translations.rst:163
+#: ../../translations.rst:164
 msgid "This can be done with *inline* translations and *block* translations. For inline,"
 msgstr ""
 
-#: ../../translations.rst:175
+#: ../../translations.rst:176
 msgid "If there are variables, a block translation is required, for example:"
 msgstr ""
 
-#: ../../translations.rst:186
+#: ../../translations.rst:187
 msgid "Comments can be added to aid translators, for example:"
 msgstr ""
 
-#: ../../translations.rst:198
+#: ../../translations.rst:199
 msgid "Making use of updated strings on local system"
 msgstr ""
 
-#: ../../translations.rst:200
+#: ../../translations.rst:201
 msgid "Specify the language to build for Sphinx docs, eg for German:"
 msgstr ""
 
-#: ../../translations.rst:206
+#: ../../translations.rst:207
 msgid "For Django strings:"
 msgstr ""
 
-#: ../../translations.rst:214
+#: ../../translations.rst:215
 msgid "Incorporating translations into main repo"
 msgstr ""
 
-#: ../../translations.rst:216
+#: ../../translations.rst:217
 msgid "In the git repository:"
 msgstr ""
 
-#: ../../translations.rst:222
+#: ../../translations.rst:223
 msgid "Checkout the ``weblate\\develop`` branch as a new local branch"
 msgstr ""
 
-#: ../../translations.rst:223
+#: ../../translations.rst:224
 msgid "Push the branch to Bitbucket"
 msgstr ""
 
-#: ../../translations.rst:224
+#: ../../translations.rst:225
 msgid "Create a pull request to develop"
 msgstr ""

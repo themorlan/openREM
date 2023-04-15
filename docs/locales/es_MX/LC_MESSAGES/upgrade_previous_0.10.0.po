@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-03-05 17:21+0000\n"
+"POT-Creation-Date: 2023-04-15 21:26+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -22,17 +22,13 @@ msgid "Upgrade to OpenREM 0.10.0 from 0.7.3 or later"
 msgstr ""
 
 #: ../../upgrade_previous_0.10.0.rst:5
-msgid "*doc not ready for translation* **needs review**"
-msgstr ""
-
-#: ../../upgrade_previous_0.10.0.rst:8
 msgid ""
 "Upgrades to OpenREM 1.0 can only be made from version 0.10.0. "
 "Installations earlier than that need to be updated to version 0.10.0 "
 "before updating to version 1.0."
 msgstr ""
 
-#: ../../upgrade_previous_0.10.0.rst:11
+#: ../../upgrade_previous_0.10.0.rst:8
 msgid ""
 "These instructions can be used to upgrade any database from version 0.7.3"
 " or later. 0.7.3 was released in August 2016. For upgrades from versions "
@@ -41,37 +37,37 @@ msgid ""
 "<https://docs.openrem.org/en/0.10.0-docs/release-0.7.3.html>`_."
 msgstr ""
 
-#: ../../upgrade_previous_0.10.0.rst:18
+#: ../../upgrade_previous_0.10.0.rst:15
 msgid "Upgrade preparation"
 msgstr ""
 
-#: ../../upgrade_previous_0.10.0.rst:20
+#: ../../upgrade_previous_0.10.0.rst:17
 msgid ""
 "Python 2.7.9 or later must be installed, but it must still be Python 2.7 "
 "and not any of the Python 3 releases."
 msgstr ""
 
-#: ../../upgrade_previous_0.10.0.rst:22
+#: ../../upgrade_previous_0.10.0.rst:19
 msgid ""
 "To check the Python version, activate the virtualenv if you are using "
 "one, then:"
 msgstr ""
 
-#: ../../upgrade_previous_0.10.0.rst:28
+#: ../../upgrade_previous_0.10.0.rst:25
 msgid ""
 "If the version is earlier than ``2.7.9``, then an upgrade is needed. If "
 "the version is ``3.x``, then Python 2.7 must be installed."
 msgstr ""
 
-#: ../../upgrade_previous_0.10.0.rst:31
+#: ../../upgrade_previous_0.10.0.rst:28
 msgid "**Ubuntu Linux**"
 msgstr ""
 
-#: ../../upgrade_previous_0.10.0.rst:33
+#: ../../upgrade_previous_0.10.0.rst:30
 msgid "Check which version of Ubuntu is installed (``lsb_release -a``)"
 msgstr ""
 
-#: ../../upgrade_previous_0.10.0.rst:34
+#: ../../upgrade_previous_0.10.0.rst:31
 msgid ""
 "If it is 14.04 LTS (Trusty), then an operating system upgrade or "
 "migration to a new server is required. If migrating, ensure the version "
@@ -80,136 +76,136 @@ msgid ""
 "when up and running again perform the upgrade on the new server"
 msgstr ""
 
-#: ../../upgrade_previous_0.10.0.rst:38
+#: ../../upgrade_previous_0.10.0.rst:35
 msgid "16.04 LTS (Xenial) or later should have 2.7.11 or later available."
 msgstr ""
 
-#: ../../upgrade_previous_0.10.0.rst:39
+#: ../../upgrade_previous_0.10.0.rst:36
 msgid ""
 "For other Linux distributions check in their archives for which versions "
 "are available."
 msgstr ""
 
-#: ../../upgrade_previous_0.10.0.rst:41
+#: ../../upgrade_previous_0.10.0.rst:38
 msgid "**Windows**"
 msgstr ""
 
-#: ../../upgrade_previous_0.10.0.rst:43
+#: ../../upgrade_previous_0.10.0.rst:40
 msgid ""
 "A newer version of Python 2.7 can be downloaded from `python.org "
 "<https://www.python.org/downloads>`_ and installed over the current "
 "version."
 msgstr ""
 
-#: ../../upgrade_previous_0.10.0.rst:46
+#: ../../upgrade_previous_0.10.0.rst:43
 msgid "**Linux and Windows**"
 msgstr ""
 
-#: ../../upgrade_previous_0.10.0.rst:48
+#: ../../upgrade_previous_0.10.0.rst:45
 msgid ""
 "With a version of Python 2.7.9 or later, setuptools can be updated "
 "(activate virtualenv if using one):"
 msgstr ""
 
-#: ../../upgrade_previous_0.10.0.rst:56
+#: ../../upgrade_previous_0.10.0.rst:53
 msgid "Upgrade"
 msgstr ""
 
-#: ../../upgrade_previous_0.10.0.rst:58
+#: ../../upgrade_previous_0.10.0.rst:55
 msgid "Back up your database"
 msgstr ""
 
-#: ../../upgrade_previous_0.10.0.rst:60
+#: ../../upgrade_previous_0.10.0.rst:57
 msgid "For PostgreSQL on linux you can refer to :ref:`backup-psql-db`"
 msgstr ""
 
-#: ../../upgrade_previous_0.10.0.rst:61
+#: ../../upgrade_previous_0.10.0.rst:58
 msgid "For PostgreSQL on Windows you can refer to :ref:`database-windows`"
 msgstr ""
 
-#: ../../upgrade_previous_0.10.0.rst:62
+#: ../../upgrade_previous_0.10.0.rst:59
 msgid ""
 "For a non-production SQLite3 database, simply make a copy of the database"
 " file"
 msgstr ""
 
-#: ../../upgrade_previous_0.10.0.rst:64
+#: ../../upgrade_previous_0.10.0.rst:61
 msgid "Stop any Celery workers"
 msgstr ""
 
-#: ../../upgrade_previous_0.10.0.rst:66
+#: ../../upgrade_previous_0.10.0.rst:63
 msgid ""
 "Consider temporarily disabling your DICOM Store SCP, or redirecting the "
 "data to be processed later"
 msgstr ""
 
-#: ../../upgrade_previous_0.10.0.rst:68
+#: ../../upgrade_previous_0.10.0.rst:65
 msgid "If you are using a virtualenv, activate it"
 msgstr ""
 
-#: ../../upgrade_previous_0.10.0.rst:70
+#: ../../upgrade_previous_0.10.0.rst:67
 msgid "Install specific versions of some packages that are needed:"
 msgstr ""
 
-#: ../../upgrade_previous_0.10.0.rst:78
+#: ../../upgrade_previous_0.10.0.rst:75
 msgid "Install specific version of Celery:"
 msgstr ""
 
-#: ../../upgrade_previous_0.10.0.rst:80
+#: ../../upgrade_previous_0.10.0.rst:77
 msgid "**Linux server:**"
 msgstr ""
 
-#: ../../upgrade_previous_0.10.0.rst:86
+#: ../../upgrade_previous_0.10.0.rst:83
 msgid "**Windows server:**"
 msgstr ""
 
-#: ../../upgrade_previous_0.10.0.rst:92
+#: ../../upgrade_previous_0.10.0.rst:89
 msgid "Install the new version of OpenREM:"
 msgstr ""
 
-#: ../../upgrade_previous_0.10.0.rst:99
+#: ../../upgrade_previous_0.10.0.rst:96
 msgid "Update the configuration"
 msgstr ""
 
-#: ../../upgrade_previous_0.10.0.rst:101
+#: ../../upgrade_previous_0.10.0.rst:98
 msgid "Locate and edit your local_settings file"
 msgstr ""
 
-#: ../../upgrade_previous_0.10.0.rst:103
+#: ../../upgrade_previous_0.10.0.rst:100
 msgid ""
 "Ubuntu linux: ``/usr/local/lib/python2.7/dist-"
 "packages/openrem/openremproject/local_settings.py``"
 msgstr ""
 
-#: ../../upgrade_previous_0.10.0.rst:104
+#: ../../upgrade_previous_0.10.0.rst:101
 msgid ""
 "Other linux: ``/usr/lib/python2.7/site-"
 "packages/openrem/openremproject/local_settings.py``"
 msgstr ""
 
-#: ../../upgrade_previous_0.10.0.rst:105
+#: ../../upgrade_previous_0.10.0.rst:102
 msgid ""
 "Linux virtualenv: ``vitualenvfolder/lib/python2.7/site-"
 "packages/openrem/openremproject/local_settings.py``"
 msgstr ""
 
-#: ../../upgrade_previous_0.10.0.rst:106
+#: ../../upgrade_previous_0.10.0.rst:103
 msgid ""
 "Windows: ``C:\\Python27\\Lib\\site-"
 "packages\\openrem\\openremproject\\local_settings.py``"
 msgstr ""
 
-#: ../../upgrade_previous_0.10.0.rst:107
+#: ../../upgrade_previous_0.10.0.rst:104
 msgid ""
 "Windows virtualenv: ``virtualenvfolder\\Lib\\site-"
 "packages\\openrem\\openremproject\\local_settings.py``"
 msgstr ""
 
-#: ../../upgrade_previous_0.10.0.rst:111
+#: ../../upgrade_previous_0.10.0.rst:108
 msgid "Add additional log file configuration - changed with 0.8"
 msgstr ""
 
-#: ../../upgrade_previous_0.10.0.rst:113
+#: ../../upgrade_previous_0.10.0.rst:110
 msgid ""
 "Add the new extractor log file configuration to the ``local_settings.py``"
 " - you can copy the 'Logging configuration' section here if you haven't "
@@ -219,39 +215,39 @@ msgid ""
 "upgrade to 1.0:"
 msgstr ""
 
-#: ../../upgrade_previous_0.10.0.rst:149
+#: ../../upgrade_previous_0.10.0.rst:146
 msgid "Migrate the database"
 msgstr ""
 
-#: ../../upgrade_previous_0.10.0.rst:151
+#: ../../upgrade_previous_0.10.0.rst:148
 msgid "In a shell/command window, move into the ``openrem`` folder:"
 msgstr ""
 
-#: ../../upgrade_previous_0.10.0.rst:153
+#: ../../upgrade_previous_0.10.0.rst:150
 msgid "Ubuntu linux: ``/usr/local/lib/python2.7/dist-packages/openrem/``"
 msgstr ""
 
-#: ../../upgrade_previous_0.10.0.rst:154
+#: ../../upgrade_previous_0.10.0.rst:151
 msgid "Other linux: ``/usr/lib/python2.7/site-packages/openrem/``"
 msgstr ""
 
-#: ../../upgrade_previous_0.10.0.rst:155
+#: ../../upgrade_previous_0.10.0.rst:152
 msgid "Linux virtualenv: ``vitualenvfolder/lib/python2.7/site-packages/openrem/``"
 msgstr ""
 
-#: ../../upgrade_previous_0.10.0.rst:156
+#: ../../upgrade_previous_0.10.0.rst:153
 msgid "Windows: ``C:\\Python27\\Lib\\site-packages\\openrem\\``"
 msgstr ""
 
-#: ../../upgrade_previous_0.10.0.rst:157
+#: ../../upgrade_previous_0.10.0.rst:154
 msgid "Windows virtualenv: ``virtualenvfolder\\Lib\\site-packages\\openrem\\``"
 msgstr ""
 
-#: ../../upgrade_previous_0.10.0.rst:167
+#: ../../upgrade_previous_0.10.0.rst:164
 msgid "Systemd service names in Ubuntu installs"
 msgstr ""
 
-#: ../../upgrade_previous_0.10.0.rst:169
+#: ../../upgrade_previous_0.10.0.rst:166
 msgid ""
 "Systemd service files were renamed in the the 0.9.1 docs to use *openrem-"
 "function* rather than *function-openrem*. To update the service files "
@@ -263,17 +259,17 @@ msgid ""
 " easier just to remember the only service names, or just rename that one."
 msgstr ""
 
-#: ../../upgrade_previous_0.10.0.rst:198
+#: ../../upgrade_previous_0.10.0.rst:195
 msgid "Upgrade to 1.0"
 msgstr ""
 
-#: ../../upgrade_previous_0.10.0.rst:200
+#: ../../upgrade_previous_0.10.0.rst:197
 msgid ""
 "Now return to :doc:`installation` instructions to follow the instructions"
 " to 1.0 for your preferred server solution."
 msgstr ""
 
-#: ../../upgrade_previous_0.10.0.rst:202
+#: ../../upgrade_previous_0.10.0.rst:199
 msgid ""
 "After upgrading to version 1.0, there will be automatic tasks that are "
 "created to populate the summary fields introduced in version 0.10."
@@ -283,7 +279,7 @@ msgstr ""
 msgid "0.10 upgrade panel before log in"
 msgstr ""
 
-#: ../../upgrade_previous_0.10.0.rst:210
+#: ../../upgrade_previous_0.10.0.rst:207
 msgid ""
 "Log in as an administrator to start the migration process. If you have a "
 "large number of studies in your database this can take some time. A large"
@@ -297,7 +293,7 @@ msgstr ""
 msgid "0.10 upgrade panel after log in as administrator"
 msgstr ""
 
-#: ../../upgrade_previous_0.10.0.rst:220
+#: ../../upgrade_previous_0.10.0.rst:217
 msgid ""
 "One task per modality type (CT, fluoroscopy, mammography and radiography)"
 " is generated to create a task per study in each modality to populate the"
@@ -309,7 +305,7 @@ msgid ""
 "review the number of tasks being created on the ``Config -> Tasks`` page."
 msgstr ""
 
-#: ../../upgrade_previous_0.10.0.rst:226
+#: ../../upgrade_previous_0.10.0.rst:223
 msgid ""
 "Before the migration is complete, some of the information on the modality"
 " pages of OpenREM will be missing, such as the dose information for "
@@ -323,7 +319,7 @@ msgstr ""
 msgid "0.10 upgrade panel, population of fields in progress"
 msgstr ""
 
-#: ../../upgrade_previous_0.10.0.rst:236
+#: ../../upgrade_previous_0.10.0.rst:233
 msgid ""
 "When the process is complete the 'Summary data fields migration' panel "
 "will disappear and will not be seen again."
@@ -547,5 +543,8 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "Now return to the 0.10.0 release docs for :ref:`post_upgrade0100`"
+#~ msgstr ""
+
+#~ msgid "*doc not ready for translation* **needs review**"
 #~ msgstr ""
 

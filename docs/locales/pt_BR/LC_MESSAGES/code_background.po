@@ -1,0 +1,180 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2013-2022, The Royal Marsden NHS Foundation Trust
+# This file is distributed under the same license as the OpenREM package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2023.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: OpenREM 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-03-05 17:21+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: pt_BR\n"
+"Language-Team: pt_BR <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.12.1\n"
+
+#: ../../code_background.rst:2
+msgid "BackgroundTask"
+msgstr ""
+
+#: ../../code_background.rst:4
+msgid "Contains functions for running tasks in the background."
+msgstr ""
+
+#: of remapp.tools.background.get_current_task
+#: remapp.tools.background.get_or_generate_task_uuid
+#: remapp.tools.background.get_queued_tasks
+#: remapp.tools.background.run_in_background_with_limits
+msgid "Returns"
+msgstr ""
+
+#: of remapp.tools.background.get_current_task:1
+msgid ""
+"The associated BackgroundTask object when called in a task. If this is "
+"not executed in a background Task None will be returned."
+msgstr ""
+
+#: of remapp.tools.background.get_or_generate_task_uuid:1
+msgid "If called from within a task the task id, else a generated uuid"
+msgstr ""
+
+#: of remapp.tools.background.get_queued_tasks:1
+msgid "Returns all task which are currently waiting for execution"
+msgstr ""
+
+#: of remapp.tools.background.get_queued_tasks
+#: remapp.tools.background.remove_task_from_queue
+#: remapp.tools.background.run_in_background_with_limits
+msgid "Parameters"
+msgstr ""
+
+#: of remapp.tools.background.get_queued_tasks:3
+msgid "Optionally filter by task type"
+msgstr ""
+
+#: of remapp.tools.background.get_queued_tasks:4
+msgid "List of queued tasks"
+msgstr ""
+
+#: of remapp.tools.background.record_task_error_exit:1
+msgid ""
+"Small helper that checks if we are in a task and assuming we are records "
+"error_msg as well as setting the completed_successfully to false and "
+"completed to True. Note that get_current_task will return None after a "
+"call to this."
+msgstr ""
+
+#: of remapp.tools.background.record_task_info:1
+msgid ""
+"Small helper that checks if we are in a task and assuming we are records "
+"info_msg as info."
+msgstr ""
+
+#: of remapp.tools.background.record_task_related_query:1
+msgid ""
+"Tries to find the related DicomQRRspStudy object given a study instance "
+"uid and if this is running in a task will record it to the query object. "
+"This is used to later find the import tasks that were run as part of a "
+"query. Since this actually just takes the latest query if the user runs "
+"imports manually via script it may in principle wrongly associate."
+msgstr ""
+
+#: of remapp.tools.background.remove_task_from_queue:1
+msgid "Removes task from queue."
+msgstr ""
+
+#: of remapp.tools.background.remove_task_from_queue:3
+msgid "task id of the task in question"
+msgstr ""
+
+#: of remapp.tools.background.run_in_background:1
+msgid "Syntactic sugar around run_in_background_with_limits."
+msgstr ""
+
+#: of remapp.tools.background.run_in_background:3
+msgid ""
+"Arguments correspond to run_in_background_with_limits. Will always run "
+"the passed function as fast as possible. This function should always be "
+"used for functions triggered from the webinterface."
+msgstr ""
+
+#: of remapp.tools.background.run_in_background_with_limits:1
+msgid "Runs func as background Process."
+msgstr ""
+
+#: of remapp.tools.background.run_in_background_with_limits:3
+msgid ""
+"This method will create a new task which will be scheduled to be run by "
+"the Huey consumer with the specified priority (defaults to 0). The "
+"priority can be passed via a keyword argument"
+msgstr ""
+
+#: of remapp.tools.background.run_in_background_with_limits:6
+msgid ""
+"Internally the Huey consumer spawns a new process, which then creates a "
+"BackgroundTask object. This can be obtained via get_current_task() inside"
+" the calling process. Note that BackgroundTask objects will not be "
+"deleted onto completion - instead the complete flag will be set to True."
+msgstr ""
+
+#: of remapp.tools.background.run_in_background_with_limits:12
+msgid "num_proc and num_of_task_type can be used to give conditions on the start."
+msgstr ""
+
+#: of remapp.tools.background.run_in_background_with_limits:14
+msgid ""
+"The function to run. Note that you should set the status of the task "
+"yourself and mark as completed when exiting yourself e.g. via sys.exit()."
+" Assuming the function returns normally on success or returns with an "
+"exception on error, the status of the BackgroundTask object will be set "
+"correctly."
+msgstr ""
+
+#: of remapp.tools.background.run_in_background_with_limits:18
+msgid ""
+"One of the strings declared in BackgroundTask.task_type. Indicates which "
+"kind of background process this is supposed to be. (E.g. move, query, "
+"...)"
+msgstr ""
+
+#: of remapp.tools.background.run_in_background_with_limits:20
+msgid ""
+"Will wait with execution until there are less than num_proc active tasks."
+" If num_proc == 0 will run directly"
+msgstr ""
+
+#: of remapp.tools.background.run_in_background_with_limits:22
+msgid ""
+"A dictionary from str to int, where key should be some used task_type. "
+"Will wait until there are less active tasks of task_type than specified "
+"in the value of the dict for that key."
+msgstr ""
+
+#: of remapp.tools.background.run_in_background_with_limits:25
+msgid "Positional arguments. Passed to func."
+msgstr ""
+
+#: of remapp.tools.background.run_in_background_with_limits:26
+msgid "Keywords arguments. Passed to func."
+msgstr ""
+
+#: of remapp.tools.background.run_in_background_with_limits:27
+msgid "The BackgroundTask object."
+msgstr ""
+
+#: of remapp.tools.background.terminate_background:1
+msgid ""
+"Terminate a background task by force. Sets complete=True on the task "
+"object."
+msgstr ""
+
+#: of remapp.tools.background.wait_task:1
+msgid "Wait until the task has completed"
+msgstr ""
+
