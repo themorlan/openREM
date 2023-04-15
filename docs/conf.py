@@ -104,3 +104,7 @@ copybutton_prompt_text = (
 )
 copybutton_prompt_is_regexp = True
 copybutton_line_continuation_character = "\\"
+
+# -- Translations
+locale_dirs = ['locales/']
+gettext_compact = "docs"
