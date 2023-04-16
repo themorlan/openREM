@@ -8606,7 +8606,7 @@ msgstr ""
 #: ../../code_running_tests.rst:73 ../../install_linux.rst:235
 #: ../../install_windows.rst:344
 msgid "Configure OpenREM"
-msgstr ""
+msgstr "OpenREM konfigurieren"
 
 #: ../../code_running_tests.rst:75
 msgid ""
@@ -9394,8 +9394,9 @@ msgid ""
 msgstr ""
 
 #: ../../docker_orthanc.rst:2
+#, fuzzy
 msgid "DICOM store configuration (Orthanc)"
-msgstr ""
+msgstr "Zusätzliche Optionen zur Konfiguration von Orthanc"
 
 #: ../../docker_orthanc.rst:4
 msgid ""
@@ -9447,7 +9448,7 @@ msgstr ""
 
 #: ../../docker_orthanc.rst:41
 msgid "Extractor for older Toshiba CT dose summary files"
-msgstr ""
+msgstr "Extraktor für ältere Toshiba Dosisdateien"
 
 #: ../../docker_orthanc.rst:43 ../../install_linux.rst:573
 #: ../../install_windows.rst:764
@@ -9458,6 +9459,10 @@ msgid ""
 "with systems in a comma separated list within curly brackets, as per the "
 "example below:"
 msgstr ""
+"Funktion für das extrahieren der Dosisinformation aus älteren Toshiba und GE "
+"Geräte ein- oder ausschalten und für welchen Gerätetyp dies erfolgen soll. "
+"Jedes System sollte in der Form ``{'Manufacturer', 'Model name'}`` "
+"aufgeführt werden, wie das nachstehende Beispiel zeigt:"
 
 #: ../../docker_orthanc.rst:55
 msgid "Physics Filtering"
@@ -9469,16 +9474,22 @@ msgid ""
 "it put them in the ``imports/physics/`` folder. Set it to ``\"false\"`` to "
 "disable this feature"
 msgstr ""
+"Diesen Wert auf true setzen, wenn Orthanc auch physikalische Teststudien "
+"speichern und diese im Ordner ``physics_to_keep_folder`` ablegen soll. Wird "
+"dieser Wert auf ``\"false\"`` gesetzt ist diese Funktion deaktiviert"
 
 #: ../../docker_orthanc.rst:65
 msgid ""
 "A list to check against patient name and ID to see if the images should be "
 "kept."
 msgstr ""
+"Eine Liste die mit Patientenname und ID abgeglichen wird um zu entscheiden "
+"ob die Bilder gespeichert werden sollen. Alles was mit dieser Liste "
+"übereinstimmt wird im Ordner ``physics_to_keep_folder`` abgelegt."
 
 #: ../../docker_orthanc.rst:73
 msgid "Orthanc Configuration"
-msgstr ""
+msgstr "Orthanc Konfiguration"
 
 #: ../../docker_orthanc.rst:75
 msgid ""
@@ -9536,7 +9547,7 @@ msgstr ""
 
 #: ../../docker_orthanc.rst:137
 msgid "Lua script path"
-msgstr ""
+msgstr "Pfad für Lua Skripte"
 
 #: ../../docker_orthanc.rst:139
 msgid ""
@@ -9724,7 +9735,7 @@ msgstr ""
 
 #: ../../enabling_debug_toolbar.rst:10 ../../installation.rst:3
 msgid "Installation"
-msgstr ""
+msgstr "Installation"
 
 #: ../../enabling_debug_toolbar.rst:12
 msgid "Activate the virtualenv (assuming you are using one...)"
@@ -9773,13 +9784,16 @@ msgstr ""
 
 #: ../../env_variables.rst:9
 msgid "Variables that should always be changed"
-msgstr ""
+msgstr "Variablen, die auf alle Fälle angepasst werden sollten"
 
 #: ../../env_variables.rst:11
 msgid ""
 "Set a new secret key. Create your own, or generate one by using a tool like "
 "http://www.miniwebtool.com/django-secret-key-generator/ for this:"
 msgstr ""
+"Wert für den geheimen Schlüssel festlgen. Entweder selbst erstellen oder "
+"über Tools wie http://www.miniwebtool.com/django-secret-key-generator/ "
+"generieren lassen:"
 
 #: ../../env_variables.rst:18
 msgid ""
@@ -9804,14 +9818,17 @@ msgid ""
 msgstr ""
 
 #: ../../env_variables.rst:24
+#, fuzzy
 msgid ""
 "For example: ``DJANGO_ALLOWED_HOSTS=nginx localhost 127.0.0.1 [::1] "
 "myservername``"
 msgstr ""
+"Dies sollte eine einfache Zeichenfolge sein mit Leerzeichen zwischen jedem "
+"Host. Z.B. ``DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1] myservername``"
 
 #: ../../env_variables.rst:32
 msgid "Variables to help with debugging problems"
-msgstr ""
+msgstr "Variablen, die bei Problemen bei der Fehlersuche helfen"
 
 #: ../../env_variables.rst:34
 msgid "Set to 1 to enable Django debugging mode."
@@ -9861,6 +9878,11 @@ msgid ""
 "(default) and ``1`` for True. Only one of these options should be set to "
 "``1``."
 msgstr ""
+"Die Optionen ``EMAIL_USE_TLS`` und ``EMAIL_USE_SSL`` sollten gemäß den "
+"Vorgaben zur Verschlüsselung auf dem E-Mail Server konfiguriert werden. "
+"Verwenden Sie eine ``0`` (Standard) wenn dies nicht zutrifft und ``1`` wenn "
+"dies Option verwendet werden soll. Nur jeweils eine der beiden Optionen "
+"sollte auf ``1`` gesetzt werden."
 
 #: ../../env_variables.rst:80
 msgid ""
@@ -9876,7 +9898,7 @@ msgstr ""
 
 #: ../../env_variables.rst:86
 msgid "Regionalisation"
-msgstr ""
+msgstr "Regionalisierung"
 
 #: ../../env_variables.rst:88
 msgid ""
@@ -9890,6 +9912,8 @@ msgid ""
 "Language code for this installation. All choices can be found here: http://"
 "www.i18nguy.com/unicode/language-identifiers.html"
 msgstr ""
+"Sprach-Code für die Installation. Mögliche Werte finden sich unter: http://"
+"www.i18nguy.com/unicode/language-identifiers.html"
 
 #: ../../env_variables.rst:103
 msgid ""
@@ -9902,6 +9926,8 @@ msgid ""
 "If you set this to False, Django will not format dates, numbers and "
 "calendars according to the current locale:"
 msgstr ""
+"Wird dieser Wert auf False gesetzt, wird Django die Formate für Datum, "
+"Zahlen und Kalenderdaten nicht anhand der aktuellen Lokalisierung ändern:"
 
 #: ../../env_variables.rst:115
 msgid ""
@@ -12200,7 +12226,7 @@ msgstr ""
 
 #: ../../index.rst:16
 msgid "Please see `openrem.org <https://openrem.org>`_ for more details."
-msgstr ""
+msgstr "Details finden sich unter `openrem.org <https://openrem.org>`_."
 
 #: ../../index.rst:18
 msgid ""
@@ -12302,7 +12328,7 @@ msgstr ""
 #: ../../install_linux.rst:9 ../../install_windows.rst:10
 #: ../../upgrade_linux_new_server.rst:14
 msgid "Database: PostgreSQL"
-msgstr ""
+msgstr "Datenbank: PostgreSQL"
 
 #: ../../install_linux.rst:10 ../../install_windows.rst:11
 #: ../../upgrade_linux_new_server.rst:15
@@ -12410,6 +12436,8 @@ msgid ""
 "At a later stage, to add a second administrator just add them to the "
 "``openrem`` group in the same way."
 msgstr ""
+"Zu einem späteren Zeitpunkt kann ein zweiter Administrator der ``openrem`` "
+"Gruppe auf die gleiche Weise hinzugefügt werden."
 
 #: ../../install_linux.rst:98
 msgid "**Folders**"
@@ -12446,10 +12474,11 @@ msgstr ""
 msgid ""
 "Create a virtualenv (Python local environment) in the folder we created:"
 msgstr ""
+"Eine virtualenv in dem erstellten Ordner erzeugen (lokale Python Umgebung):"
 
 #: ../../install_linux.rst:167
 msgid "Activate the virtualenv"
-msgstr ""
+msgstr "Die virtualenv aktivieren"
 
 #: ../../install_linux.rst:169
 msgid ""
@@ -12537,6 +12566,9 @@ msgid ""
 "Now create the database. Make sure you are still in the openrem python "
 "folder and the virtualenv is active — prompt will look like"
 msgstr ""
+"Jetzt die Datenbank erzeugen. Stellen Sie sicher, dass Sie sich noch im "
+"openrem python Ordner befinden und das virtualenv aktiv ist -- die "
+"Eingabeaufforderung sieht wie folgt aus"
 
 #: ../../install_linux.rst:353
 msgid ""
@@ -12594,7 +12626,7 @@ msgstr ""
 
 #: ../../install_linux.rst:491
 msgid "Load the new systemd configurations:"
-msgstr ""
+msgstr "Die neue systemd Konfiguration laden:"
 
 #: ../../install_linux.rst:497
 msgid "Set the new Gunicorn and consumer services to start on boot:"
@@ -12619,6 +12651,8 @@ msgid ""
 "You can check that NGINX and Gunicorn are running with the following two "
 "commands:"
 msgstr ""
+"Ob NGINX und Gunicorn bereit sind kann mit den folgenden zwei Befehlen "
+"überprüft werden:"
 
 #: ../../install_linux.rst:529 ../../install_windows.rst:724
 msgid "DICOM Store SCP"
@@ -12654,7 +12688,7 @@ msgstr ""
 
 #: ../../install_linux.rst:597 ../../install_windows.rst:787
 msgid "Add the Lua script to the Orthanc config:"
-msgstr ""
+msgstr "Dieses Lua Skript zur Othanc Konfiguration hinzufügen:"
 
 #: ../../install_linux.rst:608 ../../install_windows.rst:798
 msgid "Set the AE Title and port:"
@@ -12694,7 +12728,7 @@ msgstr ""
 
 #: ../../install_linux.rst:658
 msgid "New users, and quick access to physics folder"
-msgstr ""
+msgstr "Neue Nutzer, und schneller Zugriff auf den Physik-Ordner"
 
 #: ../../install_linux.rst:662
 msgid ""
@@ -12733,6 +12767,9 @@ msgid ""
 "the ``physicsimages`` link when they log in, and should be able to browse, "
 "copy and delete the zip files and folders."
 msgstr ""
+"Der neue Nutzer sollte, sobald er eingeloggt ist, jetzt durch Klicken auf "
+"``physicsimages`` Link auf den Physik-Ordner zugreifen können, die ZIP "
+"Dateien und Ordner anzeigen, kopieren und löschen können."
 
 #: ../../install_linux.rst:692
 msgid "Asciinema demo of this install"
@@ -12886,11 +12923,11 @@ msgstr ""
 
 #: ../../install_offline_docker.rst:11
 msgid "Collect installation files"
-msgstr ""
+msgstr "Zusammenstellung der Installationsdateien"
 
 #: ../../install_offline_docker.rst:13
 msgid "On a computer with internet access:"
-msgstr ""
+msgstr "Auf einem Computer mit Internetzugriff:"
 
 #: ../../install_offline_docker.rst:15
 msgid "Install Docker - this is required to download the images"
@@ -12902,7 +12939,7 @@ msgstr ""
 
 #: ../../install_offline_docker.rst:39
 msgid "Now save them as tar files:"
-msgstr ""
+msgstr "Als tar-Dateien speichern:"
 
 #: ../../install_offline_docker.rst:61
 msgid ""
@@ -12934,7 +12971,7 @@ msgstr ""
 
 #: ../../install_offline_docker.rst:101
 msgid "Check that the images have been loaded:"
-msgstr ""
+msgstr "Überprüfen ob die folgenden Images geladen sind:"
 
 #: ../../install_offline_docker.rst:107
 msgid "Continue to :ref:`dockerinstall`"
@@ -14298,7 +14335,7 @@ msgstr ""
 
 #: ../../installation.rst:6
 msgid "Installation options"
-msgstr ""
+msgstr "Installationsoptionen"
 
 #: ../../installation.rst:8
 msgid "There are three supported installation options for OpenREM v1.0:"
@@ -14390,7 +14427,7 @@ msgstr ""
 
 #: ../../installation.rst:83
 msgid "Databases"
-msgstr ""
+msgstr "Datenbanken"
 
 #: ../../installation.rst:93
 msgid "Advanced server configuration"
@@ -15980,7 +16017,7 @@ msgstr ""
 
 #: ../../release-0.7.0.rst:48
 msgid "Imports"
-msgstr ""
+msgstr "Importe"
 
 #: ../../release-0.7.0.rst:50
 msgid "Mammography RDSRs import correctly"
@@ -19253,3 +19290,8 @@ msgid ""
 "for example, copy the whole ``orthanc_1`` section in ``docker-compose.yml`` "
 "and paste it after the ``orthanc_1`` block. Rename to ``orthanc_2``"
 msgstr ""
+"Wird mehr als ein DICOM Store Server benötigt wird, oder ein "
+"unterschiedlicher Port verwendet werdn soll, kopieren Sie den gesamten "
+"``orthanc_1`` Bereich und fügen dies vor dem ``volumes`` Bereich ein. "
+"Anschliessend in ``orthanc_2`` umbenennen und die entsprechenden Änderungen "
+"für den Port durchführen."
