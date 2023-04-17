@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-04-15 23:47+0100\n"
+"POT-Creation-Date: 2023-04-17 17:57+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -7830,7 +7830,7 @@ msgid "Multiple stores"
 msgstr ""
 
 #: ../../docker_orthanc.rst:158
-msgid "If you need more than one DICOM Store server, to listen on a different port for example, copy the whole ``orthanc_1`` section in ``docker-compose.yml`` and paste it after the ``orthanc_1`` block. Rename to ``orthanc_2``"
+msgid "If you need more than one DICOM Store server, to listen on a different port for example, copy the whole ``orthanc_1`` section in ``docker-compose.yml`` and paste it after the ``orthanc_1`` block. Rename to ``orthanc_2``."
 msgstr ""
 
 #: ../../docker_orthanc.rst:161
