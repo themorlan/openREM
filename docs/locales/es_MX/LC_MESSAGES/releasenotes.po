@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-03-05 17:21+0000\n"
+"POT-Creation-Date: 2023-04-15 21:26+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -54,89 +54,139 @@ msgstr ""
 #: ../../releasenotes.rst:57
 msgid ""
 "Many people have contributed to OpenREM - either with code, "
-"documentation, bugs, examples or ideas, including:"
-msgstr ""
-
-#: ../../releasenotes.rst:59
-msgid "`BjörnAlbers <https://bitbucket.org/bjoernalbers/>`_"
+"documentation, translations, bugs, examples or ideas, including:"
 msgstr ""
 
 #: ../../releasenotes.rst:60
-msgid "`Erlend Andersen <https://bitbuckeet.org/erlend_andersen/>`_"
+msgid "`BjörnAlbers <https://bitbucket.org/bjoernalbers/>`_"
 msgstr ""
 
 #: ../../releasenotes.rst:61
-msgid "`Njål Brekke <https://bitbuckeet.org/elenhinan/>`_"
+msgid "`Erlend Andersen <https://bitbuckeet.org/erlend_andersen/>`_"
 msgstr ""
 
 #: ../../releasenotes.rst:62
-msgid "Elly Castellano"
+msgid "`Njål Brekke <https://bitbuckeet.org/elenhinan/>`_"
 msgstr ""
 
 #: ../../releasenotes.rst:63
-msgid "`Jonathan Cole <https://bitbucket.org/jacole/>`_"
+msgid "Elly Castellano"
 msgstr ""
 
 #: ../../releasenotes.rst:64
-msgid "`Jamie Dormand <https://bitbucket.org/jamiedormand/>`_"
+msgid "`Jonathan Cole <https://bitbucket.org/jacole/>`_"
 msgstr ""
 
 #: ../../releasenotes.rst:65
-msgid "`Ben Earner <https://bitbucket.org/bearner/>`_"
+msgid "`Jamie Dormand <https://bitbucket.org/jamiedormand/>`_"
 msgstr ""
 
 #: ../../releasenotes.rst:66
-msgid "`Daniel Gordon <https://bitbucket.org/dan_gordon/>`_"
+msgid "`Ben Earner <https://bitbucket.org/bearner/>`_"
 msgstr ""
 
 #: ../../releasenotes.rst:67
-msgid "`Hamid Khosravi <https://bitbucket.org/hrkhosravi/>`_"
+msgid "Louise Giansante Martins"
 msgstr ""
 
 #: ../../releasenotes.rst:68
-msgid "`Laurence King <https://bitbucket.org/LaurenceKing/>`_"
+msgid "`Daniel Gordon <https://bitbucket.org/dan_gordon/>`_"
 msgstr ""
 
 #: ../../releasenotes.rst:69
-msgid "`Eivind Larsen <https://bitbucket.org/leivind/>`_"
+msgid "`Hamid Khosravi <https://bitbucket.org/hrkhosravi/>`_"
 msgstr ""
 
 #: ../../releasenotes.rst:70
-msgid "`John Loveland <https://bitbucket.org/JLMPO/>`_"
+msgid "`Laurence King <https://bitbucket.org/LaurenceKing/>`_"
 msgstr ""
 
 #: ../../releasenotes.rst:71
-msgid "`Ed McDonagh <https://bitbucket.org/edmcdonagh/>`_"
+msgid "`Wens Kong <https://bitbucket.org/wens/>`_"
 msgstr ""
 
 #: ../../releasenotes.rst:72
-msgid "`Richard Miles <https://bitbucket.org/r89m/>`_"
+msgid "`Eivind Larsen <https://bitbucket.org/leivind/>`_"
 msgstr ""
 
 #: ../../releasenotes.rst:73
-msgid "`Luuk Oostveen <https://bitbucket.org/LuukO/>`_"
+msgid "`John Loveland <https://bitbucket.org/JLMPO/>`_"
 msgstr ""
 
 #: ../../releasenotes.rst:74
-msgid "`David Platten <https://bitbucket.org/dplatten/>`_"
+msgid "`Paolo Marcheschi <https://hosted.weblate.org/user/paolo.marcheschi/>`_"
 msgstr ""
 
 #: ../../releasenotes.rst:75
-msgid "`Richard Raynor <https://bitbucket.org/RaynorR/>`_"
+msgid "`Ed McDonagh <https://bitbucket.org/edmcdonagh/>`_"
 msgstr ""
 
 #: ../../releasenotes.rst:76
-msgid "`Erik-Jan Rijkhorst <https://bitbucket.org/rijkhorst/>`_"
+msgid "`Richard Miles <https://bitbucket.org/r89m/>`_"
 msgstr ""
 
 #: ../../releasenotes.rst:77
-msgid "`Arnold Schilham <https://bitbucket.org/asch99/>`_"
+msgid "Allan Nordhøy"
 msgstr ""
 
 #: ../../releasenotes.rst:78
+msgid "`Luuk Oostveen <https://bitbucket.org/LuukO/>`_"
+msgstr ""
+
+#: ../../releasenotes.rst:79
+msgid "`David Platten <https://bitbucket.org/dplatten/>`_"
+msgstr ""
+
+#: ../../releasenotes.rst:80
+msgid "`Richard Raynor <https://bitbucket.org/RaynorR/>`_"
+msgstr ""
+
+#: ../../releasenotes.rst:81
+msgid "`Erik-Jan Rijkhorst <https://bitbucket.org/rijkhorst/>`_"
+msgstr ""
+
+#: ../../releasenotes.rst:82
+msgid "Kevin Schärer - Kantonsspital Aarau AG"
+msgstr ""
+
+#: ../../releasenotes.rst:83
+msgid "`Arnold Schilham <https://bitbucket.org/asch99/>`_"
+msgstr ""
+
+#: ../../releasenotes.rst:84
+msgid "`Marcelo Sosa <https://hosted.weblate.org/user/Msosa/>`_"
+msgstr ""
+
+#: ../../releasenotes.rst:85
+msgid "`Georg Stamm <https://hosted.weblate.org/user/stamm.georg/>`_"
+msgstr ""
+
+#: ../../releasenotes.rst:86
+msgid "Jannis Widmer - Kantonsspital Aarau AG"
+msgstr ""
+
+#: ../../releasenotes.rst:87
 msgid "`Tim de Wit <https://bitbucket.org/tcdewit/>`_"
 msgstr ""
 
+#: ../../releasenotes.rst:88
+msgid "Daniel Wyatt"
+msgstr ""
+
+#: ../../releasenotes.rst:90
+msgid ""
+"Special thanks go to Gerd Lutters of `Kantonsspital Aarau AG "
+"<https://www.ksa.ch/zentren-kliniken/strahlenschutz-und-medizinphysik>`_ "
+"for providing ideas and and civil service computer science students to "
+"work on OpenREM (Jannis and Kevin)."
+msgstr ""
+
 #~ msgid ":doc:`release-1.0.0` (this release)"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Many people have contributed to OpenREM"
+#~ " - either with code, documentation, "
+#~ "bugs, examples or ideas, including:"
 #~ msgstr ""
 

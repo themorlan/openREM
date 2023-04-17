@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-03-05 17:21+0000\n"
+"POT-Creation-Date: 2023-04-15 21:26+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -21,19 +21,15 @@ msgstr ""
 msgid "Display names and user-defined modalities"
 msgstr ""
 
-#: ../../i_displaynames.rst:3
-msgid "*Functionality changed in 0.8.0*"
-msgstr ""
-
-#: ../../i_displaynames.rst:5
+#: ../../i_displaynames.rst:4
 msgid "Contents"
 msgstr ""
 
-#: ../../i_displaynames.rst:8
+#: ../../i_displaynames.rst:7
 msgid "The display name field"
 msgstr ""
 
-#: ../../i_displaynames.rst:10
+#: ../../i_displaynames.rst:9
 msgid ""
 "Previous versions of OpenREM used each X-ray system's DICOM ``station "
 "name`` as the identifier for each X-ray system. The front page showed a "
@@ -45,46 +41,46 @@ msgid ""
 " the system that had most recently sent data to the system."
 msgstr ""
 
-#: ../../i_displaynames.rst:19
+#: ../../i_displaynames.rst:18
 msgid ""
 "This issue has been resolved by introducing a new field called ``display "
 "name``. This is unique to each piece of X-ray equipment, based on the "
 "combination of the following eight fields:"
 msgstr ""
 
-#: ../../i_displaynames.rst:23
+#: ../../i_displaynames.rst:22
 msgid "manufacturer"
 msgstr ""
 
-#: ../../i_displaynames.rst:24
+#: ../../i_displaynames.rst:23
 msgid "institution name"
 msgstr ""
 
-#: ../../i_displaynames.rst:25
+#: ../../i_displaynames.rst:24
 msgid "station name"
 msgstr ""
 
-#: ../../i_displaynames.rst:26
+#: ../../i_displaynames.rst:25
 msgid "department name"
 msgstr ""
 
-#: ../../i_displaynames.rst:27
+#: ../../i_displaynames.rst:26
 msgid "model name"
 msgstr ""
 
-#: ../../i_displaynames.rst:28
+#: ../../i_displaynames.rst:27
 msgid "device serial number"
 msgstr ""
 
-#: ../../i_displaynames.rst:29
+#: ../../i_displaynames.rst:28
 msgid "software version"
 msgstr ""
 
-#: ../../i_displaynames.rst:30
+#: ../../i_displaynames.rst:29
 msgid "gantry id"
 msgstr ""
 
-#: ../../i_displaynames.rst:32
+#: ../../i_displaynames.rst:31
 msgid ""
 "The default text for ``display name`` is set to a combination of "
 "``institution name`` and ``station name``. The default display name text "
@@ -92,11 +88,11 @@ msgid ""
 ":ref:`changing_display_names`"
 msgstr ""
 
-#: ../../i_displaynames.rst:37
+#: ../../i_displaynames.rst:36
 msgid "User defined modality field"
 msgstr ""
 
-#: ../../i_displaynames.rst:39
+#: ../../i_displaynames.rst:38
 msgid ""
 "OpenREM determines the modality type of a system based on the information"
 " in the DICOM radiation dose structured report. However sometimes this "
@@ -106,25 +102,25 @@ msgid ""
 " automatically determined value."
 msgstr ""
 
-#: ../../i_displaynames.rst:47
+#: ../../i_displaynames.rst:46
 msgid "Viewing X-ray system display names and user defined modality"
 msgstr ""
 
-#: ../../i_displaynames.rst:54
+#: ../../i_displaynames.rst:53
 msgid "User options menu"
 msgstr ""
 
-#: ../../i_displaynames.rst:54
+#: ../../i_displaynames.rst:53
 msgid "The ``Config`` menu (user)"
 msgstr ""
 
-#: ../../i_displaynames.rst:56
+#: ../../i_displaynames.rst:55
 msgid ""
 "If you log in as a normal user then the ``Config`` menu becomes available"
 " at the right-hand end of the navigation bar at the top of the screen."
 msgstr ""
 
-#: ../../i_displaynames.rst:59
+#: ../../i_displaynames.rst:58
 msgid ""
 "The third option, ``View display names & modality``, takes you to a page "
 "where you can view the list of X-ray systems with data in OpenREM "
@@ -134,19 +130,19 @@ msgid ""
 "CT; mammography; DX and CR; fluoroscopy; and other."
 msgstr ""
 
-#: ../../i_displaynames.rst:71
+#: ../../i_displaynames.rst:70
 msgid "List of current display names"
 msgstr ""
 
-#: ../../i_displaynames.rst:71
+#: ../../i_displaynames.rst:70
 msgid "Example list of display names"
 msgstr ""
 
-#: ../../i_displaynames.rst:76
+#: ../../i_displaynames.rst:75
 msgid "Setting display name automatically for known devices"
 msgstr ""
 
-#: ../../i_displaynames.rst:78
+#: ../../i_displaynames.rst:77
 msgid ""
 "If you are a member of the ``admingroup`` you can set an option to "
 "automatically set the display name of already known devices even if one "
@@ -159,19 +155,19 @@ msgid ""
 "other parameters changed (like software version), don't tick this option."
 msgstr ""
 
-#: ../../i_displaynames.rst:89
+#: ../../i_displaynames.rst:88
 msgid "Changing X-ray system display names and user defined modality"
 msgstr ""
 
-#: ../../i_displaynames.rst:96
+#: ../../i_displaynames.rst:95
 msgid "Admin menu"
 msgstr ""
 
-#: ../../i_displaynames.rst:96
+#: ../../i_displaynames.rst:95
 msgid "The ``Config`` menu (admin)"
 msgstr ""
 
-#: ../../i_displaynames.rst:98
+#: ../../i_displaynames.rst:97
 msgid ""
 "If you wish to make changes to a display name or to the user defined "
 "modality then you must log in as a user that is in the ``admingroup``. "
@@ -179,7 +175,7 @@ msgid ""
 "the ``Config`` menu:"
 msgstr ""
 
-#: ../../i_displaynames.rst:107
+#: ../../i_displaynames.rst:106
 msgid ""
 "This will take you to a page where you can view the list of X-ray systems"
 " with data in OpenREM. If you wish to change a display name or the user "
@@ -188,15 +184,15 @@ msgid ""
 "to confirm your changes:"
 msgstr ""
 
-#: ../../i_displaynames.rst:117
+#: ../../i_displaynames.rst:116
 msgid "Update a display name"
 msgstr ""
 
-#: ../../i_displaynames.rst:117
+#: ../../i_displaynames.rst:116
 msgid "Example of the page for updating a display name and user defined modality"
 msgstr ""
 
-#: ../../i_displaynames.rst:119
+#: ../../i_displaynames.rst:118
 msgid ""
 "You can change multiple rows at once. For display names you may wish to "
 "do this if a system has a software upgrade, for example, as this will "
@@ -206,7 +202,7 @@ msgid ""
 "modality pages."
 msgstr ""
 
-#: ../../i_displaynames.rst:125
+#: ../../i_displaynames.rst:124
 msgid ""
 "If you update the user defined modality, the modality type for already "
 "imported studies will also be set to the user defined modality type. Only"
@@ -214,11 +210,11 @@ msgid ""
 "versa are possible."
 msgstr ""
 
-#: ../../i_displaynames.rst:130
+#: ../../i_displaynames.rst:129
 msgid "Dual modality systems"
 msgstr ""
 
-#: ../../i_displaynames.rst:132
+#: ../../i_displaynames.rst:131
 msgid ""
 "Some systems are dual purpose in that they can be used in both standard "
 "planar X-ray mode and in fluoroscopy mode. For these systems you can "
@@ -229,26 +225,26 @@ msgid ""
 "system will be assigned a modality in the same way."
 msgstr ""
 
-#: ../../i_displaynames.rst:138
+#: ../../i_displaynames.rst:137
 msgid ""
 "After an X-ray system has been set to Dual you may wish to reprocess the "
 "studies to assign modality again. To do this you can use the 'reprocess' "
 "link in the 'User defined modality' cell:"
 msgstr ""
 
-#: ../../i_displaynames.rst:146
+#: ../../i_displaynames.rst:145
 msgid "Reprocess Dual link"
 msgstr ""
 
-#: ../../i_displaynames.rst:146
+#: ../../i_displaynames.rst:145
 msgid "Re-sort studies into planar X-ray and fluoroscopy"
 msgstr ""
 
-#: ../../i_displaynames.rst:149
+#: ../../i_displaynames.rst:148
 msgid "Review of studies that failed to import"
 msgstr ""
 
-#: ../../i_displaynames.rst:151
+#: ../../i_displaynames.rst:150
 msgid ""
 "Studies that have failed early in the import process might not have an "
 "entry in the ``unique_equipment_name`` table, and therefore will not "
@@ -257,11 +253,11 @@ msgid ""
 ":ref:`failed_import_studies` for more details."
 msgstr ""
 
-#: ../../i_displaynames.rst:158
+#: ../../i_displaynames.rst:157
 msgid "Systems where Device Observer UID is not static"
 msgstr ""
 
-#: ../../i_displaynames.rst:160
+#: ../../i_displaynames.rst:159
 msgid ""
 "OpenREM users have found one x-ray system which incorrectly sets the "
 "Device Observer UID to be equal to the Study Instance UID. In this "
@@ -275,15 +271,18 @@ msgid ""
 "(0008,1090)."
 msgstr ""
 
-#: ../../i_displaynames.rst:171
+#: ../../i_displaynames.rst:170
 msgid "For Docker installations, this setting is in the :doc:`env_variables`."
 msgstr ""
 
-#: ../../i_displaynames.rst:172
+#: ../../i_displaynames.rst:171
 msgid "For Linux installations, see the :ref:`updatelinuxconfig` docs."
 msgstr ""
 
-#: ../../i_displaynames.rst:173
+#: ../../i_displaynames.rst:172
 msgid "For Windows installations, see the :ref:`updatewindowsconfig` docs."
 msgstr ""
+
+#~ msgid "*Functionality changed in 0.8.0*"
+#~ msgstr ""
 

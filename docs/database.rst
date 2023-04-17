@@ -2,8 +2,6 @@
 Database administration
 #######################
 
-**Document not ready for translation**
-
 ********************
 Docker installations
 ********************

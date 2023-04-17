@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-03-05 17:21+0000\n"
+"POT-Creation-Date: 2023-04-15 21:26+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -145,7 +145,7 @@ msgid "``-v, --verbose``"
 msgstr ""
 
 #: ../../i_patientsize.rst:119
-msgid "*New in 0.3.7* Print to the standard output the success or otherwise of inserting each value."
+msgid "Print to the standard output the success or otherwise of inserting each value."
 msgstr ""
 
 #: ../../i_patientsize.rst:123

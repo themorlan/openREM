@@ -1,0 +1,1052 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2013-2022, The Royal Marsden NHS Foundation Trust
+# This file is distributed under the same license as the OpenREM package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2023.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: OpenREM 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-03-05 17:21+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: pt_BR\n"
+"Language-Team: pt_BR <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.12.1\n"
+
+#: ../../charts.rst:3
+msgid "Charts"
+msgstr ""
+
+#: ../../charts.rst:5
+msgid ""
+"From OpenREM version 1.0.0+ charts use the Plotly_ open source Python "
+"library."
+msgstr ""
+
+#: ../../charts.rst:9
+msgid "Chart types"
+msgstr ""
+
+#: ../../charts.rst:11
+msgid ""
+"The charts below are examples of the types of chart included in OpenREM "
+"version 1.0.0+. The examples are fully interactive in the same way as the"
+" charts included in a live OpenREM system. The data contained in the "
+"example charts is synthetic."
+msgstr ""
+
+#: ../../charts.rst:15
+msgid ""
+"Single-clicking on a legend entry toggles the display of that series. "
+"Double-clicking on a legend entry hides all but that series; double-click"
+" again to show all series."
+msgstr ""
+
+#: ../../charts.rst:18
+msgid ""
+"Hovering the cursor over a chart causes the chart menu to appear along "
+"the top right corner. From the menu you can:"
+msgstr ""
+
+#: ../../charts.rst:20
+msgid "save a bitmap version of the chart"
+msgstr ""
+
+#: ../../charts.rst:21
+msgid "set zoom, pan and selection options"
+msgstr ""
+
+#: ../../charts.rst:22
+msgid "autoscale the chart"
+msgstr ""
+
+#: ../../charts.rst:23
+msgid "reset the axes, and also reset the  regions"
+msgstr ""
+
+#: ../../charts.rst:24
+msgid ""
+"toggle spike lines to graphically illustrate x- and y-axis data values on"
+" hover"
+msgstr ""
+
+#: ../../charts.rst:25
+msgid ""
+"choose whether to show the closest data when hovering, or to compare data"
+" on hover"
+msgstr ""
+
+#: ../../charts.rst:29
+msgid "Bar chart of average values across categories"
+msgstr ""
+
+#: ../../charts.rst:31
+msgid ""
+"These can be configured to show mean or median data. The example below "
+"shows the median DAP for each requested procedure name containing the "
+"word \"knee\" across eight x-ray rooms."
+msgstr ""
+
+#: ../../charts.rst:34 ../../charts.rst:103
+msgid ""
+"When viewing a chart of this type in OpenREM, the chart data can be "
+"downloaded as a csv file by clicking the *Download csv* button displayed "
+"below the chart. This feature is not available for the example charts in "
+"this document."
+msgstr ""
+
+#: ../../charts.rst:37 ../../charts.rst:82
+msgid "Hovering the cursor over a bar shows the:"
+msgstr ""
+
+#: ../../charts.rst:39 ../../charts.rst:57 ../../charts.rst:85
+#: ../../charts.rst:108 ../../charts.rst:134 ../../charts.rst:156
+#: ../../charts.rst:209
+msgid "x-ray room name"
+msgstr ""
+
+#: ../../charts.rst:40 ../../charts.rst:58 ../../charts.rst:84
+#: ../../charts.rst:109 ../../charts.rst:182
+msgid "requested procedure name"
+msgstr ""
+
+#: ../../charts.rst:41
+msgid "median DAP for that room and procedure"
+msgstr ""
+
+#: ../../charts.rst:42
+msgid "number of requests for that room and procedure"
+msgstr ""
+
+#: ../../charts.rst:51
+msgid "Boxplot of values across a number of categories"
+msgstr ""
+
+#: ../../charts.rst:53
+msgid ""
+"The example below shows the same data as for the bar chart above, but "
+"presented as a box plot."
+msgstr ""
+
+#: ../../charts.rst:55
+msgid "Hovering the cursor over an outlier shows the:"
+msgstr ""
+
+#: ../../charts.rst:59
+msgid "DAP of the data point"
+msgstr ""
+
+#: ../../charts.rst:61
+msgid "Hovering the cursor over the box shows the:"
+msgstr ""
+
+#: ../../charts.rst:63
+msgid "maximum value"
+msgstr ""
+
+#: ../../charts.rst:64
+msgid "minimum value"
+msgstr ""
+
+#: ../../charts.rst:65
+msgid "median"
+msgstr ""
+
+#: ../../charts.rst:66
+msgid "1st and 3rd quartiles"
+msgstr ""
+
+#: ../../charts.rst:67
+msgid "lower fence: 1rd quartile - (1.5 x interquartile range)"
+msgstr ""
+
+#: ../../charts.rst:68
+msgid "upper fence: 3rd quartile + (1.5 x interquartile range)"
+msgstr ""
+
+#: ../../charts.rst:77
+msgid "Histogram bar chart of values across categories"
+msgstr ""
+
+#: ../../charts.rst:79
+msgid ""
+"The example below shows the distribution of DAP values for the knee data "
+"used in the box and bar plots above. The number of bins used in the "
+"histograms can be configured in the `Additional chart options on the "
+"Config page`_."
+msgstr ""
+
+#: ../../charts.rst:86
+msgid "bin DAP range"
+msgstr ""
+
+#: ../../charts.rst:87
+msgid "bin DAP mid-point value"
+msgstr ""
+
+#: ../../charts.rst:88
+msgid "bin frequency"
+msgstr ""
+
+#: ../../charts.rst:97
+msgid "Bar chart of category frequency"
+msgstr ""
+
+#: ../../charts.rst:99
+msgid ""
+"The example below shows the frequency of the \"knee\" requested "
+"procedures for each x-ray room. The height of each bar is the total "
+"frequency for that requested procedure. Each bar is sub-divided into "
+"sections representing the number of requests for each x-ray room."
+msgstr ""
+
+#: ../../charts.rst:106 ../../charts.rst:132
+msgid "Hovering the cursor over a bar section shows the:"
+msgstr ""
+
+#: ../../charts.rst:110
+msgid "requested procedure frequency"
+msgstr ""
+
+#: ../../charts.rst:117
+msgid ""
+"Setting *Grouping choice* to **System names** in the `Chart options on "
+"the modality pages`_ groups the data by x-ray system name rather than "
+"requested procedure name, as shown below:"
+msgstr ""
+
+#: ../../charts.rst:127
+msgid "Scatter chart of x vs y values"
+msgstr ""
+
+#: ../../charts.rst:129
+msgid ""
+"The example below shows the average glandular dose plotted against "
+"compressed breast thickness for \"MAMMOGRAM\" acquisitions made on two "
+"x-ray systems."
+msgstr ""
+
+#: ../../charts.rst:135
+msgid "acquisition protocol name"
+msgstr ""
+
+#: ../../charts.rst:136
+msgid "compressed breast thickness"
+msgstr ""
+
+#: ../../charts.rst:137
+msgid "average glandular dose"
+msgstr ""
+
+#: ../../charts.rst:146
+msgid "Bar chart of workload"
+msgstr ""
+
+#: ../../charts.rst:148
+msgid ""
+"These show the number of studies taking place per weekday, sub-divided "
+"into hours of the day."
+msgstr ""
+
+#: ../../charts.rst:150
+msgid ""
+"There is a bar per weekday. The total height of this bar is the number of"
+" studies carried out on that weekday. Each bar is sub-divided into "
+"sections representing the number of studies carried out in each of the 24"
+" hours of that day. Each section is colour-coded according to how many "
+"studies it represents."
+msgstr ""
+
+#: ../../charts.rst:154 ../../charts.rst:179 ../../charts.rst:207
+msgid "Hovering the cursor over a section shows you the:"
+msgstr ""
+
+#: ../../charts.rst:157
+msgid "day of the week that the section represents"
+msgstr ""
+
+#: ../../charts.rst:158
+msgid "hour of the day that the section represents"
+msgstr ""
+
+#: ../../charts.rst:159
+msgid ""
+"number of studies that took place in that hour on that weekday in that "
+"x-ray room"
+msgstr ""
+
+#: ../../charts.rst:168
+msgid "Line chart of average value over time"
+msgstr ""
+
+#: ../../charts.rst:170
+msgid ""
+"These can be configured to show mean or median data. Each datapoint "
+"represents the average over a user-specified time period. This can be a "
+"day, week, month, quarter or year."
+msgstr ""
+
+#: ../../charts.rst:173
+msgid ""
+"The example below shows the median DAP for \"Head\" requests made in four"
+" CT scanners over the course of five years."
+msgstr ""
+
+#: ../../charts.rst:175
+msgid ""
+"With *Grouping choice* set to **Series item names** in the `Chart options"
+" on the modality pages`_ a sub-plot is created for each requested "
+"procedure name, each with a series per x-ray system as shown below. The "
+"*Number of charts per row* in the `Additional chart options on the Config"
+" page`_ was set to 2 for these example charts."
+msgstr ""
+
+#: ../../charts.rst:181
+msgid "scanner name"
+msgstr ""
+
+#: ../../charts.rst:183
+msgid "date"
+msgstr ""
+
+#: ../../charts.rst:184
+msgid "average DLP value"
+msgstr ""
+
+#: ../../charts.rst:185
+msgid "number of requests included in the sample"
+msgstr ""
+
+#: ../../charts.rst:192
+msgid ""
+"Setting *Grouping choice* to **System names** in the `Chart options on "
+"the modality pages`_ changes the grouping. Now a sub-plot is created for "
+"each x-ray system, each with a series per requested procedure name, as "
+"shown below:"
+msgstr ""
+
+#: ../../charts.rst:202
+msgid "Bar chart of average value against another binned value across categories"
+msgstr ""
+
+#: ../../charts.rst:204
+msgid ""
+"These can be configured to show mean or median data. The example below "
+"shows the median average glandular dose from \"MAMMOGRAM\" protocol "
+"exposures plotted against compressed breast thickness bins. The data is "
+"from two x-ray systems."
+msgstr ""
+
+#: ../../charts.rst:210
+msgid "acquisition protocol"
+msgstr ""
+
+#: ../../charts.rst:211
+msgid "average AGD value"
+msgstr ""
+
+#: ../../charts.rst:212
+msgid "number of acquisitions included in the sample"
+msgstr ""
+
+#: ../../charts.rst:213
+msgid "compressed breast thickness bin range"
+msgstr ""
+
+#: ../../charts.rst:222
+msgid "Chart options on the modality pages"
+msgstr ""
+
+#: ../../charts.rst:225 ../../charts.rst:256 ../../charts.rst:292
+msgid "Name"
+msgstr ""
+
+#: ../../charts.rst:225 ../../charts.rst:256
+msgid "Configuration options"
+msgstr ""
+
+#: ../../charts.rst:225 ../../charts.rst:256
+msgid "Notes"
+msgstr ""
+
+#: ../../charts.rst:227
+msgid "Average plots"
+msgstr ""
+
+#: ../../charts.rst:227
+msgid "Any combination of **mean**, |br| **median** or **boxplot**"
+msgstr ""
+
+#: ../../charts.rst:230
+msgid "Time period"
+msgstr ""
+
+#: ../../charts.rst:230
+msgid "One of **day**, **week**, **month**, |br| **quarter** or **year**"
+msgstr ""
+
+#: ../../charts.rst:230
+msgid "Applies to over-time charts"
+msgstr ""
+
+#: ../../charts.rst:233
+msgid "Grouping choice"
+msgstr ""
+
+#: ../../charts.rst:233
+msgid "**System names** or |br| **Series item names**"
+msgstr ""
+
+#: ../../charts.rst:233
+msgid ""
+"**System names** groups by x-ray system |br| **Series item names** groups"
+" by each category"
+msgstr ""
+
+#: ../../charts.rst:236
+msgid "Plot a series per system"
+msgstr ""
+
+#: ../../charts.rst:236 ../../charts.rst:238 ../../charts.rst:246
+#: ../../charts.rst:260 ../../charts.rst:263 ../../charts.rst:266
+msgid "**On** or **off**"
+msgstr ""
+
+#: ../../charts.rst:236
+msgid "Splits the data by x-ray system"
+msgstr ""
+
+#: ../../charts.rst:238
+msgid "Calculate histogram data"
+msgstr ""
+
+#: ../../charts.rst:238
+msgid "Calculate histograms for average bar charts"
+msgstr ""
+
+#: ../../charts.rst:240
+msgid "Chart sorting"
+msgstr ""
+
+#: ../../charts.rst:240
+msgid "One of **name**, **frequency** |br| or **value**"
+msgstr ""
+
+#: ../../charts.rst:240
+msgid "Sort the chart data according to the |br| selected choice"
+msgstr ""
+
+#: ../../charts.rst:243
+msgid "Sorting direction"
+msgstr ""
+
+#: ../../charts.rst:243
+msgid "**Ascending** or |br| **descending**"
+msgstr ""
+
+#: ../../charts.rst:243
+msgid "Sets the sort direction"
+msgstr ""
+
+#: ../../charts.rst:246
+msgid "Split plots by physician"
+msgstr ""
+
+#: ../../charts.rst:246
+msgid "Calculate a series per physician |br| (*some fluoroscopy charts only*)"
+msgstr ""
+
+#: ../../charts.rst:253
+msgid "Additional chart options on the Config page"
+msgstr ""
+
+#: ../../charts.rst:258
+msgid "Number of histogram bins"
+msgstr ""
+
+#: ../../charts.rst:258
+msgid "Value in the range 2 - 40"
+msgstr ""
+
+#: ../../charts.rst:258
+msgid "Default is 10"
+msgstr ""
+
+#: ../../charts.rst:260
+msgid "Fixed histogram bins across sub-plots"
+msgstr ""
+
+#: ../../charts.rst:260
+msgid "Forces all histogram sub-plots |br| to use the same bins"
+msgstr ""
+
+#: ../../charts.rst:263
+msgid "Case-insensitive categories"
+msgstr ""
+
+#: ../../charts.rst:263
+msgid ""
+"Category names forced to lowercase |br| For example, \"Chest PA\" becomes"
+" \"chest pa\""
+msgstr ""
+
+#: ../../charts.rst:266
+msgid "Remove category whitespace padding"
+msgstr ""
+
+#: ../../charts.rst:266
+msgid ""
+"Removes spaces at beginning and end of category |br| names, replaces "
+"multiple spaces with single spaces |br| For example, \" Chest   PA \" "
+"becomes \"Chest PA\""
+msgstr ""
+
+#: ../../charts.rst:270
+msgid "Colour map choice"
+msgstr ""
+
+#: ../../charts.rst:270
+msgid "One of the available |br| matplotlib colour maps"
+msgstr ""
+
+#: ../../charts.rst:270
+msgid "See the `available colourmaps`_ section"
+msgstr ""
+
+#: ../../charts.rst:273
+msgid "Chart theme"
+msgstr ""
+
+#: ../../charts.rst:273
+msgid ""
+"One of **Plotly**, **Plotly white**, |br| **Plotly dark**, "
+"**presentation**, |br| **ggplot2**, **Seaborn** or |br| **simple white**"
+msgstr ""
+
+#: ../../charts.rst:273
+msgid ""
+"Set the Plotly theme to use for the charts. |br| Some `example themed "
+"charts`_ are provided below. |br| Examples of all themes on the Plotly "
+"themes_ |br| page (external link)."
+msgstr ""
+
+#: ../../charts.rst:281
+msgid "Number of charts per row"
+msgstr ""
+
+#: ../../charts.rst:281
+msgid "Value in the range 1 - 10"
+msgstr ""
+
+#: ../../charts.rst:281
+msgid "Sets the number of sub-plots in each row"
+msgstr ""
+
+#: ../../charts.rst:289
+msgid "Available colourmaps"
+msgstr ""
+
+#: ../../charts.rst:292
+msgid "Swatch"
+msgstr ""
+
+#: ../../charts.rst:294
+msgid "Red yellow blue"
+msgstr ""
+
+#: ../../charts.rst:296
+msgid "Spectral"
+msgstr ""
+
+#: ../../charts.rst:298
+msgid "Pink yellow green"
+msgstr ""
+
+#: ../../charts.rst:300
+msgid "Purple green"
+msgstr ""
+
+#: ../../charts.rst:302
+msgid "Brown green"
+msgstr ""
+
+#: ../../charts.rst:304
+msgid "Purple orange"
+msgstr ""
+
+#: ../../charts.rst:306
+msgid "Red blue"
+msgstr ""
+
+#: ../../charts.rst:308
+msgid "Red grey"
+msgstr ""
+
+#: ../../charts.rst:310
+msgid "Yellow green blue"
+msgstr ""
+
+#: ../../charts.rst:312
+msgid "Yellow orange brown"
+msgstr ""
+
+#: ../../charts.rst:314
+msgid "Hot"
+msgstr ""
+
+#: ../../charts.rst:316
+msgid "Inferno"
+msgstr ""
+
+#: ../../charts.rst:318
+msgid "Magma"
+msgstr ""
+
+#: ../../charts.rst:320
+msgid "Plasma"
+msgstr ""
+
+#: ../../charts.rst:322
+msgid "Viridis"
+msgstr ""
+
+#: ../../charts.rst:324
+msgid "Cividis"
+msgstr ""
+
+#: ../../charts.rst:332
+msgid "Some available themes"
+msgstr ""
+
+#: ../../charts.rst:334
+msgid ""
+"The example `Chart types`_ at the top of this document use the default "
+"Plotly theme. Below are some examples of other available themes."
+msgstr ""
+
+#: ../../charts.rst:339
+msgid "Plotly dark"
+msgstr ""
+
+#: ../../charts.rst:348
+msgid "Presentation"
+msgstr ""
+
+#: ../../charts.rst:357
+msgid "Simple white"
+msgstr ""
+
+#: ../../charts.rst:366
+msgid "Available CT charts"
+msgstr ""
+
+#: ../../charts.rst:369 ../../charts.rst:432 ../../charts.rst:487
+#: ../../charts.rst:517 ../../charts.rst:551
+msgid "Chart name"
+msgstr ""
+
+#: ../../charts.rst:369 ../../charts.rst:432 ../../charts.rst:487
+#: ../../charts.rst:517 ../../charts.rst:551
+msgid "Chart type"
+msgstr ""
+
+#: ../../charts.rst:371 ../../charts.rst:434 ../../charts.rst:519
+msgid "Acquisition frequency"
+msgstr ""
+
+#: ../../charts.rst:371 ../../charts.rst:434 ../../charts.rst:519
+msgid "Bar chart of acquisition protocol frequency"
+msgstr ""
+
+#: ../../charts.rst:373
+msgid "Acquisition DLP"
+msgstr ""
+
+#: ../../charts.rst:373
+msgid ""
+"Bar chart of average DLP per acquisition protocol |br| Boxplot with data "
+"point per acquisition protocol |br| Histograms also plotted if *Calculate"
+" histogram data* **on**"
+msgstr ""
+
+#: ../../charts.rst:377
+msgid "Acquisition CTDI\\ :sub:`vol`"
+msgstr ""
+
+#: ../../charts.rst:377
+msgid ""
+"Bar chart of average CTDI\\ :sub:`vol` per acquisition protocol |br| "
+"Boxplot with data point per acquisition protocol |br| Histograms also "
+"plotted if *Calculate histogram data* **on**"
+msgstr ""
+
+#: ../../charts.rst:381
+msgid "Acquisition DLP over time"
+msgstr ""
+
+#: ../../charts.rst:381
+msgid "Line chart of average DLP over time |br| for each acquisition protocol"
+msgstr ""
+
+#: ../../charts.rst:384
+msgid "Acquisition CTDI\\ :sub:`vol` over time"
+msgstr ""
+
+#: ../../charts.rst:384
+msgid ""
+"Line chart of average CTDI\\ :sub:`vol` over time |br| for each "
+"acquisition protocol"
+msgstr ""
+
+#: ../../charts.rst:387
+msgid "Acquisition DLP vs mass"
+msgstr ""
+
+#: ../../charts.rst:387
+msgid "Scatter chart of DLP vs patient mass for each acquisition protocol"
+msgstr ""
+
+#: ../../charts.rst:389
+msgid "Acquisition CTDI\\ :sub:`vol` vs mass"
+msgstr ""
+
+#: ../../charts.rst:389
+msgid ""
+"Scatter chart of CTDI\\ :sub:`vol` vs patient mass for each |br| "
+"acquisition protocol"
+msgstr ""
+
+#: ../../charts.rst:392 ../../charts.rst:460 ../../charts.rst:489
+#: ../../charts.rst:553
+msgid "Study frequency"
+msgstr ""
+
+#: ../../charts.rst:392 ../../charts.rst:460 ../../charts.rst:489
+#: ../../charts.rst:553
+msgid "Bar chart of study description frequency"
+msgstr ""
+
+#: ../../charts.rst:394
+msgid "Study DLP"
+msgstr ""
+
+#: ../../charts.rst:394
+msgid ""
+"Bar chart of average DLP per study description |br| Boxplot with data "
+"point per study description |br| Histograms also plotted if *Calculate "
+"histogram data* **on**"
+msgstr ""
+
+#: ../../charts.rst:398
+msgid "Study CTDI\\ :sub:`vol`"
+msgstr ""
+
+#: ../../charts.rst:398
+msgid ""
+"Bar chart of average CTDI\\ :sub:`vol` per study description |br| Boxplot"
+" with data point per study description |br| Histograms also plotted if "
+"*Calculate histogram data* **on**"
+msgstr ""
+
+#: ../../charts.rst:402
+msgid "Study events"
+msgstr ""
+
+#: ../../charts.rst:402
+msgid ""
+"Bar chart of average number of radiation events per study description "
+"|br| Boxplot with data point per study description |br| Histograms also "
+"plotted if *Calculate histogram data* **on**"
+msgstr ""
+
+#: ../../charts.rst:406
+msgid "Study DLP over time"
+msgstr ""
+
+#: ../../charts.rst:406 ../../charts.rst:422
+msgid "Line chart of average DLP over time |br| for each study description"
+msgstr ""
+
+#: ../../charts.rst:409 ../../charts.rst:468 ../../charts.rst:498
+#: ../../charts.rst:542
+msgid "Study workload"
+msgstr ""
+
+#: ../../charts.rst:409 ../../charts.rst:468 ../../charts.rst:498
+#: ../../charts.rst:542
+msgid ""
+"Bar chart of number of studies carried out on each day of the |br| week, "
+"with each bar sub-divided into hours of the day"
+msgstr ""
+
+#: ../../charts.rst:412 ../../charts.rst:471 ../../charts.rst:501
+msgid "Requested procedure frequency"
+msgstr ""
+
+#: ../../charts.rst:412 ../../charts.rst:471 ../../charts.rst:501
+msgid "Bar chart of requested procedure name frequency"
+msgstr ""
+
+#: ../../charts.rst:414
+msgid "Requested procedure DLP"
+msgstr ""
+
+#: ../../charts.rst:414
+msgid ""
+"Bar chart of average DLP per requested procedure name |br| Boxplot with "
+"data point per study description |br| Histograms also plotted if "
+"*Calculate histogram data* **on**"
+msgstr ""
+
+#: ../../charts.rst:418
+msgid "Requested procedure events"
+msgstr ""
+
+#: ../../charts.rst:418
+msgid ""
+"Bar chart of average number of radiation events per requested procedure "
+"name |br| Boxplot with data point per study description |br| Histograms "
+"also plotted if *Calculate histogram data* **on**"
+msgstr ""
+
+#: ../../charts.rst:422
+msgid "Requested procedure DLP over time"
+msgstr ""
+
+#: ../../charts.rst:429
+msgid "Available radiographic charts"
+msgstr ""
+
+#: ../../charts.rst:436
+msgid "Acquisition DAP"
+msgstr ""
+
+#: ../../charts.rst:436
+msgid ""
+"Bar chart of average DAP per acquisition protocol |br| Boxplot with data "
+"point per acquisition protocol |br| Histograms also plotted if *Calculate"
+" histogram data* **on**"
+msgstr ""
+
+#: ../../charts.rst:440
+msgid "Acquisition mAs"
+msgstr ""
+
+#: ../../charts.rst:440
+msgid ""
+"Bar chart of average mAs per acquisition protocol |br| Boxplot with data "
+"point per acquisition protocol |br| Histograms also plotted if *Calculate"
+" histogram data* **on**"
+msgstr ""
+
+#: ../../charts.rst:444
+msgid "Acquisition kVp"
+msgstr ""
+
+#: ../../charts.rst:444
+msgid ""
+"Bar chart of average kVp per acquisition protocol |br| Boxplot with data "
+"point per acquisition protocol |br| Histograms also plotted if *Calculate"
+" histogram data* **on**"
+msgstr ""
+
+#: ../../charts.rst:448
+msgid "Acquisition DAP over time"
+msgstr ""
+
+#: ../../charts.rst:448
+msgid "Line chart of average DAP over time |br| for each acquisition protocol"
+msgstr ""
+
+#: ../../charts.rst:451
+msgid "Acquisition mAs over time"
+msgstr ""
+
+#: ../../charts.rst:451
+msgid "Line chart of average mAs over time |br| for each acquisition protocol"
+msgstr ""
+
+#: ../../charts.rst:454
+msgid "Acquisition kVp over time"
+msgstr ""
+
+#: ../../charts.rst:454
+msgid "Line chart of average kVp over time |br| for each acquisition protocol"
+msgstr ""
+
+#: ../../charts.rst:457
+msgid "Acquisition DAP vs mass"
+msgstr ""
+
+#: ../../charts.rst:457
+msgid "Scatter chart of DAP vs patient mass |br| for each acquisition protocol"
+msgstr ""
+
+#: ../../charts.rst:462 ../../charts.rst:491
+msgid "Study DAP"
+msgstr ""
+
+#: ../../charts.rst:462 ../../charts.rst:491
+msgid ""
+"Bar chart of average DAP per study description |br| Boxplot with data "
+"point per study description |br| Histograms also plotted if *Calculate "
+"histogram data* **on**"
+msgstr ""
+
+#: ../../charts.rst:466
+msgid "Study DAP vs mass"
+msgstr ""
+
+#: ../../charts.rst:466
+msgid "Scatter chart of DAP vs patient mass for each study description"
+msgstr ""
+
+#: ../../charts.rst:473 ../../charts.rst:503
+msgid "Requested procedure DAP"
+msgstr ""
+
+#: ../../charts.rst:473 ../../charts.rst:503
+msgid ""
+"Bar chart of average DAP per requested procedure name |br| Boxplot with "
+"data point per study description |br| Histograms also plotted if "
+"*Calculate histogram data* **on**"
+msgstr ""
+
+#: ../../charts.rst:477
+msgid "Requested procedure DAP vs mass"
+msgstr ""
+
+#: ../../charts.rst:477
+msgid ""
+"Scatter chart of DAP vs patient mass |br| for each requested procedure "
+"name"
+msgstr ""
+
+#: ../../charts.rst:484
+msgid "Available fluoroscopy charts"
+msgstr ""
+
+#: ../../charts.rst:495
+msgid "Study DAP over time"
+msgstr ""
+
+#: ../../charts.rst:495 ../../charts.rst:507
+msgid "Line chart of average DAP over time |br| for each study description"
+msgstr ""
+
+#: ../../charts.rst:507
+msgid "Requested procedure DAP over time"
+msgstr ""
+
+#: ../../charts.rst:514
+msgid "Available mammography charts"
+msgstr ""
+
+#: ../../charts.rst:521
+msgid "Acquisition AGD"
+msgstr ""
+
+#: ../../charts.rst:521
+msgid ""
+"Bar chart of average AGDP per acquisition protocol |br| Boxplot with data"
+" point per acquisition protocol |br| Histograms also plotted if "
+"*Calculate histogram data* **on**"
+msgstr ""
+
+#: ../../charts.rst:525
+msgid "Acquisition average AGD vs thickness"
+msgstr ""
+
+#: ../../charts.rst:525
+msgid ""
+"Bar chart of average AGD for each of the following nine compressed |br| "
+"breast thickness bands: |br| min ≤ x < 20; 20 ≤ x < 30; 30 ≤ x < 40; 40 ≤"
+" x < 50; 50 ≤ x < 60; |br| 60 ≤ x < 70; 70 ≤ x < 80; 80 ≤ x < 90; 90 ≤ x "
+"< max"
+msgstr ""
+
+#: ../../charts.rst:530
+msgid "Acquisition AGD over time"
+msgstr ""
+
+#: ../../charts.rst:530
+msgid "Line chart of average AGD over time |br| for each acquisition protocol"
+msgstr ""
+
+#: ../../charts.rst:533
+msgid "Acquisition AGD vs thickness"
+msgstr ""
+
+#: ../../charts.rst:533
+msgid ""
+"Scatter chart of AGD vs compressed breast thickness |br| for each "
+"acquisition protocol"
+msgstr ""
+
+#: ../../charts.rst:536
+msgid "Acquisition mAs vs thickness"
+msgstr ""
+
+#: ../../charts.rst:536
+msgid ""
+"Scatter chart of mAs vs compressed breast thickness |br| for each "
+"acquisition protocol"
+msgstr ""
+
+#: ../../charts.rst:539
+msgid "Acquisition kVp vs thickness"
+msgstr ""
+
+#: ../../charts.rst:539
+msgid ""
+"Scatter chart of kVp vs compressed breast thickness |br| for each "
+"acquisition protocol"
+msgstr ""
+
+#: ../../charts.rst:548
+msgid "Available nuclear medicine charts"
+msgstr ""
+
+#: ../../charts.rst:555
+msgid "Study description workload"
+msgstr ""
+
+#: ../../charts.rst:555
+msgid ""
+"Bar chart of number of studies carried out on each |br| day of the  week,"
+" with each bar sub-divided |br| into hours of the day"
+msgstr ""
+
+#: ../../charts.rst:559
+msgid "Injected dose per study"
+msgstr ""
+
+#: ../../charts.rst:559
+msgid ""
+"Bar chart or boxplot of average injected dose per |br| study description."
+" If calculate histogram is |br| enabled creates a histogram of injected "
+"dose"
+msgstr ""
+
+#: ../../charts.rst:563
+msgid "Injected dose over time"
+msgstr ""
+
+#: ../../charts.rst:563
+msgid "Bar chart or boxplot of injected dose per study |br| description over time"
+msgstr ""
+
+#: ../../charts.rst:566
+msgid "Injected dose over weight"
+msgstr ""
+
+#: ../../charts.rst:566
+msgid "Show a scatter plot of injected dose versus |br| patient weight"
+msgstr ""
+

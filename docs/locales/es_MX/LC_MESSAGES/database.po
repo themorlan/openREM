@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-03-05 17:21+0000\n"
+"POT-Creation-Date: 2023-04-15 21:26+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: es_MX\n"
@@ -23,43 +23,39 @@ msgstr ""
 msgid "Database administration"
 msgstr ""
 
-#: ../../database.rst:5
-msgid "**Document not ready for translation**"
-msgstr ""
-
-#: ../../database.rst:9
+#: ../../database.rst:7
 msgid "Docker installations"
 msgstr ""
 
-#: ../../database.rst:12 ../../database.rst:134 ../../database.rst:188
+#: ../../database.rst:10 ../../database.rst:132 ../../database.rst:186
 msgid "Database backup"
 msgstr ""
 
-#: ../../database.rst:14
+#: ../../database.rst:12
 msgid "Open a shell (command prompt) in the Docker folder"
 msgstr ""
 
-#: ../../database.rst:20 ../../database.rst:146
+#: ../../database.rst:18 ../../database.rst:144
 msgid ""
 "To automate a regular backup (**recommended**) adapt the following "
 "command in a bash script:"
 msgstr ""
 
-#: ../../database.rst:28
+#: ../../database.rst:26
 msgid "or powershell script:"
 msgstr ""
 
-#: ../../database.rst:35
+#: ../../database.rst:33
 msgid ""
 "You will need to ensure the backups are either regularly deleted/moved, "
 "or overwritten so that the backups don't fill the disk."
 msgstr ""
 
-#: ../../database.rst:39 ../../database.rst:157 ../../database.rst:208
+#: ../../database.rst:37 ../../database.rst:155 ../../database.rst:206
 msgid "Database restore"
 msgstr ""
 
-#: ../../database.rst:41
+#: ../../database.rst:39
 msgid ""
 "To restore a database backup to a new Docker container, install using the"
 " :doc:`installation` instructions and bring the containers up, but don't "
@@ -67,182 +63,185 @@ msgid ""
 "a duplicate server on a different system for testing or other purposes."
 msgstr ""
 
-#: ../../database.rst:45
+#: ../../database.rst:43
 msgid ""
 "Requires exactly the same version of OpenREM to be installed as the "
 "database was exported from"
 msgstr ""
 
-#: ../../database.rst:46
+#: ../../database.rst:44
 msgid ""
 "Copy the database backup to the ``db_backup/`` folder of the new install "
 "(the name is assumed to be ``openremdump.bak``, change as necessary)"
 msgstr ""
 
-#: ../../database.rst:48
+#: ../../database.rst:46
 msgid ""
 "Open a shell (command prompt) in the new install folder (where ``docker-"
 "compose.yml`` is)"
 msgstr ""
 
-#: ../../database.rst:54
+#: ../../database.rst:52
 msgid "You may get an error about the public schema, this is normal."
 msgstr ""
 
-#: ../../database.rst:56
+#: ../../database.rst:54
 msgid "Get the database ready and set up Django:"
 msgstr ""
 
-#: ../../database.rst:78
+#: ../../database.rst:76
 msgid "The OpenREM server should now be ready to use again."
 msgstr ""
 
-#: ../../database.rst:81
+#: ../../database.rst:79
 msgid "Advanced"
 msgstr ""
 
-#: ../../database.rst:83
+#: ../../database.rst:81
 msgid ""
 "These methods should not be required in normal use; only do this if you "
 "know what you are doing!"
 msgstr ""
 
-#: ../../database.rst:86
+#: ../../database.rst:84
 msgid "psql"
 msgstr ""
 
-#: ../../database.rst:88
+#: ../../database.rst:86
 msgid "Start the PostgreSQL console:"
 msgstr ""
 
-#: ../../database.rst:106
+#: ../../database.rst:104
 msgid "pgAdmin or other PostgreSQL connections"
 msgstr ""
 
-#: ../../database.rst:108
+#: ../../database.rst:106
 msgid ""
 "To access the database directly by pgAdmin or other software, the ports "
 "must be exposed."
 msgstr ""
 
-#: ../../database.rst:110
+#: ../../database.rst:108
 msgid "Edit ``docker-compose.yml`` to add the ports:"
 msgstr ""
 
-#: ../../database.rst:118
+#: ../../database.rst:116
 msgid ""
 "If you have a database already running on the host machine, this port "
 "will prevent the container starting. In this case, change the first "
 "number in the pair to an alternative port."
 msgstr ""
 
-#: ../../database.rst:120
+#: ../../database.rst:118
 msgid ""
 "The service will be accessible on the host machine after the containers "
 "are taken down and up again:"
 msgstr ""
 
-#: ../../database.rst:129
+#: ../../database.rst:127
 msgid "Linux installations"
 msgstr ""
 
-#: ../../database.rst:136 ../../database.rst:190
+#: ../../database.rst:134 ../../database.rst:188
 msgid ""
 "Check the database username and change in the command below as necessary "
 "(``openremuser``)"
 msgstr ""
 
-#: ../../database.rst:137 ../../database.rst:191
+#: ../../database.rst:135 ../../database.rst:189
 msgid ""
 "Check the database name and change in the command below as necessary "
 "(``openremdb``)"
 msgstr ""
 
-#: ../../database.rst:138 ../../database.rst:192
+#: ../../database.rst:136 ../../database.rst:190
 msgid "You will need the password for ``openremuser``"
 msgstr ""
 
-#: ../../database.rst:140 ../../database.rst:195
+#: ../../database.rst:138 ../../database.rst:193
 msgid "Ad hoc:"
 msgstr ""
 
-#: ../../database.rst:159
+#: ../../database.rst:157
 msgid ""
 "Requires the same version of OpenREM to be installed as the database was "
 "exported from, unless you are :doc:`upgrade_linux` or "
 ":doc:`upgrade_linux_new_server`."
 msgstr ""
 
-#: ../../database.rst:161
+#: ../../database.rst:159
 msgid ""
 "Username can be changed on restore by specifying the new user in the "
 "restore command. The user must exist in PostgreSQL though - ``sudo -u "
 "postgres createuser -P openremuser`` if required"
 msgstr ""
 
-#: ../../database.rst:163
+#: ../../database.rst:161
 msgid "``openrem/remapp/migrations/`` should be empty except ``__init__.py``"
 msgstr ""
 
-#: ../../database.rst:170
+#: ../../database.rst:168
 msgid ""
 "Update the ``local_settings.py`` file with the new database details, as "
 "per :ref:`updatelinuxconfig`"
 msgstr ""
 
-#: ../../database.rst:171
+#: ../../database.rst:169
 msgid ""
 "Set up the new database with Django/OpenREM after activating the "
 "virtualenv and moving to the ``site-packages/openrem`` folder:"
 msgstr ""
 
-#: ../../database.rst:185
+#: ../../database.rst:183
 msgid "Windows installations"
 msgstr ""
 
-#: ../../database.rst:193
+#: ../../database.rst:191
 msgid ""
 "You will need to edit the command for the path to ``pg_dump.exe`` - the "
 "``14`` is likely to be a lower number"
 msgstr ""
 
-#: ../../database.rst:201
+#: ../../database.rst:199
 msgid ""
 "To automate a regular backup (**recommended**) adapt the following "
 "command in a bat script:"
 msgstr ""
 
-#: ../../database.rst:205
+#: ../../database.rst:203
 msgid "Content to be added!"
 msgstr ""
 
-#: ../../database.rst:210
+#: ../../database.rst:208
 msgid ""
 "Requires the same version of OpenREM to be installed as the database was "
 "exported from, unless you are :doc:`upgrade_windows` or "
 ":doc:`upgrade_windows_new_server`."
 msgstr ""
 
-#: ../../database.rst:212
+#: ../../database.rst:210
 msgid ""
 "Username can be changed on restore by specifying the new user in the "
 "restore command. The user must exist in PostgreSQL though - create the "
 "user in pgAdmin if required"
 msgstr ""
 
-#: ../../database.rst:214
+#: ../../database.rst:212
 msgid "``openrem\\remapp\\migrations\\`` should be empty except ``__init__.py``"
 msgstr ""
 
-#: ../../database.rst:220
+#: ../../database.rst:218
 msgid ""
 "Update the ``local_settings.py`` file with the new database details, as "
 "per :ref:`updatewindowsconfig`"
 msgstr ""
 
-#: ../../database.rst:221
+#: ../../database.rst:219
 msgid ""
 "Set up the new database with Django/OpenREM after activating the "
 "virtualenv and moving to the ``site-packages\\openrem`` folder:"
 msgstr ""
+
+#~ msgid "**Document not ready for translation**"
+#~ msgstr ""
 

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-03-05 17:21+0000\n"
+"POT-Creation-Date: 2023-04-15 21:26+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: de\n"
@@ -23,55 +23,51 @@ msgstr ""
 msgid "Task management"
 msgstr ""
 
-#: ../../task-management.rst:3
-msgid "*New in 0.9*"
-msgstr ""
-
-#: ../../task-management.rst:5
+#: ../../task-management.rst:4
 msgid "Contents"
 msgstr ""
 
-#: ../../task-management.rst:8
+#: ../../task-management.rst:7
 msgid "Viewing task and service statuses"
 msgstr ""
 
-#: ../../task-management.rst:15
+#: ../../task-management.rst:14
 msgid "Config options"
 msgstr ""
 
-#: ../../task-management.rst:15
-msgid "Figure 1: The ``Config`` menu (user and admin)"
+#: ../../task-management.rst:14
+msgid "Figure 1: The ``Tasks`` menu"
 msgstr ""
 
-#: ../../task-management.rst:17
+#: ../../task-management.rst:16
 msgid ""
-"Users who are logged in with admin rights can use the **Config** menu and"
-" choose **Tasks** to see the following:"
+"Users who are logged in with admin rights can use the **Tasks** menu and "
+"choose **All tasks** to see the following:"
 msgstr ""
 
-#: ../../task-management.rst:19
+#: ../../task-management.rst:18
 msgid "A list of the tasks currently being executed"
 msgstr ""
 
-#: ../../task-management.rst:20
+#: ../../task-management.rst:19
 msgid ""
-"A list of previous tasks and their final status. If any errors occured "
+"A list of previous tasks and their final status. If any errors occurred "
 "they will be displayed here."
 msgstr ""
 
-#: ../../task-management.rst:27
+#: ../../task-management.rst:26
 msgid "Task and service status"
 msgstr ""
 
-#: ../../task-management.rst:27
+#: ../../task-management.rst:26
 msgid "Figure 2: The task administration page"
 msgstr ""
 
-#: ../../task-management.rst:30
+#: ../../task-management.rst:29
 msgid "Terminating running tasks"
 msgstr ""
 
-#: ../../task-management.rst:32
+#: ../../task-management.rst:31
 msgid ""
 "It is possible to terminate any active tasks by clicking the red button. "
 "**There is no confirmation step**. Note that this immediately interrupts "
@@ -82,7 +78,7 @@ msgid ""
 "use this only as a last resort."
 msgstr ""
 
-#: ../../task-management.rst:38
+#: ../../task-management.rst:37
 msgid ""
 "A note on move: executing a move will create a task which then produces "
 "import tasks for all the studies it should import. This means if you "
@@ -90,11 +86,11 @@ msgid ""
 "and not the import tasks started by that process!"
 msgstr ""
 
-#: ../../task-management.rst:43
+#: ../../task-management.rst:42
 msgid "Configuring the size of task history"
 msgstr ""
 
-#: ../../task-management.rst:45
+#: ../../task-management.rst:44
 msgid ""
 "The status of 2000 active, recent and older tasks are stored in the "
 "OpenREM database. This limit can be altered by users who are logged in "
@@ -103,4 +99,23 @@ msgid ""
 "value it can cause the web browser to run out of memory when trying to "
 "view the **Task** page due to the large number of rows in the tables."
 msgstr ""
+
+#~ msgid "*New in 0.9*"
+#~ msgstr ""
+
+#~ msgid "Figure 1: The ``Config`` menu (user and admin)"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Users who are logged in with admin"
+#~ " rights can use the **Config** menu"
+#~ " and choose **Tasks** to see the "
+#~ "following:"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "A list of previous tasks and their"
+#~ " final status. If any errors occured"
+#~ " they will be displayed here."
+#~ msgstr ""
 

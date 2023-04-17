@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-03-05 17:21+0000\n"
+"POT-Creation-Date: 2023-04-15 21:26+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: es_MX\n"
@@ -108,11 +108,15 @@ msgstr ""
 msgid "Notepad++"
 msgstr ""
 
-#: ../../install_offline.rst:42
+#: ../../install_offline.rst:40
+msgid "WinSW"
+msgstr ""
+
+#: ../../install_offline.rst:43
 msgid "Download Python packages from PyPI"
 msgstr ""
 
-#: ../../install_offline.rst:44
+#: ../../install_offline.rst:45
 msgid ""
 "In a console, navigate to a suitable place and create an empty directory "
 "to collect all the packages in, then use ``pip`` to download them all - "
@@ -120,19 +124,19 @@ msgid ""
 "internet access to download the packages, ideally Python 3.10:"
 msgstr ""
 
-#: ../../install_offline.rst:56
+#: ../../install_offline.rst:57
 msgid "Copy everything to the Server"
 msgstr ""
 
-#: ../../install_offline.rst:58
+#: ../../install_offline.rst:59
 msgid "Copy this directory plus the binaries to the offline server."
 msgstr ""
 
-#: ../../install_offline.rst:61
+#: ../../install_offline.rst:62
 msgid "On the server without internet access"
 msgstr ""
 
-#: ../../install_offline.rst:63
+#: ../../install_offline.rst:64
 msgid ""
 "Follow the :doc:`install_windows`, :doc:`upgrade_windows_new_server`, or "
 ":doc:`upgrade_windows` instructions, installing the binary packages that "
