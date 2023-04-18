@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-04-15 21:26+0100\n"
-"PO-Revision-Date: 2023-04-17 16:53+0000\n"
+"PO-Revision-Date: 2023-04-18 08:55+0000\n"
 "Last-Translator: Ed McDonagh <ed@mcdonagh.org.uk>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/openrem/"
 "rtd-installation/de/>\n"
@@ -33,9 +33,8 @@ msgid "There are three supported installation options for OpenREM v1.0:"
 msgstr ""
 
 #: ../../installation.rst:10 ../../installation.rst:15
-#, fuzzy
 msgid "Docker"
-msgstr "Docker installieren"
+msgstr ""
 
 #: ../../installation.rst:11 ../../installation.rst:39
 msgid "Native install on Linux"
