@@ -3,20 +3,21 @@
 # This file is distributed under the same license as the OpenREM package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2023.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-04-17 17:57+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"PO-Revision-Date: 2023-04-18 20:11+0000\n"
+"Last-Translator: Ed McDonagh <ed@mcdonagh.org.uk>\n"
+"Language-Team: Spanish (Mexico) <https://hosted.weblate.org/projects/openrem/"
+"read-the-docs-documentation/es_MX/>\n"
 "Language: es_MX\n"
-"Language-Team: es_MX <LL@li.org>\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.18-dev\n"
 "Generated-By: Babel 2.12.1\n"
 
 #: ../../changes.rst:3
@@ -5406,11 +5407,11 @@ msgstr ""
 
 #: ../../code.rst:4 ../../index.rst:27
 msgid "Contents:"
-msgstr ""
+msgstr "Contenidos:"
 
 #: ../../code.rst:30 ../../index.rst:48
 msgid "Indices and tables"
-msgstr ""
+msgstr "Indices y tablas"
 
 #: ../../code.rst:32 ../../index.rst:50
 msgid ":ref:`genindex`"
@@ -9760,7 +9761,7 @@ msgstr ""
 
 #: ../../enabling_debug_toolbar.rst:10 ../../installation.rst:3
 msgid "Installation"
-msgstr ""
+msgstr "Instalación"
 
 #: ../../enabling_debug_toolbar.rst:12
 msgid "Activate the virtualenv (assuming you are using one...)"
@@ -9797,7 +9798,7 @@ msgstr ""
 
 #: ../../env_variables.rst:2
 msgid "Docker env configuration"
-msgstr ""
+msgstr "Configuración del Docker env"
 
 #: ../../env_variables.rst:4
 msgid ""
@@ -9807,16 +9808,23 @@ msgid ""
 "the value. These settings take effect when docker-compose is started or "
 "restarted."
 msgstr ""
+"Editar el archivo ``.env.prod`` para personalizar su instalación. No debe "
+"haber espacios entre el nombre de la variable, el ``=`` y el valor. Todo "
+"después de ``=`` hasta el final de la linea es transferido como el valor. "
+"Estos ajustes tienen efecto al iniciar o reiniciar el docker-compose."
 
 #: ../../env_variables.rst:9
 msgid "Variables that should always be changed"
-msgstr ""
+msgstr "Variables que deberían cambiar siempre"
 
 #: ../../env_variables.rst:11
 msgid ""
 "Set a new secret key. Create your own, or generate one by using a tool "
 "like http://www.miniwebtool.com/django-secret-key-generator/ for this:"
 msgstr ""
+"Introduzca una nueva llave secreta. Cree la suya, o genere una utilizando "
+"una herramienta como http://www.miniwebtool.com/django-secret-key-generator/ "
+"para esto:"
 
 #: ../../env_variables.rst:18
 msgid ""
@@ -9848,25 +9856,27 @@ msgstr ""
 
 #: ../../env_variables.rst:32
 msgid "Variables to help with debugging problems"
-msgstr ""
+msgstr "Variables para ayudarnos a depurar problemas"
 
 #: ../../env_variables.rst:34
 msgid "Set to 1 to enable Django debugging mode."
-msgstr ""
+msgstr "Establecer en 1 para permitir el modo de depuración de Django."
 
 #: ../../env_variables.rst:40
 msgid ""
 "Set the log level. Options are ``DEBUG``, ``INFO``, ``WARNING``, "
 "``ERROR``, and ``CRITICAL``, with progressively less logging."
 msgstr ""
+"Establecer el nivel de log. Las opciones son ``DEBUG``, ``INFO``, ``WARNING``"
+", ``ERROR``, and ``CRITICAL``, con menos logs progresivamente."
 
 #: ../../env_variables.rst:51
 msgid "Variables to be changed for your environment"
-msgstr ""
+msgstr "Variables a ser modificadas para su ambiente"
 
 #: ../../env_variables.rst:54
 msgid "E-mail server settings"
-msgstr ""
+msgstr "Parámetros del servidor de E-mail"
 
 #: ../../env_variables.rst:67
 msgid ""
@@ -9874,6 +9884,10 @@ msgid ""
 "entered in the ``EMAIL_HOST`` and ``EMAIL_PORT`` fields. ``EMAIL_HOST`` "
 "might be your institution's Outlook/Exchange server."
 msgstr ""
+"El nombre del host y el puerto para el servidor de e-mail que usted desee "
+"utilizar debe ser ingresado en los campos ``EMAIL_HOST`` and ``EMAIL_PORT``. "
+"El ``EMAIL_HOST`` puede ser el servidor de Outlook/Exchange de su "
+"institución."
 
 #: ../../env_variables.rst:70
 msgid ""
@@ -9883,6 +9897,12 @@ msgid ""
 "is used then it may be useful to request that an e-mail account be "
 "created specifically for sending these OpenREM alert messages."
 msgstr ""
+"Si en los ajustes de servidor de e-mail solo se le permite usuarios "
+"autenticados a enviar mensajes se debe utilizar un usuario y contraseña "
+"adecuado que sera ingresado en los campos ``EMAIL_HOST_USER`` y "
+"``EMAIL_HOST_PASSWORD``. Si este enfoque se utiliza entonces debería ser "
+"util el solicitar que la cuenta de e-mail sea creada específicamente para "
+"enviar estos mensajes de alerta de OpenREM."
 
 #: ../../env_variables.rst:74
 msgid ""
@@ -9890,6 +9910,9 @@ msgid ""
 "messages that originate from the OpenREM server without authentication, "
 "in which case the user and password settings should not be required."
 msgstr ""
+"Debería ser posible configurar el servidor de e-mail para permitir el envió "
+"de mensajes que se originen desde el servidor de OpenREM sin autenticación, "
+"en estos casos el usuario y la contraseña no serán requeridos."
 
 #: ../../env_variables.rst:77
 msgid ""
@@ -9898,12 +9921,18 @@ msgid ""
 "False (default) and ``1`` for True. Only one of these options should be "
 "set to ``1``."
 msgstr ""
+"Las opciones ``EMAIL_USE_TLS`` y ``EMAIL_USE_SSL`` deben ser configuradas "
+"para coincidir con los requerimientos de cifrado del servidor de e-mail. "
+"Utilizando ``0`` para falso (por defecto) y ``1`` para Verdadero. Solo una "
+"de estas opciones debe ser configurada a 1."
 
 #: ../../env_variables.rst:80
 msgid ""
 "The ``EMAIL_DOSE_ALERT_SENDER`` should contain the e-mail address that "
 "you want to use as the sender address."
 msgstr ""
+"El ``EMAIL_DOSE_ALERT_SENDER`` debería contener la dirección del e-mail que "
+"se quiere utilizar como dirección remitente."
 
 #: ../../env_variables.rst:82
 msgid ""
@@ -9911,10 +9940,13 @@ msgid ""
 "installation in order for hyperlinks in the e-mail alert messages to "
 "function correctly."
 msgstr ""
+"El ``EMAIL_OPENREM_URL`` debe contener la URL de su instalación de OpenREM "
+"para que los hipervínculos en los mensajes de alerta del e-mail funcionen "
+"correctamente."
 
 #: ../../env_variables.rst:86
 msgid "Regionalisation"
-msgstr ""
+msgstr "Regionalización"
 
 #: ../../env_variables.rst:88
 msgid ""
@@ -9922,44 +9954,58 @@ msgid ""
 "http://en.wikipedia.org/wiki/List_of_tz_zones_by_name although not all "
 "choices may be available on all operating systems:"
 msgstr ""
+"Zona horaria local para esta instalación. Las opciones pueden ser "
+"encontradas aquí: http://en.wikipedia.org/wiki/List_of_tz_zones_by_name "
+"aunque no todas las opciones pueden estar disponibles en todos los sistemas "
+"operativos:"
 
 #: ../../env_variables.rst:96
 msgid ""
 "Language code for this installation. All choices can be found here: "
 "http://www.i18nguy.com/unicode/language-identifiers.html"
 msgstr ""
+"Código de lenguaje para esta instalación. Todas las opciones pueden ser "
+"encontradas aquí: http://www.i18nguy.com/unicode/language-identifiers.html"
 
 #: ../../env_variables.rst:103
 msgid ""
 "If you set this to False, Django will make some optimizations so as not "
 "to load the internationalization machinery:"
 msgstr ""
+"Si esto se ajusta a Falso, Django realizara algunas optimizaciones para no "
+"cargar la maquinaria de internacionalización:"
 
 #: ../../env_variables.rst:109
 msgid ""
 "If you set this to False, Django will not format dates, numbers and "
 "calendars according to the current locale:"
 msgstr ""
+"Si se establece este valor a Falso, Django no formateará fechas, números y "
+"calendarios de acuerdo con la configuración regional actual:"
 
 #: ../../env_variables.rst:115
 msgid ""
 "If you set this to False (default), Django will not use timezone-aware "
 "datetimes:"
 msgstr ""
+"Si establece esto en Falso (predeterminado), Django no usará fechas y horas "
+"con reconocimiento de zona horaria:"
 
 #: ../../env_variables.rst:121
 msgid "XLSX date and time settings for exports:"
-msgstr ""
+msgstr "Configuración de fecha y hora XLSX para exportaciones:"
 
 #: ../../env_variables.rst:129
 msgid "Virtual directory settings"
-msgstr ""
+msgstr "Configuración del directorio virtual"
 
 #: ../../env_variables.rst:131
 msgid ""
 "See :doc:`virtual_directory` for details of these variables - normally "
 "these can be left commented out."
 msgstr ""
+"Ver :doc:`virtual_directory` por detalles de estas variables - normalmente "
+"estas se pueden dejarse comentados."
 
 #: ../../env_variables.rst:134
 msgid "Device Observer UID settings"
@@ -9981,15 +10027,15 @@ msgstr ""
 
 #: ../../env_variables.rst:148
 msgid "Variables that should only be changed if you know what you are doing"
-msgstr ""
+msgstr "Variables que solo deberían ser cambiadas si sabe lo que está haciendo"
 
 #: ../../env_variables.rst:167
 msgid "Variables that shouldn't be changed"
-msgstr ""
+msgstr "Variables que no deben cambiarse"
 
 #: ../../env_variables.rst:169
 msgid "Changing this will mean some OpenREM functions will fail"
-msgstr ""
+msgstr "Cambiar esto significará que algunas funciones de OpenREM fallarán"
 
 #: ../../i_deletesettings.rst:3
 msgid "Delete objects configuration"
@@ -12238,7 +12284,7 @@ msgstr ""
 
 #: ../../index.rst:3
 msgid "Welcome to OpenREM's documentation"
-msgstr ""
+msgstr "Bienvenidos a la documentación de OpenREM"
 
 #: ../../index.rst:-1
 msgid "OpenREM logo"
@@ -12253,16 +12299,24 @@ msgid ""
 "that is suitable for further analysis by suitably qualified medical "
 "physics personnel."
 msgstr ""
+"OpenREM es una herramienta gratuita, es de código abierto y permite "
+"monitorizar las dosis de radiación en pacientes. El software es capaz de "
+"importar y mostrar datos de una gran gama de fuentes de dosis de rayos X con "
+"filtros, gráficos y análisis. También permite la fácil exportación de datos "
+"en un formato adecuado para mayores análisis por parte del personal físico "
+"medico calificado."
 
 #: ../../index.rst:16
 msgid "Please see `openrem.org <https://openrem.org>`_ for more details."
-msgstr ""
+msgstr "Por favor vea `openrem.org <https://openrem.org>`_ por mas detalles."
 
 #: ../../index.rst:18
 msgid ""
 "These docs are for the version of OpenREM currently in development. For "
 "the current release version, see https://docs.openrem.org/"
 msgstr ""
+"Estos documentos corresponden a la version de OpenREM actualmente en "
+"desarollo. Por la actual version disponible, vea https://docs.openrem.org/"
 
 #: ../../index.rst:21
 msgid ""
@@ -12274,6 +12328,13 @@ msgid ""
 "or head over to `Weblate <https://hosted.weblate.org/projects/openrem/>`_"
 " to get started. More details: :doc:`translations`."
 msgstr ""
+"Estos documentos están en Español (México) y en Inglés Británico - si "
+"quieres ayudar a traducirlo a otros lenguajes por favor ponerse en contacto "
+"con: `@_OpenREM <https://twitter.com/_OpenREM>`_, `Bitbucket "
+"<https://bitbucket.org/openrem/openrem/issues/855/add-other-languages-as-"
+"people-volunteer>`_, `Google Groups <mailto:openrem@googlegroups.com>`_ o "
+"diríjase a `Weblate <https://hosted.weblate.org/projects/openrem/>`_ para "
+"comenzar. Más detalles: :doc:`translations`."
 
 #: ../../install_docker.rst:2
 msgid "Docker install"
@@ -12287,7 +12348,7 @@ msgstr ""
 
 #: ../../install_docker.rst:7 ../../install_offline_docker.rst:16
 msgid "Download https://bitbucket.org/openrem/docker/get/develop.zip"
-msgstr ""
+msgstr "Descargar https://bitbucket.org/openrem/docker/get/develop.zip"
 
 #: ../../install_docker.rst:12
 msgid "Install"
@@ -12929,7 +12990,7 @@ msgstr ""
 
 #: ../../install_offline_docker.rst:3
 msgid "Offline Docker installation"
-msgstr ""
+msgstr "Instalación de Docker sin conexión"
 
 #: ../../install_offline_docker.rst:5
 msgid ""
@@ -12937,6 +12998,9 @@ msgid ""
 "required, though access to https://hub.docker.com would make installation"
 " and upgrades much easier."
 msgstr ""
+"OpenREM puede correr en un servidor sin conexión a internet de ser "
+"necesario, aunque el acceso a https://hub.docker.com haría la instalación y "
+"las actualizaciones mucho mas fáciles."
 
 #: ../../install_offline_docker.rst:8
 msgid "The server will need to have Docker and Docker Compose installed."
@@ -12944,59 +13008,68 @@ msgstr ""
 
 #: ../../install_offline_docker.rst:11
 msgid "Collect installation files"
-msgstr ""
+msgstr "Recolectar archivos de instalación"
 
 #: ../../install_offline_docker.rst:13
 msgid "On a computer with internet access:"
-msgstr ""
+msgstr "En una computadora con acceso a internet:"
 
 #: ../../install_offline_docker.rst:15
 msgid "Install Docker - this is required to download the images"
-msgstr ""
+msgstr "Instalar Docker - esto es requerido para poder descargar las imágenes"
 
 #: ../../install_offline_docker.rst:17
 msgid "Download the Docker images:"
-msgstr ""
+msgstr "Descargar las imágenes de Docker:"
 
 #: ../../install_offline_docker.rst:39
 msgid "Now save them as tar files:"
-msgstr ""
+msgstr "Ahora guardarlas como archivos tar:"
 
 #: ../../install_offline_docker.rst:61
 msgid ""
 "If both the computer with internet access and the target server are Linux"
 " or MacOS the images can be made smaller using gzip, for example:"
 msgstr ""
+"Si tanto la computadora con acceso a internet como la destinada para server "
+"son Linux o MacOS las imágenes se pueden comprimir mas utilizando gzip, por "
+"ejemplo:"
 
 #: ../../install_offline_docker.rst:68
 msgid ""
 "Copy all the tar files and the zip file to the server where OpenREM is to"
 " be installed."
 msgstr ""
+"Copiar todos los archivos tar y los zip al servidor donde sera instalado "
+"OpenREM."
 
 #: ../../install_offline_docker.rst:71
 msgid "Load the docker images"
-msgstr ""
+msgstr "Cargar las imágenes Docker"
 
 #: ../../install_offline_docker.rst:73
 msgid ""
 "On the server where OpenREM is to be installed, in the folder containing "
 "the Docker images:"
 msgstr ""
+"En el servidor donde se instalara OpenREM, en la carpeta que contiene las "
+"imágenes Docker:"
 
 #: ../../install_offline_docker.rst:95
 msgid ""
 "If you have compressed the images with gzip the command is the same but "
 "with the ``.gz`` suffix, for example:"
 msgstr ""
+"Si se comprimieron las imágenes con gzip el comando es el mismo pero con el "
+"sufijo ``.gz``, por ejemplo:"
 
 #: ../../install_offline_docker.rst:101
 msgid "Check that the images have been loaded:"
-msgstr ""
+msgstr "Comprobar que las imágenes han sido cargadas:"
 
 #: ../../install_offline_docker.rst:107
 msgid "Continue to :ref:`dockerinstall`"
-msgstr ""
+msgstr "Continuar a :ref:`dockerinstall`"
 
 #: ../../install_windows.rst:3
 msgid "Native Windows install"
@@ -14457,7 +14530,7 @@ msgstr ""
 
 #: ../../installation.rst:83
 msgid "Databases"
-msgstr ""
+msgstr "Bases de dato"
 
 #: ../../installation.rst:93
 msgid "Advanced server configuration"
@@ -19348,4 +19421,3 @@ msgstr ""
 #~ "compose.yml`` and paste it after the "
 #~ "``orthanc_1`` block. Rename to ``orthanc_2``"
 #~ msgstr ""
-
