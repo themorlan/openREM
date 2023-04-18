@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-04-15 21:26+0100\n"
-"PO-Revision-Date: 2023-04-17 16:53+0000\n"
+"PO-Revision-Date: 2023-04-18 08:55+0000\n"
 "Last-Translator: Ed McDonagh <ed@mcdonagh.org.uk>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/openrem/"
 "rtd-installation-docker-orthanc-config/de/>\n"
@@ -58,13 +58,12 @@ msgstr ""
 "definieren die Hierarchie."
 
 #: ../../docker_orthanc.rst:16
-#, fuzzy
 msgid ""
 "Edit the ``docker-compose.yml`` file to make the changes. They will take "
 "effect next time ``docker-compose up -d`` is run."
 msgstr ""
-"Für Änderungen die Datei ``docker-compose.yml`` editieren. Diese werden "
-"beim nächsten Start von ``docker-compose`` wirksam."
+"Für Änderungen die Datei ``docker-compose.yml`` editieren. Diese werden beim "
+"nächsten Start von ``docker-compose`` wirksam."
 
 #: ../../docker_orthanc.rst:19
 msgid "Find the ``orthanc_1`` definition near the end of the file."
@@ -146,7 +145,7 @@ msgstr ""
 
 #: ../../docker_orthanc.rst:82
 msgid "DICOM Application Entity Title"
-msgstr "DICOM AET (Application Entity Title)"
+msgstr ""
 
 #: ../../docker_orthanc.rst:84
 msgid ""
@@ -202,14 +201,13 @@ msgid "Lua script path"
 msgstr "Pfad für Lua Skripte"
 
 #: ../../docker_orthanc.rst:139
-#, fuzzy
 msgid ""
 "The path within the Orthanc container for the OpenREM Lua script is "
 "specified here - this should not be changed (see below for advanced "
 "options)."
 msgstr ""
-"Der Pfad im Orthanc Container zum OpenREM Lua-Skript wird hier angegeben "
-"- dies sollte nicht geändert werden."
+"Hier wird der Pfad im Orthanc-Container zum OpenREM Lua-Skript angegeben – "
+"dieser sollte nicht verändert werden (weitere Optionen siehe unten)."
 
 #: ../../docker_orthanc.rst:153
 msgid "Advanced options"
@@ -240,10 +238,10 @@ msgid ""
 "containers, so if you are removing the additional Orthanc container stop "
 "the containers first."
 msgstr ""
-"Beim nächsten Starten von ``docker-compose`` wird der zusätzliche Orthanc"
-" Container gestartet. ``docker-compose.yml`` kann auch zum anhalten der "
-"Container verwendet werden, wenn Sie also den zusätzlichen Othanc "
-"Container löschen wollen, stoppen Sie zunächst die Container."
+"Beim nächsten Starten von ``docker-compose`` wird der zusätzliche Orthanc "
+"Container gestartet. ``docker-compose.yml`` kann auch zum anhalten der "
+"Container verwendet werden, wenn Sie also den zusätzlichen Othanc Container "
+"löschen wollen, stoppen Sie zunächst die Container."
 
 #: ../../docker_orthanc.rst:165
 #, fuzzy
