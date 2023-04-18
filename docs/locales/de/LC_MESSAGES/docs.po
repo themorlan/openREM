@@ -3,20 +3,21 @@
 # This file is distributed under the same license as the OpenREM package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2023.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-04-17 17:57+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"PO-Revision-Date: 2023-04-18 08:55+0000\n"
+"Last-Translator: Ed McDonagh <ed@mcdonagh.org.uk>\n"
+"Language-Team: German <https://hosted.weblate.org/projects/openrem/"
+"read-the-docs-documentation/de/>\n"
 "Language: de\n"
-"Language-Team: de <LL@li.org>\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.17\n"
 "Generated-By: Babel 2.12.1\n"
 
 #: ../../changes.rst:3
@@ -4776,8 +4777,9 @@ msgid "Calculate histograms for average bar charts"
 msgstr ""
 
 #: ../../charts.rst:240
+#, fuzzy
 msgid "Chart sorting"
-msgstr ""
+msgstr "Graphikoptionen"
 
 #: ../../charts.rst:240
 msgid "One of **name**, **frequency** |br| or **value**"
@@ -9428,6 +9430,8 @@ msgid ""
 "Edit the ``docker-compose.yml`` file to make the changes. They will take "
 "effect next time ``docker-compose up -d`` is run."
 msgstr ""
+"Für Änderungen die Datei ``docker-compose.yml`` editieren. Diese werden beim "
+"nächsten Start von ``docker-compose`` wirksam."
 
 #: ../../docker_orthanc.rst:19
 msgid "Find the ``orthanc_1`` definition near the end of the file."
@@ -9554,6 +9558,8 @@ msgid ""
 "The path within the Orthanc container for the OpenREM Lua script is "
 "specified here - this should not be changed (see below for advanced options)."
 msgstr ""
+"Hier wird der Pfad im Orthanc-Container zum OpenREM Lua-Skript angegeben – "
+"dieser sollte nicht verändert werden (weitere Optionen siehe unten)."
 
 #: ../../docker_orthanc.rst:153
 msgid "Advanced options"
@@ -9577,6 +9583,10 @@ msgid ""
 "so if you are removing the additional Orthanc container stop the containers "
 "first."
 msgstr ""
+"Beim nächsten Starten von ``docker-compose`` wird der zusätzliche Orthanc "
+"Container gestartet. ``docker-compose.yml`` kann auch zum anhalten der "
+"Container verwendet werden, wenn Sie also den zusätzlichen Othanc Container "
+"löschen wollen, stoppen Sie zunächst die Container."
 
 #: ../../docker_orthanc.rst:165
 msgid "Advanced Orthanc configuration"
@@ -9842,7 +9852,7 @@ msgstr ""
 
 #: ../../env_variables.rst:51
 msgid "Variables to be changed for your environment"
-msgstr ""
+msgstr "Variablen, die an die eigene Ümgebung angepasst werden sollten"
 
 #: ../../env_variables.rst:54
 msgid "E-mail server settings"
@@ -9920,6 +9930,8 @@ msgid ""
 "If you set this to False, Django will make some optimizations so as not to "
 "load the internationalization machinery:"
 msgstr ""
+"Wird dieser Wert auf Falsch gestellt, wird Django einige Optimierungen "
+"durchführen:"
 
 #: ../../env_variables.rst:109
 msgid ""
@@ -9934,6 +9946,8 @@ msgid ""
 "If you set this to False (default), Django will not use timezone-aware "
 "datetimes:"
 msgstr ""
+"Wird dieser Wert auf False (Standard) gesetzt, wird Django die "
+"zeitzonenbezogenen Datumsangaben nicht verwenden:"
 
 #: ../../env_variables.rst:121
 msgid "XLSX date and time settings for exports:"
@@ -9941,7 +9955,7 @@ msgstr ""
 
 #: ../../env_variables.rst:129
 msgid "Virtual directory settings"
-msgstr ""
+msgstr "Einstellungen für den virtuellen Ordner"
 
 #: ../../env_variables.rst:131
 msgid ""
@@ -12257,6 +12271,7 @@ msgstr ""
 #: ../../install_docker.rst:7 ../../install_offline_docker.rst:16
 msgid "Download https://bitbucket.org/openrem/docker/get/develop.zip"
 msgstr ""
+"Die Datei https://bitbucket.org/openrem/docker/get/develop.zip herunterladen"
 
 #: ../../install_docker.rst:12
 msgid "Install"
@@ -12388,7 +12403,7 @@ msgstr ""
 
 #: ../../install_linux.rst:34
 msgid "**Apt sources**"
-msgstr ""
+msgstr "**Apt sources**"
 
 #: ../../install_linux.rst:36
 msgid "We will need the ``universe`` repository enabled. Check first:"
@@ -12396,7 +12411,7 @@ msgstr ""
 
 #: ../../install_linux.rst:42
 msgid "Look for::"
-msgstr ""
+msgstr "Suchen nach::"
 
 #: ../../install_linux.rst:47
 msgid ""
@@ -12419,7 +12434,7 @@ msgstr ""
 
 #: ../../install_linux.rst:78
 msgid "**Groups**"
-msgstr ""
+msgstr "**Groups**"
 
 #: ../../install_linux.rst:80
 msgid ""
@@ -12492,7 +12507,7 @@ msgstr ""
 
 #: ../../install_linux.rst:189
 msgid "Database and OpenREM config"
-msgstr ""
+msgstr "Konfiguration von Datenbank und OpenREM"
 
 #: ../../install_linux.rst:192
 msgid "Setup PostgreSQL database"
@@ -12594,7 +12609,7 @@ msgstr ""
 
 #: ../../install_linux.rst:393 ../../install_windows.rst:522
 msgid "Webserver"
-msgstr ""
+msgstr "Webserver"
 
 #: ../../install_linux.rst:396
 msgid "Configure NGINX and Gunicorn"
@@ -12645,6 +12660,8 @@ msgstr ""
 #: ../../install_linux.rst:514
 msgid "You should now be able to browse to the OpenREM server from another PC."
 msgstr ""
+"Jetzt sollte der Zugriff auf den OpenREM Server von anderen Rechner möglich "
+"sein."
 
 #: ../../install_linux.rst:516
 msgid ""
@@ -12908,7 +12925,7 @@ msgstr ""
 
 #: ../../install_offline_docker.rst:3
 msgid "Offline Docker installation"
-msgstr ""
+msgstr "Docker Installation ohne Internetzugriff"
 
 #: ../../install_offline_docker.rst:5
 msgid ""
@@ -12946,6 +12963,9 @@ msgid ""
 "If both the computer with internet access and the target server are Linux or "
 "MacOS the images can be made smaller using gzip, for example:"
 msgstr ""
+"Wenn sowohl der Computer mit Internetzugriff als auch der Ziel-Server mit "
+"Linux oder MacOS laufen, können die Images mittels gzip verkleinert werden, z"
+".B.:"
 
 #: ../../install_offline_docker.rst:68
 msgid ""
