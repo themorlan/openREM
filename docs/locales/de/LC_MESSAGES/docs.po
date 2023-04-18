@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-04-17 17:57+0100\n"
-"PO-Revision-Date: 2023-04-18 08:55+0000\n"
+"PO-Revision-Date: 2023-04-18 09:18+0000\n"
 "Last-Translator: Ed McDonagh <ed@mcdonagh.org.uk>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/openrem/"
 "read-the-docs-documentation/de/>\n"
@@ -5401,11 +5401,11 @@ msgstr ""
 
 #: ../../code.rst:4 ../../index.rst:27
 msgid "Contents:"
-msgstr ""
+msgstr "Inhalt:"
 
 #: ../../code.rst:30 ../../index.rst:48
 msgid "Indices and tables"
-msgstr ""
+msgstr "Indizes und Tabellen"
 
 #: ../../code.rst:32 ../../index.rst:50
 msgid ":ref:`genindex`"
@@ -5413,7 +5413,7 @@ msgstr ""
 
 #: ../../code.rst:33 ../../index.rst:51
 msgid ":ref:`modindex`"
-msgstr ":ref:`modindex`"
+msgstr ""
 
 #: ../../code.rst:34 ../../index.rst:52
 msgid ":ref:`search`"
@@ -12222,7 +12222,7 @@ msgstr ""
 
 #: ../../index.rst:3
 msgid "Welcome to OpenREM's documentation"
-msgstr ""
+msgstr "Willkommen zur Dokumentation zu OpenREM"
 
 #: ../../index.rst:-1
 msgid "OpenREM logo"
@@ -12237,6 +12237,12 @@ msgid ""
 "is suitable for further analysis by suitably qualified medical physics "
 "personnel."
 msgstr ""
+"OpenREM ist eine freie, Opensource-Anwendung zur Überwachung der "
+"Patientenexposition. Die Software können die Daten einer großen Anzahl von "
+"Röntgengeräten importiert und gefiltert über entsprechende graphische "
+"Darstellungen analysiert werden. Die Software ermöglicht auch den Export der "
+"Daten für eine spätere Analsyse durch qualifiziertes Personal aus der "
+"Medizinphysik."
 
 #: ../../index.rst:16
 msgid "Please see `openrem.org <https://openrem.org>`_ for more details."
@@ -12247,6 +12253,9 @@ msgid ""
 "These docs are for the version of OpenREM currently in development. For the "
 "current release version, see https://docs.openrem.org/"
 msgstr ""
+"Diese Dokumente beziehen sich auf die Version von OpenREM, die sich derzeit "
+"in der Entwicklung befindet. Informationen zur aktuellen Version finden Sie "
+"unter https://docs.openrem.org/"
 
 #: ../../index.rst:21
 msgid ""
@@ -12257,6 +12266,13 @@ msgid ""
 "openrem@googlegroups.com>`_ or head over to `Weblate <https://hosted.weblate."
 "org/projects/openrem/>`_ to get started. More details: :doc:`translations`."
 msgstr ""
+"Diese Dokumente sind in britischem Englisch - wenn Sie helfen möchten, sie "
+"in andere Sprachen zu übersetzen, kontaktieren Sie uns bitte: `@_OpenREM "
+"<https://twitter.com/_OpenREM>`_, `Bitbucket <https://bitbucket.org/openrem/"
+"openrem/issues/855/add-other-languages-as-people-volunteer>`_, `Google "
+"Groups <mailto:openrem@googlegroups.com>`_ oder gehen Sie zu `Weblate "
+"<https://hosted.weblate.org/projects/openrem/>`_, um loszulegen. Weitere "
+"Einzelheiten: :doc:`translations`."
 
 #: ../../install_docker.rst:2
 msgid "Docker install"
