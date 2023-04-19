@@ -358,7 +358,6 @@ pipelines:
     '*':
       - step:
           name: retag and repush image
-          deployment: Production
           script:
             - export IMAGE_NAME=openrem/openrem:$BITBUCKET_BRANCH-$BITBUCKET_COMMIT
             - export NEW_IMAGE_NAME=openrem/openrem:$BITBUCKET_TAG
