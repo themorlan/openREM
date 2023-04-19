@@ -265,6 +265,7 @@ definitions:
         name: build and push to docker
         script:
           - export IMAGE_NAME=openrem/openrem:$BITBUCKET_BRANCH-$BITBUCKET_COMMIT
+          - echo $IMAGE_NAME
           - docker build -t openrem/openrem:$BITBUCKET_BRANCH-$BITBUCKET_COMMIT -t openrem/openrem:$BITBUCKET_BRANCH .
           - docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PASSWORD
           - docker push --all-tags openrem/openrem
@@ -360,7 +361,9 @@ pipelines:
           name: retag and repush image
           script:
             - export IMAGE_NAME=openrem/openrem:$BITBUCKET_BRANCH-$BITBUCKET_COMMIT
+            - echo $IMAGE_NAME
             - export NEW_IMAGE_NAME=openrem/openrem:$BITBUCKET_TAG
+            - echo $NEW_IMAGE_NAME
             - docker login --username $DOCKER_HUB_USER --password $DOCKER_HUB_PASSWORD
             - docker pull $IMAGE_NAME
             - docker tag $IMAGE_NAME $NEW_IMAGE_NAME
