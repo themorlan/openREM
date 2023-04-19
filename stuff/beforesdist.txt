@@ -42,8 +42,9 @@ Real upload:
     commit all changes to branch
     Push branch to bitbucket for reference
     merge into develop if beta, master if release
-    tag with release number, ie 0.9.0b4
-    push to bitbucket
+    Manually trigger the deploy-to-docker pipeline
+    tag develop/master with release number, ie 0.9.0b4
+    push to bitbucket again with tag, this time the retag-and-repush-image pipeline should start automatically
     make new branch named version-docs eg 0.9.0b4-docs
     push to bitbucket
 
