@@ -160,7 +160,7 @@ def send_rf_high_dose_alert_email(study_pk=None, test_message=None, test_user=No
 
     # Python 3 can't compare None to int. Compare to 0 if variable is None
     if (
-        this_study_dap >= alert_levels["alert_total_dap_rf"]
+        (this_study_dap or 0) >= alert_levels["alert_total_dap_rf"]
         or (this_study_rp_dose or 0) >= alert_levels["alert_total_rp_dose_rf"]
         or (accum_dap or 0) >= alert_levels["alert_total_dap_rf"]
         or (accum_rp_dose or 0) >= alert_levels["alert_total_rp_dose_rf"]
