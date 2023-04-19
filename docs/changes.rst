@@ -10,6 +10,7 @@ OpenREM version history
 * :issue:`987`  Tasks: configuring Windows WinSW log files to roll over to ensure their size is restricted
 * :issue:`986`  SkinDose: fixed bug where a zero study dap causes a divide by zero error
 * :issue:`984`  Interface: improved performance of home page
+* :issue:`981`  Interface: reorganised the config menu
 * :issue:`980`  Interface: improved standard name form layout
 * :issue:`977`  Documentation: fix issues preventing translations to be built
 * :issue:`976`  NM charts: Fixed bug where graphs were not displayed correctly for some chart options
