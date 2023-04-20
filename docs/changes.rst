@@ -3,7 +3,7 @@ OpenREM version history
 =======================
 
 
-1.0.0b1 (2023-03-29)
+1.0.0b2 (2023-04-20)
 --------------------
 * :issue:`990`  SkinDose: fixed bug where a zero study dap causes a TypeError in the e-mail sending code
 * :issue:`988`  Imports: fixing hard-written DX text in MG import messages
