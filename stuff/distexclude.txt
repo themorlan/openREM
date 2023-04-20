@@ -12,3 +12,10 @@ openrem/openremproject/wsgi.py
 OpenREM.egg-info/
 docker/
 */__pycache__/
+.codacy.yml
+.coveragerc
+.dockerignore
+.pylintrc
+.readthedocs.yaml
+.readthedocs.yml
+bitbucket-pipelines.yml
