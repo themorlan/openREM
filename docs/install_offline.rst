@@ -50,7 +50,7 @@ to download the packages, ideally Python 3.10:
 
     C:\Users\me\Desktop> mkdir openremfiles
     C:\Users\me\Desktop> pip3 download -d openremfiles pip
-    C:\Users\me\Desktop> pip3 download -d openremfiles openrem==1.0.0b1
+    C:\Users\me\Desktop> pip3 download -d openremfiles openrem==1.0.0b2
     C:\Users\me\Desktop> pip3 download -d openremfiles wfastcgi
 
 Copy everything to the Server
