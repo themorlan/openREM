@@ -91,8 +91,8 @@ def get_study_check_dup(dataset, modality="DX"):
     ).order_by("pk")
     if same_study_uid.count() > 1:
         logger.warning(
-            "Duplicate DX study UID {0} in database - could be a problem! There are {1} copies.".format(
-                study_uid, same_study_uid.count()
+            "Duplicate {0} study UID {1} in database - could be a problem! There are {2} copies.".format(
+                modality, study_uid, same_study_uid.count()
             )
         )
         # Studies are ordered by study level pk. FInd the first one that has a modality type, and replace our
@@ -109,8 +109,8 @@ def get_study_check_dup(dataset, modality="DX"):
                 break
         if not this_study:
             logger.warning(
-                "Duplicate {1} study UID {0}, none of which have modality_type assigned!"
-                " Setting first instance to DX".format(study_uid, modality)
+                "Duplicate {0} study UID {1}, none of which have modality_type assigned!"
+                " Setting first instance to {0}".format(modality, study_uid)
             )
             this_study = same_study_uid[0]
             this_study.modality_type = modality

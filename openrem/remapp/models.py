@@ -1055,6 +1055,17 @@ class ContextID(models.Model):
         ordering = ["code_value"]
 
 
+class GeneralStudyModuleAttrManager(models.Manager):
+    def get_queryset(self):
+        qs = super(GeneralStudyModuleAttrManager, self).get_queryset().annotate(
+            test_date_time=models.ExpressionWrapper(
+                models.F("study_date") + models.F("study_time"),
+                output_field=models.DateTimeField()
+            )
+        )
+        return qs
+
+
 class GeneralStudyModuleAttr(models.Model):  # C.7.2.1
     """General Study Module C.7.2.1
 
@@ -1170,6 +1181,8 @@ class GeneralStudyModuleAttr(models.Model):  # C.7.2.1
                 ]
             ),
         ]
+
+    objects = GeneralStudyModuleAttrManager()
 
 
 class SkinDoseMapResults(models.Model):

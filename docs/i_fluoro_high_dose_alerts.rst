@@ -1,6 +1,5 @@
 Fluroscopy high dose alerts
 ***************************
-*New in 0.8.2*
 
 .. contents::
 

@@ -14,18 +14,16 @@
             Number in last {{ day_delta }} days{% endblocktrans %}</th>
       {% endif %}
     </tr>
-    {% for display_name,details in data.items %}
-      {% if not display_name %}
-        <tr>
+    {% for details in study_data %}
+
+      {% if not details.generalequipmentmoduleattr__unique_equipment_name__display_name %}
+
+      <tr>
         <td style="width: 25%">
           {% if admin.admingroup %}
-          <a href="{% url 'review_failed_imports' modality|upper %}">
-            Failed import - review here
-          </a>
+            <a href="{% url 'review_failed_imports' modality|upper %}">Failed import - review here</a>
           {% else %}
-          <a href="#">
-            Failed import - ask an administrator to review
-          </a>
+            <a href="#">Failed import - ask an administrator to review</a>
           {% endif %}
         </td>
         <td style="width:25%">
@@ -37,7 +35,7 @@
             {{ details.total }}
           </a>
         </td>
-        <td style="width:25%" sorttable_customkey="{{ details.deltaseconds }}">
+        <td style="width:25%" sorttable_customkey="{{ details.latest_entry_date_time|date:"U" }}">
           {% if admin.admingroup %}
             <a href="{% url 'review_failed_imports' modality|upper %}">
           {% else %}
@@ -49,43 +47,48 @@
         {% if home_config.display_workload_stats %}
           <td style="width:12.5%">
           {% if admin.admingroup %}
-            <a href="{% url 'review_failed_imports' modality|upper %}">
+            <a href="{% url 'review_failed_imports' modality|upper %}"></a>
           {% endif %}
           </td>
           <td style="width:12.5%">
           {% if admin.admingroup %}
-            <a href="{% url 'review_failed_imports' modality|upper %}">
+            <a href="{% url 'review_failed_imports' modality|upper %}"></a>
           {% endif %}
           </td>
         {% endif %}
-        </tr>
+      </tr>
+
       {% else %}
+
       <tr>
         <td style="width:25%">
-          <a href="{% url url_name %}?generalequipmentmoduleattr__unique_equipment_name__display_name={{ display_name }}&o=-study_date">
-            {{ details.displayname }}
+          <a href="{% url url_name %}?generalequipmentmoduleattr__unique_equipment_name__display_name={{ details.generalequipmentmoduleattr__unique_equipment_name__display_name }}&o=-study_date">
+            {{ details.generalequipmentmoduleattr__unique_equipment_name__display_name }}
           </a>
         </td>
         <td style="width:25%">
-          <a href="{% url url_name %}?generalequipmentmoduleattr__unique_equipment_name__display_name={{ display_name }}&o=-study_date">
-            {{ details.total }}
+          <a href="{% url url_name %}?generalequipmentmoduleattr__unique_equipment_name__display_name={{ details.generalequipmentmoduleattr__unique_equipment_name__display_name }}&o=-study_date">
+            {{ details.num_studies }}
           </a>
         </td>
-        <td style="width:25%" sorttable_customkey="{{ details.deltaseconds }}">
-          <a href="{% url url_name %}?generalequipmentmoduleattr__unique_equipment_name__display_name={{ display_name }}&o=-study_date">
-            {{ details.latest|naturaltime }}
+        <td style="width:25%" sorttable_customkey="{{ details.latest_entry_date_time|date:"U" }}">
+          <a href="{% url url_name %}?generalequipmentmoduleattr__unique_equipment_name__display_name={{ details.generalequipmentmoduleattr__unique_equipment_name__display_name }}&o=-study_date">
+            {{ details.latest_entry_date_time|naturaltime }}
           </a>
         </td>
         {% if home_config.display_workload_stats %}
           <td style="width:12.5%">
-            <a href="{% url url_name %}?generalequipmentmoduleattr__unique_equipment_name__display_name={{ display_name }}&o=-study_date&study_date__gt={{ home_config.date_a }}" id="{{ details.displayname_pk }}_a"></a>
+            <a href="{% url url_name %}?generalequipmentmoduleattr__unique_equipment_name__display_name={{ details.generalequipmentmoduleattr__unique_equipment_name__display_name }}&o=-study_date&study_date__gt={{ home_config.date_a }}">{{ details.studies_since_delta_a }}</a>
           </td>
           <td style="width:12.5%">
-            <a href="{% url url_name %}?generalequipmentmoduleattr__unique_equipment_name__display_name={{ display_name }}&o=-study_date&study_date__gt={{ home_config.date_b }}" id="{{ details.displayname_pk }}_b"></a>
+            <a href="{% url url_name %}?generalequipmentmoduleattr__unique_equipment_name__display_name={{ details.generalequipmentmoduleattr__unique_equipment_name__display_name }}&o=-study_date&study_date__gt={{ home_config.date_b }}">{{ details.studies_since_delta_b }}</a>
           </td>
         {% endif %}
-      {% endif %}
       </tr>
+
+      {% endif %}
+
     {% endfor %}
+
   </table>
 {% endwith %}
