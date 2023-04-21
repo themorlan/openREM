@@ -1,8 +1,6 @@
 DICOM store configuration (Orthanc)
 ===================================
 
-**Document not ready for translation**
-
 Orthanc provides the DICOM Store functionality to enable scanners to send directly to OpenREM, and for
 query-retrieve to function. Configuration is in the orthanc section of ``docker-compose.yml``
 
@@ -158,7 +156,7 @@ Multiple stores
 ^^^^^^^^^^^^^^^
 
 If you need more than one DICOM Store server, to listen on a different port for example, copy the whole ``orthanc_1``
-section in ``docker-compose.yml`` and paste it after the ``orthanc_1`` block. Rename to ``orthanc_2``
+section in ``docker-compose.yml`` and paste it after the ``orthanc_1`` block. Rename to ``orthanc_2``.
 
 Next time ``docker-compose`` is started the additional Orthanc container will be started. ``docker-compose.yml`` is
 also used to stop the containers, so if you are removing the additional Orthanc container stop the containers first.
