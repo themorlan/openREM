@@ -918,6 +918,7 @@ class StandardNames(models.Model):
     requested_procedure_code_meaning = models.TextField(blank=True, null=True)
     procedure_code_meaning = models.TextField(blank=True, null=True)
     acquisition_protocol = models.TextField(blank=True, null=True)
+    radiopharmaceutical = models.TextField(blank=True, null=True)
 
     class Meta(object):
         """

@@ -2154,66 +2154,51 @@ class StandardNameFormRF(StandardNameFormBase):
 class StandardNameFormNM(StandardNameFormBase):
     """Form for configuring standard names for study description, requested procedure, procedure and acquisition name"""
 
+    def _get_pairs(self, studies):
+        pairs = set()
+        for study in studies:
+            radiopharmaceutical = ""
+            test = study.radiopharmaceuticalradiationdose_set.get().radiopharmaceuticaladministrationeventdata_set.get()
+            if test.radiopharmaceutical_agent:
+                radiopharmaceutical = test.radiopharmaceutical_agent.code_meaning
+            else:
+                radiopharmaceutical = test.radiopharmaceutical_agent_string
+            pairs.add(study.study_description + " - " + radiopharmaceutical)
+        return pairs
+
+
     def __init__(self, *args, **kwargs):
         super(StandardNameFormNM, self).__init__(*args, **kwargs)
         self.fields["modality"].initial = "NM"
 
         try:
+            del self.fields["study_description"]
+            del self.fields["requested_procedure_code_meaning"]
+            del self.fields["procedure_code_meaning"]
             del self.fields["acquisition_protocol"]
         except KeyError:
             pass
 
-        all_studies = GeneralStudyModuleAttr.objects.filter(modality_type__iexact="NM")
 
-        field_names = [
-            ("study_description", "Study description"),
-            ("requested_procedure_code_meaning", "Requested procedure name"),
-            ("procedure_code_meaning", "Procedure name"),
-        ]
-
-        for field_name, label_name in field_names:
-            # Exclude items already in the RF standard names entries except for the current value of the field
-            items_to_exclude = (
-                StandardNames.objects.all()
-                .filter(modality="NM")
-                .values(field_name)
-                .exclude(**{field_name: None})
-            )
-            if "standard_name" in self.initial:
-                items_to_exclude = items_to_exclude.exclude(
-                    standard_name=self.initial["standard_name"]
-                )
-
-            query = (
-                all_studies.values_list(field_name, flat=True)
-                .exclude(**{field_name + "__in": items_to_exclude})
-                .distinct()
-                .order_by(field_name)
-            )
-            query_choices = [("", "None")] + [(item, item) for item in query]
-
-            initial_choices = (
-                StandardNames.objects.all()
-                .filter(modality="NM")
-                .exclude(**{field_name: None})
-                .order_by(field_name)
-            )
-            if "standard_name" in self.initial:
-                initial_choices = initial_choices.filter(
-                    standard_name=self.initial["standard_name"]
-                )
-
-            self.initial[field_name] = list(
-                initial_choices.values_list(field_name, flat=True)
+        all_studies = GeneralStudyModuleAttr.objects.filter(modality_type__iexact="NM").order_by("study_description")
+        filtered_studies = []
+        if "standard_name" in self.initial:
+            filtered_studies = all_studies.filter(
+                standard_name=self.initial["standard_name"]
             )
 
-            self.fields[field_name] = forms.MultipleChoiceField(
-                choices=query_choices,
-                required=False,
-                widget=FilteredSelectMultiple(
-                    label_name.lower() + "s", is_stacked=False
-                ),
-            )
+        query_choices = [(item, item) for item in self._get_pairs(all_studies)]
+        initial_choices = [(item, item) for item in self._get_pairs(filtered_studies)]
+
+        self.initial["study_description_radiopharmaceutical_pairs"] = initial_choices
+
+        self.fields["study_description_radiopharmaceutical_pairs"] = forms.MultipleChoiceField(
+            choices=query_choices,
+            required=False,
+            widget=FilteredSelectMultiple(
+                "Study description - Radiopharmaceutical pairs", is_stacked=False
+            ),
+        )
 
         class Media:
             css = {
