@@ -903,7 +903,6 @@ class UniqueEquipmentNames(models.Model):
             "device_observer_uid_hash",
         )
 
-    class Meta:
         indexes = [
             models.Index(
                 fields=[
