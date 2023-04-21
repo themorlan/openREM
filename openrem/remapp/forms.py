@@ -34,6 +34,7 @@ from functools import reduce
 
 from django import forms
 from django.db.models import Q
+from django.forms import modelformset_factory
 from django.contrib.admin.widgets import FilteredSelectMultiple
 from django.conf import settings
 from django.utils.safestring import mark_safe
@@ -65,6 +66,8 @@ from .models import (
     CtIrradiationEventData,
     IrradEventXRayData,
     BackgroundTaskMaximumRows,
+    DiagnosticReferenceLevels,
+    KFactors,
 )
 
 logger = logging.getLogger()
@@ -1651,8 +1654,19 @@ class DicomStoreForm(forms.ModelForm):
             ] = "Port: set to the same as the DICOM_PORT setting in docker-compose.yml"
 
 
+DRL_CRITERIA_CHOICES = (("age", "age"), ("bmi", "bmi"))
+DRL_CRITERIA_DEFAULT_IDX = 0
+K_FACTOR_CRITERIA_CHOICES = (("age", "age"), ("bmi", "bmi"))
+K_FACTOR_CRITERIA_DEFAULT_IDX = 0
+
 class StandardNameFormBase(forms.ModelForm):
     """For configuring standard names for study description, requested procedure, procedure and acquisition name."""
+
+    diagnostic_reference_level_criteria = forms.ChoiceField(choices=DRL_CRITERIA_CHOICES,
+        initial=DRL_CRITERIA_CHOICES[DRL_CRITERIA_DEFAULT_IDX], label="DRL criteria")
+    
+    k_factor_criteria = forms.ChoiceField(choices=K_FACTOR_CRITERIA_CHOICES,
+        initial=K_FACTOR_CRITERIA_CHOICES[K_FACTOR_CRITERIA_DEFAULT_IDX], label="k-factor criteria")
 
     class Meta(object):
         model = StandardNames
@@ -1663,7 +1677,11 @@ class StandardNameFormBase(forms.ModelForm):
             "requested_procedure_code_meaning",
             "procedure_code_meaning",
             "acquisition_protocol",
+            "diagnostic_reference_level_criteria",
+            "drl_alert_factor",
+            "k_factor_criteria",
         ]
+        labels = {"drl_alert_factor": "DRL alert factor"}
         widgets = {
             "standard_name": forms.TextInput,
             "modality": forms.HiddenInput,
@@ -1693,6 +1711,14 @@ class StandardNameFormBase(forms.ModelForm):
         else:
             return self.cleaned_data["acquisition_protocol"]
 
+
+DiagnosticReferenceLevelsFormSet = modelformset_factory(
+    DiagnosticReferenceLevels, fields=("lower_bound", "upper_bound", "diagnostic_reference_level"), can_delete=True, can_delete_extra=False,
+)
+
+KFactorsFormSet = modelformset_factory(
+    KFactors, fields=("lower_bound", "upper_bound", "k_factor"), can_delete=True, can_delete_extra=False,
+)
 
 class StandardNameFormCT(StandardNameFormBase):
     """Form for configuring standard names for study description, requested procedure, procedure and acquisition name"""

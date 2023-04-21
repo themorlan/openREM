@@ -31,6 +31,7 @@
 # Following two lines added so that sphinx autodocumentation works.
 from builtins import object  # pylint: disable=redefined-builtin
 import json
+from decimal import Decimal
 from django.db import models
 from django.urls import reverse
 from solo.models import SingletonModel
@@ -919,6 +920,9 @@ class StandardNames(models.Model):
     procedure_code_meaning = models.TextField(blank=True, null=True)
     acquisition_protocol = models.TextField(blank=True, null=True)
     radiopharmaceutical = models.TextField(blank=True, null=True)
+    diagnostic_reference_level_criteria = models.TextField(blank=True, default="age")
+    drl_alert_factor = models.DecimalField(max_digits=16, decimal_places=8, default=Decimal(1.0))
+    k_factor_criteria = models.TextField(blank=True, default="age")
 
     class Meta(object):
         """
@@ -938,6 +942,43 @@ class StandardNames(models.Model):
 
     def get_absolute_url(self):
         return reverse("standard_names_view")
+
+
+class DiagnosticReferenceLevels(models.Model):
+    """
+    Table to store DRL values corresponding to a certain range for a specific standard name
+    """
+
+    standard_name = models.ManyToManyField(StandardNames)
+    lower_bound = models.DecimalField(
+        max_digits=16, decimal_places=8
+    )
+    upper_bound = models.DecimalField(
+        max_digits=16, decimal_places=8
+    )
+    # DRL can be either a DLP (unit: [mGy.cm]) or DAP (unit: [cGy.cm^2]) reference value
+    diagnostic_reference_level = models.DecimalField(
+        max_digits=16, decimal_places=8
+    )
+
+
+class KFactors(models.Model):
+    """
+    Table to store k factors corresponding to a certain range for a specific standard name
+    The k factor allows to convert a given value (e.g. DLP) into an effective dose
+    """
+
+    standard_name = models.ManyToManyField(StandardNames)
+    lower_bound = models.DecimalField(
+        max_digits=16, decimal_places=8
+    )
+    upper_bound = models.DecimalField(
+        max_digits=16, decimal_places=8
+    )
+    # k factor has one of the following units: [mSv/(mGy.cm)] or [mSv/(cGy.cm^2)]
+    k_factor = models.DecimalField(
+        max_digits=16, decimal_places=8
+    )
 
 
 class StandardNameSettings(SingletonModel):

@@ -38,6 +38,7 @@ import operator
 from datetime import timedelta
 import numpy as np
 from builtins import map  # pylint: disable=redefined-builtin
+from decimal import Decimal
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -64,9 +65,11 @@ from .forms import (
     CTChartOptionsDisplayFormIncStandard,
     DXChartOptionsDisplayForm,
     DXChartOptionsDisplayFormIncStandard,
+    DiagnosticReferenceLevelsFormSet,
     DicomDeleteSettingsForm,
     GeneralChartOptionsDisplayForm,
     HomepageOptionsForm,
+    KFactorsFormSet,
     MGChartOptionsDisplayForm,
     MGChartOptionsDisplayFormIncStandard,
     MergeOnDeviceObserverUIDForm,
@@ -90,6 +93,7 @@ from .models import (
     AdminTaskQuestions,
     CtIrradiationEventData,
     BackgroundTask,
+    DiagnosticReferenceLevels,
     DicomDeleteSettings,
     DicomQuery,
     Exports,
@@ -98,6 +102,7 @@ from .models import (
     HighDoseMetricAlertSettings,
     HomePageAdminSettings,
     IrradEventXRayData,
+    KFactors,
     MergeOnDeviceObserverUIDSettings,
     NotPatientIndicatorsID,
     NotPatientIndicatorsName,
@@ -121,6 +126,7 @@ from .tools.populate_summary import (
     populate_summary_dx,
     populate_summary_rf,
 )
+from openrem.remapp.tools.standard_names import add_standard_name, delete_standard_name, update_all_standard_names_for_modality, update_standard_name
 from openrem.remapp.tools.background import (
     run_in_background,
     terminate_background,
@@ -2956,172 +2962,19 @@ class StandardNameAddCore(CreateView):
 
     def form_valid(self, form):
         if form.has_changed():
-            if not form.cleaned_data["standard_name"]:
-                messages.warning(self.request, "Blank standard name - no update made")
-                return redirect(self.success_url)
-
-            # Add new entries to the StandardNames table
-            new_ids_study = []
-            for item in form.cleaned_data["study_description"]:
-                new_entry = StandardNames(
-                    standard_name=form.cleaned_data["standard_name"],
-                    modality=form.cleaned_data["modality"],
-                    study_description=item,
-                )
-                try:
-                    new_entry.save()
-                    new_ids_study.append(new_entry.pk)
-                except IntegrityError as e:
-                    messages.warning(
-                        self.request, mark_safe("Error adding name: {0}".format(e.args))
-                    )
-                    return redirect(self.success_url)
-
-            new_ids_request = []
-            for item in form.cleaned_data["requested_procedure_code_meaning"]:
-                new_entry = StandardNames(
-                    standard_name=form.cleaned_data["standard_name"],
-                    modality=form.cleaned_data["modality"],
-                    requested_procedure_code_meaning=item,
-                )
-                try:
-                    new_entry.save()
-                    new_ids_request.append(new_entry.pk)
-                except IntegrityError as e:
-                    messages.warning(
-                        self.request, mark_safe("Error adding name: {0}".format(e.args))
-                    )
-                    return redirect(self.success_url)
-
-            new_ids_procedure = []
-            for item in form.cleaned_data["procedure_code_meaning"]:
-                new_entry = StandardNames(
-                    standard_name=form.cleaned_data["standard_name"],
-                    modality=form.cleaned_data["modality"],
-                    procedure_code_meaning=item,
-                )
-                try:
-                    new_entry.save()
-                    new_ids_procedure.append(new_entry.pk)
-                except IntegrityError as e:
-                    messages.warning(
-                        self.request, mark_safe("Error adding name: {0}".format(e.args))
-                    )
-                    return redirect(self.success_url)
-
-            new_ids_acquisition = []
-            for item in form.cleaned_data["acquisition_protocol"]:
-                new_entry = StandardNames(
-                    standard_name=form.cleaned_data["standard_name"],
-                    modality=form.cleaned_data["modality"],
-                    acquisition_protocol=item,
-                )
-                try:
-                    new_entry.save()
-                    new_ids_acquisition.append(new_entry.pk)
-                except IntegrityError as e:
-                    messages.warning(
-                        self.request, mark_safe("Error adding name: {0}".format(e.args))
-                    )
-                    return redirect(self.success_url)
-
-            # Obtain a list of the required studies
-            studies = GeneralStudyModuleAttr.objects
-            if form.cleaned_data["modality"] == "CT":
-                studies = studies.filter(modality_type="CT")
-            elif form.cleaned_data["modality"] == "MG":
-                studies = studies.filter(modality_type="MG")
-            elif form.cleaned_data["modality"] == "RF":
-                studies = studies.filter(modality_type="RF")
-            else:
-                studies = studies.filter(
-                    Q(modality_type__exact="DX")
-                    | Q(modality_type__exact="CR")
-                    | Q(modality_type__exact="PX")
-                )
-
-            # Add the standard names to the studies
-            self.add_multiple_standard_studies(
-                studies, new_ids_study, new_ids_request, new_ids_procedure
-            )
-
-            # Obtain a list of the required acquisitions
-            acquisitions = None
-            if form.cleaned_data["modality"] == "CT":
-                acquisitions = CtIrradiationEventData.objects
-            else:
-                # Filter the IrradEventXRayData.objects to just contain the required modality
-                q = ["DX", "CR", "PX"]
-                if form.cleaned_data["modality"] == "MG":
-                    q = ["MG"]
-                elif form.cleaned_data["modality"] == "RF":
-                    q = ["RF"]
-
-                q_criteria = reduce(
-                    operator.or_,
-                    (
-                        Q(
-                            projection_xray_radiation_dose__general_study_module_attributes__modality_type__icontains=item
-                        )
-                        for item in q
-                    ),
-                )
-                acquisitions = IrradEventXRayData.objects.filter(q_criteria)
-
-            # Add the standard names to the acquisitions
-            self.add_multiple_standard_acquisitions(acquisitions, new_ids_acquisition)
-
+            add_standard_name(self.request, form)
             return redirect(self.success_url)
         else:
             messages.info(self.request, "No changes made")
             return redirect(self.success_url)
-
-    def add_multiple_standard_studies(
-        self, studies, std_name_study_ids, std_name_request_ids, std_name_procedure_ids
-    ):
-
-        for standard_name in StandardNames.objects.filter(pk__in=std_name_study_ids):
-            standard_name.generalstudymoduleattr_set.add(
-                *studies.filter(
-                    study_description=standard_name.study_description
-                ).values_list("pk", flat=True)
-            )
-
-        for standard_name in StandardNames.objects.filter(pk__in=std_name_request_ids):
-            standard_name.generalstudymoduleattr_set.add(
-                *studies.filter(
-                    requested_procedure_code_meaning=standard_name.requested_procedure_code_meaning
-                ).values_list("pk", flat=True)
-            )
-
-        for standard_name in StandardNames.objects.filter(
-            pk__in=std_name_procedure_ids
-        ):
-            standard_name.generalstudymoduleattr_set.add(
-                *studies.filter(
-                    procedure_code_meaning=standard_name.procedure_code_meaning
-                ).values_list("pk", flat=True)
-            )
-
-    def add_multiple_standard_acquisitions(
-        self, acquisitions, std_name_acquisition_ids
-    ):
-
-        for standard_name in StandardNames.objects.filter(
-            pk__in=std_name_acquisition_ids
-        ):
-            if type(self).__name__ == "StandardNameAddCT":
-                standard_name.ctirradiationeventdata_set.add(
-                    *acquisitions.filter(
-                        acquisition_protocol=standard_name.acquisition_protocol
-                    ).values_list("pk", flat=True)
-                )
-            else:
-                standard_name.irradeventxraydata_set.add(
-                    *acquisitions.filter(
-                        acquisition_protocol=standard_name.acquisition_protocol
-                    ).values_list("pk", flat=True)
-                )
+        
+    def get_context_data(self, **context):
+        context = super().get_context_data(**context)
+        drl_formset = DiagnosticReferenceLevelsFormSet(prefix="drl_formset", queryset=DiagnosticReferenceLevels.objects.none())
+        kfactor_formset = KFactorsFormSet(prefix="kfactor_formset", queryset=KFactors.objects.none())
+        context["drl_formset"] = drl_formset
+        context["kfactor_formset"] = kfactor_formset
+        return context
 
 
 class StandardNameAddCT(StandardNameAddCore):  # pylint: disable=unused-variable
@@ -3139,6 +2992,8 @@ class StandardNameAddCT(StandardNameAddCore):  # pylint: disable=unused-variable
             admin[group.name] = True
         context["admin"] = admin
         context["modality_name"] = "CT"
+        context["drl_unit"] = "mGy.cm"
+        context["kfactor_unit"] = "mSv/(mGy.cm)"
         return context
 
 
@@ -3157,6 +3012,8 @@ class StandardNameAddDX(StandardNameAddCore):  # pylint: disable=unused-variable
             admin[group.name] = True
         context["admin"] = admin
         context["modality_name"] = "radiographic"
+        context["drl_unit"] = "cGy.cm^2"
+        context["kfactor_unit"] = "mSv/(cGy.cm^2)"
         return context
 
 
@@ -3175,6 +3032,8 @@ class StandardNameAddMG(StandardNameAddCore):  # pylint: disable=unused-variable
             admin[group.name] = True
         context["admin"] = admin
         context["modality_name"] = "mammographic"
+        context["drl_unit"] = "mGy"
+        context["kfactor_unit"] = "mSv/mGy"
         return context
 
 
@@ -3193,6 +3052,8 @@ class StandardNameAddRF(StandardNameAddCore):  # pylint: disable=unused-variable
             admin[group.name] = True
         context["admin"] = admin
         context["modality_name"] = "fluoroscopic"
+        context["drl_unit"] = "cGy.cm"
+        context["kfactor_unit"] = "mSv/(cGy.cm)"
         return context
 
 
@@ -3293,69 +3154,7 @@ class StandardNameDelete(DeleteView):  # pylint: disable=unused-variable
 
     def delete(self, *args, **kwargs):
         self.object = self.get_object()
-
-        # Obtain a list of relevant studies
-        studies = GeneralStudyModuleAttr.objects
-        if self.object.modality == "CT":
-            studies = studies.filter(modality_type="CT")
-        elif self.object.modality == "MG":
-            studies = studies.filter(modality_type="MG")
-        elif self.object.modality == "RF":
-            studies = studies.filter(modality_type="RF")
-        else:
-            studies = studies.filter(
-                Q(modality_type__exact="DX")
-                | Q(modality_type__exact="CR")
-                | Q(modality_type__exact="PX")
-            )
-
-        # Remove this standard_name reference to these studies as the standard name may have changed
-        self.object.generalstudymoduleattr_set.remove(
-            *studies.filter(
-                standard_names__standard_name=self.object.standard_name
-            ).values_list("pk", flat=True)
-        )
-
-        # Remove the standard_names entries from acquisitions
-        acquisitions = None
-        if self.object.modality == "CT":
-            acquisitions = CtIrradiationEventData.objects
-            self.object.ctirradiationeventdata_set.remove(
-                *acquisitions.filter(
-                    standard_protocols__standard_name=self.object.standard_name
-                ).values_list("pk", flat=True)
-            )
-        else:
-            # Filter the IrradEventXRayData.objects to just contain the required modality
-            q = ["DX", "CR", "PX"]
-            if self.object.modality == "MG":
-                q = ["MG"]
-            elif self.object.modality == "RF":
-                q = ["RF"]
-
-            q_criteria = reduce(
-                operator.or_,
-                (
-                    Q(
-                        projection_xray_radiation_dose__general_study_module_attributes__modality_type__icontains=item
-                    )
-                    for item in q
-                ),
-            )
-            acquisitions = IrradEventXRayData.objects.filter(q_criteria)
-
-            # Remove the standard names from the acquisitions
-            self.object.irradeventxraydata_set.remove(
-                *acquisitions.filter(
-                    standard_protocols__standard_name=self.object.standard_name
-                ).values_list("pk", flat=True)
-            )
-
-        # Remove entries with standard_name = self.object.standard_name from the StandardNames table
-        StandardNames.objects.filter(modality=self.object.modality).filter(
-            standard_name=self.object.standard_name
-        ).delete()
-
+        delete_standard_name(self.object)
         return HttpResponseRedirect(self.get_success_url())
 
 
@@ -3365,229 +3164,20 @@ class StandardNameUpdateCore(UpdateView):
 
     def form_valid(self, form):
         if form.has_changed():
-            # All StandardNames entries for the required modality
-            std_names = StandardNames.objects.filter(modality=self.object.modality)
-
-            # Obtain a list of relevant studies
-            studies = GeneralStudyModuleAttr.objects
-            if self.object.modality == "CT":
-                studies = studies.filter(modality_type="CT")
-            elif self.object.modality == "MG":
-                studies = studies.filter(modality_type="MG")
-            elif self.object.modality == "RF":
-                studies = studies.filter(modality_type="RF")
-            else:
-                studies = studies.filter(
-                    Q(modality_type__exact="DX")
-                    | Q(modality_type__exact="CR")
-                    | Q(modality_type__exact="PX")
-                )
-
-            # Remove references to the StandardName entries from generalstudymoduleattr for any study_description,
-            # requested_procedure_code_meaning or procedure_code_meaning values which have been removed from this
-            # standard name. Then remove the corresponding StandardName entries.
-            field_names = [
-                "study_description",
-                "requested_procedure_code_meaning",
-                "procedure_code_meaning",
-            ]
-            for field in field_names:
-                if field in form.changed_data:
-
-                    # Obtain a list of field name values that have been remove from this standard name
-                    names_to_remove = np.setdiff1d(
-                        form.initial[field], form.cleaned_data[field]
-                    )
-
-                    # Remove reference to these standard names from entries from generalstudymoduleattr
-                    self.object.generalstudymoduleattr_set.remove(
-                        *studies.filter(**{field + "__in": names_to_remove})
-                        .filter(standard_names__standard_name=self.object.standard_name)
-                        .values_list("pk", flat=True)
-                    )
-
-                    # Remove the corresponding StandardName entries
-                    std_names.filter(**{field + "__in": names_to_remove}).delete()
-
-            # Remove references to the StandardName entries from the irradiatedevent table for any acquisition_protocol
-            # values which have been removed from this standard name. Then remove the StandardName entries.
-            acquisitions = None
-            field = "acquisition_protocol"
-            if field in form.changed_data:
-
-                # Obtain a list of field name values that have been remove from this standard name
-                names_to_remove = np.setdiff1d(
-                    form.initial[field], form.cleaned_data[field]
-                )
-
-                if self.object.modality == "CT":
-                    # Remove reference to these standard names from entries from CtIrradiationEventData
-                    acquisitions = CtIrradiationEventData.objects
-                    self.object.ctirradiationeventdata_set.remove(
-                        *acquisitions.filter(**{field + "__in": names_to_remove})
-                        .filter(
-                            standard_protocols__standard_name=self.object.standard_name
-                        )
-                        .values_list("pk", flat=True)
-                    )
-                else:
-                    # Filter the IrradEventXRayData.objects to just contain the required modality
-                    q = ["DX", "CR", "PX"]
-                    if self.object.modality == "MG":
-                        q = ["MG"]
-                    elif self.object.modality == "RF":
-                        q = ["RF"]
-
-                    q_criteria = reduce(
-                        operator.or_,
-                        (
-                            Q(
-                                projection_xray_radiation_dose__general_study_module_attributes__modality_type__icontains=item
-                            )
-                            for item in q
-                        ),
-                    )
-                    acquisitions = IrradEventXRayData.objects.filter(q_criteria)
-
-                    # Remove reference to these standard names from entries from IrradEventXRayData
-                    self.object.irradeventxraydata_set.remove(
-                        *acquisitions.filter(**{field + "__in": names_to_remove})
-                        .filter(
-                            standard_protocols__standard_name=self.object.standard_name
-                        )
-                        .values_list("pk", flat=True)
-                    )
-
-                # Remove the corresponding StandardName entries
-                std_names.filter(**{field + "__in": names_to_remove}).delete()
-
-            # Add new entries to the StandardNames table
-            new_ids_study = []
-            if "study_description" in form.changed_data:
-                names_to_add = np.setdiff1d(
-                    form.cleaned_data["study_description"],
-                    form.initial["study_description"],
-                )
-                for item in names_to_add:
-                    new_entry = StandardNames(
-                        standard_name=form.cleaned_data["standard_name"],
-                        modality=form.cleaned_data["modality"],
-                        study_description=item,
-                    )
-                    new_entry.save()
-                    new_ids_study.append(new_entry.pk)
-
-            new_ids_request = []
-            if "requested_procedure_code_meaning" in form.changed_data:
-                names_to_add = np.setdiff1d(
-                    form.cleaned_data["requested_procedure_code_meaning"],
-                    form.initial["requested_procedure_code_meaning"],
-                )
-                for item in names_to_add:
-                    new_entry = StandardNames(
-                        standard_name=form.cleaned_data["standard_name"],
-                        modality=form.cleaned_data["modality"],
-                        requested_procedure_code_meaning=item,
-                    )
-                    new_entry.save()
-                    new_ids_request.append(new_entry.pk)
-
-            new_ids_procedure = []
-            if "procedure_code_meaning" in form.changed_data:
-                names_to_add = np.setdiff1d(
-                    form.cleaned_data["procedure_code_meaning"],
-                    form.initial["procedure_code_meaning"],
-                )
-                for item in names_to_add:
-                    new_entry = StandardNames(
-                        standard_name=form.cleaned_data["standard_name"],
-                        modality=form.cleaned_data["modality"],
-                        procedure_code_meaning=item,
-                    )
-                    new_entry.save()
-                    new_ids_procedure.append(new_entry.pk)
-
-            new_ids_acquisition = []
-            if "acquisition_protocol" in form.changed_data:
-                names_to_add = np.setdiff1d(
-                    form.cleaned_data["acquisition_protocol"],
-                    form.initial["acquisition_protocol"],
-                )
-                for item in names_to_add:
-                    new_entry = StandardNames(
-                        standard_name=form.cleaned_data["standard_name"],
-                        modality=form.cleaned_data["modality"],
-                        acquisition_protocol=item,
-                    )
-                    new_entry.save()
-                    new_ids_acquisition.append(new_entry.pk)
-
-            # Add the new standard names to the studies
-            self.add_multiple_standard_studies(
-                studies, new_ids_study, new_ids_request, new_ids_procedure
-            )
-
-            # Add the new standard names to the acquisitions
-            self.add_multiple_standard_acquisitions(acquisitions, new_ids_acquisition)
-
-            # Update the StandardNames standard name if it has been changed
-            if "standard_name" in form.changed_data:
-                std_names.filter(standard_name=form.initial["standard_name"]).update(
-                    standard_name=form.cleaned_data["standard_name"]
-                )
-
+            update_standard_name(self.request, form, self.object)
             messages.success(self.request, "Entry updated")
             return redirect(self.success_url)
         else:
             messages.info(self.request, "No changes made")
             return redirect(self.success_url)
 
-    def add_multiple_standard_studies(
-        self, studies, std_name_study_ids, std_name_request_ids, std_name_procedure_ids
-    ):
-
-        for standard_name in StandardNames.objects.filter(pk__in=std_name_study_ids):
-            standard_name.generalstudymoduleattr_set.add(
-                *studies.filter(
-                    study_description=standard_name.study_description
-                ).values_list("pk", flat=True)
-            )
-
-        for standard_name in StandardNames.objects.filter(pk__in=std_name_request_ids):
-            standard_name.generalstudymoduleattr_set.add(
-                *studies.filter(
-                    requested_procedure_code_meaning=standard_name.requested_procedure_code_meaning
-                ).values_list("pk", flat=True)
-            )
-
-        for standard_name in StandardNames.objects.filter(
-            pk__in=std_name_procedure_ids
-        ):
-            standard_name.generalstudymoduleattr_set.add(
-                *studies.filter(
-                    procedure_code_meaning=standard_name.procedure_code_meaning
-                ).values_list("pk", flat=True)
-            )
-
-    def add_multiple_standard_acquisitions(
-        self, acquisitions, std_name_acquisition_ids
-    ):
-
-        for standard_name in StandardNames.objects.filter(
-            pk__in=std_name_acquisition_ids
-        ):
-            if type(self).__name__ == "StandardNameUpdateCT":
-                standard_name.ctirradiationeventdata_set.add(
-                    *acquisitions.filter(
-                        acquisition_protocol=standard_name.acquisition_protocol
-                    ).values_list("pk", flat=True)
-                )
-            else:
-                standard_name.irradeventxraydata_set.add(
-                    *acquisitions.filter(
-                        acquisition_protocol=standard_name.acquisition_protocol
-                    ).values_list("pk", flat=True)
-                )
+    def get_context_data(self, **context):
+        context = super().get_context_data(**context)
+        drl_formset = DiagnosticReferenceLevelsFormSet(prefix="drl_formset", queryset=DiagnosticReferenceLevels.objects.filter(standard_name__in=[self.object]))
+        kfactor_formset = KFactorsFormSet(prefix="kfactor_formset", queryset=KFactors.objects.filter(standard_name__in=[self.object]))
+        context["drl_formset"] = drl_formset
+        context["kfactor_formset"] = kfactor_formset
+        return context
 
 
 class StandardNameUpdateCT(StandardNameUpdateCore):  # pylint: disable=unused-variable
@@ -3605,6 +3195,8 @@ class StandardNameUpdateCT(StandardNameUpdateCore):  # pylint: disable=unused-va
         for group in self.request.user.groups.all():
             admin[group.name] = True
         context["admin"] = admin
+        context["drl_unit"] = "mGy.cm"
+        context["kfactor_unit"] = "mSv/(mGy.cm)"
         return context
 
 
@@ -3623,6 +3215,8 @@ class StandardNameUpdateDX(StandardNameUpdateCore):  # pylint: disable=unused-va
         for group in self.request.user.groups.all():
             admin[group.name] = True
         context["admin"] = admin
+        context["drl_unit"] = "cGy.cm"
+        context["kfactor_unit"] = "mSv/(cGy.cm)"
         return context
 
 
@@ -3641,6 +3235,8 @@ class StandardNameUpdateRF(StandardNameUpdateCore):  # pylint: disable=unused-va
         for group in self.request.user.groups.all():
             admin[group.name] = True
         context["admin"] = admin
+        context["drl_unit"] = "cGy.cm"
+        context["kfactor_unit"] = "mSv/(cGy.cm)"
         return context
 
 
@@ -3659,6 +3255,8 @@ class StandardNameUpdateMG(StandardNameUpdateCore):  # pylint: disable=unused-va
         for group in self.request.user.groups.all():
             admin[group.name] = True
         context["admin"] = admin
+        context["drl_unit"] = "mGy"
+        context["kfactor_unit"] = "mSv/mGy"
         return context
 
 
@@ -3770,98 +3368,7 @@ def standard_name_update_all(request, modality=None):
         return redirect(reverse_lazy("standard_names_view"))
 
     if request.method == "GET":
-        # All StandardNames entries for the required modality
-        std_names = StandardNames.objects.filter(modality=modality)
-
-        # Obtain a list of relevant studies
-        studies = GeneralStudyModuleAttr.objects
-        if modality == "CT":
-            studies = studies.filter(modality_type="CT")
-        elif modality == "MG":
-            studies = studies.filter(modality_type="MG")
-        elif modality == "RF":
-            studies = studies.filter(modality_type="RF")
-        else:
-            studies = studies.filter(
-                Q(modality_type__exact="DX")
-                | Q(modality_type__exact="CR")
-                | Q(modality_type__exact="PX")
-            )
-
-        success_url = reverse_lazy("standard_names_view")
-
-        # Remove reference to the standard names from entries from generalstudymoduleattr (study level)
-        for std_name in std_names:
-            std_name.generalstudymoduleattr_set.clear()
-
-        # Remove references to the StandardName entries from the appropriate acquisition table
-        if modality == "CT":
-            for std_name in std_names:
-                std_name.ctirradiationeventdata_set.clear()
-        else:
-            for std_name in std_names:
-                std_name.irradeventxraydata_set.clear()
-
-        # Add the standard names back at the study level
-        for standard_name in std_names.filter(study_description__isnull=False):
-            standard_name.generalstudymoduleattr_set.add(
-                *studies.filter(
-                    study_description=standard_name.study_description
-                ).values_list("pk", flat=True)
-            )
-
-        for standard_name in std_names.filter(
-            requested_procedure_code_meaning__isnull=False
-        ):
-            standard_name.generalstudymoduleattr_set.add(
-                *studies.filter(
-                    requested_procedure_code_meaning=standard_name.requested_procedure_code_meaning
-                ).values_list("pk", flat=True)
-            )
-
-        for standard_name in std_names.filter(procedure_code_meaning__isnull=False):
-            standard_name.generalstudymoduleattr_set.add(
-                *studies.filter(
-                    procedure_code_meaning=standard_name.procedure_code_meaning
-                ).values_list("pk", flat=True)
-            )
-
-        # Add the standard names back at the acquisition level
-        acquisitions = None
-        if modality == "CT":
-            acquisitions = CtIrradiationEventData.objects
-        else:
-            # Filter the IrradEventXRayData.objects to just contain the required modality
-            q = ["DX", "CR", "PX"]
-            if modality == "MG":
-                q = ["MG"]
-            elif modality == "RF":
-                q = ["RF"]
-
-            q_criteria = reduce(
-                operator.or_,
-                (
-                    Q(
-                        projection_xray_radiation_dose__general_study_module_attributes__modality_type__icontains=item
-                    )
-                    for item in q
-                ),
-            )
-            acquisitions = IrradEventXRayData.objects.filter(q_criteria)
-
-        for standard_name in std_names.filter(acquisition_protocol__isnull=False):
-            if modality == "CT":
-                standard_name.ctirradiationeventdata_set.add(
-                    *acquisitions.filter(
-                        acquisition_protocol=standard_name.acquisition_protocol
-                    ).values_list("pk", flat=True)
-                )
-            else:
-                standard_name.irradeventxraydata_set.add(
-                    *acquisitions.filter(
-                        acquisition_protocol=standard_name.acquisition_protocol
-                    ).values_list("pk", flat=True)
-                )
+        update_all_standard_names_for_modality(modality)
 
         messages.success(
             request, "All {0} standard name entries refreshed".format(modality)
