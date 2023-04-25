@@ -224,6 +224,19 @@
                             </tr>
                         {% endwith %}
                     {% endwith %}
+                    <tr>
+                        <td>Total calculated peak skin dose to openSkin phantom (Gy):</td>
+                        <td>
+                            {% if accum_peak_skin_dose >= alert_levels.alert_skindose %}
+                                <strong style="color: red;">
+                                    {{ accum_peak_skin_dose|floatformat:1 }}
+                                </strong> (This is above the alert level of
+                                {{ alert_levels.alert_skindose|floatformat:1 }})
+                            {% else %}
+                                {{ accum_peak_skin_dose|floatformat:1 }}
+                            {% endif %}
+                        </td>
+                    </tr>
                 </table>
                 <br>
                 <table class="table table-condensed table-bordered" aria-describedby="Summary of studies from the past {{ alert_levels.accum_dose_delta_weeks }} weeks for this patient ID">
