@@ -187,7 +187,6 @@ def send_rf_high_dose_alert_email(study_pk=None, test_message=None, test_user=No
             )
     )
 
-    print("{0} and {1}".format(accum_peak_skin_dose, alert_levels["alert_skindose"]))
     alert_for_skin_dose = (
             alert_levels["send_high_dose_metric_alert_emails_skin"] and
             (
