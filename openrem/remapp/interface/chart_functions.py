@@ -36,7 +36,6 @@ import base64
 from builtins import range  # pylint: disable=redefined-builtin
 from datetime import datetime
 import textwrap
-import warnings
 
 from django.conf import settings
 from django.utils.translation import gettext as _
@@ -101,6 +100,7 @@ def create_dataframe(
     :param data_point_name_lowercase: boolean flag to determine whether to make all "names" field values lower case
     :param data_point_name_remove_whitespace_padding: boolean flag to determine whether to strip whitespace
     :param data_point_value_multipliers: list of float valuse to multiply each "values" field value by
+    :param char_wrap: the maximum length of series and system names before characters are wrapped with <br>
     :param uid: string containing database field name which contains a unique identifier for each record
     :return: a Pandas DataFrame with a column per required field
     """
@@ -182,23 +182,19 @@ def create_dataframe(
         df[date_field] = pd.to_datetime(df[date_field], format="%Y-%m-%d")
 
     # Character wrap the system and name fields
-    with warnings.catch_warnings():
-        warnings.filterwarnings("ignore", category=FutureWarning)
-        df.update(
-            df["x_ray_system_name"].apply(
-                lambda x: (textwrap.fill(x, char_wrap)).replace("\n", "<br>")
-            )
+    df.update(
+        df["x_ray_system_name"].apply(
+            lambda x: (textwrap.fill(x, char_wrap)).replace("\n", "<br>")
         )
+    )
 
     df["x_ray_system_name"] = df["x_ray_system_name"].astype("category")
     for field in field_dict["names"]:
-        with warnings.catch_warnings():
-            warnings.filterwarnings("ignore", category=FutureWarning)
-            df.update(
-                df[field].apply(
-                    lambda x: (textwrap.fill(x, char_wrap)).replace("\n", "<br>")
-                )
+        df.update(
+            df[field].apply(
+                lambda x: (textwrap.fill(x, char_wrap)).replace("\n", "<br>")
             )
+        )
         df[field] = df[field].astype("category")
 
     if settings.DEBUG:
@@ -555,6 +551,13 @@ def plotly_boxplot(
         df = df.dropna(subset=[params["df_value_col"]])
         if df.empty:
             return empty_dataframe_msg(params)
+
+        # Remove any unused categories that are as a result of the dropna above: these would cause the boxplot to fail.
+        # This command results in a SettingWithCopyWarning that does not affect the underlying data in this use case.
+        # I am temporarily disabling the warning for this one command, then setting it back to the default of "warn".
+        pd.options.mode.chained_assignment = None
+        df["x_ray_system_name"] = df["x_ray_system_name"].cat.remove_unused_categories()
+        pd.options.mode.chained_assignment = "warn"
 
         if params["facet_col"]:
             chart_height, n_facet_rows = calc_facet_rows_and_height(
