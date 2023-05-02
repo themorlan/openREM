@@ -2198,7 +2198,6 @@ class StandardNameFormNM(StandardNameFormBase):
         self.fields["modality"].initial = "NM"
 
         try:
-            del self.fields["study_description"]
             del self.fields["requested_procedure_code_meaning"]
             del self.fields["procedure_code_meaning"]
             del self.fields["acquisition_protocol"]
@@ -2207,18 +2206,38 @@ class StandardNameFormNM(StandardNameFormBase):
 
 
         all_studies = GeneralStudyModuleAttr.objects.filter(modality_type__iexact="NM").order_by("study_description")
-        filtered_studies = []
+        
+        standard_names = (
+            StandardNames.objects.all()
+            .filter(modality="NM")
+            .values("study_description")
+            .exclude(**{"study_description": None})
+        )
+
+        items_to_exclude = []
+        initial_choices = []
+
         if "standard_name" in self.initial:
-            filtered_studies = all_studies.filter(
+            items_to_exclude = standard_names.exclude(
                 standard_name=self.initial["standard_name"]
             )
+            initial_choices = standard_names.filter(
+                standard_name=self.initial["standard_name"]
+            )
+        
+        all_studies = all_studies.exclude(
+            **{"study_description__in": items_to_exclude}
+        )
 
-        query_choices = [(item, item) for item in self._get_pairs(all_studies)]
-        initial_choices = [(item, item) for item in self._get_pairs(filtered_studies)]
+        query_choices = [(item, item) for item in self._get_pairs(all_studies) if item not in items_to_exclude]
+        initial_choices = [item["study_description"] for item in initial_choices]
 
-        self.initial["study_description_radiopharmaceutical_pairs"] = initial_choices
+        print(query_choices)
+        print(initial_choices)
 
-        self.fields["study_description_radiopharmaceutical_pairs"] = forms.MultipleChoiceField(
+        self.initial["study_description"] = initial_choices
+
+        self.fields["study_description"] = forms.MultipleChoiceField(
             choices=query_choices,
             required=False,
             widget=FilteredSelectMultiple(

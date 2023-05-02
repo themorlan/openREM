@@ -135,10 +135,16 @@ def add_standard_name(request, form):
         return
 
     for field_name in STANDARD_STUDY_NAME_MAPPING_FIELDS:
-        _add_standard_study_names_for_field(field_name, request, **data)
+        try:
+            _add_standard_study_names_for_field(field_name, request, **data)
+        except KeyError:
+            pass
 
     for field_name in STANDARD_ACQUISITION_NAME_FIELDS:
-        _add_standard_acquisition_names_for_field(field_name, request, **data)
+        try:
+            _add_standard_acquisition_names_for_field(field_name, request, **data)
+        except KeyError:
+            pass
 
     std_names = StandardNames.objects.filter(modality=data["modality"]).filter(
         standard_name__exact=data["standard_name"]
