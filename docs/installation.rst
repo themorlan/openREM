@@ -2,8 +2,6 @@
 Installation
 ************
 
-**Document not ready for translation**
-
 Installation options
 ====================
 

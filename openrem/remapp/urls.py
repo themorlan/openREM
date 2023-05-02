@@ -50,9 +50,7 @@ from .extractors import import_views
 main_patterns = [
     path("rf/<int:pk>/", views.rf_detail_view, name="rf_detail_view"),
     path("", views.openrem_home, name="home"),
-    path("hometotals/", views.update_modality_totals, name="update_modality_totals"),
     path("homestudies/", views.update_latest_studies, name="update_latest_studies"),
-    path("homeworkload/", views.update_study_workload, name="update_study_workload"),
     path("alerts/", views.alert_summary, name="alert_summary"),
     path("patients/", views.patients_summary, name="patients_summary"),
     path("patients/<int:id>", views.patient_details, name="patient_details"),

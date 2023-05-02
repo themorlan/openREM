@@ -265,32 +265,7 @@ definitions:
         name: build and push to docker
         script:
           - export IMAGE_NAME=openrem/openrem:$BITBUCKET_BRANCH-$BITBUCKET_COMMIT
-          - docker build -t openrem/openrem:$BITBUCKET_BRANCH-$BITBUCKET_COMMIT -t openrem/openrem:$BITBUCKET_BRANCH .
-          - docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PASSWORD
-          - docker push --all-tags openrem/openrem
-        services:
-          - docker
-        caches:
-          - docker
-    - step: &add-tag-to-docker
-        name: add tag to existing image and re-push to docker
-        script:
-          - export IMAGE_NAME=openrem/openrem:$BITBUCKET_BRANCH-$BITBUCKET_COMMIT
-          - export NEW_IMAGE_NAME=openrem/openrem:$BITBUCKET_TAG
-          - docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PASSWORD
-          - docker pull $IMAGE_NAME
-          - docker tag $IMAGE_NAME $NEW_IMAGE_NAME
-          - docker push $NEW_IMAGE_NAME
-        services:
-          - docker
-        caches:
-          - docker
-    - step: &build-and-deploy-to-docker-with-tag
-        name: build and tag image and push to docker
-        script:
-          - export IMAGE_NAME=openrem/openrem:$BITBUCKET_BRANCH-$BITBUCKET_COMMIT
-          - export NEW_IMAGE_NAME=openrem/openrem:$BITBUCKET_TAG
-          - docker build -t openrem/openrem:$BITBUCKET_BRANCH-$BITBUCKET_COMMIT -t openrem/openrem:$BITBUCKET_BRANCH -t openrem/openrem:$BITBUCKET_TAG .
+          - docker build -t openrem/openrem:$BITBUCKET_BRANCH-$BITBUCKET_COMMIT -t openrem/openrem:$BITBUCKET_BRANCH -t openrem/openrem:$BITBUCKET_COMMIT .
           - docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PASSWORD
           - docker push --all-tags openrem/openrem
         services:
@@ -307,10 +282,6 @@ pipelines:
           deployment: testing  # deployment has $server as a variable = testing.openrem.org
     deploy-to-docker:
       - step: *build-and-deploy-to-docker
-    deploy-to-docker-with-tag:
-      - step: *build-and-deploy-to-docker-with-tag
-    add-tag-to-docker:
-      - step: *add-tag-to-docker
     test-python-3.8:
       - step: *test-python3.8
     test-python-3.9:
@@ -354,19 +325,18 @@ pipelines:
       - step:
           <<: *build-and-deploy-to-docker
           name: build and push to Docker Hub
-#  tags:
-#    '*':
-#      - step:
-#          name: retag and repush image
-#          deployment: Production
-#          script:
-#            - export IMAGE_NAME=openrem/openrem:master-$BITBUCKET_COMMIT
-#            - export NEW_IMAGE_NAME=openrem/openrem:$BITBUCKET_TAG
-#            - docker login --username $DOCKER_HUB_USER --password $DOCKER_HUB_PASSWORD
-#            - docker pull $IMAGE_NAME
-#            - docker tag $IMAGE_NAME $NEW_IMAGE_NAME
-#            - docker push $NEW_IMAGE_NAME
-#          services:
-#            - docker
-#          caches:
-#            - docker
+  tags:
+    '*':
+      - step:
+          name: retag and repush image
+          script:
+            - export IMAGE_NAME=openrem/openrem:$BITBUCKET_COMMIT
+            - export NEW_IMAGE_NAME=openrem/openrem:$BITBUCKET_TAG
+            - docker login --username $DOCKER_HUB_USER --password $DOCKER_HUB_PASSWORD
+            - docker pull $IMAGE_NAME
+            - docker tag $IMAGE_NAME $NEW_IMAGE_NAME
+            - docker push $NEW_IMAGE_NAME
+          services:
+            - docker
+          caches:
+            - docker

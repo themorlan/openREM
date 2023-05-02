@@ -5,18 +5,20 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: \n"
+"Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-04-17 17:58+0100\n"
-"PO-Revision-Date: 2020-11-28 13:29+0000\n"
-"Last-Translator: Ed McDonagh <ed@mcdonagh.org.uk>\n"
-"Language-Team: German <https://hosted.weblate.org/projects/openrem/web-"
-"interface/de/>\n"
-"Language: de\n"
+"PO-Revision-Date: 2020-12-21 21:29+0000\n"
+"Last-Translator: Romualdas Griškevičius <romasg@gmail.com>\n"
+"Language-Team: Lithuanian <https://hosted.weblate.org/projects/openrem/web-"
+"interface/lt/>\n"
+"Language: lt\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"Plural-Forms: nplurals=3; plural=(n % 10 == 1 && (n % 100 < 11 || n % 100 > "
+"19)) ? 0 : ((n % 10 >= 2 && n % 10 <= 9 && (n % 100 < 11 || n % 100 > 19)) ? "
+"1 : 2);\n"
 "X-Generator: Weblate 4.4-dev\n"
 
 #: remapp/exports/ct_export.py:176
@@ -25,8 +27,8 @@ msgid ""
 "Writing study {row} of {numrows} to All data sheet and individual protocol "
 "sheets"
 msgstr ""
-"Schreiben von Studien-{row} von {numrows} in das Tabellenblatt All data und "
-"in die einzelnen Protokollblätter"
+"Rašomas tyrimo {row} iš {numrows} į visų duomenų lapą ir į atskirus "
+"protokolo lapus"
 
 #: remapp/forms.py:76
 msgid "Select a file"
@@ -136,10 +138,8 @@ msgstr ""
 
 #: remapp/forms.py:298 remapp/forms.py:489 remapp/forms.py:522
 #: remapp/forms.py:715 remapp/forms.py:827 remapp/forms.py:1070
-#, fuzzy
-#| msgid "Chart options"
 msgid "Chart sorting"
-msgstr "Graphikoptionen"
+msgstr ""
 
 #: remapp/forms.py:304 remapp/forms.py:494 remapp/forms.py:567
 #: remapp/forms.py:721 remapp/forms.py:1169
@@ -298,10 +298,8 @@ msgid "Chart label character wrap length"
 msgstr ""
 
 #: remapp/forms.py:1198
-#, fuzzy
-#| msgid "Chart options"
 msgid "Chart grouping"
-msgstr "Graphikoptionen"
+msgstr ""
 
 #: remapp/forms.py:1203
 msgid "Chart theme"
@@ -333,13 +331,13 @@ msgstr ""
 
 #: remapp/forms.py:1312 remapp/templates/base.html:52 remapp/views.py:890
 msgid "CT"
-msgstr "CT"
+msgstr "KT"
 
 #: remapp/forms.py:1313
 #, fuzzy
 #| msgid "Fluoroscopy"
 msgid "Fluoroscopy (XA and RF)"
-msgstr "Durchleuchtung"
+msgstr "Fluoroskopija"
 
 #: remapp/forms.py:1314
 msgid "DX, including CR"
@@ -347,7 +345,7 @@ msgstr ""
 
 #: remapp/forms.py:1315 remapp/templates/base.html:60 remapp/views.py:894
 msgid "Mammography"
-msgstr "Mammographie"
+msgstr "Mamografija"
 
 #: remapp/forms.py:1316 remapp/views.py:898
 msgid "Nuclear Medicine"
@@ -381,11 +379,8 @@ msgstr ""
 
 #: remapp/forms.py:1358
 #, fuzzy
-#| msgid ""
-#| "Checking to see if any response studies are already in the OpenREM "
-#| "database"
 msgid "Ignore studies already in the database?"
-msgstr "Überprüfung ob bereits Studien in der OpenREM Datenbank vorhanden sind"
+msgstr "Tikrinama, ar „OpenREM“ duomenų bazėje jau yra  tyrimų atsakymų"
 
 #: remapp/forms.py:1362
 msgid ""
@@ -446,24 +441,24 @@ msgid "No data left after excluding missing values."
 msgstr ""
 
 #: remapp/netdicom/qrscu.py:177
+#, fuzzy
 msgid ""
 "Checking to see if any response studies are already in the OpenREM database"
-msgstr "Überprüfung ob bereits Studien in der OpenREM Datenbank vorhanden sind"
+msgstr "Tikrinama, ar „OpenREM“ duomenų bazėje jau yra  tyrimų atsakymų"
 
 #: remapp/netdicom/qrscu.py:270
 #, python-brace-format
 msgid ""
 "Filter at {level} level on {filter_name} that {filter_type} {filter_list}"
 msgstr ""
-"Filterung über {level} Kriterium {filter_name} auf {filter_type} "
-"{filter_list}"
 
 #: remapp/netdicom/qrscu.py:342
+#, fuzzy
 msgid ""
 "Getting series and image level information and deleting series we can't use"
 msgstr ""
-"Auslesen von Informationen auf Serien- und Bildebene und löschen von Serien "
-"die nicht verwendet werden können"
+"Gautnama nformaciją apie serijas ir vaizdo lygius bei ištrinamos serijos, "
+"kurių negalime naudoti"
 
 #: remapp/netdicom/qrscu.py:959
 msgid "Association aborted twice in succession. Aborting query"
@@ -485,60 +480,55 @@ msgstr ""
 #: remapp/netdicom/qrscu.py:1049
 msgid "Image level matching for this study is complete (there many be more)"
 msgstr ""
-"Abgleich auf Bildebene ist für diese Studie abgeschlossen (es können noch "
-"mehr vorhanden sein)"
 
 #: remapp/netdicom/qrscu.py:1067
 msgid "Image level matches are continuing."
-msgstr "Abgleich auf Bildebene wird fortgeführt."
+msgstr ""
 
 #: remapp/netdicom/qrscu.py:1107 remapp/netdicom/qrscu.py:1225
 #: remapp/netdicom/qrscu.py:1342
 msgid "Connection timed out, was aborted or received invalid response"
-msgstr "Verbindungsabbruch oder ungültige Rückantwort"
+msgstr ""
+"Baigėsi ryšio laikas, jis buvo nutrauktas arba gautas neteisingas atsakymas"
 
 #: remapp/netdicom/qrscu.py:1161
 msgid "Series level matching for this study is complete (there may be more)"
 msgstr ""
-"Abgleich auf Serienebene ist für diese Studie abgeschlossen (es können noch "
-"mehr vorhanden sein)"
 
 #: remapp/netdicom/qrscu.py:1170
 msgid "Series level matches are continuing."
-msgstr "Abgleich auf Serienebene wird fortgeführt."
+msgstr ""
 
 #: remapp/netdicom/qrscu.py:1272
 #, python-brace-format
 msgid "Study level matching for {modalities} is complete"
-msgstr "Abgleich auf Studienebene für {modalities} ist abgeschlossen"
+msgstr ""
 
 #: remapp/netdicom/qrscu.py:1284
 #, python-brace-format
 msgid "Matches are continuing for {modalities} studies"
-msgstr "Abgleich wird für {modalities} Studien fortgeführt"
+msgstr ""
 
 #: remapp/netdicom/qrscu.py:1371
 #, python-brace-format
 msgid "Currently querying for {modality} studies…"
-msgstr "Abfrage für {modality} Studien läuft…"
+msgstr ""
 
 #: remapp/netdicom/qrscu.py:1781
 msgid "Pruning study responses based on inc/exc options"
 msgstr ""
-"Rückmeldungen zu Studien wird limiert basierend auf Einschluss/Ausschluss "
-"Optionen"
 
 #: remapp/netdicom/qrscu.py:1806
 msgid "Querying at series level to get more details about studies"
-msgstr "Abfrage auf Serienebene um mehr Details zu den Studien zu erhalten"
+msgstr ""
 
 #: remapp/netdicom/qrscu.py:1830
 msgid "Deleting studies we didn't ask for"
-msgstr "Löschen von Studien, die nicht abgefragt wurden"
+msgstr ""
 
 #: remapp/netdicom/qrscu.py:1867
 msgid "Pruning series responses"
-msgstr "Limitieren von Serienrückmeldungen"
+msgstr ""
 
 #: remapp/netdicom/qrscu.py:1895
 #, python-brace-format
@@ -568,8 +558,6 @@ msgstr ""
 #: remapp/netdicom/qrscu.py:1933
 msgid "Removing any responses that match data we already have in the database"
 msgstr ""
-"Löschen von Rückmeldungen, deren Daten bereits in der Datenbank vorhanden "
-"sind"
 
 #: remapp/netdicom/qrscu.py:1962
 #, python-brace-format
@@ -577,49 +565,32 @@ msgid ""
 "Query complete. Query took {time} and we are left with {studies_left} "
 "studies to move.<br>Of the original {studies_initial} study responses, "
 msgstr ""
-"Abfrage komplett. Zeitdauer {time} und es bleiben {studies_left} Studien von "
-"den ursprünglichen {studies_initial} Studienrückmeldungen für den Transfer "
-"übrig, "
 
 #: remapp/netdicom/qrscu.py:1976
 #, python-brace-format
 msgid ""
 "only studies with description that include '{text}' removed {num} studies, "
 msgstr ""
-"nur Studien bei denen '{text}' in der Beschreibung vorkommt wurden {num} "
-"gelöscht, "
 
 #: remapp/netdicom/qrscu.py:1983
 #, python-brace-format
 msgid ""
 "studies with description that do not include '{text}' removed {num} studies, "
 msgstr ""
-"von Studien, bei denen '{text}' nicht in der Beschreibung vorkommnt wurden "
-"{num} gelöscht, "
 
 #: remapp/netdicom/qrscu.py:1990
-#, fuzzy, python-brace-format
-#| msgid ""
-#| "only studies with description that include '{text}' removed {num} "
-#| "studies, "
+#, python-brace-format
 msgid ""
 "only studies with station names that include '{text}' at {filter_level} "
 "level removed {num} studies, "
 msgstr ""
-"nur Studien bei denen '{text}' in der Beschreibung vorkommt wurden {num} "
-"gelöscht, "
 
 #: remapp/netdicom/qrscu.py:1999
-#, fuzzy, python-brace-format
-#| msgid ""
-#| "studies with description that do not include '{text}' removed {num} "
-#| "studies, "
+#, python-brace-format
 msgid ""
 "studies with station names that do not include '{text}' at {filter_level} "
 "level removed {num} studies, "
 msgstr ""
-"von Studien, bei denen '{text}' nicht in der Beschreibung vorkommnt wurden "
-"{num} gelöscht, "
 
 #: remapp/netdicom/qrscu.py:2008
 #, python-brace-format
@@ -627,16 +598,11 @@ msgid "<br>Filtering for {pruning_logs}."
 msgstr ""
 
 #: remapp/netdicom/qrscu.py:2014
-#, fuzzy, python-brace-format
-#| msgid ""
-#| "Removing duplicates of previous objects removed {duplicates_removed} "
-#| "studies."
+#, python-brace-format
 msgid ""
 "<br>Removing duplicates of previous objects removed {duplicates_removed} "
 "studies."
 msgstr ""
-"Durch löschen von Duplikaten der letzten Objekte wurden {duplicates_removed} "
-"Studien gelöscht."
 
 #: remapp/netdicom/qrscu.py:2020
 #, python-brace-format
@@ -661,11 +627,11 @@ msgstr ""
 
 #: remapp/templates/base.html:56 remapp/views.py:892
 msgid "Fluoroscopy"
-msgstr "Durchleuchtung"
+msgstr "Fluoroskopija"
 
 #: remapp/templates/base.html:64 remapp/views.py:896
 msgid "Radiography"
-msgstr "Radiographie"
+msgstr "Radiologija"
 
 #: remapp/templates/base.html:68
 msgid "NM/PET"
@@ -673,21 +639,21 @@ msgstr ""
 
 #: remapp/templates/base.html:80
 msgid "Imports"
-msgstr "Importe"
+msgstr "Importavimas"
 
 #: remapp/templates/base.html:84
 #, fuzzy
-#| msgid "Previous patient size imports"
+#| msgid "Import patient size info"
 msgid "Patient size imports"
-msgstr "Vorherige Importe der Patientengröße"
+msgstr "Importuoti paciento dydžio informaciją"
 
 #: remapp/templates/base.html:85
 msgid "Import patient size info"
-msgstr "Informationen zur Patientengröße importieren"
+msgstr "Importuoti paciento dydžio informaciją"
 
 #: remapp/templates/base.html:88
 msgid "Previous patient size imports"
-msgstr "Vorherige Importe der Patientengröße"
+msgstr ""
 
 #: remapp/templates/base.html:92
 msgid "DICOM query-retrieve"
@@ -695,7 +661,7 @@ msgstr ""
 
 #: remapp/templates/base.html:93
 msgid "Query remote server"
-msgstr "Serverabfrage"
+msgstr ""
 
 #: remapp/templates/base.html:94
 msgid "Previous queries"
@@ -703,11 +669,11 @@ msgstr ""
 
 #: remapp/templates/base.html:104
 msgid "Tasks"
-msgstr "Aufgaben"
+msgstr ""
 
 #: remapp/templates/base.html:108
 msgid "Exports"
-msgstr "Exporte"
+msgstr ""
 
 #: remapp/templates/base.html:111
 msgid "All tasks"
@@ -715,81 +681,79 @@ msgstr ""
 
 #: remapp/templates/base.html:120
 msgid "Config"
-msgstr "Konfigurieren"
+msgstr ""
 
 #: remapp/templates/base.html:123
 msgid "User level config"
-msgstr "Konfiguration auf Benutzerebene"
+msgstr ""
 
 #: remapp/templates/base.html:124
 msgid "Chart options"
-msgstr "Graphikoptionen"
+msgstr ""
 
 #: remapp/templates/base.html:127
 msgid "Switch charts off"
-msgstr "Graphiken ausschalten"
+msgstr ""
 
 #: remapp/templates/base.html:129
 msgid "Switch charts on"
-msgstr "Graphiken einschalten"
+msgstr ""
 
 #: remapp/templates/base.html:133
 msgid "View display names & modality"
-msgstr "Anzeige von Gerätenamen und Modalitäten"
+msgstr ""
 
 #: remapp/templates/base.html:134
 msgid "View not-patient indicators"
-msgstr "Nicht patientenbezogene Indikatoren anzeigen"
+msgstr ""
 
 #: remapp/templates/base.html:138
 msgid "Home page options"
-msgstr "Optionen für die Startseite"
+msgstr ""
 
 #: remapp/templates/base.html:143
 msgid "System level settings"
-msgstr "Einstellungen auf Systemebene"
+msgstr ""
 
 #: remapp/templates/base.html:144
 msgid "Users"
-msgstr "Benutzer"
+msgstr ""
 
 #: remapp/templates/base.html:145
 msgid "Display names & modality"
-msgstr "Gerätenamen und Modalitäten"
+msgstr ""
 
 #: remapp/templates/base.html:146
 msgid "DICOM object deletion"
-msgstr "Löschen von DICOM Objekten"
+msgstr ""
 
 #: remapp/templates/base.html:147
 msgid "DICOM networking"
-msgstr "DICOM Netzwerk"
+msgstr ""
 
 #: remapp/templates/base.html:148
 msgid "Patient ID"
-msgstr "Patienten ID"
+msgstr ""
 
 #: remapp/templates/base.html:149
 msgid "Not-patient indicators"
-msgstr "Indikatoren ohne Patientenbezug"
+msgstr ""
 
 #: remapp/templates/base.html:150
 msgid "Skin dose map"
-msgstr "Hautdosisverteilung"
+msgstr ""
 
 #: remapp/templates/base.html:151
 msgid "Fluoro alert levels"
-msgstr "Warnschwellen für die Durchleuchtung"
+msgstr ""
 
 #: remapp/templates/base.html:152
 msgid "Fluoro alert notification"
-msgstr "Benachrichtigung für die Durchleuchtung"
+msgstr ""
 
 #: remapp/templates/base.html:153
-#, fuzzy
-#| msgid "System level settings"
 msgid "Standard name settings"
-msgstr "Einstellungen auf Systemebene"
+msgstr ""
 
 #: remapp/templates/base.html:155
 msgid "Standard name mapping"
@@ -801,54 +765,54 @@ msgstr ""
 
 #: remapp/templates/base.html:172
 msgid "User"
-msgstr "Nutzer"
+msgstr ""
 
 #: remapp/templates/base.html:178
 msgid "Change password"
-msgstr "Passwort ändern"
+msgstr ""
 
 #: remapp/templates/base.html:179
 msgid "Logout"
-msgstr "Abmelden"
+msgstr ""
 
 #: remapp/templates/base.html:182
 msgid "Login"
-msgstr "Anmelden"
+msgstr ""
 
 #: remapp/templates/base.html:189
 msgid "Docs"
-msgstr "Dokumentation"
+msgstr ""
 
 #: remapp/templates/base.html:196
 msgid "OpenREM documentation - opens in a new tab"
-msgstr "OpenREM Dokumentation - öffnet sich in einem neuen Tab"
+msgstr ""
 
 #: remapp/templates/base.html:197
 #, python-format
 msgid "OpenREM Documentation (%(docsversion)s)"
-msgstr "OpenREM Dokumentation (%(docsversion)s)"
+msgstr ""
 
 #: remapp/templates/remapp/home-list-modalities.html:7
 #: remapp/templates/remapp/home.html:175
 msgid "System name"
-msgstr "Systemname"
+msgstr ""
 
 #: remapp/templates/remapp/home-list-modalities.html:8
 #: remapp/templates/remapp/home.html:176
 msgid "Total number of studies"
-msgstr "Gesamtzahl der Studien"
+msgstr ""
 
 #: remapp/templates/remapp/home-list-modalities.html:9
 #: remapp/templates/remapp/home.html:177
 msgid "Latest study"
-msgstr "Neueste Studie"
+msgstr ""
 
 #: remapp/templates/remapp/home-list-modalities.html:11
 #: remapp/templates/remapp/home-list-modalities.html:13
 #: remapp/templates/remapp/home.html:179 remapp/templates/remapp/home.html:181
 #, python-format
 msgid "Number in last %(day_delta)s days"
-msgstr "Anzahl in den letzten %(day_delta)s-Tagen"
+msgstr ""
 
 #: remapp/templates/remapp/home.html:64
 #, python-format
@@ -856,20 +820,18 @@ msgid ""
 "There are %(total_studies)s studies in this database. Page last refreshed on "
 "%(current_time)s"
 msgstr ""
-"In dieser Datenbank sind %(total_studies)s Studien vorhanden. Die Seite "
-"wurde zuletzt um %(current_time)s aktualisiert"
 
 #: remapp/templates/remapp/home.html:69
 msgid "Chart plotting on."
-msgstr "Diagrammanzeige ein."
+msgstr ""
 
 #: remapp/templates/remapp/home.html:71
 msgid "Chart plotting off."
-msgstr "Diagrammanzeige aus."
+msgstr ""
 
 #: remapp/templates/remapp/home.html:187
 msgid "Please wait - querying the database"
-msgstr "Bitte warten - die Datenbank wird abgefragt"
+msgstr ""
 
 #: remapp/templates/remapp/openskinsafelist_add.html:52
 #: remapp/templates/remapp/openskinsafelist_confirm_delete.html:95
@@ -936,10 +898,8 @@ msgstr ""
 
 #: remapp/views_charts_nm.py:304 remapp/views_charts_nm.py:464
 #: remapp/views_charts_nm.py:498
-#, fuzzy
-#| msgid "System name"
 msgid "System"
-msgstr "Systemname"
+msgstr ""
 
 #: remapp/views_charts_nm.py:307
 msgid "OpenREM NM study description frequency"
@@ -1026,34 +986,3 @@ msgstr ""
 #: remapp/views_openskin.py:382
 msgid "Only members of the admin group can change the openSkin safe list"
 msgstr ""
-
-#, fuzzy
-#~| msgid ""
-#~| "only studies with station names that include '{text}' removed {num} "
-#~| "studies, "
-#~ msgid ""
-#~ "only studies at {filter_level} level with station names that include "
-#~ "'{text}' removed {num} studies, "
-#~ msgstr ""
-#~ "von Studien bei denen der Gerätename '{text}' enthält wurden {num} "
-#~ "gelöscht, "
-
-#, fuzzy
-#~| msgid ""
-#~| "studies with station names that do not include '{text}' removed {num} "
-#~| "studies, "
-#~ msgid ""
-#~ "studies at {filter_level} level with station names that do not include "
-#~ "'{text}' removed {num} studies, "
-#~ msgstr ""
-#~ "von Studien, bei denen im Gerätenamen '{text}' nicht auftaucht wurden "
-#~ "{num} gelöscht, "
-
-#~ msgid "German"
-#~ msgstr "Deutsch"
-
-#~ msgid "English"
-#~ msgstr "Englisch"
-
-#~ msgid "Number in last %(day_delta_b)s days"
-#~ msgstr "Nummer in den letzten %(day_delta_b)s-Tagen"

@@ -12,8 +12,8 @@ available at the right hand end of the navigation bar:
 .. image:: img/AdminImportMenu.png
     :align: right
     :alt: Admin import patient size data menu
-    :width: 314px
-    :height: 110px
+    :width: 235px
+    :height: 143px
 
 The first option takes you to a page where you can upload a csv file
 containing details of the patient height and weight, plus either the
@@ -22,8 +22,8 @@ accession number or the Study Instance UID.
 .. image:: img/AdminUploadPtSzCSV.png
     :align: center
     :alt: Uploading CSV files containing patient size information
-    :width: 730px
-    :height: 497px
+    :width: 792px
+    :height: 638px
 
 .. image:: img/AdminUploadButton.png
     :align: right
@@ -116,7 +116,7 @@ Usage:
   Use Study Instance UID instead of Accession Number.
 
 ``-v, --verbose``
-  *New in 0.3.7* Print to the standard output the success or otherwise of inserting each value.
+  Print to the standard output the success or otherwise of inserting each value.
 
 ``csvfile``
   csv file containing the height and/or weight information and study identifier.

@@ -1,8 +1,6 @@
 Docker SELinux configuration
 ============================
 
-**Document not ready for translation**
-
 SELinux will prevent bind mounts in Docker with the standard configuration, which will be seen because Orthanc fails
 to start. SELinux is commonly enabled on Red Hat, Fedora and associated distributions.
 

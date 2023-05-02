@@ -1,6 +1,5 @@
 Home page options
 *****************
-*New in 0.8.2*
 
 .. contents::
 

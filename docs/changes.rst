@@ -3,8 +3,14 @@ OpenREM version history
 =======================
 
 
-1.0.0a1 (2023-03-05)
+1.0.0b2 (2023-04-20)
 --------------------
+* :issue:`990`  SkinDose: fixed bug where a zero study dap causes a TypeError in the e-mail sending code
+* :issue:`988`  Imports: fixing hard-written DX text in MG import messages
+* :issue:`987`  Tasks: configuring Windows WinSW log files to roll over to ensure their size is restricted
+* :issue:`986`  SkinDose: fixed bug where a zero study dap causes a divide by zero error
+* :issue:`984`  Interface: improved performance of home page
+* :issue:`981`  Interface: reorganised the config menu
 * :issue:`980`  Interface: improved standard name form layout
 * :issue:`977`  Documentation: fix issues preventing translations to be built
 * :issue:`976`  NM charts: Fixed bug where graphs were not displayed correctly for some chart options
