@@ -1,8 +1,6 @@
 Errors at docker-compose up
 ===========================
 
-**Document not ready for translation**
-
 Cannot start service nginx
 --------------------------
 

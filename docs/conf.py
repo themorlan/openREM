@@ -16,7 +16,7 @@ import sys
 
 sys.path.insert(0, os.path.abspath(".."))
 sys.path.insert(0, os.path.abspath(os.path.join("..", "openrem")))
-from openrem.remapp.version import __version__, __short_version__, __repo_branch__
+from openrem.remapp.version import __version__, __short_version__
 
 os.environ["DJANGO_SETTINGS_MODULE"] = "openrem.openremproject.settings"
 django.setup()
@@ -53,8 +53,6 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.napoleon",
     "sphinx.ext.graphviz",
-    "sphinxcontrib.programoutput",
-    "sphinxcontrib.autoprogram",
     "sphinxarg.ext",
     "sphinx_issues",
     "sphinx_copybutton",
@@ -107,10 +105,6 @@ copybutton_prompt_text = (
 copybutton_prompt_is_regexp = True
 copybutton_line_continuation_character = "\\"
 
-rst_prolog = """
-    .. |openrem_orthanc_conf_link| raw:: html
-
-     <a href="https://bitbucket.org/openrem/openrem/raw/%s/stuff/openrem_orthanc_config.lua">openrem_orthanc_config.lua on bitbucket</a>
-""" % (
-    __repo_branch__
-)
+# -- Translations
+locale_dirs = ['locales/']
+gettext_compact = "docs"

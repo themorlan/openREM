@@ -37,7 +37,7 @@ def skin_map(
     transmission,
     table_mattress_thickness,
     angle_x,
-    angle_y
+    angle_y,
 ):
     """This function calculates a skin dose map.
 
@@ -182,7 +182,9 @@ def skin_map(
                         if check_orthogonal(table_normal, my_ray):
                             sin_alpha = x_ray.vector[2] / x_ray.length
                             path_length = table_mattress_thickness / sin_alpha
-                            mu_table = np.log(transmission) / (-table_mattress_thickness)
+                            mu_table = np.log(transmission) / (
+                                -table_mattress_thickness
+                            )
                             table_cor = np.exp(-mu_table * path_length)
                             ref_ak_cor = ref_ak * table_cor
                         # If the beam is more than 90 degrees (ie above the table) leave the AK alone
@@ -230,7 +232,7 @@ def rotational(
     transmission,
     table_mattress_thickness,
     angle_x,
-    angle_y
+    angle_y,
 ):
     """This function computes the dose from a rotational exposure.
 
@@ -282,7 +284,7 @@ def rotational(
         transmission,
         table_mattress_thickness,
         angle_x,
-        angle_y
+        angle_y,
     )
     for i in range(1, frames - 1):
         xray = rotate_ray_y(xray, rotation_angle)
@@ -299,7 +301,7 @@ def rotational(
             transmission,
             table_mattress_thickness,
             angle_x,
-            angle_y
+            angle_y,
         )
     return my_dose
 

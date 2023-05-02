@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-12-28 21:54+0000\n"
+"POT-Creation-Date: 2023-04-17 17:58+0100\n"
 "PO-Revision-Date: 2020-12-06 11:13+0000\n"
 "Last-Translator: Ed McDonagh <ed@mcdonagh.org.uk>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/openrem/web-"
@@ -19,7 +19,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Generator: Weblate 4.4-dev\n"
 
-#: remapp/exports/ct_export.py:161
+#: remapp/exports/ct_export.py:176
 #, python-brace-format
 msgid ""
 "Writing study {row} of {numrows} to All data sheet and individual protocol "
@@ -28,106 +28,524 @@ msgstr ""
 "Scrittura dello studio {row} di {numrows} sulla scheda \"All data\" sulle "
 "singole schede di protocollo"
 
-#: remapp/interface/chart_functions.py:350
+#: remapp/forms.py:76
+msgid "Select a file"
+msgstr ""
+
+#: remapp/forms.py:101
+msgid "Accession Number"
+msgstr ""
+
+#: remapp/forms.py:102
+msgid "Study instance UID"
+msgstr ""
+
+#: remapp/forms.py:111
+msgid "Items per page"
+msgstr ""
+
+#: remapp/forms.py:120 remapp/forms.py:453 remapp/forms.py:1161
+msgid "Plot charts?"
+msgstr ""
+
+#: remapp/forms.py:158 remapp/forms.py:311 remapp/forms.py:800
+#: remapp/forms.py:886 remapp/forms.py:1011
+msgid "Acquisition frequency"
+msgstr ""
+
+#: remapp/forms.py:162 remapp/forms.py:889
+msgid "Acquisition DAP"
+msgstr ""
+
+#: remapp/forms.py:166 remapp/forms.py:892
+msgid "Acquisition mAs"
+msgstr ""
+
+#: remapp/forms.py:170 remapp/forms.py:895
+msgid "Acquisition kVp"
+msgstr ""
+
+#: remapp/forms.py:174 remapp/forms.py:898
+msgid "Acquisition DAP over time"
+msgstr ""
+
+#: remapp/forms.py:178 remapp/forms.py:901
+msgid "Acquisition mAs over time"
+msgstr ""
+
+#: remapp/forms.py:182 remapp/forms.py:904
+msgid "Acquisition kVp over time"
+msgstr ""
+
+#: remapp/forms.py:186 remapp/forms.py:907
+msgid "Acquisition DAP vs mass"
+msgstr ""
+
+#: remapp/forms.py:189 remapp/forms.py:455 remapp/forms.py:505
+#: remapp/forms.py:622 remapp/forms.py:909 remapp/forms.py:1042
+msgid "Study frequency"
+msgstr ""
+
+#: remapp/forms.py:191 remapp/forms.py:623 remapp/forms.py:910
+msgid "Study DAP"
+msgstr ""
+
+#: remapp/forms.py:194 remapp/forms.py:912
+msgid "Study DAP vs mass"
+msgstr ""
+
+#: remapp/forms.py:198 remapp/forms.py:367 remapp/forms.py:457
+#: remapp/forms.py:507 remapp/forms.py:582 remapp/forms.py:628
+#: remapp/forms.py:821 remapp/forms.py:915 remapp/forms.py:1052
+msgid "Study workload"
+msgstr ""
+
+#: remapp/forms.py:202 remapp/forms.py:372 remapp/forms.py:587
+#: remapp/forms.py:631 remapp/forms.py:918 remapp/forms.py:1055
+msgid "Requested procedure frequency"
+msgstr ""
+
+#: remapp/forms.py:206 remapp/forms.py:591 remapp/forms.py:634
+#: remapp/forms.py:921
+msgid "Requested procedure DAP"
+msgstr ""
+
+#: remapp/forms.py:210 remapp/forms.py:924
+msgid "Requested procedure DAP vs mass"
+msgstr ""
+
+#: remapp/forms.py:277 remapp/forms.py:472 remapp/forms.py:538
+#: remapp/forms.py:694 remapp/forms.py:1163
+msgid "Average plots"
+msgstr ""
+
+#: remapp/forms.py:284 remapp/forms.py:478 remapp/forms.py:549
+#: remapp/forms.py:701
+msgid "Grouping choice"
+msgstr ""
+
+#: remapp/forms.py:290 remapp/forms.py:483 remapp/forms.py:555
+#: remapp/forms.py:707 remapp/forms.py:1174
+msgid "Plot a series per system"
+msgstr ""
+
+#: remapp/forms.py:294 remapp/forms.py:486 remapp/forms.py:559
+#: remapp/forms.py:711 remapp/forms.py:1177
+msgid "Calculate histogram data"
+msgstr ""
+
+#: remapp/forms.py:298 remapp/forms.py:489 remapp/forms.py:522
+#: remapp/forms.py:715 remapp/forms.py:827 remapp/forms.py:1070
+#, fuzzy
+#| msgid "Chart options"
+msgid "Chart sorting"
+msgstr "Opzioni del grafico"
+
+#: remapp/forms.py:304 remapp/forms.py:494 remapp/forms.py:567
+#: remapp/forms.py:721 remapp/forms.py:1169
+msgid "Sorting direction"
+msgstr ""
+
+#: remapp/forms.py:315 remapp/forms.py:1014
+msgid "Acquisition DLP"
+msgstr ""
+
+#: remapp/forms.py:319 remapp/forms.py:1017
+msgid "Acquisition CTDI<sub>vol</sub>"
+msgstr ""
+
+#: remapp/forms.py:323 remapp/forms.py:1020
+msgid "Acquisition DLP over time"
+msgstr ""
+
+#: remapp/forms.py:327 remapp/forms.py:1023
+msgid "Acquisition CTDI<sub>vol</sub> over time"
+msgstr ""
+
+#: remapp/forms.py:332 remapp/forms.py:1027
+msgid "Acquisition DLP vs mass"
+msgstr ""
+
+#: remapp/forms.py:336
+msgid "Acquisition CTDI<sub>vol</sub> vs mass"
+msgstr ""
+
+#: remapp/forms.py:343 remapp/forms.py:1035
+msgid ""
+"Acquisition types to include<br/>in acquisition-level chart<br/>calculations"
+msgstr ""
+
+#: remapp/forms.py:357 remapp/forms.py:1045
+msgid "Study CTDI<sub>vol</sub>"
+msgstr ""
+
+#: remapp/forms.py:363 remapp/forms.py:1049
+msgid "Study DLP over time"
+msgstr ""
+
+#: remapp/forms.py:376 remapp/forms.py:1058
+msgid "Requested procedure DLP"
+msgstr ""
+
+#: remapp/forms.py:380 remapp/forms.py:1061
+msgid "Requested procedure events"
+msgstr ""
+
+#: remapp/forms.py:384 remapp/forms.py:1064
+msgid "Requested procedure DLP over time"
+msgstr ""
+
+#: remapp/forms.py:460
+msgid "Injected dose per study"
+msgstr ""
+
+#: remapp/forms.py:463
+msgid "Injected dose over time"
+msgstr ""
+
+#: remapp/forms.py:466
+msgid "Injected dose vs mass"
+msgstr ""
+
+#: remapp/forms.py:469 remapp/forms.py:519 remapp/forms.py:640
+#: remapp/forms.py:690 remapp/forms.py:824 remapp/forms.py:927
+#: remapp/forms.py:1067
+msgid "Time period"
+msgstr ""
+
+#: remapp/forms.py:510
+msgid "Injected Dose per Study"
+msgstr ""
+
+#: remapp/forms.py:513
+msgid "Injected Dose over Time"
+msgstr ""
+
+#: remapp/forms.py:516
+msgid "Injected Dose over Weight"
+msgstr ""
+
+#: remapp/forms.py:578 remapp/forms.py:625
+msgid "Study DAP over time"
+msgstr ""
+
+#: remapp/forms.py:595 remapp/forms.py:637
+msgid "Requested procedure DAP over time"
+msgstr ""
+
+#: remapp/forms.py:643
+msgid "Split plots by physician"
+msgstr ""
+
+#: remapp/forms.py:646 remapp/forms.py:930
+msgid "Default chart sorting"
+msgstr ""
+
+#: remapp/forms.py:803
+msgid "Acquisition average AGD"
+msgstr ""
+
+#: remapp/forms.py:806
+msgid "Acquisition average AGD vs. compressed thickness"
+msgstr ""
+
+#: remapp/forms.py:809
+msgid "Acquisition AGD over time"
+msgstr ""
+
+#: remapp/forms.py:812
+msgid "Acquisition AGD vs. compressed thickness"
+msgstr ""
+
+#: remapp/forms.py:815
+msgid "Acquisition mAs vs. compressed thickness"
+msgstr ""
+
+#: remapp/forms.py:818
+msgid "Acquisition kVp vs. compressed thickness"
+msgstr ""
+
+#: remapp/forms.py:1030
+msgid "Acquisition CTDI vs mass"
+msgstr ""
+
+#: remapp/forms.py:1043
+msgid "Study DLP"
+msgstr ""
+
+#: remapp/forms.py:1047
+msgid "Study events"
+msgstr ""
+
+#: remapp/forms.py:1180
+msgid "Number of histogram bins"
+msgstr ""
+
+#: remapp/forms.py:1183
+msgid "Fixed histogram bins across subplots"
+msgstr ""
+
+#: remapp/forms.py:1186
+msgid "Case-insensitive categories"
+msgstr ""
+
+#: remapp/forms.py:1189
+msgid "Remove category whitespace padding"
+msgstr ""
+
+#: remapp/forms.py:1192
+msgid "Chart label character wrap length"
+msgstr ""
+
+#: remapp/forms.py:1198
+#, fuzzy
+#| msgid "Chart options"
+msgid "Chart grouping"
+msgstr "Opzioni del grafico"
+
+#: remapp/forms.py:1203
+msgid "Chart theme"
+msgstr ""
+
+#: remapp/forms.py:1206
+msgid "Colour map choice"
+msgstr ""
+
+#: remapp/forms.py:1212
+msgid "Number of sub-charts per row"
+msgstr ""
+
+#: remapp/forms.py:1284
+msgid "Primary time period to sum studies (days)"
+msgstr ""
+
+#: remapp/forms.py:1287
+msgid "Secondary time period to sum studies (days)"
+msgstr ""
+
+#: remapp/forms.py:1290
+msgid "Enable calculation and display of workload stats on home page?"
+msgstr ""
+
+#: remapp/forms.py:1300
+msgid "Set Display Name and Modality type if Device Observer UID is matching"
+msgstr ""
+
+#: remapp/forms.py:1312 remapp/templates/base.html:52 remapp/views.py:890
+msgid "CT"
+msgstr "CT"
+
+#: remapp/forms.py:1313
+#, fuzzy
+#| msgid "Fluoroscopy"
+msgid "Fluoroscopy (XA and RF)"
+msgstr "Fluoroscopia"
+
+#: remapp/forms.py:1314
+msgid "DX, including CR"
+msgstr ""
+
+#: remapp/forms.py:1315 remapp/templates/base.html:60 remapp/views.py:894
+msgid "Mammography"
+msgstr "Mammografia"
+
+#: remapp/forms.py:1316 remapp/views.py:898
+msgid "Nuclear Medicine"
+msgstr ""
+
+#: remapp/forms.py:1326
+msgid "Date from"
+msgstr ""
+
+#: remapp/forms.py:1330 remapp/forms.py:1336
+msgid "Format yyyy-mm-dd, restrict as much as possible for best results"
+msgstr ""
+
+#: remapp/forms.py:1333
+msgid "Date until"
+msgstr ""
+
+#: remapp/forms.py:1344
+msgid ""
+"At least one modality must be ticked - if SR only is ticked (Advanced) these "
+"modalities will be ignored"
+msgstr ""
+
+#: remapp/forms.py:1350
+msgid "Include SR only studies?"
+msgstr ""
+
+#: remapp/forms.py:1354
+msgid "Only use with stores containing only RDSRs, with no accompanying images"
+msgstr ""
+
+#: remapp/forms.py:1358
+#, fuzzy
+#| msgid ""
+#| "Checking to see if any response studies are already in the OpenREM "
+#| "database"
+msgid "Ignore studies already in the database?"
+msgstr "Verifico se sono già presenti dati per gli studi nel database OpenREM"
+
+#: remapp/forms.py:1362
+msgid ""
+"Objects that have already been processed won't be imported, so there isn't "
+"any point getting them!"
+msgstr ""
+
+#: remapp/forms.py:1368
+msgid "Exclude studies with these terms in the study description:"
+msgstr ""
+
+#: remapp/forms.py:1369 remapp/forms.py:1374
+msgid "Comma separated list of terms"
+msgstr ""
+
+#: remapp/forms.py:1373
+msgid "Only keep studies with these terms in the study description:"
+msgstr ""
+
+#: remapp/forms.py:1378
+msgid "Exclude studies or series with these terms in the station name:"
+msgstr ""
+
+#: remapp/forms.py:1380 remapp/forms.py:1387
+msgid "Comma separated list of terms, tested at series level — see Advanced"
+msgstr ""
+
+#: remapp/forms.py:1385
+msgid "Only keep studies or series with these terms in the station name:"
+msgstr ""
+
+#: remapp/forms.py:1391
+msgid "Attempt to get Toshiba dose images"
+msgstr ""
+
+#: remapp/forms.py:1394
+msgid "Only applicable if using Toshiba RDSR generator extension, see docs"
+msgstr ""
+
+#: remapp/forms.py:1398
+msgid "Get SR series that return nothing at image level query"
+msgstr ""
+
+#: remapp/forms.py:1399
+msgid "Only use if suggested in qrscu log, see docs"
+msgstr ""
+
+#: remapp/forms.py:1403
+msgid "Check station name include/exclude at study level"
+msgstr ""
+
+#: remapp/forms.py:1404
+msgid "Default from v1.0 is to check at series level only"
+msgstr ""
+
+#: remapp/interface/chart_functions.py:356
 msgid "No data left after excluding missing values."
 msgstr ""
 
-#: remapp/netdicom/qrscu.py:126
+#: remapp/netdicom/qrscu.py:177
 msgid ""
 "Checking to see if any response studies are already in the OpenREM database"
 msgstr "Verifico se sono già presenti dati per gli studi nel database OpenREM"
 
-#: remapp/netdicom/qrscu.py:212
+#: remapp/netdicom/qrscu.py:270
 #, python-brace-format
 msgid ""
 "Filter at {level} level on {filter_name} that {filter_type} {filter_list}"
 msgstr ""
 "Filtrare al livello {level} su {filter_name} e su {filter_type} {filter_list}"
 
-#: remapp/netdicom/qrscu.py:271
+#: remapp/netdicom/qrscu.py:342
 msgid ""
 "Getting series and image level information and deleting series we can't use"
 msgstr ""
 "Recupero informazioni al livello di serie e immagine ed elimino serie che "
 "non possiamo utilizzare"
 
-#: remapp/netdicom/qrscu.py:760
+#: remapp/netdicom/qrscu.py:959
 msgid "Association aborted twice in succession. Aborting query"
 msgstr ""
 
-#: remapp/netdicom/qrscu.py:762
+#: remapp/netdicom/qrscu.py:961
 msgid "Association rejected after being aborted. Aborting query"
 msgstr ""
 
-#: remapp/netdicom/qrscu.py:764
+#: remapp/netdicom/qrscu.py:963
 msgid "Association failed. Aborting query."
 msgstr ""
 
-#: remapp/netdicom/qrscu.py:827
+#: remapp/netdicom/qrscu.py:985
+#, python-brace-format
+msgid "{result_type} (0x{status:04x}) - {result_status}. See logs for details."
+msgstr ""
+
+#: remapp/netdicom/qrscu.py:1049
 msgid "Image level matching for this study is complete (there many be more)"
 msgstr ""
 "La corrispondenza a livello di immagine per questo studio è stata completata "
 "(ce ne saranno molti altri)"
 
-#: remapp/netdicom/qrscu.py:836
+#: remapp/netdicom/qrscu.py:1067
 msgid "Image level matches are continuing."
 msgstr "Le corrispondenze a livello di immagine continuano."
 
-#: remapp/netdicom/qrscu.py:872 remapp/netdicom/qrscu.py:989
-#: remapp/netdicom/qrscu.py:1105
+#: remapp/netdicom/qrscu.py:1107 remapp/netdicom/qrscu.py:1225
+#: remapp/netdicom/qrscu.py:1342
 msgid "Connection timed out, was aborted or received invalid response"
 msgstr "Connessione scaduta, interrotta o risposta non valida"
 
-#: remapp/netdicom/qrscu.py:929
+#: remapp/netdicom/qrscu.py:1161
 msgid "Series level matching for this study is complete (there may be more)"
 msgstr ""
 "La corrispondenza a livello di immagine per questo studio è stata completata "
 "(ce ne saranno molti altri)"
 
-#: remapp/netdicom/qrscu.py:938
+#: remapp/netdicom/qrscu.py:1170
 msgid "Series level matches are continuing."
 msgstr "Le corrispondenze al livello di serie continuano."
 
-#: remapp/netdicom/qrscu.py:1039
+#: remapp/netdicom/qrscu.py:1272
 #, python-brace-format
 msgid "Study level matching for {modalities} is complete"
 msgstr "La corrispondenza al livello di studio per le {modalities} è completa"
 
-#: remapp/netdicom/qrscu.py:1051
+#: remapp/netdicom/qrscu.py:1284
 #, python-brace-format
 msgid "Matches are continuing for {modalities} studies"
 msgstr "Le corrispondenze continuano per gli studi {modalities}"
 
-#: remapp/netdicom/qrscu.py:1137
+#: remapp/netdicom/qrscu.py:1371
 #, python-brace-format
 msgid "Currently querying for {modality} studies…"
 msgstr "Attualmente sono in corso ricerche per studi di {modality} …"
 
-#: remapp/netdicom/qrscu.py:1507
+#: remapp/netdicom/qrscu.py:1781
 msgid "Pruning study responses based on inc/exc options"
 msgstr "Stò rimuovendo risposte di studi sulla base delle opzioni inc/exc"
 
-#: remapp/netdicom/qrscu.py:1532
+#: remapp/netdicom/qrscu.py:1806
 msgid "Querying at series level to get more details about studies"
 msgstr ""
 "Interrogazione a livello di serie per ottenere maggiori dettagli sugli studi"
 
-#: remapp/netdicom/qrscu.py:1556
+#: remapp/netdicom/qrscu.py:1830
 msgid "Deleting studies we didn't ask for"
 msgstr "Eliminazione di studi che non avevamo richiesto"
 
-#: remapp/netdicom/qrscu.py:1589
+#: remapp/netdicom/qrscu.py:1867
 msgid "Pruning series responses"
 msgstr "Rimozione delle risposte relative alle serie"
 
-#: remapp/netdicom/qrscu.py:1617
+#: remapp/netdicom/qrscu.py:1895
 #, python-brace-format
 msgid ""
 "{num_del_studies} RF studies were deleted from query due to no suitable RDSR "
 "being found. "
 msgstr ""
 
-#: remapp/netdicom/qrscu.py:1623
+#: remapp/netdicom/qrscu.py:1901
 #, python-brace-format
 msgid ""
 "{ct_del_studies} CT studies were deleted from query due to no suitable "
@@ -138,20 +556,20 @@ msgid ""
 "dose images. "
 msgstr ""
 
-#: remapp/netdicom/qrscu.py:1636
+#: remapp/netdicom/qrscu.py:1914
 #, python-brace-format
 msgid ""
 "{del_sr_studies} SR studies were deleted from query due to no suitable SR "
 "being found. "
 msgstr ""
 
-#: remapp/netdicom/qrscu.py:1655
+#: remapp/netdicom/qrscu.py:1933
 msgid "Removing any responses that match data we already have in the database"
 msgstr ""
 "Rimozione di tutte le risposte che corrispondono ai dati già disponibili nel "
 "database"
 
-#: remapp/netdicom/qrscu.py:1679
+#: remapp/netdicom/qrscu.py:1962
 #, python-brace-format
 msgid ""
 "Query complete. Query took {time} and we are left with {studies_left} "
@@ -161,21 +579,21 @@ msgstr ""
 "studi da spostare. <br> Delle {studies_initial} risposte originali dello "
 "studio, "
 
-#: remapp/netdicom/qrscu.py:1693
+#: remapp/netdicom/qrscu.py:1976
 #, python-brace-format
 msgid ""
 "only studies with description that include '{text}' removed {num} studies, "
 msgstr ""
 "solo gli studi con descrizione che includono '{text}' rimossi {num} studi, "
 
-#: remapp/netdicom/qrscu.py:1700
+#: remapp/netdicom/qrscu.py:1983
 #, python-brace-format
 msgid ""
 "studies with description that do not include '{text}' removed {num} studies, "
 msgstr ""
 "studi con descrizione che non includono '{text}' eliminati {num} studi, "
 
-#: remapp/netdicom/qrscu.py:1707
+#: remapp/netdicom/qrscu.py:1990
 #, fuzzy, python-brace-format
 #| msgid ""
 #| "only studies with description that include '{text}' removed {num} "
@@ -186,7 +604,7 @@ msgid ""
 msgstr ""
 "solo gli studi con descrizione che includono '{text}' rimossi {num} studi, "
 
-#: remapp/netdicom/qrscu.py:1715
+#: remapp/netdicom/qrscu.py:1999
 #, fuzzy, python-brace-format
 #| msgid ""
 #| "studies with description that do not include '{text}' removed {num} "
@@ -197,12 +615,12 @@ msgid ""
 msgstr ""
 "studi con descrizione che non includono '{text}' eliminati {num} studi, "
 
-#: remapp/netdicom/qrscu.py:1723
+#: remapp/netdicom/qrscu.py:2008
 #, python-brace-format
 msgid "<br>Filtering for {pruning_logs}."
 msgstr ""
 
-#: remapp/netdicom/qrscu.py:1729
+#: remapp/netdicom/qrscu.py:2014
 #, fuzzy, python-brace-format
 #| msgid ""
 #| "Removing duplicates of previous objects removed {duplicates_removed} "
@@ -214,173 +632,214 @@ msgstr ""
 "Rimozione di duplicati di oggetti precedenti rimossi {duplicates_removed} "
 "studi."
 
-#: remapp/netdicom/qrscu.py:1770
+#: remapp/netdicom/qrscu.py:2020
+#, python-brace-format
+msgid "<br>The following errors were received: {errors}"
+msgstr ""
+
+#: remapp/netdicom/qrscu.py:2045
 msgid "Association aborted or never connected"
 msgstr ""
 
-#: remapp/netdicom/qrscu.py:1775
+#: remapp/netdicom/qrscu.py:2050
 msgid "Association Failed"
 msgstr ""
 
-#: remapp/templates/base.html:52 remapp/views.py:933
-msgid "CT"
-msgstr "CT"
+#: remapp/netdicom/tools.py:57
+msgid "Store Docker container name is missing"
+msgstr ""
 
-#: remapp/templates/base.html:56 remapp/views.py:937
+#: remapp/netdicom/tools.py:59
+msgid "Store hostname is missing (normally localhost)"
+msgstr ""
+
+#: remapp/templates/base.html:56 remapp/views.py:892
 msgid "Fluoroscopy"
 msgstr "Fluoroscopia"
 
-#: remapp/templates/base.html:60 remapp/views.py:941
-msgid "Mammography"
-msgstr "Mammografia"
-
-#: remapp/templates/base.html:64 remapp/views.py:945
+#: remapp/templates/base.html:64 remapp/views.py:896
 msgid "Radiography"
 msgstr "Radiografia"
 
-#: remapp/templates/base.html:76
+#: remapp/templates/base.html:68
+msgid "NM/PET"
+msgstr ""
+
+#: remapp/templates/base.html:80
 msgid "Imports"
 msgstr "Importazioni"
 
-#: remapp/templates/base.html:80
+#: remapp/templates/base.html:84
+#, fuzzy
+#| msgid "Previous patient size imports"
+msgid "Patient size imports"
+msgstr "Importazioni della taglia del paziente precedente"
+
+#: remapp/templates/base.html:85
 msgid "Import patient size info"
 msgstr "Importa le informazioni sulla taglia del paziente"
 
-#: remapp/templates/base.html:83
+#: remapp/templates/base.html:88
 msgid "Previous patient size imports"
 msgstr "Importazioni della taglia del paziente precedente"
 
-#: remapp/templates/base.html:86
+#: remapp/templates/base.html:92
+msgid "DICOM query-retrieve"
+msgstr ""
+
+#: remapp/templates/base.html:93
 msgid "Query remote server"
 msgstr "Query server remoto"
 
-#: remapp/templates/base.html:95
-msgid "Exports"
-msgstr "Esportazioni"
+#: remapp/templates/base.html:94
+msgid "Previous queries"
+msgstr ""
 
-#: remapp/templates/base.html:102
-msgid "Config"
-msgstr "Configurazione"
-
-#: remapp/templates/base.html:105
-msgid "User level config"
-msgstr "Configurazione a livello utente"
-
-#: remapp/templates/base.html:106
-msgid "Chart options"
-msgstr "Opzioni del grafico"
-
-#: remapp/templates/base.html:109
-msgid "Switch charts off"
-msgstr "Disattivare i grafici"
-
-#: remapp/templates/base.html:111
-msgid "Switch charts on"
-msgstr "Attivare i grafici"
-
-#: remapp/templates/base.html:115
-msgid "View display names & modality"
-msgstr "Visualizza nomi visualizzati e modalità"
-
-#: remapp/templates/base.html:116
-msgid "View not-patient indicators"
-msgstr "Visualizza gli indicatori non paziente"
-
-#: remapp/templates/base.html:120
-msgid "Home page options"
-msgstr "Opzioni della home page"
-
-#: remapp/templates/base.html:125
-msgid "System level settings"
-msgstr "Impostazioni a livello di sistema"
-
-#: remapp/templates/base.html:126
-msgid "Users"
-msgstr "Utenti"
-
-#: remapp/templates/base.html:127
-msgid "Display names & modality"
-msgstr "Visualizza nomi visualizzati e modalità"
-
-#: remapp/templates/base.html:128
-msgid "DICOM object deletion"
-msgstr "Eliminazione dell'oggetto DICOM"
-
-#: remapp/templates/base.html:129
-msgid "DICOM networking"
-msgstr "Rete DICOM"
-
-#: remapp/templates/base.html:130
-msgid "Patient ID"
-msgstr "ID paziente"
-
-#: remapp/templates/base.html:131
-msgid "Not-patient indicators"
-msgstr "Indicatori non pazienti"
-
-#: remapp/templates/base.html:132
-msgid "Skin dose map"
-msgstr "Mappa della dose cutanea"
-
-#: remapp/templates/base.html:133
-msgid "Fluoro alert levels"
-msgstr "Livelli di allarme fluoro"
-
-#: remapp/templates/base.html:134
-msgid "Fluoro alert notification"
-msgstr "Notifica di allarme Fluoro"
-
-#: remapp/templates/base.html:135
+#: remapp/templates/base.html:104
 msgid "Tasks"
 msgstr "Attività"
 
+#: remapp/templates/base.html:108
+msgid "Exports"
+msgstr "Esportazioni"
+
+#: remapp/templates/base.html:111
+msgid "All tasks"
+msgstr ""
+
+#: remapp/templates/base.html:120
+msgid "Config"
+msgstr "Configurazione"
+
+#: remapp/templates/base.html:123
+msgid "User level config"
+msgstr "Configurazione a livello utente"
+
+#: remapp/templates/base.html:124
+msgid "Chart options"
+msgstr "Opzioni del grafico"
+
+#: remapp/templates/base.html:127
+msgid "Switch charts off"
+msgstr "Disattivare i grafici"
+
+#: remapp/templates/base.html:129
+msgid "Switch charts on"
+msgstr "Attivare i grafici"
+
+#: remapp/templates/base.html:133
+msgid "View display names & modality"
+msgstr "Visualizza nomi visualizzati e modalità"
+
+#: remapp/templates/base.html:134
+msgid "View not-patient indicators"
+msgstr "Visualizza gli indicatori non paziente"
+
+#: remapp/templates/base.html:138
+msgid "Home page options"
+msgstr "Opzioni della home page"
+
+#: remapp/templates/base.html:143
+msgid "System level settings"
+msgstr "Impostazioni a livello di sistema"
+
+#: remapp/templates/base.html:144
+msgid "Users"
+msgstr "Utenti"
+
+#: remapp/templates/base.html:145
+msgid "Display names & modality"
+msgstr "Visualizza nomi visualizzati e modalità"
+
+#: remapp/templates/base.html:146
+msgid "DICOM object deletion"
+msgstr "Eliminazione dell'oggetto DICOM"
+
+#: remapp/templates/base.html:147
+msgid "DICOM networking"
+msgstr "Rete DICOM"
+
+#: remapp/templates/base.html:148
+msgid "Patient ID"
+msgstr "ID paziente"
+
+#: remapp/templates/base.html:149
+msgid "Not-patient indicators"
+msgstr "Indicatori non pazienti"
+
 #: remapp/templates/base.html:150
+msgid "Skin dose map"
+msgstr "Mappa della dose cutanea"
+
+#: remapp/templates/base.html:151
+msgid "Fluoro alert levels"
+msgstr "Livelli di allarme fluoro"
+
+#: remapp/templates/base.html:152
+msgid "Fluoro alert notification"
+msgstr "Notifica di allarme Fluoro"
+
+#: remapp/templates/base.html:153
+#, fuzzy
+#| msgid "System level settings"
+msgid "Standard name settings"
+msgstr "Impostazioni a livello di sistema"
+
+#: remapp/templates/base.html:155
+msgid "Standard name mapping"
+msgstr ""
+
+#: remapp/templates/base.html:157
+msgid "Task settings"
+msgstr ""
+
+#: remapp/templates/base.html:172
 msgid "User"
 msgstr "Utente"
 
-#: remapp/templates/base.html:156
+#: remapp/templates/base.html:178
 msgid "Change password"
 msgstr "Modificare la password"
 
-#: remapp/templates/base.html:157
+#: remapp/templates/base.html:179
 msgid "Logout"
 msgstr "Disconnettersi"
 
-#: remapp/templates/base.html:160
+#: remapp/templates/base.html:182
 msgid "Login"
 msgstr "Accesso"
 
-#: remapp/templates/base.html:167
+#: remapp/templates/base.html:189
 msgid "Docs"
 msgstr "Documenti"
 
-#: remapp/templates/base.html:174
+#: remapp/templates/base.html:196
 msgid "OpenREM documentation - opens in a new tab"
 msgstr "Documentazione OpenREM - viene aperta in una nuova scheda"
 
-#: remapp/templates/base.html:175
+#: remapp/templates/base.html:197
 #, python-format
 msgid "OpenREM Documentation (%(docsversion)s)"
 msgstr "Documentazione OpenREM (%(docsversion)s)"
 
 #: remapp/templates/remapp/home-list-modalities.html:7
-#: remapp/templates/remapp/home.html:202
+#: remapp/templates/remapp/home.html:175
 msgid "System name"
 msgstr "Nome del sistema"
 
 #: remapp/templates/remapp/home-list-modalities.html:8
-#: remapp/templates/remapp/home.html:203
+#: remapp/templates/remapp/home.html:176
 msgid "Total number of studies"
 msgstr "Numero totale di studi"
 
 #: remapp/templates/remapp/home-list-modalities.html:9
-#: remapp/templates/remapp/home.html:204
+#: remapp/templates/remapp/home.html:177
 msgid "Latest study"
 msgstr "Ultimo studio"
 
 #: remapp/templates/remapp/home-list-modalities.html:11
 #: remapp/templates/remapp/home-list-modalities.html:13
-#: remapp/templates/remapp/home.html:206 remapp/templates/remapp/home.html:208
+#: remapp/templates/remapp/home.html:179 remapp/templates/remapp/home.html:181
 #, python-format
 msgid "Number in last %(day_delta)s days"
 msgstr "Numero negli ultimi %(day_delta)s giorni"
@@ -402,7 +861,7 @@ msgstr "Disegno su grafico acceso."
 msgid "Chart plotting off."
 msgstr "Disegno su grafico spento."
 
-#: remapp/templates/remapp/home.html:214
+#: remapp/templates/remapp/home.html:187
 msgid "Please wait - querying the database"
 msgstr "Attendere, interrogazione del database"
 
@@ -418,10 +877,130 @@ msgstr ""
 msgid "Skin dose map settings do not allow safelist to be updated"
 msgstr ""
 
-#: remapp/views_charts_ct.py:558
+#: remapp/views_charts_ct.py:888
 msgid ""
 "<br/>This may be because there are no acquisition types selected in the "
 "chart options. Try selecting at least one acquisition type."
+msgstr ""
+
+#: remapp/views_charts_nm.py:89
+msgid "Chart of study description frequency"
+msgstr ""
+
+#: remapp/views_charts_nm.py:96
+msgid "Chart of study description workload"
+msgstr ""
+
+#: remapp/views_charts_nm.py:104
+msgid "Chart of injected dose per study mean"
+msgstr ""
+
+#: remapp/views_charts_nm.py:111
+msgid "Chart of injected dose per study median"
+msgstr ""
+
+#: remapp/views_charts_nm.py:118
+msgid "Boxplot of injected dose per study"
+msgstr ""
+
+#: remapp/views_charts_nm.py:125
+msgid "Histogram of injected dose per study"
+msgstr ""
+
+#: remapp/views_charts_nm.py:134
+#, python-brace-format
+msgid "Chart of injected dose mean over time ({time_period})"
+msgstr ""
+
+#: remapp/views_charts_nm.py:143
+#, python-brace-format
+msgid "Chart of injected dose median over time ({time_period})"
+msgstr ""
+
+#: remapp/views_charts_nm.py:158
+msgid "Chart of injected dose versus patient weight"
+msgstr ""
+
+#: remapp/views_charts_nm.py:302 remapp/views_charts_nm.py:361
+#: remapp/views_charts_nm.py:394 remapp/views_charts_nm.py:439
+#: remapp/views_charts_nm.py:459 remapp/views_charts_nm.py:496
+#: remapp/views_charts_nm.py:507
+msgid "Study description"
+msgstr ""
+
+#: remapp/views_charts_nm.py:304 remapp/views_charts_nm.py:464
+#: remapp/views_charts_nm.py:498
+#, fuzzy
+#| msgid "System name"
+msgid "System"
+msgstr "Nome del sistema"
+
+#: remapp/views_charts_nm.py:307
+msgid "OpenREM NM study description frequency"
+msgstr ""
+
+#: remapp/views_charts_nm.py:334
+msgid "Weekday"
+msgstr ""
+
+#: remapp/views_charts_nm.py:335
+msgid "Frequency"
+msgstr ""
+
+#: remapp/views_charts_nm.py:337
+msgid "OpenREM NM study description workload"
+msgstr ""
+
+#: remapp/views_charts_nm.py:364
+msgid "Patient mass (kg)"
+msgstr ""
+
+#: remapp/views_charts_nm.py:365
+msgid "Administed Activity (MBq)"
+msgstr ""
+
+#: remapp/views_charts_nm.py:366
+msgid "OpenREM Nuclear Medicine Dose vs patient mass"
+msgstr ""
+
+#: remapp/views_charts_nm.py:405
+msgid "Mean Injected Dose (MBq)"
+msgstr ""
+
+#: remapp/views_charts_nm.py:407
+msgid "OpenREM nuclear medicine study injected dose mean"
+msgstr ""
+
+#: remapp/views_charts_nm.py:420
+msgid "Median Injected Dose (MBq)"
+msgstr ""
+
+#: remapp/views_charts_nm.py:422
+msgid "OpenREM nuclear medicine study injected dose median"
+msgstr ""
+
+#: remapp/views_charts_nm.py:438 remapp/views_charts_nm.py:470
+msgid "Injected Dose (MBq)"
+msgstr ""
+
+#: remapp/views_charts_nm.py:441
+msgid "OpenREM nuclear medicine study injected dose boxplot"
+msgstr ""
+
+#: remapp/views_charts_nm.py:474
+msgid "OpenREM nuclear medicine study injected dose histogram"
+msgstr ""
+
+#: remapp/views_charts_nm.py:508
+msgid "Administered Dose (MBq)"
+msgstr ""
+
+#: remapp/views_charts_nm.py:509
+msgid "Study date"
+msgstr ""
+
+#: remapp/views_charts_nm.py:520
+msgid "OpenREM Nuclear medicine injected dose over time"
 msgstr ""
 
 #: remapp/views_openskin.py:192

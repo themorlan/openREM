@@ -2,9 +2,6 @@
 Upgrade to OpenREM 0.10.0 from 0.7.3 or later
 #############################################
 
-*doc not ready for translation*
-**needs review**
-
 Upgrades to OpenREM 1.0 can only be made from version 0.10.0. Installations earlier than that need to be updated
 to version 0.10.0 before updating to version 1.0.
 

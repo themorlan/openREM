@@ -2971,7 +2971,9 @@ class StandardNameAddCore(CreateView):
                     new_entry.save()
                     new_ids_study.append(new_entry.pk)
                 except IntegrityError as e:
-                    messages.warning(self.request, mark_safe("Error adding name: {0}".format(e.args)))
+                    messages.warning(
+                        self.request, mark_safe("Error adding name: {0}".format(e.args))
+                    )
                     return redirect(self.success_url)
 
             new_ids_request = []
@@ -2985,7 +2987,9 @@ class StandardNameAddCore(CreateView):
                     new_entry.save()
                     new_ids_request.append(new_entry.pk)
                 except IntegrityError as e:
-                    messages.warning(self.request, mark_safe("Error adding name: {0}".format(e.args)))
+                    messages.warning(
+                        self.request, mark_safe("Error adding name: {0}".format(e.args))
+                    )
                     return redirect(self.success_url)
 
             new_ids_procedure = []
@@ -2999,7 +3003,9 @@ class StandardNameAddCore(CreateView):
                     new_entry.save()
                     new_ids_procedure.append(new_entry.pk)
                 except IntegrityError as e:
-                    messages.warning(self.request, mark_safe("Error adding name: {0}".format(e.args)))
+                    messages.warning(
+                        self.request, mark_safe("Error adding name: {0}".format(e.args))
+                    )
                     return redirect(self.success_url)
 
             new_ids_acquisition = []
@@ -3013,7 +3019,9 @@ class StandardNameAddCore(CreateView):
                     new_entry.save()
                     new_ids_acquisition.append(new_entry.pk)
                 except IntegrityError as e:
-                    messages.warning(self.request, mark_safe("Error adding name: {0}".format(e.args)))
+                    messages.warning(
+                        self.request, mark_safe("Error adding name: {0}".format(e.args))
+                    )
                     return redirect(self.success_url)
 
             # Obtain a list of the required studies
@@ -3690,7 +3698,11 @@ def standard_name_update_all_form(request, modality=None):
     for group in request.user.groups.all():
         admin[group.name] = True
 
-    return render(request, "remapp/standardnamesrefreshall.html", {"admin": admin, "modality": modality})
+    return render(
+        request,
+        "remapp/standardnamesrefreshall.html",
+        {"admin": admin, "modality": modality},
+    )
 
 
 @login_required
@@ -3756,7 +3768,9 @@ def standard_name_update_all(request, modality=None):
                 ).values_list("pk", flat=True)
             )
 
-        for standard_name in std_names.filter(requested_procedure_code_meaning__isnull=False):
+        for standard_name in std_names.filter(
+            requested_procedure_code_meaning__isnull=False
+        ):
             standard_name.generalstudymoduleattr_set.add(
                 *studies.filter(
                     requested_procedure_code_meaning=standard_name.requested_procedure_code_meaning
@@ -3807,7 +3821,9 @@ def standard_name_update_all(request, modality=None):
                     ).values_list("pk", flat=True)
                 )
 
-        messages.success(request, "All {0} standard name entries refreshed".format(modality))
+        messages.success(
+            request, "All {0} standard name entries refreshed".format(modality)
+        )
 
         django_messages = []
         for message in messages.get_messages(request):
@@ -3893,7 +3909,9 @@ class BackgroundTaskMaximumRowsUpdate(UpdateView):  # pylint: disable=unused-var
     form_class = BackgroundTaskMaximumRowsForm
 
     def get_context_data(self, **context):
-        context = super(BackgroundTaskMaximumRowsUpdate, self).get_context_data(**context)
+        context = super(BackgroundTaskMaximumRowsUpdate, self).get_context_data(
+            **context
+        )
         admin = {
             "openremversion": __version__,
             "docsversion": __docs_version__,

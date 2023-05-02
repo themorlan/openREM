@@ -86,6 +86,9 @@ Activate development environment - see :doc:`code_dev_env` for details - and add
 
     $ pip install sphinx
     $ pip install sphinx-intl
+    $ pip install sphinx-argparse
+    $ pip install sphinx_issues
+    $ pip install sphinx_copybutton
 
 Update .pot and .po files
 -------------------------
@@ -96,6 +99,7 @@ Activate the development environment and move to the root of the OpenREM reposit
 .. code-block:: console
 
     $ cd docs/
+    $ mkdir _static
     $ sphinx-build -b gettext . _build/gettext/
     $ sphinx-intl update -p _build/gettext/
     $ cd ../openrem/

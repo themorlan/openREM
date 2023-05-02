@@ -1,23 +1,22 @@
 Task management
 ***************
-*New in 0.9*
 
 .. contents::
 
 Viewing task and service statuses
 =================================
 
-.. figure:: img/ConfigMenu.png
+.. figure:: img/TasksMenu.png
    :figwidth: 30%
    :align: right
    :alt: Config options
 
-   Figure 1: The ``Config`` menu (user and admin)
+   Figure 1: The ``Tasks`` menu
 
-Users who are logged in with admin rights can use the **Config** menu and choose **Tasks** to see the following:
+Users who are logged in with admin rights can use the **Tasks** menu and choose **All tasks** to see the following:
 
 * A list of the tasks currently being executed
-* A list of previous tasks and their final status. If any errors occured they will be displayed here.
+* A list of previous tasks and their final status. If any errors occurred they will be displayed here.
 
 .. figure:: img/tasks3waiting4inprogress.png
    :figwidth: 100%

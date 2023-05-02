@@ -126,23 +126,6 @@
                 )
             }
         ); {% endif %}
-        $(document).ready(
-            function get_modality_numbers(json) {
-                $.ajax(
-                    {
-                        url: "{% url 'update_modality_totals' %}",
-                        type: "POST",
-                        dataType: "json",
-                        success: function (json) {
-                            $('#total-ct').html(json.total_ct);
-                            $('#total-rf').html(json.total_rf);
-                            $('#total-mg').html(json.total_mg);
-                            $('#total-dx').html(json.total_dx);
-                        }
-                    }
-                )
-            }
-        )
     </script>
     <p>
     <p id="summary-progress"></p>
@@ -175,18 +158,8 @@
                             type: "POST",
                             success: function (data) {
                                 $('#{{ modality }}-table').html(data);
-                                {% if home_config.display_workload_stats %}
-                                    $.ajax(
-                                        {
-                                            url: "{% url 'update_study_workload' %}",
-                                            data: {modality: '{{ modality }}'},
-                                            type: "POST",
-                                            success: function (data) {
-                                                $('#{{ modality }}-table').append(data);
-                                            }
-                                        }
-                                    );
-                                {% endif %}
+                                var summary_table_{{ modality }} = document.getElementById("summary_table_{{ modality|lower }}");
+                                sorttable.makeSortable(summary_table_{{ modality }});
                             }
                         }
                     )

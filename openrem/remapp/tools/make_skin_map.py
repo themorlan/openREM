@@ -48,10 +48,12 @@ django.setup()
 from remapp.models import (  # pylint: disable=wrong-import-position
     GeneralStudyModuleAttr,
     SkinDoseMapResults,
-    OpenSkinSafeList
+    OpenSkinSafeList,
 )
 from .background import record_task_info  # pylint: disable=wrong-import-position
-from .save_skin_map_structure import save_openskin_structure  # pylint: disable=wrong-import-position
+from .save_skin_map_structure import (  # pylint: disable=wrong-import-position
+    save_openskin_structure,
+)
 from .openskin.calc_exp_map import CalcExpMap  # pylint: disable=wrong-import-position
 from ..version import __skin_map_version__  # pylint: disable=wrong-import-position
 
@@ -75,7 +77,7 @@ def make_skin_map(study_pk=None):
         # Get all OpenSkinSafeList table entries that match the manufacturer and model name of the current study
         entries = OpenSkinSafeList.objects.all().filter(
             manufacturer=study.generalequipmentmoduleattr_set.get().manufacturer,
-            manufacturer_model_name=study.generalequipmentmoduleattr_set.get().manufacturer_model_name
+            manufacturer_model_name=study.generalequipmentmoduleattr_set.get().manufacturer_model_name,
         )
 
         # Look for an entry which has a matching software version with the current study,
@@ -83,8 +85,10 @@ def make_skin_map(study_pk=None):
         entry = None
         for current_entry in entries:
             if (
-                    current_entry.software_version == study.generalequipmentmoduleattr_set.get().software_versions
-                    or current_entry.software_version is None or not current_entry.software_version
+                current_entry.software_version
+                == study.generalequipmentmoduleattr_set.get().software_versions
+                or current_entry.software_version is None
+                or not current_entry.software_version
             ):
                 entry = current_entry
                 break
@@ -305,8 +309,10 @@ def make_skin_map(study_pk=None):
             except TypeError:
                 try:
                     frames = float(
-                        irrad.irradeventxraysourcedata_set.get().exposure_time /
-                        irrad.irradeventxraysourcedata_set.get().pulsewidth_set.get().pulse_width
+                        irrad.irradeventxraysourcedata_set.get().exposure_time
+                        / irrad.irradeventxraysourcedata_set.get()
+                        .pulsewidth_set.get()
+                        .pulse_width
                     )
                 except (ObjectDoesNotExist, TypeError):
                     frames = None
@@ -392,7 +398,7 @@ def make_skin_map(study_pk=None):
             "patient_height_source": pat_height_source,
             "patient_mass_source": pat_mass_source,
             "patient_orientation_source": pat_pos_source,
-            "fraction_DAP": my_exp_map.my_dose.dap_count / float(study.total_dap),
+            "fraction_DAP": dap_fraction,
             "skin_map_version": __skin_map_version__,
         }
 

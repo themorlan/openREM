@@ -50,9 +50,7 @@ from .extractors import import_views
 main_patterns = [
     path("rf/<int:pk>/", views.rf_detail_view, name="rf_detail_view"),
     path("", views.openrem_home, name="home"),
-    path("hometotals/", views.update_modality_totals, name="update_modality_totals"),
     path("homestudies/", views.update_latest_studies, name="update_latest_studies"),
-    path("homeworkload/", views.update_study_workload, name="update_study_workload"),
     path("rf/", views.rf_summary_list_filter, name="rf_summary_list_filter"),
     path(
         "rf/chart/", views_charts_rf.rf_summary_chart_data, name="rf_summary_chart_data"
@@ -299,7 +297,6 @@ settings_patterns = [
         views_admin.BackgroundTaskMaximumRowsUpdate.as_view(),
         name="background_task_settings",
     ),
-
 ]
 
 
@@ -380,11 +377,16 @@ standard_name_patterns = [  # pylint: disable=invalid-name
     path("add_name_dx/", views_admin.StandardNameAddDX.as_view(), name="add_name_dx"),
     path("add_name_rf/", views_admin.StandardNameAddRF.as_view(), name="add_name_rf"),
     path("add_name_mg/", views_admin.StandardNameAddMG.as_view(), name="add_name_mg"),
-
-    path("update_all_std_names/<str:modality>/", views_admin.standard_name_update_all, name="update_all_std_names"),
-    path("update_all_std_names_form/<str:modality>/", views_admin.standard_name_update_all_form,
-         name="update_all_std_names_form"),
-
+    path(
+        "update_all_std_names/<str:modality>/",
+        views_admin.standard_name_update_all,
+        name="update_all_std_names",
+    ),
+    path(
+        "update_all_std_names_form/<str:modality>/",
+        views_admin.standard_name_update_all_form,
+        name="update_all_std_names_form",
+    ),
     path(
         "update_name/<int:std_name_pk>/<str:modality>/",
         views_admin.standard_name_update,
