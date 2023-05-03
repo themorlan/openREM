@@ -3129,7 +3129,10 @@ def standard_names_populate(request):
 
         name_set = f.filter(modality=modality).distinct()
 
-        template = "remapp/standardname-modality.html"
+        if modality == "NM":
+            template = "remapp/standardname-nm-modality.html"
+        else:
+            template = "remapp/standardname-modality.html"
 
         return render(
             request,

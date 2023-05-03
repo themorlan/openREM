@@ -2189,15 +2189,18 @@ class StandardNameFormNM(StandardNameFormBase):
                 radiopharmaceutical = test.radiopharmaceutical_agent.code_meaning
             else:
                 radiopharmaceutical = test.radiopharmaceutical_agent_string
-            pairs.add(study.study_description + " - " + radiopharmaceutical)
+            pairs.add(study.study_description + " | " + radiopharmaceutical)
         return pairs
 
+    def _get_pair_from_standard_name(self, standard_name: StandardNames):
+        return f"{standard_name.study_description} | {standard_name.radiopharmaceutical}"
 
     def __init__(self, *args, **kwargs):
         super(StandardNameFormNM, self).__init__(*args, **kwargs)
         self.fields["modality"].initial = "NM"
 
         try:
+            del self.fields["study_description"]
             del self.fields["requested_procedure_code_meaning"]
             del self.fields["procedure_code_meaning"]
             del self.fields["acquisition_protocol"]
@@ -2210,34 +2213,26 @@ class StandardNameFormNM(StandardNameFormBase):
         standard_names = (
             StandardNames.objects.all()
             .filter(modality="NM")
-            .values("study_description")
-            .exclude(**{"study_description": None})
+            .exclude(**{"study_description": None, "radiopharmaceutical": None})
         )
 
-        items_to_exclude = []
+        choices_to_exclude = [self._get_pair_from_standard_name(standard_name) for standard_name in standard_names]
         initial_choices = []
-
         if "standard_name" in self.initial:
-            items_to_exclude = standard_names.exclude(
-                standard_name=self.initial["standard_name"]
-            )
             initial_choices = standard_names.filter(
                 standard_name=self.initial["standard_name"]
             )
         
-        all_studies = all_studies.exclude(
-            **{"study_description__in": items_to_exclude}
-        )
+        all_choices = self._get_pairs(all_studies)
+        initial_choices = [self._get_pair_from_standard_name(standard_name) for standard_name in initial_choices]
+        choices_to_exclude = [choice for choice in choices_to_exclude if choice not in initial_choices]
+        available_choices = [choice for choice in all_choices if choice not in choices_to_exclude]
 
-        query_choices = [(item, item) for item in self._get_pairs(all_studies) if item not in items_to_exclude]
-        initial_choices = [item["study_description"] for item in initial_choices]
+        query_choices = [(item, item) for item in available_choices]
 
-        print(query_choices)
-        print(initial_choices)
+        self.initial["study_desc_radiopharma_pair"] = initial_choices
 
-        self.initial["study_description"] = initial_choices
-
-        self.fields["study_description"] = forms.MultipleChoiceField(
+        self.fields["study_desc_radiopharma_pair"] = forms.MultipleChoiceField(
             choices=query_choices,
             required=False,
             widget=FilteredSelectMultiple(

@@ -1217,6 +1217,13 @@ class NMSummaryListFilter(django_filters.FilterSet):
         ),
     )
 
+class NMFilterPlusStdNames(NMSummaryListFilter):
+    """Adding standard name fields"""
+
+    standard_names__standard_name = django_filters.CharFilter(
+        lookup_expr="icontains", label="Standard study name"
+    )
+
 
 class NMFilterPlusPid(NMSummaryListFilter):
 
@@ -1232,10 +1239,35 @@ class NMFilterPlusPid(NMSummaryListFilter):
         )
 
 
+class NMFilterPlusPidPlusStdNames(NMFilterPlusPid):
+    """Adding standard name fields"""
+
+    standard_names__standard_name = django_filters.CharFilter(
+        lookup_expr="icontains", label="Standard study name"
+    )
+
+
 def nm_filter(filters, pid=False):
+    # Obtain the system-level enable_standard_names setting
+    try:
+        StandardNameSettings.objects.get()
+    except ObjectDoesNotExist:
+        StandardNameSettings.objects.create()
+    enable_standard_names = StandardNameSettings.objects.values_list(
+        "enable_standard_names", flat=True
+    )[0]
+
     studies = GeneralStudyModuleAttr.objects.filter(modality_type__exact="NM")
     if pid:
+        if enable_standard_names:
+            return NMFilterPlusPidPlusStdNames(
+                filters, studies.order_by("-study_date", "-study_time").distinct()
+            )
         return NMFilterPlusPid(
+            filters, studies.order_by("-study_date", "-study_time").distinct()
+        )
+    if enable_standard_names:
+        return NMFilterPlusStdNames(
             filters, studies.order_by("-study_date", "-study_time").distinct()
         )
     return NMSummaryListFilter(

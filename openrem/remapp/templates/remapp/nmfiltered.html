@@ -140,6 +140,9 @@
                     <tr><th scope="col" class="nowrap">Accession number</th></tr>
                 </table>
             </th>
+            {% if showStandardNames %}
+                <th>Standard study names</th>
+            {% endif %}
             <th>Radiopharmaceutical</th>
             <th>Administered Dose (MBq)</th>
             {% if admin.admingroup %}
@@ -180,6 +183,17 @@
                             </table>
                         </a>
                     </td>
+                    {% if showStandardNames %}
+                        <td>
+                            <a href="{% url 'ct_detail_view' pk=exam.id %}">
+                                <table onclick="window.location='{% url 'ct_detail_view' pk=exam.id %}';" aria-describedby="Standard study description, procedure and requested procedure names">
+                                    {% for std_name in exam.standard_names.all %}
+                                        <tr><td class="nowrap">{{ std_name.standard_name|default_if_none:"-" }}</td></tr>
+                                    {% endfor %}
+                                </table>
+                            </a>
+                        </td>
+                    {% endif %}
                     <td>
                         <a href="{% url 'nm_detail_view' pk=exam.id %}">
                             {% if radioadmin.radiopharmaceutical_agent %}

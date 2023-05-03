@@ -46,6 +46,8 @@ import operator
 from functools import reduce
 
 
+NM_STANDARD_NAME_FIELD = "study_desc_radiopharma_pair"
+
 STANDARD_STUDY_NAME_MAPPING_FIELDS = [
     "study_description",
     "requested_procedure_code_meaning",
@@ -56,6 +58,11 @@ STANDARD_ACQUISITION_NAME_FIELDS = [
     "acquisition_protocol",
 ]
 
+ALL_STANDARD_NAME_FIELDS = [
+    NM_STANDARD_NAME_FIELD,
+    *STANDARD_STUDY_NAME_MAPPING_FIELDS,
+    *STANDARD_ACQUISITION_NAME_FIELDS
+]
 
 def assign_studies_to_standard_name(standard_name: StandardNames):
     """
@@ -164,9 +171,7 @@ def add_standard_name(request, form):
         messages.warning(request, "Blank standard name - no update made")
         return
 
-    for field_name in (
-        STANDARD_STUDY_NAME_MAPPING_FIELDS + STANDARD_ACQUISITION_NAME_FIELDS
-    ):
+    for field_name in ALL_STANDARD_NAME_FIELDS:
         try:
             for field_value in data[field_name]:
                 _add_standard_name(field_name, field_value, **data)
@@ -206,6 +211,7 @@ def update_all_standard_names_for_modality(modality):
 
 def update_standard_name(request, form, standard_name: StandardNames):
     data = form.cleaned_data
+    modality = data["modality"]
 
     studies = _get_studies_for_modality(standard_name.modality)
     acquisitions = _get_acquisitions_for_modality(standard_name.modality)
@@ -244,6 +250,9 @@ def update_standard_name(request, form, standard_name: StandardNames):
         for name_to_add in names_to_add:
             _add_standard_name(field_name, name_to_add, **data)
 
+    if modality == "NM":
+        _update_nm_standard_name(data, form, standard_name)
+
     standard_names = StandardNames.objects.filter(
         modality=standard_name.modality
     ).filter(standard_name=data["standard_name"])
@@ -272,6 +281,25 @@ def update_standard_name(request, form, standard_name: StandardNames):
     _save_all_reference_values_for_standard_names(
         standard_name.modality, standard_names, drl_formset, kfactor_formset
     )
+
+def _update_nm_standard_name(data, form, standard_name: StandardNames):
+    field_name = NM_STANDARD_NAME_FIELD
+    studies = _get_studies_for_modality(data["modality"])
+    standard_names = StandardNames.objects.filter(
+        modality=standard_name.modality
+    ).filter(standard_name=standard_name.standard_name)
+    if field_name not in data:
+        return
+    (names_to_remove, names_to_add) = get_field_values_to_add_and_remove(
+        form.initial[field_name], data[field_name]
+    )
+    _remove_studies_from_standard_study_name(studies, standard_name)
+    for name_to_remove in names_to_remove:
+        study_description, radiopharmaceutical = name_to_remove.split(" | ")
+        standard_names.filter(**{"study_description": study_description, "radiopharmaceutical": radiopharmaceutical}).delete()
+
+    for name_to_add in names_to_add:
+        _add_standard_name(field_name, name_to_add, **data)
 
 
 def get_field_values_to_add_and_remove(initial_values, new_values):
@@ -345,13 +373,20 @@ def _filter_irrad_event_x_ray_data(modality):
 
 
 def _add_standard_name(field_name, field_value, **data):
+    additional_data = {field_name: field_value}
+    if data["modality"] == "NM":
+        study_description, radiopharmaceutical = field_value.split(" | ")
+        additional_data = {
+            "study_description": study_description,
+            "radiopharmaceutical": radiopharmaceutical
+        }
     return StandardNames.objects.create(
         standard_name=data["standard_name"],
         modality=data["modality"],
         diagnostic_reference_level_criteria=data["diagnostic_reference_level_criteria"],
         drl_alert_factor=data["drl_alert_factor"],
         k_factor_criteria=data["k_factor_criteria"],
-        **{field_name: field_value}
+        **additional_data
     )
 
 
