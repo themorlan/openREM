@@ -3144,13 +3144,9 @@ class StandardNameUpdateCore(UpdateView):
     success_url = reverse_lazy("standard_names_view")
 
     def form_valid(self, form):
-        if form.has_changed():
-            update_standard_name(self.request, form, self.object)
-            messages.success(self.request, "Entry updated")
-            return redirect(self.success_url)
-        else:
-            messages.info(self.request, "No changes made")
-            return redirect(self.success_url)
+        update_standard_name(self.request, form, self.object)
+        messages.success(self.request, "Entry updated")
+        return redirect(self.success_url)
 
     def get_context_data(self, **context):
         context = super().get_context_data(**context)
