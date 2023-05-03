@@ -29,9 +29,7 @@
 
 """
 
-from django.db import IntegrityError
 from django.contrib import messages
-from django.utils.safestring import mark_safe
 from django.db.models import Q
 from django.core.exceptions import ObjectDoesNotExist
 import numpy as np
@@ -59,6 +57,30 @@ STANDARD_ACQUISITION_NAME_FIELDS = [
 ]
 
 
+def assign_studies_to_standard_name(standard_name: StandardNames):
+    """
+    Add references to any matching study entries
+
+    :param standard_name: StandardNames entry
+    """
+
+    modality = standard_name.modality
+    studies = _get_studies_for_modality(modality)
+    acquisitions = _get_acquisitions_for_modality(modality)
+
+    for field_name in STANDARD_STUDY_NAME_MAPPING_FIELDS:
+        _assign_standard_study_name_to_studies(
+            studies,
+            standard_name,
+            field_name,
+        )
+
+    for field_name in STANDARD_ACQUISITION_NAME_FIELDS:
+        _assign_standard_acquisition_name_to_acquisitions(
+            acquisitions, standard_name, field_name
+        )
+
+
 def assign_standard_names_to_study(study: GeneralStudyModuleAttr):
     """Add references to any matching standard name entries
 
@@ -73,7 +95,10 @@ def assign_standard_names_to_study(study: GeneralStudyModuleAttr):
 
     # Obtain a list of standard name IDs that match this GeneralStudyModuleAttr
     matching_std_name_ids = std_names.filter(
-        (Q(study_description=study.study_description) & Q(study_description__isnull=False))
+        (
+            Q(study_description=study.study_description)
+            & Q(study_description__isnull=False)
+        )
         | (
             Q(requested_procedure_code_meaning=study.requested_procedure_code_meaning)
             & Q(requested_procedure_code_meaning__isnull=False)
@@ -99,7 +124,9 @@ def assign_standard_names_to_study(study: GeneralStudyModuleAttr):
     # Some events will already exist if the new data is adding to an existing study
     try:
         if modality == "CT":
-            for event in study.ctradiationdose_set.get().ctirradiationeventdata_set.all():
+            for (
+                event
+            ) in study.ctradiationdose_set.get().ctirradiationeventdata_set.all():
                 # Only add matching standard name if the event doesn't already have one
                 if not event.standard_protocols.values_list("pk", flat=True):
                     pk_value = list(
@@ -112,7 +139,9 @@ def assign_standard_names_to_study(study: GeneralStudyModuleAttr):
         else:
             for (
                 event
-            ) in study.projectionxrayradiationdose_set.get().irradeventxraydata_set.all():
+            ) in (
+                study.projectionxrayradiationdose_set.get().irradeventxraydata_set.all()
+            ):
                 # Only add matching standard name if the event doesn't already have one
                 if not event.standard_protocols.values_list("pk", flat=True):
                     pk_value = list(
@@ -129,25 +158,29 @@ def assign_standard_names_to_study(study: GeneralStudyModuleAttr):
 
 def add_standard_name(request, form):
     data = form.cleaned_data
+    modality = data["modality"]
 
     if not data["standard_name"]:
         messages.warning(request, "Blank standard name - no update made")
         return
 
-    for field_name in STANDARD_STUDY_NAME_MAPPING_FIELDS:
-        _add_standard_study_names_for_field(field_name, request, **data)
+    for field_name in (
+        STANDARD_STUDY_NAME_MAPPING_FIELDS + STANDARD_ACQUISITION_NAME_FIELDS
+    ):
+        for field_value in data[field_name]:
+            _add_standard_name(field_name, field_value, **data)
 
-    for field_name in STANDARD_ACQUISITION_NAME_FIELDS:
-        _add_standard_acquisition_names_for_field(field_name, request, **data)
-
-    std_names = StandardNames.objects.filter(modality=data["modality"]).filter(
+    std_names = StandardNames.objects.filter(modality=modality).filter(
         standard_name__exact=data["standard_name"]
     )
+
+    for standard_name in std_names:
+        assign_studies_to_standard_name(standard_name)
 
     drl_formset = DiagnosticReferenceLevelsFormSet(request.POST, prefix="drl_formset")
     kfactor_formset = KFactorsFormSet(request.POST, prefix="kfactor_formset")
     _save_all_reference_values_for_standard_names(
-        data["modality"], std_names, drl_formset, kfactor_formset
+        modality, std_names, drl_formset, kfactor_formset
     )
 
 
@@ -164,18 +197,8 @@ def update_all_standard_names_for_modality(modality):
         for std_name in standard_names:
             std_name.irradeventxraydata_set.clear()  # type: ignore
 
-    studies = _get_studies_for_modality(modality)
-    acquisitions = _get_acquisitions_for_modality(modality)
-
-    for field_name in STANDARD_STUDY_NAME_MAPPING_FIELDS:
-        _assign_standard_study_names_to_studies_for_field_name(
-            studies, standard_names, field_name
-        )
-
-    for field_name in STANDARD_ACQUISITION_NAME_FIELDS:
-        _assign_standard_acquisition_names_to_studies_for_field_name(
-            acquisitions, standard_names, field_name
-        )
+    for standard_name in standard_names:
+        assign_studies_to_standard_name(standard_name)
 
 
 def update_standard_name(request, form, standard_name: StandardNames):
@@ -198,7 +221,7 @@ def update_standard_name(request, form, standard_name: StandardNames):
         standard_names.filter(**{field_name + "__in": names_to_remove}).delete()
 
         for name_to_add in names_to_add:
-            _add_standard_study_name_for_field(field_name, name_to_add, request, **data)
+            _add_standard_name(field_name, name_to_add, **data)
 
     for field_name in STANDARD_ACQUISITION_NAME_FIELDS:
         if field_name not in data:
@@ -216,19 +239,14 @@ def update_standard_name(request, form, standard_name: StandardNames):
         standard_names.filter(**{field_name + "__in": names_to_remove}).delete()
 
         for name_to_add in names_to_add:
-            _add_standard_acquisition_name_for_field(
-                field_name, name_to_add, request, **data
-            )
+            _add_standard_name(field_name, name_to_add, **data)
 
-    for field_name in STANDARD_STUDY_NAME_MAPPING_FIELDS:
-        _assign_standard_study_names_to_studies_for_field_name(
-            studies, standard_names, field_name
-        )
+    standard_names = StandardNames.objects.filter(
+        modality=standard_name.modality
+    ).filter(standard_name=data["standard_name"])
 
-    for field_name in STANDARD_ACQUISITION_NAME_FIELDS:
-        _assign_standard_acquisition_names_to_studies_for_field_name(
-            acquisitions, standard_names, field_name
-        )
+    for standard_name in standard_names:
+        assign_studies_to_standard_name(standard_name)
 
     if "standard_name" in data:
         standard_names.update(standard_name=data["standard_name"])
@@ -334,27 +352,17 @@ def _add_standard_name(field_name, field_value, **data):
     )
 
 
-def _assign_standard_study_names_to_studies_for_field_name(
-    studies, standard_names, field_name
-):
-    for standard_name in standard_names.filter(**{field_name + "__isnull": False}):
-        _assign_standard_study_name_to_studies(studies, standard_name, field_name)
-
-
 def _assign_standard_study_name_to_studies(
     studies, standard_name: StandardNames, field_name
 ):
-    for study in studies.filter(**{field_name: standard_name.__dict__[field_name]}):
+    for study in studies.filter(
+        **{
+            field_name + "__isnull": False,
+            field_name: standard_name.__dict__[field_name],
+        }
+    ):
+        print(study.study_description)
         study.standard_names.add(standard_name)
-
-
-def _assign_standard_acquisition_names_to_studies_for_field_name(
-    acquisitions, standard_names, field_name
-):
-    for standard_name in standard_names.filter(**{field_name + "__isnull": False}):
-        _assign_standard_acquisition_name_to_acquisitions(
-            acquisitions, standard_name, field_name
-        )
 
 
 def _assign_standard_acquisition_name_to_acquisitions(
@@ -364,42 +372,6 @@ def _assign_standard_acquisition_name_to_acquisitions(
         **{field_name: standard_name.__dict__[field_name]}
     ):
         acquisition.standard_protocols.add(standard_name)
-
-
-def _add_standard_study_names_for_field(field_name, request, **data):
-    for field_value in data[field_name]:
-        _add_standard_study_name_for_field(field_name, field_value, request, **data)
-
-
-def _add_standard_study_name_for_field(field_name, field_value, request, **data):
-    try:
-        studies = _get_studies_for_modality(data["modality"])
-        new_standard_name = _add_standard_name(field_name, field_value, **data)
-        _assign_standard_study_name_to_studies(
-            studies,
-            new_standard_name,
-            field_name,
-        )
-    except IntegrityError as e:
-        messages.warning(request, mark_safe("Error adding name: {0}".format(e.args)))
-
-
-def _add_standard_acquisition_names_for_field(field_name, request, **data):
-    for field_value in data[field_name]:
-        _add_standard_acquisition_name_for_field(
-            field_name, field_value, request, **data
-        )
-
-
-def _add_standard_acquisition_name_for_field(field_name, field_value, request, **data):
-    try:
-        acquisitions = _get_acquisitions_for_modality(data["modality"])
-        new_standard_name = _add_standard_name(field_name, field_value, **data)
-        _assign_standard_acquisition_name_to_acquisitions(
-            acquisitions, new_standard_name, field_name
-        )
-    except IntegrityError as e:
-        messages.warning(request, mark_safe("Error adding name: {0}".format(e.args)))
 
 
 def _remove_studies_from_standard_study_name(studies, standard_name: StandardNames):
