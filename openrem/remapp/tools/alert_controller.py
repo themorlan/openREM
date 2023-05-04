@@ -47,10 +47,15 @@ from remapp.models import (
     IrradEventXRayData,
 )
 
-from .standard_names import (
-    STANDARD_STUDY_NAME_MAPPING_FIELDS,
-    STANDARD_ACQUISITION_NAME_FIELDS,
-)
+STANDARD_STUDY_NAME_MAPPING_FIELDS = [
+    "study_description",
+    "requested_procedure_code_meaning",
+    "procedure_code_meaning",
+]
+
+STANDARD_ACQUISITION_NAME_FIELDS = [
+    "acquisition_protocol",
+]
 
 
 def check_for_new_alerts():

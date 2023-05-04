@@ -33,6 +33,7 @@ from django.contrib import messages
 from django.db.models import Q
 from django.core.exceptions import ObjectDoesNotExist
 import numpy as np
+from remapp.tools.alert_controller import check_for_new_alerts
 from remapp.forms import DiagnosticReferenceLevelsFormSet, KFactorsFormSet
 from remapp.models import (
     StandardNames,
@@ -183,6 +184,8 @@ def add_standard_name(request, form):
         modality, std_names, drl_formset, kfactor_formset
     )
 
+    check_for_new_alerts()
+
 
 def update_all_standard_names_for_modality(modality):
     standard_names = StandardNames.objects.filter(modality=modality)
@@ -269,6 +272,7 @@ def update_standard_name(request, form, standard_name: StandardNames):
     _save_all_reference_values_for_standard_names(
         standard_name.modality, standard_names, drl_formset, kfactor_formset
     )
+    check_for_new_alerts()
 
 
 def get_field_values_to_add_and_remove(initial_values, new_values):

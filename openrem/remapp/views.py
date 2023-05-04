@@ -77,7 +77,6 @@ from .interface.mod_filters import (
     nm_filter,
 )
 from .tools.make_skin_map import make_skin_map
-from .tools.alert_controller import check_for_new_alerts
 from .tools.patient_controller import add_or_update_patients
 from .views_charts_ct import (
     generate_required_ct_charts_list,
@@ -835,8 +834,6 @@ def alert_summary(request):
     admin = create_admin_info(request)
     drl_alerts = DiagnosticReferenceLevelAlerts.objects.all()
     effective_dose_alerts = EffectiveDoseAlerts.objects.all()
-
-    check_for_new_alerts()
 
     context = {
         "admin": admin,
