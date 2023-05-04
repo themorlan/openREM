@@ -38,175 +38,149 @@
 {% endblock %}
 
 {% block mainblock %}
-    <div class="row">
-        <div class="col-md-9">
-            {% block paginate_top %}
-                {% if study_list.has_other_pages %}
-                    {% load proper_paginate %}
-                    {% load url_replace %}
-                    <ul class="pagination">
-                        {% if study_list.number == 1 %}
-                            <li class="disabled"><span>⇤</span></li>
-                        {% else %}
-                            <li><a class="page-link" href="?{% url_replace request 'page' 1 %}">⇤</a></li>
-                        {% endif %}
-                        {% if study_list.has_previous %}
-                            <li><a class="page-link"
-                                   href="?{% url_replace request 'page' study_list.previous_page_number %}">&laquo;</a>
-                            </li>
-                        {% else %}
-                            <li class="disabled"><span>&laquo;</span></li>
-                        {% endif %}
-                        {% for i in study_list.paginator|proper_paginate:study_list.number %}
-                            {% if study_list.number == i %}
-                                <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
-                            {% else %}
-                                <li><a class="page-link" href="?{% url_replace request 'page' i %}">{{ i }}</a></li>
-                            {% endif %}
-                        {% endfor %}
-                        {% if study_list.has_next %}
-                            <li><a class="page-link"
-                                   href="?{% url_replace request 'page' study_list.next_page_number %}">&raquo;</a></li>
-                        {% else %}
-                            <li class="disabled"><span>&raquo;</span></li>
-                        {% endif %}
-                        {% if study_list.number == study_list.paginator.num_pages %}
-                            <li class="disabled"><span>⇥</span></li>
-                        {% else %}
-                            <li><a class="page-link"
-                                   href="?{% url_replace request 'page' study_list.paginator.num_pages %}">⇥</a></li>
-                        {% endif %}
-                    </ul>
+    {% block paginate_top %}
+        {% if study_list.has_other_pages %}
+            {% load proper_paginate %}
+            {% load url_replace %}
+            <ul class="pagination">
+                {% if study_list.number == 1 %}
+                    <li class="disabled"><span>⇤</span></li>
+                {% else %}
+                    <li><a class="page-link" href="?{% url_replace request 'page' 1 %}">⇤</a></li>
                 {% endif %}
-            {% endblock %}
-            {% block col1 %}
-                <h2>DRL Alerts</h2>
-                <table class="table table-bordered table-hover row-clickable small" aria-describedby="Study summary table">
-                    <tr>
-                        <th>Modality</th>
-                        <th>Standard name</th>
-                        <th>Triggered by</th>
-                        <th>Date issued</th>
-                        <th>Details?</th>
-                    </tr>
-                    {% for alert in drl_alerts %}
-                        <tr>
-                            <td>
-                                <a>
-                                    {{ alert.general_study_module_attributes.modality_type }}</td>
-                                </a>
-                            <td>
-                                <a>
-                                    {{ alert.standard_name.standard_name }}</td>
-                                </a>
-                            <td>
-                                <a>
-                                    {{ alert.general_study_module_attributes.total_dlp }} >> {{ alert.diagnostic_reference_level.diagnostic_reference_level }}</td>
-                                </a>
-                            <td>
-                                <a>
-                                    {{ alert.date_of_issue }}</td>
-                                </a>
-                            <td>
-                                <a href="{% url 'ct_detail_view' pk=alert.general_study_module_attributes.id %}">
-                                    Study details
-                                </a>
-                            </td>
-                        </tr>
-                    {% endfor %}
-                </table>
-
-                <h2>Effective Dose Alerts</h2>
-                <table class="table table-bordered table-hover row-clickable small" aria-describedby="Study summary table">
-                    <tr>
-                        <th>Patient</th>
-                        <th>Cumulative Dose (mSv)</th>
-                        <th>Date range</th>
-                    </tr>
-                    {% for alert in effective_dose_alerts %}
-                        <tr>
-                            <td>
-                                <a href="{% url 'patient_details' id=alert.patient.id %}">
-                                    {{ alert.patient.patient_id }} ({{ alert.patient.patient_name }})
-                                </a>
-                            </td>
-                            <td>
-                                <a>
-                                    {{ alert.cumulative_dose }}
-                                </a>
-                            </td>
-                            <td>
-                                <a>
-                                    {{ alert.first_study_date }} - {{ alert.last_study_date }}
-                                </a>
-                            </td>
-                        </tr>
-                    {% endfor %}
-                </table>
-            
-            
-            {% endblock %}
-            {% block paginate_bottom %}
-                {% if study_list.has_other_pages %}
-                    <ul class="pagination">
-                        {% if study_list.number == 1 %}
-                            <li class="disabled"><span>⇤</span></li>
-                        {% else %}
-                            <li><a class="page-link" href="?{% url_replace request 'page' 1 %}">⇤</a></li>
-                        {% endif %}
-                        {% if study_list.has_previous %}
-                            <li><a class="page-link"
-                                   href="?{% url_replace request 'page' study_list.previous_page_number %}">&laquo;</a>
-                            </li>
-                        {% else %}
-                            <li class="disabled"><span>&laquo;</span></li>
-                        {% endif %}
-                        {% for i in study_list.paginator|proper_paginate:study_list.number %}
-                            {% if study_list.number == i %}
-                                <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
-                            {% else %}
-                                <li><a class="page-link" href="?{% url_replace request 'page' i %}">{{ i }}</a></li>
-                            {% endif %}
-                        {% endfor %}
-                        {% if study_list.has_next %}
-                            <li><a class="page-link"
-                                   href="?{% url_replace request 'page' study_list.next_page_number %}">&raquo;</a></li>
-                        {% else %}
-                            <li class="disabled"><span>&raquo;</span></li>
-                        {% endif %}
-                        {% if study_list.number == study_list.paginator.num_pages %}
-                            <li class="disabled"><span>⇥</span></li>
-                        {% else %}
-                            <li><a class="page-link"
-                                   href="?{% url_replace request 'page' study_list.paginator.num_pages %}">⇥</a></li>
-                        {% endif %}
-                    </ul>
+                {% if study_list.has_previous %}
+                    <li><a class="page-link"
+                            href="?{% url_replace request 'page' study_list.previous_page_number %}">&laquo;</a>
+                    </li>
+                {% else %}
+                    <li class="disabled"><span>&laquo;</span></li>
                 {% endif %}
-            {% endblock %}
-        </div>
+                {% for i in study_list.paginator|proper_paginate:study_list.number %}
+                    {% if study_list.number == i %}
+                        <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+                    {% else %}
+                        <li><a class="page-link" href="?{% url_replace request 'page' i %}">{{ i }}</a></li>
+                    {% endif %}
+                {% endfor %}
+                {% if study_list.has_next %}
+                    <li><a class="page-link"
+                            href="?{% url_replace request 'page' study_list.next_page_number %}">&raquo;</a></li>
+                {% else %}
+                    <li class="disabled"><span>&raquo;</span></li>
+                {% endif %}
+                {% if study_list.number == study_list.paginator.num_pages %}
+                    <li class="disabled"><span>⇥</span></li>
+                {% else %}
+                    <li><a class="page-link"
+                            href="?{% url_replace request 'page' study_list.paginator.num_pages %}">⇥</a></li>
+                {% endif %}
+            </ul>
+        {% endif %}
+    {% endblock %}
+    {% block col1 %}
+        <h2>DRL Alerts</h2>
+        <table class="table table-bordered table-hover row-clickable small" aria-describedby="Study summary table">
+            <tr>
+                <th>Modality</th>
+                <th>Standard name</th>
+                <th>Triggered by</th>
+                <th>Date issued</th>
+                <th>Details?</th>
+            </tr>
+            {% for alert in drl_alerts %}
+                <tr>
+                    <td>
+                        <a>
+                            {{ alert.general_study_module_attributes.modality_type }}</td>
+                        </a>
+                    <td>
+                        <a>
+                            {{ alert.standard_name.standard_name }}</td>
+                        </a>
+                    <td>
+                        <a>
+                            {{ alert.general_study_module_attributes.total_dlp }} >> {{ alert.diagnostic_reference_level.diagnostic_reference_level }}</td>
+                        </a>
+                    <td>
+                        <a>
+                            {{ alert.date_of_issue }}</td>
+                        </a>
+                    <td>
+                        <a href="{% url 'ct_detail_view' pk=alert.general_study_module_attributes.id %}">
+                            Study details
+                        </a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
 
-        <div class="col-md-3">
-            {% block col2 %}
-                <div class="panel panel-info small">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">Data export</h3>
-                    </div>
-                    <div class="panel-body">
-                        {% if admin.exportgroup %}
-                            <p>
-                                <a href="{% url 'nmcsv1' 0 0 %}?{{ request.GET.urlencode }}"
-                                class="btn btn-default btn-sm" role="button">Export to CSV&nbsp;</a>
-                            </p>
-                        {% else %}
-                            <p>
-                                No export permissions
-                            </p>
-                        {% endif %}
-                    </div>
-                </div>
-            {% endblock %}
-        </div>
-    </div>
+        <h2>Effective Dose Alerts</h2>
+        <table class="table table-bordered table-hover row-clickable small" aria-describedby="Study summary table">
+            <tr>
+                <th>Patient</th>
+                <th>Cumulative Dose (mSv)</th>
+                <th>Date range</th>
+            </tr>
+            {% for alert in effective_dose_alerts %}
+                <tr>
+                    <td>
+                        <a href="{% url 'patient_details' id=alert.patient.id %}">
+                            {{ alert.patient.patient_id }} ({{ alert.patient.patient_name }})
+                        </a>
+                    </td>
+                    <td>
+                        <a>
+                            {{ alert.cumulative_dose }}
+                        </a>
+                    </td>
+                    <td>
+                        <a>
+                            {{ alert.first_study_date }} - {{ alert.last_study_date }}
+                        </a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+    
+    
+    {% endblock %}
+    {% block paginate_bottom %}
+        {% if study_list.has_other_pages %}
+            <ul class="pagination">
+                {% if study_list.number == 1 %}
+                    <li class="disabled"><span>⇤</span></li>
+                {% else %}
+                    <li><a class="page-link" href="?{% url_replace request 'page' 1 %}">⇤</a></li>
+                {% endif %}
+                {% if study_list.has_previous %}
+                    <li><a class="page-link"
+                            href="?{% url_replace request 'page' study_list.previous_page_number %}">&laquo;</a>
+                    </li>
+                {% else %}
+                    <li class="disabled"><span>&laquo;</span></li>
+                {% endif %}
+                {% for i in study_list.paginator|proper_paginate:study_list.number %}
+                    {% if study_list.number == i %}
+                        <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+                    {% else %}
+                        <li><a class="page-link" href="?{% url_replace request 'page' i %}">{{ i }}</a></li>
+                    {% endif %}
+                {% endfor %}
+                {% if study_list.has_next %}
+                    <li><a class="page-link"
+                            href="?{% url_replace request 'page' study_list.next_page_number %}">&raquo;</a></li>
+                {% else %}
+                    <li class="disabled"><span>&raquo;</span></li>
+                {% endif %}
+                {% if study_list.number == study_list.paginator.num_pages %}
+                    <li class="disabled"><span>⇥</span></li>
+                {% else %}
+                    <li><a class="page-link"
+                            href="?{% url_replace request 'page' study_list.paginator.num_pages %}">⇥</a></li>
+                {% endif %}
+            </ul>
+        {% endif %}
+    {% endblock %}
 {% endblock %}
 
 
