@@ -32,6 +32,7 @@
 import os
 import sys
 import django
+from django.db.models import Sum
 
 # setup django/OpenREM
 basepath = os.path.dirname(__file__)
@@ -136,6 +137,8 @@ def send_rf_high_dose_alert_email(study_pk=None, test_message=None, test_user=No
         "alert_total_rp_dose_rf",
         "accum_dose_delta_weeks",
         "alert_skindose",
+        "send_high_dose_metric_alert_emails_ref",
+        "send_high_dose_metric_alert_emails_skin",
     )[0]
 
     if alert_levels["show_accum_dose_over_delta_weeks"]:
@@ -158,14 +161,41 @@ def send_rf_high_dose_alert_email(study_pk=None, test_message=None, test_user=No
         included_studies = None
         week_delta = None
 
-    # Python 3 can't compare None to int. Compare to 0 if variable is None
-    if (
-        (this_study_dap or 0) >= alert_levels["alert_total_dap_rf"]
-        or (this_study_rp_dose or 0) >= alert_levels["alert_total_rp_dose_rf"]
-        or (accum_dap or 0) >= alert_levels["alert_total_dap_rf"]
-        or (accum_rp_dose or 0) >= alert_levels["alert_total_rp_dose_rf"]
-        or (peak_skin_dose or 0) >= alert_levels["alert_skindose"]
-    ):
+    if this_study_dap is None:
+        this_study_dap = 0
+    if this_study_rp_dose is None:
+        this_study_rp_dose = 0
+    if accum_dap is None:
+        accum_dap = 0
+    if accum_rp_dose is None:
+        accum_rp_dose = 0
+    if peak_skin_dose is None:
+        peak_skin_dose = 0
+    accum_peak_skin_dose = peak_skin_dose
+    if included_studies:
+        accum_peak_skin_dose = list(included_studies.aggregate(Sum("skindosemapresults__peak_skin_dose")).values())[0]
+        if accum_peak_skin_dose is None:
+            accum_peak_skin_dose = 0
+
+    alert_for_dap_or_rp_dose = (
+            alert_levels["send_high_dose_metric_alert_emails_ref"] and
+            (
+                    this_study_dap >= alert_levels["alert_total_dap_rf"] or
+                    this_study_rp_dose >= alert_levels["alert_total_rp_dose_rf"] or
+                    accum_dap >= alert_levels["alert_total_dap_rf"] or
+                    accum_rp_dose >= alert_levels["alert_total_rp_dose_rf"]
+            )
+    )
+
+    alert_for_skin_dose = (
+            alert_levels["send_high_dose_metric_alert_emails_skin"] and
+            (
+                    peak_skin_dose >= alert_levels["alert_skindose"] or
+                    accum_peak_skin_dose >= alert_levels["alert_skindose"]
+            )
+    )
+
+    if (alert_for_dap_or_rp_dose or alert_for_skin_dose):
 
         projection_xray_dose_set = study.projectionxrayradiationdose_set.get()
         accumxraydose_set_all_planes = (
@@ -182,6 +212,7 @@ def send_rf_high_dose_alert_email(study_pk=None, test_message=None, test_user=No
             "alert_levels": alert_levels,
             "studies_in_week_delta": included_studies,
             "server_url": settings.EMAIL_OPENREM_URL,
+            "accum_peak_skin_dose": accum_peak_skin_dose,
         }
 
         text_msg_content = render_to_string(
