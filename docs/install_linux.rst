@@ -376,6 +376,10 @@ Otherwise see :ref:`activatevirtualenv` and navigate back to that folder.
     .. code-block:: console
 
         $ python manage.py migrate remapp --fake
+        
+    The ``makemigrations`` command below may trigger questions about whether fields have been renamed, eg 
+    ``Did you rename userprofile.median_available to userprofile.plotBoxplots (a BooleanField)? [y/N]``. The answer
+    to these questions is no (``N``).
 
 
 .. code-block:: console
@@ -385,6 +389,11 @@ Otherwise see :ref:`activatevirtualenv` and navigate back to that folder.
     $ python manage.py loaddata openskin_safelist.json
     $ python manage.py collectstatic --no-input --clear
     $ python manage.py compilemessages
+
+If this is not an upgrade, or if you want to create an additional superuser:
+
+.. code-block:: console
+
     $ python manage.py createsuperuser
 
 .. _Install Linux webserver:
