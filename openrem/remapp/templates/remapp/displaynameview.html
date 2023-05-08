@@ -120,6 +120,10 @@
               )
           }
       );
+  </script>
+{% endfor %}
+
+  <script>
       $(document).ready(
           function get_failed_imports_list(json) {
               $.ajax(
@@ -137,7 +141,6 @@
           }
       )
   </script>
-{% endfor %}
 
 {% if admin.admingroup %}
   <input class="btn btn-default" type="submit" value="Update">

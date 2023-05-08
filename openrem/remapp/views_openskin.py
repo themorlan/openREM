@@ -80,8 +80,7 @@ def get_matching_equipment_names(manufacturer, model_name):
     rf_names = (
         UniqueEquipmentNames.objects.order_by("display_name")
         .filter(
-            Q(user_defined_modality="RF")
-            | Q(user_defined_modality="dual")
+            Q(user_defined_modality__in=["RF", "dual"])
             | (
                 Q(user_defined_modality__isnull=True)
                 & Q(

@@ -51,7 +51,7 @@ def populate_summary_study_level(modality, study_pk):
     )
 
     try:
-        study = GeneralStudyModuleAttr.objects.get(pk__exact=study_pk)
+        study = GeneralStudyModuleAttr.objects.get(pk=study_pk)
     except ObjectDoesNotExist:
         logger.error(
             f"Attempt to get {modality} study with pk {study_pk} failed - presumably deleted?"
@@ -98,10 +98,10 @@ def populate_summary_ct():
     """
 
     try:
-        task = SummaryFields.objects.get(modality_type__exact="CT")
+        task = SummaryFields.objects.get(modality_type="CT")
     except ObjectDoesNotExist:
-        task = SummaryFields.objects.create(modality_type__exact="CT")
-    all_ct = GeneralStudyModuleAttr.objects.filter(modality_type__exact="CT").order_by(
+        task = SummaryFields.objects.create(modality_type="CT")
+    all_ct = GeneralStudyModuleAttr.objects.filter(modality_type="CT").order_by(
         "pk"
     )
     task.total_studies = all_ct.count()
@@ -122,10 +122,10 @@ def populate_summary_mg():
     """
 
     try:
-        task = SummaryFields.objects.get(modality_type__exact="MG")
+        task = SummaryFields.objects.get(modality_type="MG")
     except ObjectDoesNotExist:
         task = SummaryFields.objects.create(modality_type="MG")
-    all_mg = GeneralStudyModuleAttr.objects.filter(modality_type__exact="MG").order_by(
+    all_mg = GeneralStudyModuleAttr.objects.filter(modality_type="MG").order_by(
         "pk"
     )
     task.total_studies = all_mg.count()
@@ -150,13 +150,11 @@ def populate_summary_dx():
     from django.db.models import Q
 
     try:
-        task = SummaryFields.objects.get(modality_type__exact="DX")
+        task = SummaryFields.objects.get(modality_type="DX")
     except ObjectDoesNotExist:
         task = SummaryFields.objects.create(modality_type="DX")
     all_dx = GeneralStudyModuleAttr.objects.filter(
-        Q(modality_type__exact="DX")
-        | Q(modality_type__exact="CR")
-        | Q(modality_type__exact="PX")
+        Q(modality_type__in=["DX", "CR", "PX"])
     ).order_by("pk")
     task.total_studies = all_dx.count()
     to_process_dx = all_dx.filter(number_of_events_a__isnull=True)
@@ -176,10 +174,10 @@ def populate_summary_rf():
     """
 
     try:
-        task = SummaryFields.objects.get(modality_type__exact="RF")
+        task = SummaryFields.objects.get(modality_type="RF")
     except ObjectDoesNotExist:
         task = SummaryFields.objects.create(modality_type="RF")
-    all_rf = GeneralStudyModuleAttr.objects.filter(modality_type__exact="RF").order_by(
+    all_rf = GeneralStudyModuleAttr.objects.filter(modality_type="RF").order_by(
         "pk"
     )
     task.total_studies = all_rf.count()
