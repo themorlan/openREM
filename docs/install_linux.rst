@@ -527,6 +527,8 @@ You can check that NGINX and Gunicorn are running with the following two command
 .. code-block:: console
 
     $ sudo systemctl status openrem-gunicorn.service
+    
+If the prompt doesn't return, press ``q``.
 
 .. code-block:: console
 
