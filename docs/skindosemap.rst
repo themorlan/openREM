@@ -253,11 +253,15 @@ If you would like to help with validation of `openSkin`_ please do go ahead and
 feed back your findings to Jonathan Cole at `jacole`_ and David Platten at
 `dplatten`_.
 
+**********
+References
+**********
+
 .. _Platten 2023:
 
-Platten, D 2023, "Monte Carlo simulation of skin dose distribution from
-interventional cardiology procedures", Doctor of Clinical Science thesis,
-The University of Manchester, Manchester, UK (`link to thesis`_).
+Platten, D. "Monte Carlo simulation of skin dose distribution from
+interventional cardiology procedures", Doctor of Clinical Science thesis
+(2023), The University of Manchester, UK (`external link to thesis`_).
 
 .. _`phantom design`: http://bitbucket.org/openskin/openskin/wiki/Phantom%20design
 .. _`openSkin`: http://bitbucket.org/openskin/openskin
@@ -268,4 +272,4 @@ The University of Manchester, Manchester, UK (`link to thesis`_).
 .. _ImageJ: http://imagej.nih.gov/ij/download.html
 .. _`openSkin downloads`: http://bitbucket.org/openskin/openskin/downloads
 .. _`this paper`:  https://doi.org/10.1088/0031-9155/56/22/012
-.. _`link to thesis`: https://research.manchester.ac.uk/en/studentTheses/monte-carlo-simulation-of-skin-dose-distribution-from-interventio
+.. _`external link to thesis`: https://research.manchester.ac.uk/en/studentTheses/monte-carlo-simulation-of-skin-dose-distribution-from-interventio
