@@ -54,15 +54,11 @@ If these two lines are not there or are commented out (line starts with a ``#``)
 .. code-block:: console
 
     $ sudo apt install acl python3.10 python3.10-dev python3.10-distutils python3.10-venv python3-pip \
-    postgresql nginx orthanc dcmtk default-jre zip gettext
+    postgresql nginx orthanc dcmtk default-jre zip gettext lsb-release
 
 **Redis**
 
 Redis is used to temporarily store the background tasks.
-
-.. code-block:: console
-
-    $ sudo apt install lsb-release
 
 .. code-block:: console
 
