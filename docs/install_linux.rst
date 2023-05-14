@@ -659,6 +659,13 @@ Restart Orthanc:
 
     $ sudo systemctl restart orthanc.service
 
+.. admonition:: Upgrading to a new server
+
+    If you are upgrading an OpenREM server, check the local Orthanc DICOM server can be seen by OpenREM - go to the web
+    interface, navigate to ``Config --> DICOM Networking`` and see if the Store server is marked as Down.
+    If the status is ``Store hostname is missing (normally localhost) - modify to add`` modify the store node and add
+    ``localhost`` to the ``Peer:`` field. The server should now be marked as Alive.
+
 .. _add_linux_user:
 
 New users, and quick access to physics folder
