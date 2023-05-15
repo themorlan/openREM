@@ -280,7 +280,7 @@ def rf_summary_list_filter(request):
 
     enable_standard_names = standard_name_settings()
     queryset = (
-        GeneralStudyModuleAttr.objects.filter(modality_type__exact="RF")
+        GeneralStudyModuleAttr.objects.filter(modality_type="RF")
         .order_by("-study_date", "-study_time")
         .distinct()
     )
@@ -503,8 +503,8 @@ def rf_detail_view(request, pk=None):
             )[0]
             oldest_date = study_date - timedelta(weeks=week_delta)
             included_studies = GeneralStudyModuleAttr.objects.filter(
-                modality_type__exact="RF",
-                patientmoduleattr__patient_id__exact=patient_id,
+                modality_type="RF",
+                patientmoduleattr__patient_id=patient_id,
                 study_date__range=[oldest_date, study_date],
             )
         else:
@@ -657,8 +657,8 @@ def nm_detail_view(request, pk=None):
         return redirect(reverse_lazy("nm_summary_list_filter"))
 
     associated_ct = GeneralStudyModuleAttr.objects.filter(
-        Q(study_instance_uid__exact=study.study_instance_uid)
-        & Q(modality_type__exact="CT")
+        Q(study_instance_uid=study.study_instance_uid)
+        & Q(modality_type="CT")
     ).first()
 
     admin = create_admin_info(request)
@@ -715,8 +715,8 @@ def ct_detail_view(request, pk=None):
     )
 
     associated_nm = GeneralStudyModuleAttr.objects.filter(
-        Q(study_instance_uid__exact=study.study_instance_uid)
-        & Q(modality_type__exact="NM")
+        Q(study_instance_uid=study.study_instance_uid)
+        & Q(modality_type="NM")
     ).first()
 
     admin = create_admin_info(request)
@@ -744,7 +744,7 @@ def mg_summary_list_filter(request):
         del filter_data["page"]
 
     queryset = (
-        GeneralStudyModuleAttr.objects.filter(modality_type__exact="MG")
+        GeneralStudyModuleAttr.objects.filter(modality_type="MG")
         .order_by("-study_date", "-study_time")
         .distinct()
     )
@@ -875,7 +875,6 @@ def openrem_home(request):
             user_profile = request.user.userprofile
 
     allstudies = GeneralStudyModuleAttr.objects.all()
-
     study_counts = allstudies.aggregate(
         all_count=Count("pk"),
         ct_count=Count("pk", filter=Q(modality_type="CT")),
@@ -957,7 +956,7 @@ def openrem_home(request):
     # )[0]
     # if send_alert_emails:
     #     recipients = User.objects.filter(
-    #         highdosemetricalertrecipients__receive_high_dose_metric_alerts__exact=True
+    #         highdosemetricalertrecipients__receive_high_dose_metric_alerts=True
     #     ).values_list('email', flat=True)
     #     send_mail('OpenREM high dose alert test',
     #               'This is a test for high dose alert e-mails from OpenREM',
@@ -995,13 +994,11 @@ def update_latest_studies(request):
         modality = data.get("modality")
         if modality == "DX":
             studies = GeneralStudyModuleAttr.objects.filter(
-                Q(modality_type__exact="DX")
-                | Q(modality_type__exact="CR")
-                | Q(modality_type__exact="PX")
+                Q(modality_type__in=["DX", "CR", "PX"])
             ).all()
         else:
             studies = GeneralStudyModuleAttr.objects.filter(
-                modality_type__exact=modality
+                modality_type=modality
             ).all()
 
         today = datetime.now()
@@ -1018,6 +1015,7 @@ def update_latest_studies(request):
         else:
             day_delta_a = 7
             day_delta_b = 28
+
         date_a = today.date() - timedelta(days=day_delta_a)
         date_b = today.date() - timedelta(days=day_delta_b)
         if display_workload_stats:

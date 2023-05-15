@@ -903,6 +903,14 @@ class UniqueEquipmentNames(models.Model):
             "device_observer_uid_hash",
         )
 
+        indexes = [
+            models.Index(
+                fields=[
+                    "display_name",
+                ]
+            ),
+        ]
+
     def __unicode__(self):
         return self.display_name
 

@@ -2,8 +2,6 @@
 Troubleshooting
 ***************
 
-**Document not ready for translation**
-
 General Docker troubleshooting
 ==============================
 

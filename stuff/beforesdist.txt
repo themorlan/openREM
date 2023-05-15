@@ -1,4 +1,16 @@
+Run the following pipelines on develop from bitbucket:
+  default
+  custom: test-python-3.8
+  custom: test-python-3.9
+
+
+Create a new folder called "openrem-for-release"
+git clone git@bitbucket.org:openrem/openrem.git openrem-for-release
+
+
 Make sure develop is up to date, branch as release-version, eg release-0.9.0b5
+Checkout the release-version branch
+
 Change the version number in
 	openrem/remapp/version.py - append '-docs' to version tag name for docs branch
 	install instructions in the release notes where applicable
@@ -6,20 +18,24 @@ Change the version number in
 	    install-offline.rst
         install_windows.rst - set to version for beta or versionless for release
         upgrade_windows.rst ?
+        install_offline_docker.rst - set to version for beta or ?
+        install_docker.rst - change Download link to 1.0.0b2.zip or equivalent
+
 	date and other details in changes.rst
     Edit README.rst including docs links
     Edit description in setup.py between beta and release
 
+
 Clean the existing distribute folder - instructions assume the following layout:
-    bbOpenREM # bitbucket repo of openrem/openrem
-    distribute # empty folder at the same level as bbOpenREM
+    openrem-for-release # bitbucket repo of openrem/openrem
+    distribute # empty folder at the same level as openrem-for-release
 
 cd distribute
 rm -r *
 
 Then get the new contents:
-rsync -av --exclude-from='../bbOpenREM/stuff/distexclude.txt' ../bbOpenREM/ .
-cp ../bbOpenREM/stuff/v1initial.py openrem/remapp/migrations/0001_initial.py.1-0-upgrade
+rsync -av --exclude-from='../openrem-for-release/stuff/distexclude.txt' ../openrem-for-release/ .
+cp ../openrem-for-release/stuff/v1initial.py openrem/remapp/migrations/0001_initial.py.1-0-upgrade
 
 Build:
     Activate the venv you are using, then
@@ -30,28 +46,37 @@ Build:
 
 Test upload:
     python3 -m pip install --upgrade twine
-    twine upload --repository testpypi dist/*
+    python3 -m twine upload --repository testpypi dist/*
 
     Go to https://test.pypi.org/project/OpenREM/ to review
 
 Real upload:
-    twine upload dist/*
+    python3 -m twine upload dist/*
 
     Go to https://pypi.org/project/OpenREM/ to review
+
+    Change directory to openrem-for-release
 
     commit all changes to branch
     Push branch to bitbucket for reference
     merge into develop if beta, master if release
-    tag with release number, ie 0.9.0b4
-    push to bitbucket
+    Manually trigger the deploy-to-docker pipeline on the develop branch
+    Checkout the develop branch
+    tag develop/master with release number, ie 0.9.0b4 (git tag 0.9.0b4)
+    push to bitbucket again with tag (git push --tag), this time the retag-and-repush-image pipeline should start automatically
     make new branch named version-docs eg 0.9.0b4-docs
-    push to bitbucket
+    push to bitbucket if applicable
 
     If release, merge into develop and push to bitbucket
 
 Update docs versions
     Go to https://readthedocs.org/projects/openrem/versions/ and find docs branch and set to public and active
     For release, set docs to default in https://readthedocs.org/dashboard/openrem/versions/
+
+On https://bitbucket.org/openrem/docker
+    Update docker-compose.yml to make "image" reflect the current version
+    Create tag (git tag x.x.x.x)
+    Push tag (git push --tag)
 
 Update demo site for full release
     If release, log into the demo site (ssh deploy@openrem.org)
@@ -75,7 +100,7 @@ Update website for full release
     If good, pull request deploy-stage to deploy-live
     Merge, check https://openrem.org
 
-    Tell developers (beta) or public (late beta or release)
+Tell developers (beta) or public (late beta or release)
 
     Git statistics:
         Number of commits:

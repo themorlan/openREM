@@ -61,7 +61,7 @@ def custom_name_filter(queryset, name, value):
         )
         | (
             Q(patientmoduleattr__name_hashed=True)
-            & Q(patientmoduleattr__patient_name__exact=hash_id(value))
+            & Q(patientmoduleattr__patient_name=hash_id(value))
         )
     )
     return filtered
@@ -78,7 +78,7 @@ def custom_id_filter(queryset, name, value):
         )
         | (
             Q(patientmoduleattr__id_hashed=True)
-            & Q(patientmoduleattr__patient_id__exact=hash_id(value))
+            & Q(patientmoduleattr__patient_id=hash_id(value))
         )
     )
     return filtered
@@ -90,7 +90,7 @@ def _custom_acc_filter(queryset, name, value):
         return queryset
     filtered = queryset.filter(
         (Q(accession_hashed=False) & Q(accession_number__icontains=value))
-        | (Q(accession_hashed=True) & Q(accession_number__exact=hash_id(value)))
+        | (Q(accession_hashed=True) & Q(accession_number=hash_id(value)))
     )
     return filtered
 
@@ -387,15 +387,15 @@ def _specify_event_numbers(queryset, name, value):
             return queryset
         return filtered
     if "num_events" in name:
-        filtered = queryset.filter(number_of_events__exact=value)
+        filtered = queryset.filter(number_of_events=value)
     elif "num_spiral_events" in name:
-        filtered = queryset.filter(number_of_spiral__exact=value)
+        filtered = queryset.filter(number_of_spiral=value)
     elif "num_axial_events" in name:
-        filtered = queryset.filter(number_of_axial__exact=value)
+        filtered = queryset.filter(number_of_axial=value)
     elif "num_spr_events" in name:
-        filtered = queryset.filter(number_of_const_angle__exact=value)
+        filtered = queryset.filter(number_of_const_angle=value)
     elif "num_stationary_events" in name:
-        filtered = queryset.filter(number_of_stationary__exact=value)
+        filtered = queryset.filter(number_of_stationary=value)
     else:
         return queryset
     return filtered
@@ -632,7 +632,7 @@ def ct_acq_filter(filters, pid=False):
         "enable_standard_names", flat=True
     )[0]
 
-    studies = GeneralStudyModuleAttr.objects.filter(modality_type__exact="CT")
+    studies = GeneralStudyModuleAttr.objects.filter(modality_type="CT")
 
     if pid:
         if enable_standard_names:
@@ -1048,9 +1048,7 @@ def dx_acq_filter(filters, pid=False):
     )[0]
 
     studies = GeneralStudyModuleAttr.objects.filter(
-        Q(modality_type__exact="DX")
-        | Q(modality_type__exact="CR")
-        | Q(modality_type__exact="PX")
+        Q(modality_type__in=["DX", "CR", "PX"])
     )
 
     if pid:
@@ -1233,7 +1231,7 @@ class NMFilterPlusPid(NMSummaryListFilter):
 
 
 def nm_filter(filters, pid=False):
-    studies = GeneralStudyModuleAttr.objects.filter(modality_type__exact="NM")
+    studies = GeneralStudyModuleAttr.objects.filter(modality_type="NM")
     if pid:
         return NMFilterPlusPid(
             filters, studies.order_by("-study_date", "-study_time").distinct()
