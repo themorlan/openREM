@@ -362,6 +362,16 @@ Otherwise see :ref:`activatevirtualenv` and navigate back to that folder.
 
         $ pg_restore --no-privileges --no-owner -U openremuser -d openremdb /path/to/pre-1-0-upgrade-dump.bak
 
+    It is normal to get one or more errors about the public schema, for example:
+
+    .. code-block:: none
+
+        pg_restore: while PROCESSING TOC:
+        pg_restore: from TOC entry 3; 2615 2200 SCHEMA public postgres
+        pg_restore: error: could not execute query: ERROR:  schema "public" already exists
+        Command was: CREATE SCHEMA public;
+
+        pg_restore: warning: errors ignored on restore: 1
 
     Migrate the database:
 

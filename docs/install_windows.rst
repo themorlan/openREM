@@ -469,6 +469,8 @@ In a ``CMD`` window, move to the openrem Python folder and activate the virtuale
 
         C:\Users\openrem>"c:\Program Files\PostgreSQL\14\bin\pg_restore.exe" --no-privileges --no-owner -U openremuser -d openremdb -W windump.bak
 
+    It is normal to get one or more errors about the public schema.
+
     Migrate the database:
 
     .. code-block:: console
