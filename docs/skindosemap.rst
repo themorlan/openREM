@@ -232,6 +232,8 @@ A native and 'colour equalised' version of the same export are shown below:
 
     </div>
 
+.. _limitations:
+
 ***********
 Limitations
 ***********
@@ -240,16 +242,34 @@ Skin dose map calculations do not currently work for all systems. Siemens Artis
 Zee data is known to work. If skin dose maps do not work for your systems then
 please let us know via the `OpenREM Google Group`_.
 
-`openSkin`_ is yet to be validated independently - if this is something you
-want to do, please do go ahead and feed back your findings to Jonathan Cole at
-`jacole`_.
+Monte Carlo validation has been carried out for a Siemens Artis zee system for
+the body section of the phantom: openSkin results were within &pm; 20&percnt;
+of the Monte Carlo results (`Platten 2023`_). Skin dose values depend on the
+accuracy of the x-ray system's dose at reference point and DAP values. For
+other types of x-ray system the results are for indication only as they have
+not been validated.
 
+If you would like to help with validation of `openSkin`_ please do go ahead and
+feed back your findings to Jonathan Cole at `jacole`_ and David Platten at
+`dplatten`_.
+
+**********
+References
+**********
+
+.. _Platten 2023:
+
+Platten, D. "Monte Carlo simulation of skin dose distribution from
+interventional cardiology procedures", Doctor of Clinical Science thesis
+(2023), The University of Manchester, UK (`external link to thesis`_).
 
 .. _`phantom design`: http://bitbucket.org/openskin/openskin/wiki/Phantom%20design
 .. _`openSkin`: http://bitbucket.org/openskin/openskin
 .. _`jacole`: http://bitbucket.org/jacole/
+.. _`dplatten`: http://bitbucket.org/dplatten/
 .. _`OpenREM Google Group`: http://groups.google.com/forum/#!forum/openrem
 .. _`GIMP`: http://www.gimp.org/
 .. _ImageJ: http://imagej.nih.gov/ij/download.html
 .. _`openSkin downloads`: http://bitbucket.org/openskin/openskin/downloads
 .. _`this paper`:  https://doi.org/10.1088/0031-9155/56/22/012
+.. _`external link to thesis`: https://research.manchester.ac.uk/en/studentTheses/monte-carlo-simulation-of-skin-dose-distribution-from-interventio

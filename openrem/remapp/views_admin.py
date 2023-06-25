@@ -44,7 +44,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User  # pylint: disable=all
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.db.models import Q, Sum
+from django.db.models import Q, Sum, Count, Max
 from django.db.utils import OperationalError as AvoidDataMigrationErrorSQLite
 from django.db.utils import ProgrammingError as AvoidDataMigrationErrorPostgres
 from django.db.utils import IntegrityError
@@ -381,65 +381,49 @@ def display_name_populate(request):
             admin[group.name] = True
         if modality in ["MG", "CT", "NM"]:
             name_set = f.filter(
-                generalequipmentmoduleattr__general_study_module_attributes__modality_type=modality
-            ).distinct()
+                generalequipmentmoduleattr__general_study_module_attributes__modality_type=modality).distinct().annotate(
+                num_entries=Count("generalequipmentmoduleattr__pk"),
+                latest_entry_date=Max("generalequipmentmoduleattr__general_study_module_attributes__study_date"))
             dual = False
         elif modality == "DX":
             name_set = f.filter(
-                Q(user_defined_modality="DX")
-                | Q(user_defined_modality="dual")
+                Q(user_defined_modality__in=["DX", "dual"])
                 | (
                     Q(user_defined_modality__isnull=True)
                     & (
-                        Q(
-                            generalequipmentmoduleattr__general_study_module_attributes__modality_type="DX"
-                        )
-                        | Q(
-                            generalequipmentmoduleattr__general_study_module_attributes__modality_type="CR"
-                        )
-                        | Q(
-                            generalequipmentmoduleattr__general_study_module_attributes__modality_type="PX"
-                        )
+                        Q(generalequipmentmoduleattr__general_study_module_attributes__modality_type__in=["DX", "CR",
+                                                                                                          "PX"])
                     )
                 )
-            ).distinct()
+            ).distinct().annotate(
+                num_entries=Count("generalequipmentmoduleattr__pk"),
+                latest_entry_date=Max("generalequipmentmoduleattr__general_study_module_attributes__study_date")
+            )
+
             dual = True
         elif modality == "RF":
             name_set = f.filter(
-                Q(user_defined_modality="RF")
-                | Q(user_defined_modality="dual")
+                Q(user_defined_modality__in=["RF", "dual"])
                 | (
                     Q(user_defined_modality__isnull=True)
                     & Q(
                         generalequipmentmoduleattr__general_study_module_attributes__modality_type="RF"
                     )
                 )
-            ).distinct()
+            ).distinct().annotate(
+                num_entries=Count("generalequipmentmoduleattr__pk"),
+                latest_entry_date=Max("generalequipmentmoduleattr__general_study_module_attributes__study_date")
+            )
             dual = True
         elif modality == "OT":
             name_set = f.filter(  # ~Q(user_defined_modality__isnull=True) | (
-                ~Q(
-                    generalequipmentmoduleattr__general_study_module_attributes__modality_type="RF"
-                )
-                & ~Q(
-                    generalequipmentmoduleattr__general_study_module_attributes__modality_type="MG"
-                )
-                & ~Q(
-                    generalequipmentmoduleattr__general_study_module_attributes__modality_type="CT"
-                )
-                & ~Q(
-                    generalequipmentmoduleattr__general_study_module_attributes__modality_type="DX"
-                )
-                & ~Q(
-                    generalequipmentmoduleattr__general_study_module_attributes__modality_type="CR"
-                )
-                & ~Q(
-                    generalequipmentmoduleattr__general_study_module_attributes__modality_type="PX"
-                )
-                & ~Q(
-                    generalequipmentmoduleattr__general_study_module_attributes__modality_type="NM"
-                )
-            ).distinct()
+                ~Q(generalequipmentmoduleattr__general_study_module_attributes__modality_type__in=[
+                    "RF", "MG", "CT", "DX", "CR", "PX", "NM"
+                ])
+            ).distinct().annotate(
+                num_entries=Count("generalequipmentmoduleattr__pk"),
+                latest_entry_date=Max("generalequipmentmoduleattr__general_study_module_attributes__study_date")
+            )
             dual = False
         else:
             name_set = None
@@ -475,28 +459,14 @@ def display_name_modality_filter(equip_name_pk=None, modality=None):
     )
     count_all = studies_all.count()
     if modality in ["CT", "MG", "RF", "NM"]:
-        studies = studies_all.filter(modality_type__exact=modality)
+        studies = studies_all.filter(modality_type=modality)
     elif modality == "DX":
         studies = studies_all.filter(
-            Q(
-                generalequipmentmoduleattr__general_study_module_attributes__modality_type__exact="DX"
-            )
-            | Q(
-                generalequipmentmoduleattr__general_study_module_attributes__modality_type__exact="CR"
-            )
-            | Q(
-                generalequipmentmoduleattr__general_study_module_attributes__modality_type__exact="PX"
-            )
+            Q(generalequipmentmoduleattr__general_study_module_attributes__modality_type__in=["DX", "CR", "PX"])
         )
     else:  # modality == 'OT'
         studies = (
-            studies_all.exclude(modality_type__exact="CT")
-            .exclude(modality_type__exact="MG")
-            .exclude(modality_type__exact="DX")
-            .exclude(modality_type__exact="CR")
-            .exclude(modality_type__exact="PX")
-            .exclude(modality_type__exact="RF")
-            .exclude(modality_type__exact="NM")
+            studies_all.filter(~Q(modality_type__in=["CT", "MG", "DX", "CR", "PX", "RF", "NM"]))
         )
     return studies, count_all
 
@@ -729,10 +699,10 @@ def reset_dual(pk=None):
         generalequipmentmoduleattr__unique_equipment_name__pk=pk
     )
     not_dx_rf_cr = (
-        studies.exclude(modality_type__exact="DX")
-        .exclude(modality_type__exact="RF")
-        .exclude(modality_type__exact="CR")
-        .exclude(modality_type__exact="PX")
+        studies.exclude(modality_type="DX")
+        .exclude(modality_type="RF")
+        .exclude(modality_type="CR")
+        .exclude(modality_type="PX")
     )
     message_start = (
         "Reprocessing dual for {0}. Number of studies is {1}, of which {2} are "
@@ -741,10 +711,10 @@ def reset_dual(pk=None):
             .generalequipmentmoduleattr_set.get()
             .unique_equipment_name.display_name,
             studies.count(),
-            studies.filter(modality_type__exact="DX").count(),
-            studies.filter(modality_type__exact="CR").count(),
-            studies.filter(modality_type__exact="PX").count(),
-            studies.filter(modality_type__exact="RF").count(),
+            studies.filter(modality_type="DX").count(),
+            studies.filter(modality_type="CR").count(),
+            studies.filter(modality_type="PX").count(),
+            studies.filter(modality_type="RF").count(),
             not_dx_rf_cr.count(),
         )
     )
@@ -815,10 +785,10 @@ def reset_dual(pk=None):
             )
 
     not_dx_rf_cr = (
-        studies.exclude(modality_type__exact="DX")
-        .exclude(modality_type__exact="RF")
-        .exclude(modality_type__exact="CR")
-        .exclude(modality_type__exact="PX")
+        studies.exclude(modality_type="DX")
+        .exclude(modality_type="RF")
+        .exclude(modality_type="CR")
+        .exclude(modality_type="PX")
     )
     message_finish = "and after processing  {0} are DX, {1} are CR, {2} are PX, {3} are RF and {4} are something else".format(
         studies.filter(modality_type="DX").count(),
@@ -1127,7 +1097,7 @@ def review_study_details(request):
     if request.is_ajax():
         data = request.POST
         study_pk = data.get("study_pk")
-        study = GeneralStudyModuleAttr.objects.get(pk__exact=study_pk)
+        study = GeneralStudyModuleAttr.objects.get(pk=study_pk)
         study_data = _get_review_study_data(study)
         template = "remapp/review_study.html"
         return render(request, template, study_data)
@@ -1143,7 +1113,7 @@ def review_failed_study_details(request):
     if request.is_ajax():
         data = request.POST
         study_pk = data.get("study_pk")
-        study = GeneralStudyModuleAttr.objects.get(pk__exact=study_pk)
+        study = GeneralStudyModuleAttr.objects.get(pk=study_pk)
         study_data = _get_review_study_data(study)
 
         try:
@@ -1177,16 +1147,30 @@ def _get_broken_studies(modality=None):
     """
     if modality == "DX":
         all_mod = GeneralStudyModuleAttr.objects.filter(
-            Q(modality_type__exact="DX")
-            | Q(modality_type__exact="CR")
-            | Q(modality_type__exact="PX")
+            Q(modality_type__in=["DX", "CR", "PX"])
         )
     else:
-        all_mod = GeneralStudyModuleAttr.objects.filter(modality_type__exact=modality)
+        all_mod = GeneralStudyModuleAttr.objects.filter(modality_type=modality)
 
     return all_mod.filter(
         generalequipmentmoduleattr__unique_equipment_name__display_name__isnull=True
     )
+
+
+def _get_broken_studies_count():
+    """Filter studies with no unique_equipment_name table entry
+    :return: Query filter of study counts
+    """
+    all_mod = GeneralStudyModuleAttr.objects.filter(
+        generalequipmentmoduleattr__unique_equipment_name__display_name__isnull=True).aggregate(
+        broken_dx=Count("pk", filter=Q(modality_type__in=["DX", "CR", "PX"])),
+        broken_ct=Count("pk", filter=Q(modality_type="CT")),
+        broken_rf=Count("pk", filter=Q(modality_type="RF")),
+        broken_mg=Count("pk", filter=Q(modality_type="MG")),
+        broken_nm=Count("pk", filter=Q(modality_type="NM")),
+    )
+
+    return all_mod
 
 
 def failed_list_populate(request):
@@ -1196,9 +1180,7 @@ def failed_list_populate(request):
     """
 
     if request.is_ajax():
-        failed = {}
-        for modality in ["CT", "RF", "MG", "DX", "NM"]:
-            failed[modality] = _get_broken_studies(modality).count()
+        failed = _get_broken_studies_count()
         template = "remapp/failed_summary_list.html"
         return render(request, template, {"failed": failed})
 
@@ -2316,12 +2298,12 @@ def task_abort(request, task_id=None):
                     )
                 )
                 if task.task_type == "query":
-                    DicomQuery.objects.filter(query_id__exact=task_id).delete()
+                    DicomQuery.objects.filter(query_id=task_id).delete()
             else:
                 if task.task_type.startswith("export"):
-                    Exports.objects.filter(task_id__exact=task_id).delete()
+                    Exports.objects.filter(task_id=task_id).delete()
                 elif task.task_type.startswith("import_size"):
-                    SizeUpload.objects.filter(task_id__exact=task_id).delete()
+                    SizeUpload.objects.filter(task_id=task_id).delete()
                 abort_logger = logging.getLogger("remapp")
                 abort_logger.info(
                     "Task {0} of type {1} terminated from the Tasks interface".format(
@@ -2547,7 +2529,7 @@ def rf_recalculate_accum_doses(request):  # pylint: disable=unused-variable
         )[0]
 
         all_rf_studies = GeneralStudyModuleAttr.objects.filter(
-            modality_type__exact="RF"
+            modality_type="RF"
         ).all()
 
         for study in all_rf_studies:
@@ -2595,15 +2577,15 @@ def rf_recalculate_accum_doses(request):  # pylint: disable=unused-variable
                     )
 
                     included_studies = all_rf_studies.filter(
-                        patientmoduleattr__patient_id__exact=patient_id,
+                        patientmoduleattr__patient_id=patient_id,
                         study_date__range=[oldest_date, study_date],
                     )
 
                     bulk_entries = []
                     for pk in included_studies.values_list("pk", flat=True):
                         if not PKsForSummedRFDoseStudiesInDeltaWeeks.objects.filter(
-                            general_study_module_attributes_id__exact=study.pk
-                        ).filter(study_pk_in_delta_weeks__exact=pk):
+                            general_study_module_attributes_id=study.pk
+                        ).filter(study_pk_in_delta_weeks=pk):
                             new_entry = PKsForSummedRFDoseStudiesInDeltaWeeks()
                             new_entry.general_study_module_attributes_id = study.pk
                             new_entry.study_pk_in_delta_weeks = pk
@@ -2771,7 +2753,7 @@ def populate_summary(request):
     """
     if request.user.groups.filter(name="admingroup"):
         try:
-            task_ct = SummaryFields.objects.get(modality_type__exact="CT")
+            task_ct = SummaryFields.objects.get(modality_type="CT")
         except ObjectDoesNotExist:
             task_ct = SummaryFields.objects.create(modality_type="CT")
         if not task_ct.complete:
@@ -2780,7 +2762,7 @@ def populate_summary(request):
                 "populate_summary_ct",
             )
         try:
-            task_mg = SummaryFields.objects.get(modality_type__exact="MG")
+            task_mg = SummaryFields.objects.get(modality_type="MG")
         except ObjectDoesNotExist:
             task_mg = SummaryFields.objects.create(modality_type="MG")
         if not task_mg.complete:
@@ -2789,7 +2771,7 @@ def populate_summary(request):
                 "populate_summary_mg",
             )
         try:
-            task_dx = SummaryFields.objects.get(modality_type__exact="DX")
+            task_dx = SummaryFields.objects.get(modality_type="DX")
         except ObjectDoesNotExist:
             task_dx = SummaryFields.objects.create(modality_type="DX")
         if not task_dx.complete:
@@ -2798,7 +2780,7 @@ def populate_summary(request):
                 "populate_summary_dx",
             )
         try:
-            task_rf = SummaryFields.objects.get(modality_type__exact="RF")
+            task_rf = SummaryFields.objects.get(modality_type="RF")
         except ObjectDoesNotExist:
             task_rf = SummaryFields.objects.create(modality_type="RF")
         if not task_rf.complete:
@@ -2815,10 +2797,10 @@ def populate_summary_progress(request):
     if request.is_ajax():
         if request.user.groups.filter(name="admingroup"):
             try:
-                ct_status = SummaryFields.objects.get(modality_type__exact="CT")
-                rf_status = SummaryFields.objects.get(modality_type__exact="RF")
-                mg_status = SummaryFields.objects.get(modality_type__exact="MG")
-                dx_status = SummaryFields.objects.get(modality_type__exact="DX")
+                ct_status = SummaryFields.objects.get(modality_type="CT")
+                rf_status = SummaryFields.objects.get(modality_type="RF")
+                mg_status = SummaryFields.objects.get(modality_type="MG")
+                dx_status = SummaryFields.objects.get(modality_type="DX")
             except ObjectDoesNotExist:
                 return render(
                     request,
@@ -2837,7 +2819,7 @@ def populate_summary_progress(request):
                 upgrade_status.save()
                 return HttpResponse("")
             try:
-                ct = GeneralStudyModuleAttr.objects.filter(modality_type__exact="CT")
+                ct = GeneralStudyModuleAttr.objects.filter(modality_type="CT")
                 if ct.filter(number_of_const_angle__isnull=True).count() > 0:
                     ct_complete = ct.filter(number_of_const_angle__isnull=False).count()
                     ct_total = ct.count()
@@ -2853,7 +2835,7 @@ def populate_summary_progress(request):
                 ct_total = None
                 ct_pc = 0
             try:
-                rf = GeneralStudyModuleAttr.objects.filter(modality_type__exact="RF")
+                rf = GeneralStudyModuleAttr.objects.filter(modality_type="RF")
                 if rf.filter(number_of_events_a__isnull=True).count() > 0:
                     rf_complete = rf.filter(number_of_events_a__isnull=False).count()
                     rf_total = rf.count()
@@ -2869,7 +2851,7 @@ def populate_summary_progress(request):
                 rf_total = None
                 rf_pc = 0
             try:
-                mg = GeneralStudyModuleAttr.objects.filter(modality_type__exact="MG")
+                mg = GeneralStudyModuleAttr.objects.filter(modality_type="MG")
                 if (
                     mg.filter(total_agd_right__isnull=True)
                     .filter(total_agd_left__isnull=True)
@@ -2896,9 +2878,7 @@ def populate_summary_progress(request):
                 mg_pc = 0
             try:
                 dx = GeneralStudyModuleAttr.objects.filter(
-                    Q(modality_type__exact="DX")
-                    | Q(modality_type__exact="CR")
-                    | Q(modality_type__exact="PX")
+                    Q(modality_type__in=["DX", "CR", "PX"])
                 )
                 if dx.filter(number_of_events_a__isnull=True).count() > 0:
                     dx_complete = dx.filter(number_of_events_a__isnull=False).count()
@@ -3034,9 +3014,7 @@ class StandardNameAddCore(CreateView):
                 studies = studies.filter(modality_type="RF")
             else:
                 studies = studies.filter(
-                    Q(modality_type__exact="DX")
-                    | Q(modality_type__exact="CR")
-                    | Q(modality_type__exact="PX")
+                    Q(modality_type__in=["DX", "CR", "PX"])
                 )
 
             # Add the standard names to the studies
@@ -3056,16 +3034,9 @@ class StandardNameAddCore(CreateView):
                 elif form.cleaned_data["modality"] == "RF":
                     q = ["RF"]
 
-                q_criteria = reduce(
-                    operator.or_,
-                    (
-                        Q(
-                            projection_xray_radiation_dose__general_study_module_attributes__modality_type__icontains=item
-                        )
-                        for item in q
-                    ),
+                acquisitions = IrradEventXRayData.objects.filter(
+                    Q(projection_xray_radiation_dose__general_study_module_attributes__modality_type__in=q)
                 )
-                acquisitions = IrradEventXRayData.objects.filter(q_criteria)
 
             # Add the standard names to the acquisitions
             self.add_multiple_standard_acquisitions(acquisitions, new_ids_acquisition)
@@ -3282,11 +3253,7 @@ class StandardNameDelete(DeleteView):  # pylint: disable=unused-variable
         elif self.object.modality == "RF":
             studies = studies.filter(modality_type="RF")
         else:
-            studies = studies.filter(
-                Q(modality_type__exact="DX")
-                | Q(modality_type__exact="CR")
-                | Q(modality_type__exact="PX")
-            )
+            studies = studies.filter(Q(modality_type__in=["DX", "CR", "PX"]))
 
         # Remove this standard_name reference to these studies as the standard name may have changed
         self.object.generalstudymoduleattr_set.remove(
@@ -3312,16 +3279,9 @@ class StandardNameDelete(DeleteView):  # pylint: disable=unused-variable
             elif self.object.modality == "RF":
                 q = ["RF"]
 
-            q_criteria = reduce(
-                operator.or_,
-                (
-                    Q(
-                        projection_xray_radiation_dose__general_study_module_attributes__modality_type__icontains=item
-                    )
-                    for item in q
-                ),
+            acquisitions = IrradEventXRayData.objects.filter(
+                Q(projection_xray_radiation_dose__general_study_module_attributes__modality_type__in=q)
             )
-            acquisitions = IrradEventXRayData.objects.filter(q_criteria)
 
             # Remove the standard names from the acquisitions
             self.object.irradeventxraydata_set.remove(
@@ -3356,11 +3316,7 @@ class StandardNameUpdateCore(UpdateView):
             elif self.object.modality == "RF":
                 studies = studies.filter(modality_type="RF")
             else:
-                studies = studies.filter(
-                    Q(modality_type__exact="DX")
-                    | Q(modality_type__exact="CR")
-                    | Q(modality_type__exact="PX")
-                )
+                studies = studies.filter(Q(modality_type__in=["DX", "CR", "PX"]))
 
             # Remove references to the StandardName entries from generalstudymoduleattr for any study_description,
             # requested_procedure_code_meaning or procedure_code_meaning values which have been removed from this
@@ -3417,16 +3373,9 @@ class StandardNameUpdateCore(UpdateView):
                     elif self.object.modality == "RF":
                         q = ["RF"]
 
-                    q_criteria = reduce(
-                        operator.or_,
-                        (
-                            Q(
-                                projection_xray_radiation_dose__general_study_module_attributes__modality_type__icontains=item
-                            )
-                            for item in q
-                        ),
+                    acquisitions = IrradEventXRayData.objects.filter(
+                        Q(projection_xray_radiation_dose__general_study_module_attributes__modality_type__in=q)
                     )
-                    acquisitions = IrradEventXRayData.objects.filter(q_criteria)
 
                     # Remove reference to these standard names from entries from IrradEventXRayData
                     self.object.irradeventxraydata_set.remove(
@@ -3740,11 +3689,7 @@ def standard_name_update_all(request, modality=None):
         elif modality == "RF":
             studies = studies.filter(modality_type="RF")
         else:
-            studies = studies.filter(
-                Q(modality_type__exact="DX")
-                | Q(modality_type__exact="CR")
-                | Q(modality_type__exact="PX")
-            )
+            studies = studies.filter(Q(modality_type__in=["DX", "CR", "PX"]))
 
         success_url = reverse_lazy("standard_names_view")
 
@@ -3796,16 +3741,9 @@ def standard_name_update_all(request, modality=None):
             elif modality == "RF":
                 q = ["RF"]
 
-            q_criteria = reduce(
-                operator.or_,
-                (
-                    Q(
-                        projection_xray_radiation_dose__general_study_module_attributes__modality_type__icontains=item
-                    )
-                    for item in q
-                ),
+            acquisitions = IrradEventXRayData.objects.filter(
+                Q(projection_xray_radiation_dose__general_study_module_attributes__modality_type__in=q)
             )
-            acquisitions = IrradEventXRayData.objects.filter(q_criteria)
 
         for standard_name in std_names.filter(acquisition_protocol__isnull=False):
             if modality == "CT":
