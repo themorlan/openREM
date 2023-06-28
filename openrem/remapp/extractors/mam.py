@@ -651,7 +651,19 @@ def mam(mg_file):
         del_mg_im = False
         del_no_match = True
 
-    dataset = pydicom.dcmread(mg_file)
+    try:
+        dataset = pydicom.dcmread(mg_file)
+    except FileNotFoundError:
+        logger.warning(
+            "mam.py not attempting to extract from {0}, the file does not exist".format(
+                mg_file
+            )
+        )
+        record_task_error_exit(
+            f"Not attempting to extract from {mg_file}, the file does not exist"
+        )
+        return 1
+
     dataset.decode()
     ismammo = _test_if_mammo(dataset)
     if not ismammo:

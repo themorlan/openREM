@@ -929,7 +929,20 @@ def dx(dig_file):
         del_dx_im = False
 
     logger.debug("About to read DX")
-    dataset = pydicom.dcmread(dig_file)
+
+    try:
+        dataset = pydicom.dcmread(dig_file)
+    except FileNotFoundError:
+        logger.warning(
+            "dx.py not attempting to extract from {0}, the file does not exist".format(
+                dig_file
+            )
+        )
+        record_task_error_exit(
+            f"Not attempting to extract from {dig_file}, the file does not exist"
+        )
+        return 1
+
     try:
         dataset.decode()
     except ValueError as err:

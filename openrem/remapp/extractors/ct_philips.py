@@ -394,7 +394,19 @@ def ct_philips(philips_file):
     except ObjectDoesNotExist:
         del_ct_phil = False
 
-    dataset = pydicom.dcmread(philips_file)
+    try:
+        dataset = pydicom.dcmread(philips_file)
+    except FileNotFoundError:
+        logger.warning(
+            "ct_philips.py not attempting to extract from {0}, the file does not exist".format(
+                philips_file
+            )
+        )
+        record_task_error_exit(
+            f"Not attempting to extract from {philips_file}, the file does not exist"
+        )
+        return 1
+
     dataset.decode()
     if (
         dataset.SOPClassUID != "1.2.840.10008.5.1.4.1.1.7"
