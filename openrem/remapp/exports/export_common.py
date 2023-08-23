@@ -703,7 +703,7 @@ def create_xlsx(task):
 
     try:
         temp_xlsx = TemporaryFile()
-        book = Workbook(temp_xlsx, {"strings_to_numbers": False})
+        book = Workbook(temp_xlsx, {"strings_to_numbers": False, "constant_memory": True})
     except (OSError, IOError) as e:
         logger.error(
             "Error saving xlsx temporary file ({0}): {1}".format(e.errno, e.strerror)
