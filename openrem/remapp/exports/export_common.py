@@ -43,7 +43,9 @@ from django.db.models import Q
 from xlsxwriter.workbook import Workbook
 
 from remapp.models import (
+    CtRadiationDose,
     Exports,
+    ProjectionXRayRadiationDose,
     StandardNames,
     StandardNameSettings,
 )
@@ -819,18 +821,22 @@ def create_summary_sheet(
         required_fields.append("standard_names__standard_name")
         column_names.append("Standard study name")
 
-    # DataFrame containing study description and requested procedure data
+    # DataFrame containing study description, requested procedure data and possibly standard study names.
+    # Note that a single exam can have more than one standard study name associated with it because a standard name
+    # can be mapped to study description, requested procedure, and also to procedure. When we are counting up study
+    # description and requested procedure occurences it is important to drop private key duplicates to avoid double
+    # counting.
     df = pd.DataFrame.from_records(data=studies.values_list(*required_fields), columns=column_names)
 
     # Get the study descriptions used and their frequency
-    study_description_frequency = df["Study description"].value_counts(dropna=False)
+    study_description_frequency = df.drop_duplicates(subset="pk")["Study description"].value_counts(dropna=False)
     study_description_frequency = study_description_frequency.reset_index()
     study_description_frequency.columns = ["Study description", "Frequency"]
     study_description_frequency["Frequency"] = study_description_frequency["Frequency"].astype("UInt32")
     study_description_frequency["BlankCol"] = None
 
     # Get the requested procedures used and their frequency
-    requested_procedure_frequency = df["Requested procedure"].value_counts(dropna=False)
+    requested_procedure_frequency = df.drop_duplicates(subset="pk")["Requested procedure"].value_counts(dropna=False)
     requested_procedure_frequency = requested_procedure_frequency.reset_index()
     requested_procedure_frequency.columns = ["Requested procedure", "Frequency"]
     requested_procedure_frequency["Frequency"] = requested_procedure_frequency["Frequency"].astype("UInt32")
@@ -847,31 +853,45 @@ def create_summary_sheet(
     # Get the acquisition protocols used and their frequency
     required_fields = []
     column_names = []
+    acq_df = None
     if modality in ["DX", "RF", "MG"]:
         required_fields.extend([
-            "projectionxrayradiationdose__irradeventxraydata__pk",
-            "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
+            "irradeventxraydata__pk",
+            "irradeventxraydata__acquisition_protocol"
         ])
         column_names.extend(["pk", "Acquisition protocol"])
 
         if enable_standard_names:
-            required_fields.append("projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name")
+            required_fields.append("irradeventxraydata__standard_protocols__standard_name")
             column_names.append("Standard acquisition name")
+
+        acq_df = pd.DataFrame.from_records(
+            data=ProjectionXRayRadiationDose.objects.filter(
+                general_study_module_attributes__in=studies.values("pk")
+            ).values_list(*required_fields),
+            columns=column_names
+        )
 
     elif modality in "CT":
         required_fields.extend([
-            "ctradiationdose__ctirradiationeventdata__pk",
-            "ctradiationdose__ctirradiationeventdata__acquisition_protocol"
+            "ctirradiationeventdata__pk",
+            "ctirradiationeventdata__acquisition_protocol"
         ])
         column_names.extend(["pk", "Acquisition protocol"])
 
         if enable_standard_names:
-            required_fields.append("ctradiationdose__ctirradiationeventdata__standard_protocols__standard_name")
+            required_fields.append("ctirradiationeventdata__standard_protocols__standard_name")
             column_names.append("Standard acquisition name")
+
+        acq_df = pd.DataFrame.from_records(
+            data=CtRadiationDose.objects.filter(
+                general_study_module_attributes__in=studies.values("pk")
+            ).values_list(*required_fields),
+            columns=column_names
+        )
 
     acquisition_protocol_frequency = None
     if len(required_fields) != 0:
-        acq_df = pd.DataFrame.from_records(data=studies.values_list(*required_fields), columns=column_names)
 
         acquisition_protocol_frequency = acq_df["Acquisition protocol"].value_counts(dropna=False).reset_index()
         acquisition_protocol_frequency.columns = ["Acquisition protocol", "Frequency"]
@@ -924,92 +944,6 @@ def create_summary_sheet(
         summary_sheet.write_row(
             idx + 6, 0, [None if x is pd.NA or not pd.notna(x) else x for x in combined_df.iloc[idx].to_list()]
         )
-
-
-
-    # # Generate list of Study Descriptions
-    # summary_sheet.write(5, 0, "Study Description")
-    # summary_sheet.write(5, 1, "Frequency")
-    # study_descriptions = studies.values("study_description").annotate(
-    #     n=Count("pk", distinct=True)
-    # )
-    # for row, item in enumerate(study_descriptions.order_by("n").reverse()):
-    #     summary_sheet.write(row + 6, 0, item["study_description"])
-    #     summary_sheet.write(row + 6, 1, item["n"])
-    # summary_sheet.set_column("A:A", 25)
-    #
-    # # Generate list of Requested Procedures
-    # summary_sheet.write(5, 3, "Requested Procedure")
-    # summary_sheet.write(5, 4, "Frequency")
-    # requested_procedure = studies.values("requested_procedure_code_meaning").annotate(
-    #     n=Count("pk", distinct=True)
-    # )
-    # for row, item in enumerate(requested_procedure.order_by("n").reverse()):
-    #     summary_sheet.write(row + 6, 3, item["requested_procedure_code_meaning"])
-    #     summary_sheet.write(row + 6, 4, item["n"])
-    # summary_sheet.set_column("D:D", 25)
-    #
-    # # Generate list of Series Protocols
-    # if has_series_protocol:
-    #     summary_sheet.write(5, 6, "Series Protocol")
-    #     summary_sheet.write(5, 7, "Frequency")
-    #     sorted_protocols = sorted(
-    #         iter(sheet_list.items()), key=lambda k_v: k_v[1]["count"], reverse=True
-    #     )
-    #
-    #     # Exclude any [standard] protocols
-    #     protocols = [
-    #         x
-    #         for x in sorted_protocols
-    #         if not x[1]["protocolname"][0].startswith("[standard]")
-    #     ]
-    #     for row, item in enumerate(protocols):
-    #         if not item[1]["protocolname"][0].startswith("[standard]"):
-    #             summary_sheet.write(
-    #                 row + 6, 6, ", ".join(item[1]["protocolname"])
-    #             )  # Join - can't write list to a single cell.
-    #             summary_sheet.write(row + 6, 7, item[1]["count"])
-    #     summary_sheet.set_column("G:G", 15)
-    #
-    # # Obtain the system-level enable_standard_names setting
-    # try:
-    #     StandardNameSettings.objects.get()
-    # except ObjectDoesNotExist:
-    #     StandardNameSettings.objects.create()
-    # enable_standard_names = StandardNameSettings.objects.values_list(
-    #     "enable_standard_names", flat=True
-    # )[0]
-    #
-    # if enable_standard_names:
-    #     # Generate list of standard study names
-    #     summary_sheet.write(5, 9, "Standard study name")
-    #     summary_sheet.write(5, 10, "Frequency")
-    #     standard_names = (
-    #         studies.exclude(standard_names__standard_name__isnull=True)
-    #         .values("standard_names__standard_name")
-    #         .annotate(n=Count("pk", distinct=True))
-    #     )
-    #
-    #     for row, item in enumerate(standard_names.order_by("n").reverse()):
-    #         summary_sheet.write(row + 6, 9, item["standard_names__standard_name"])
-    #         summary_sheet.write(row + 6, 10, item["n"])
-    #     summary_sheet.set_column("J:J", 25)
-    #
-    #     # Write standard acquisition names
-    #     # Only include [standard] protocols
-    #     summary_sheet.write(5, 12, "Standard acquisition name")
-    #     summary_sheet.write(5, 13, "Frequency")
-    #     protocols = [
-    #         x
-    #         for x in sorted_protocols
-    #         if x[1]["protocolname"][0].startswith("[standard]")
-    #     ]
-    #
-    #     for row, item in enumerate(protocols):
-    #         summary_sheet.write(row + 6, 12, item[1]["protocolname"][0])
-    #         summary_sheet.write(row + 6, 13, item[1]["count"])
-    #     summary_sheet.set_column("M:M", 25)
-
 
 def abort_if_zero_studies(num_studies, tsk):
     """Function to update progress and status if filter is empty
