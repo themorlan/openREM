@@ -232,48 +232,24 @@ def generate_sheets(
     )[0]
 
     sheet_list = {}
-    protocols_list = []
-    for exams in studies:
-        try:
-            if modality in ["DX", "RF", "MG"]:
-                events = exams.projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by(
-                    "id"
-                )
-            elif modality in "CT":
-                events = (
-                    exams.ctradiationdose_set.get().ctirradiationeventdata_set.all()
-                )
-            for s in events:
-                if s.acquisition_protocol:
-                    safe_protocol = s.acquisition_protocol
-                else:
-                    safe_protocol = "Unknown"
-                if safe_protocol not in protocols_list:
-                    protocols_list.append(safe_protocol)
 
-                if enable_standard_names:
-                    try:
-                        if s.standard_protocols.first().standard_name:
-                            safe_protocol = (
-                                "[standard] "
-                                + s.standard_protocols.first().standard_name
-                            )
+    # Obtain a dataframe of all the acquisition protocols and standard acquisition names in the supplied studies
+    acq_name_df = pd.DataFrame.from_records(
+        data=CtRadiationDose.objects.filter(general_study_module_attributes__in=studies.values("pk")).values_list(
+            "ctirradiationeventdata__acquisition_protocol",
+            "ctirradiationeventdata__standard_protocols__standard_name"),
+        columns=["Acquisition protocol", "Standard acquisition name"]
+    )
 
-                        if safe_protocol not in protocols_list:
-                            protocols_list.append(safe_protocol)
+    # Obtain a list of the unique acquisition protocols. Replace any na or None values with "Unknown"
+    acq_protocols = acq_name_df.sort_values(by=["Acquisition protocol"])["Acquisition protocol"].fillna("Unknown").unique()
 
-                    except AttributeError:
-                        pass
+    # Obtain a list of the unique standard acquisition names. Drop any na or None values. Prepend "[standard] " to each entry
+    std_acq_protocols = acq_name_df.sort_values(by=["Standard acquisition name"])["Standard acquisition name"].dropna().unique()
+    std_acq_protocols = "[standard] " + std_acq_protocols
 
-                    if safe_protocol not in protocols_list:
-                        protocols_list.append(safe_protocol)
+    protocols_list = list(acq_protocols) + list(std_acq_protocols)
 
-        except ObjectDoesNotExist:
-            logger.error(
-                "Study missing during generation of sheet names; most likely due to study being deleted "
-                "whilst export in progress to be replace by later version of RDSR."
-            )
-            continue
     protocols_list.sort()
 
     for protocol in protocols_list:
