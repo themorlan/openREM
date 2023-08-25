@@ -724,7 +724,7 @@ def rfxlsx(filterdict, pid=False, name=None, patid=None, user=None):
     num_rows = e.count()
     wsalldata.autofilter(0, 0, num_rows, len(all_data_headers) - 1)
 
-    create_summary_sheet(tsk, e, book, summarysheet, sheetlist)
+    create_summary_sheet(tsk, e, book, summarysheet, sheetlist, modality="RF")
 
     book.close()
     tsk.progress = "XLSX book written."

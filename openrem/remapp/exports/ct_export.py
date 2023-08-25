@@ -233,7 +233,7 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
             logger.error(error_message)
             wsalldata.write(row + 1, 0, error_message)
 
-    create_summary_sheet(tsk, e, book, summarysheet, sheet_list)
+    create_summary_sheet(tsk, e, book, summarysheet, sheet_list, modality="CT")
 
     book.close()
     tsk.progress = "XLSX book written."

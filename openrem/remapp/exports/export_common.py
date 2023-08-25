@@ -35,6 +35,7 @@ import sys
 from tempfile import TemporaryFile
 import uuid
 
+import pandas as pd
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.files.base import ContentFile
@@ -764,7 +765,7 @@ def write_export(task, filename, temp_file, datestamp):
 
 
 def create_summary_sheet(
-    task, studies, book, summary_sheet, sheet_list, has_series_protocol=True
+    task, studies, book, summary_sheet, sheet_list, has_series_protocol=True, modality=None
 ):
     """Create summary sheet for xlsx exports
 
@@ -803,50 +804,6 @@ def create_summary_sheet(
     summary_sheet.write(3, 0, "Total number of exams")
     summary_sheet.write(3, 1, studies.count())
 
-    # Generate list of Study Descriptions
-    summary_sheet.write(5, 0, "Study Description")
-    summary_sheet.write(5, 1, "Frequency")
-    study_descriptions = studies.values("study_description").annotate(
-        n=Count("pk", distinct=True)
-    )
-    for row, item in enumerate(study_descriptions.order_by("n").reverse()):
-        summary_sheet.write(row + 6, 0, item["study_description"])
-        summary_sheet.write(row + 6, 1, item["n"])
-    summary_sheet.set_column("A:A", 25)
-
-    # Generate list of Requested Procedures
-    summary_sheet.write(5, 3, "Requested Procedure")
-    summary_sheet.write(5, 4, "Frequency")
-    requested_procedure = studies.values("requested_procedure_code_meaning").annotate(
-        n=Count("pk", distinct=True)
-    )
-    for row, item in enumerate(requested_procedure.order_by("n").reverse()):
-        summary_sheet.write(row + 6, 3, item["requested_procedure_code_meaning"])
-        summary_sheet.write(row + 6, 4, item["n"])
-    summary_sheet.set_column("D:D", 25)
-
-    # Generate list of Series Protocols
-    if has_series_protocol:
-        summary_sheet.write(5, 6, "Series Protocol")
-        summary_sheet.write(5, 7, "Frequency")
-        sorted_protocols = sorted(
-            iter(sheet_list.items()), key=lambda k_v: k_v[1]["count"], reverse=True
-        )
-
-        # Exclude any [standard] protocols
-        protocols = [
-            x
-            for x in sorted_protocols
-            if not x[1]["protocolname"][0].startswith("[standard]")
-        ]
-        for row, item in enumerate(protocols):
-            if not item[1]["protocolname"][0].startswith("[standard]"):
-                summary_sheet.write(
-                    row + 6, 6, ", ".join(item[1]["protocolname"])
-                )  # Join - can't write list to a single cell.
-                summary_sheet.write(row + 6, 7, item[1]["count"])
-        summary_sheet.set_column("G:G", 15)
-
     # Obtain the system-level enable_standard_names setting
     try:
         StandardNameSettings.objects.get()
@@ -856,35 +813,202 @@ def create_summary_sheet(
         "enable_standard_names", flat=True
     )[0]
 
+    required_fields = ["pk", "study_description", "requested_procedure_code_meaning"]
+    column_names = ["pk", "Study description", "Requested procedure"]
     if enable_standard_names:
-        # Generate list of standard study names
-        summary_sheet.write(5, 9, "Standard study name")
-        summary_sheet.write(5, 10, "Frequency")
-        standard_names = (
-            studies.exclude(standard_names__standard_name__isnull=True)
-            .values("standard_names__standard_name")
-            .annotate(n=Count("pk", distinct=True))
+        required_fields.append("standard_names__standard_name")
+        column_names.append("Standard study name")
+
+    # DataFrame containing study description and requested procedure data
+    df = pd.DataFrame.from_records(data=studies.values_list(*required_fields), columns=column_names)
+
+    # Get the study descriptions used and their frequency
+    study_description_frequency = df["Study description"].value_counts(dropna=False)
+    study_description_frequency = study_description_frequency.reset_index()
+    study_description_frequency.columns = ["Study description", "Frequency"]
+    study_description_frequency["Frequency"] = study_description_frequency["Frequency"].astype("UInt32")
+    study_description_frequency["BlankCol"] = None
+
+    # Get the requested procedures used and their frequency
+    requested_procedure_frequency = df["Requested procedure"].value_counts(dropna=False)
+    requested_procedure_frequency = requested_procedure_frequency.reset_index()
+    requested_procedure_frequency.columns = ["Requested procedure", "Frequency"]
+    requested_procedure_frequency["Frequency"] = requested_procedure_frequency["Frequency"].astype("UInt32")
+    requested_procedure_frequency["BlankCol"] = None
+
+    if enable_standard_names:
+        # Get the standard study names used and their frequency
+        standard_study_name_frequency = df["Standard study name"].value_counts(dropna=False)
+        standard_study_name_frequency = standard_study_name_frequency.reset_index()
+        standard_study_name_frequency.columns = ["Standard study name", "Frequency"]
+        standard_study_name_frequency["Frequency"] = standard_study_name_frequency["Frequency"].astype("UInt32")
+        standard_study_name_frequency["BlankCol"] = None
+
+    # Get the acquisition protocols used and their frequency
+    required_fields = []
+    column_names = []
+    if modality in ["DX", "RF", "MG"]:
+        required_fields.extend([
+            "projectionxrayradiationdose__irradeventxraydata__pk",
+            "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
+        ])
+        column_names.extend(["pk", "Acquisition protocol"])
+
+        if enable_standard_names:
+            required_fields.append("projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name")
+            column_names.append("Standard acquisition name")
+
+    elif modality in "CT":
+        required_fields.extend([
+            "ctradiationdose__ctirradiationeventdata__pk",
+            "ctradiationdose__ctirradiationeventdata__acquisition_protocol"
+        ])
+        column_names.extend(["pk", "Acquisition protocol"])
+
+        if enable_standard_names:
+            required_fields.append("ctradiationdose__ctirradiationeventdata__standard_protocols__standard_name")
+            column_names.append("Standard acquisition name")
+
+    acquisition_protocol_frequency = None
+    if len(required_fields) != 0:
+        acq_df = pd.DataFrame.from_records(data=studies.values_list(*required_fields), columns=column_names)
+
+        acquisition_protocol_frequency = acq_df["Acquisition protocol"].value_counts(dropna=False).reset_index()
+        acquisition_protocol_frequency.columns = ["Acquisition protocol", "Frequency"]
+        acquisition_protocol_frequency["Frequency"] = acquisition_protocol_frequency["Frequency"].astype("UInt32")
+        acquisition_protocol_frequency["BlankCol"] = None
+
+        if enable_standard_names:
+            std_acquisition_protocol_frequency = acq_df["Standard acquisition name"].value_counts(dropna=False).reset_index()
+            std_acquisition_protocol_frequency.columns = ["Standard acquisition name", "Frequency"]
+            std_acquisition_protocol_frequency["Frequency"] = std_acquisition_protocol_frequency["Frequency"].astype("UInt32")
+            std_acquisition_protocol_frequency["BlankCol"] = None
+
+    # Now write the data to the worksheet
+    # Write the column titles
+    col_titles = [
+        "Study Description", "Frequency", "",
+        "Requested Procedure", "Frequency", "",
+        "Acquisition protocol", "Frequency", "",
+    ]
+    if enable_standard_names:
+        col_titles.extend([
+            "Standard Study Name", "Frequency", "",
+            "Standard Acquisition Name", "Frequency", "",
+        ])
+
+    summary_sheet.write_row(5, 0, col_titles)
+
+    # Widen the name columns
+    summary_sheet.set_column("A:A", 25)
+    summary_sheet.set_column("D:D", 25)
+    summary_sheet.set_column("G:G", 25)
+    summary_sheet.set_column("J:J", 25)
+    summary_sheet.set_column("M:M", 25)
+
+    # Write the frequency data to the xlsx file
+    combined_df = pd.concat([
+        study_description_frequency,
+        requested_procedure_frequency,
+        acquisition_protocol_frequency
+    ], axis=1)
+
+    if enable_standard_names:
+        combined_df = pd.concat([
+            combined_df, standard_study_name_frequency, std_acquisition_protocol_frequency
+        ], axis=1)
+
+    combined_df = combined_df.where(pd.notnull(combined_df), None)
+
+    for idx in combined_df.index:
+        summary_sheet.write_row(
+            idx + 6, 0, [None if x is pd.NA or not pd.notna(x) else x for x in combined_df.iloc[idx].to_list()]
         )
 
-        for row, item in enumerate(standard_names.order_by("n").reverse()):
-            summary_sheet.write(row + 6, 9, item["standard_names__standard_name"])
-            summary_sheet.write(row + 6, 10, item["n"])
-        summary_sheet.set_column("J:J", 25)
 
-        # Write standard acquisition names
-        # Only include [standard] protocols
-        summary_sheet.write(5, 12, "Standard acquisition name")
-        summary_sheet.write(5, 13, "Frequency")
-        protocols = [
-            x
-            for x in sorted_protocols
-            if x[1]["protocolname"][0].startswith("[standard]")
-        ]
 
-        for row, item in enumerate(protocols):
-            summary_sheet.write(row + 6, 12, item[1]["protocolname"][0])
-            summary_sheet.write(row + 6, 13, item[1]["count"])
-        summary_sheet.set_column("M:M", 25)
+    # # Generate list of Study Descriptions
+    # summary_sheet.write(5, 0, "Study Description")
+    # summary_sheet.write(5, 1, "Frequency")
+    # study_descriptions = studies.values("study_description").annotate(
+    #     n=Count("pk", distinct=True)
+    # )
+    # for row, item in enumerate(study_descriptions.order_by("n").reverse()):
+    #     summary_sheet.write(row + 6, 0, item["study_description"])
+    #     summary_sheet.write(row + 6, 1, item["n"])
+    # summary_sheet.set_column("A:A", 25)
+    #
+    # # Generate list of Requested Procedures
+    # summary_sheet.write(5, 3, "Requested Procedure")
+    # summary_sheet.write(5, 4, "Frequency")
+    # requested_procedure = studies.values("requested_procedure_code_meaning").annotate(
+    #     n=Count("pk", distinct=True)
+    # )
+    # for row, item in enumerate(requested_procedure.order_by("n").reverse()):
+    #     summary_sheet.write(row + 6, 3, item["requested_procedure_code_meaning"])
+    #     summary_sheet.write(row + 6, 4, item["n"])
+    # summary_sheet.set_column("D:D", 25)
+    #
+    # # Generate list of Series Protocols
+    # if has_series_protocol:
+    #     summary_sheet.write(5, 6, "Series Protocol")
+    #     summary_sheet.write(5, 7, "Frequency")
+    #     sorted_protocols = sorted(
+    #         iter(sheet_list.items()), key=lambda k_v: k_v[1]["count"], reverse=True
+    #     )
+    #
+    #     # Exclude any [standard] protocols
+    #     protocols = [
+    #         x
+    #         for x in sorted_protocols
+    #         if not x[1]["protocolname"][0].startswith("[standard]")
+    #     ]
+    #     for row, item in enumerate(protocols):
+    #         if not item[1]["protocolname"][0].startswith("[standard]"):
+    #             summary_sheet.write(
+    #                 row + 6, 6, ", ".join(item[1]["protocolname"])
+    #             )  # Join - can't write list to a single cell.
+    #             summary_sheet.write(row + 6, 7, item[1]["count"])
+    #     summary_sheet.set_column("G:G", 15)
+    #
+    # # Obtain the system-level enable_standard_names setting
+    # try:
+    #     StandardNameSettings.objects.get()
+    # except ObjectDoesNotExist:
+    #     StandardNameSettings.objects.create()
+    # enable_standard_names = StandardNameSettings.objects.values_list(
+    #     "enable_standard_names", flat=True
+    # )[0]
+    #
+    # if enable_standard_names:
+    #     # Generate list of standard study names
+    #     summary_sheet.write(5, 9, "Standard study name")
+    #     summary_sheet.write(5, 10, "Frequency")
+    #     standard_names = (
+    #         studies.exclude(standard_names__standard_name__isnull=True)
+    #         .values("standard_names__standard_name")
+    #         .annotate(n=Count("pk", distinct=True))
+    #     )
+    #
+    #     for row, item in enumerate(standard_names.order_by("n").reverse()):
+    #         summary_sheet.write(row + 6, 9, item["standard_names__standard_name"])
+    #         summary_sheet.write(row + 6, 10, item["n"])
+    #     summary_sheet.set_column("J:J", 25)
+    #
+    #     # Write standard acquisition names
+    #     # Only include [standard] protocols
+    #     summary_sheet.write(5, 12, "Standard acquisition name")
+    #     summary_sheet.write(5, 13, "Frequency")
+    #     protocols = [
+    #         x
+    #         for x in sorted_protocols
+    #         if x[1]["protocolname"][0].startswith("[standard]")
+    #     ]
+    #
+    #     for row, item in enumerate(protocols):
+    #         summary_sheet.write(row + 6, 12, item[1]["protocolname"][0])
+    #         summary_sheet.write(row + 6, 13, item[1]["count"])
+    #     summary_sheet.set_column("M:M", 25)
 
 
 def abort_if_zero_studies(num_studies, tsk):

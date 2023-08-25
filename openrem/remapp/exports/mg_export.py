@@ -494,7 +494,7 @@ def exportMG2excel(filterdict, pid=False, name=None, patid=None, user=None, xlsx
         wsalldata.write_row("A1", all_data_headings)
         numrows = studies.count()
         wsalldata.autofilter(0, 0, numrows, len(all_data_headings) - 1)
-        create_summary_sheet(tsk, studies, book, summarysheet, sheet_list)
+        create_summary_sheet(tsk, studies, book, summarysheet, sheet_list, modality="MG")
 
     tsk.progress = "All study data written."
     tsk.save()
