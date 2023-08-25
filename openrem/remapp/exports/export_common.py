@@ -233,13 +233,40 @@ def generate_sheets(
 
     sheet_list = {}
 
-    # Obtain a dataframe of all the acquisition protocols and standard acquisition names in the supplied studies
-    acq_name_df = pd.DataFrame.from_records(
-        data=CtRadiationDose.objects.filter(general_study_module_attributes__in=studies.values("pk")).values_list(
-            "ctirradiationeventdata__acquisition_protocol",
-            "ctirradiationeventdata__standard_protocols__standard_name"),
-        columns=["Acquisition protocol", "Standard acquisition name"]
-    )
+    required_fields = []
+    column_names = []
+    acq_name_df = None
+    if modality in ["DX", "RF", "MG"]:
+        required_fields.append("irradeventxraydata__acquisition_protocol")
+        column_names.append("Acquisition protocol")
+
+        if enable_standard_names:
+            required_fields.append("irradeventxraydata__standard_protocols__standard_name")
+            column_names.append("Standard acquisition name")
+
+        # Obtain a dataframe of all the acquisition protocols and standard acquisition names in the supplied studies
+        acq_name_df = pd.DataFrame.from_records(
+            data=ProjectionXRayRadiationDose.objects.filter(
+                general_study_module_attributes__in=studies.values("pk")
+            ).values_list(*required_fields),
+            columns=column_names
+        )
+
+    elif modality in "CT":
+        required_fields.append("ctirradiationeventdata__acquisition_protocol")
+        column_names.append("Acquisition protocol")
+
+        if enable_standard_names:
+            required_fields.append("ctirradiationeventdata__standard_protocols__standard_name")
+            column_names.append("Standard acquisition name")
+
+        # Obtain a dataframe of all the acquisition protocols and standard acquisition names in the supplied studies
+        acq_name_df = pd.DataFrame.from_records(
+            data=CtRadiationDose.objects.filter(
+                general_study_module_attributes__in=studies.values("pk")
+            ).values_list(*required_fields),
+            columns=column_names
+        )
 
     # Obtain a list of the unique acquisition protocols. Replace any na or None values with "Unknown"
     acq_protocols = acq_name_df.sort_values(by=["Acquisition protocol"])["Acquisition protocol"].fillna("Unknown").unique()
@@ -805,14 +832,14 @@ def create_summary_sheet(
     df = pd.DataFrame.from_records(data=studies.values_list(*required_fields), columns=column_names)
 
     # Get the study descriptions used and their frequency
-    study_description_frequency = df.drop_duplicates(subset="pk")["Study description"].value_counts(dropna=False)
+    study_description_frequency = df.drop_duplicates(subset="pk")["Study description"].value_counts(dropna=False).sort_index(ascending=True).sort_values(ascending=False)
     study_description_frequency = study_description_frequency.reset_index()
     study_description_frequency.columns = ["Study description", "Frequency"]
     study_description_frequency["Frequency"] = study_description_frequency["Frequency"].astype("UInt32")
     study_description_frequency["BlankCol"] = None
 
     # Get the requested procedures used and their frequency
-    requested_procedure_frequency = df.drop_duplicates(subset="pk")["Requested procedure"].value_counts(dropna=False)
+    requested_procedure_frequency = df.drop_duplicates(subset="pk")["Requested procedure"].value_counts(dropna=False).sort_index(ascending=True).sort_values(ascending=False)
     requested_procedure_frequency = requested_procedure_frequency.reset_index()
     requested_procedure_frequency.columns = ["Requested procedure", "Frequency"]
     requested_procedure_frequency["Frequency"] = requested_procedure_frequency["Frequency"].astype("UInt32")
@@ -820,7 +847,7 @@ def create_summary_sheet(
 
     if enable_standard_names:
         # Get the standard study names used and their frequency
-        standard_study_name_frequency = df["Standard study name"].value_counts(dropna=False)
+        standard_study_name_frequency = df["Standard study name"].value_counts(dropna=False).sort_index(ascending=True).sort_values(ascending=False)
         standard_study_name_frequency = standard_study_name_frequency.reset_index()
         standard_study_name_frequency.columns = ["Standard study name", "Frequency"]
         standard_study_name_frequency["Frequency"] = standard_study_name_frequency["Frequency"].astype("UInt32")
@@ -869,13 +896,13 @@ def create_summary_sheet(
     acquisition_protocol_frequency = None
     if len(required_fields) != 0:
 
-        acquisition_protocol_frequency = acq_df["Acquisition protocol"].value_counts(dropna=False).reset_index()
+        acquisition_protocol_frequency = acq_df["Acquisition protocol"].value_counts(dropna=False).sort_index(ascending=True).sort_values(ascending=False).reset_index()
         acquisition_protocol_frequency.columns = ["Acquisition protocol", "Frequency"]
         acquisition_protocol_frequency["Frequency"] = acquisition_protocol_frequency["Frequency"].astype("UInt32")
         acquisition_protocol_frequency["BlankCol"] = None
 
         if enable_standard_names:
-            std_acquisition_protocol_frequency = acq_df["Standard acquisition name"].value_counts(dropna=False).reset_index()
+            std_acquisition_protocol_frequency = acq_df["Standard acquisition name"].value_counts(dropna=False).sort_index(ascending=True).sort_values(ascending=False).reset_index()
             std_acquisition_protocol_frequency.columns = ["Standard acquisition name", "Frequency"]
             std_acquisition_protocol_frequency["Frequency"] = std_acquisition_protocol_frequency["Frequency"].astype("UInt32")
             std_acquisition_protocol_frequency["BlankCol"] = None
