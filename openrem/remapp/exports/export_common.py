@@ -271,11 +271,13 @@ def generate_sheets(
     # Obtain a list of the unique acquisition protocols. Replace any na or None values with "Unknown"
     acq_protocols = acq_name_df.sort_values(by=["Acquisition protocol"])["Acquisition protocol"].fillna("Unknown").unique()
 
-    # Obtain a list of the unique standard acquisition names. Drop any na or None values. Prepend "[standard] " to each entry
-    std_acq_protocols = acq_name_df.sort_values(by=["Standard acquisition name"])["Standard acquisition name"].dropna().unique()
-    std_acq_protocols = "[standard] " + std_acq_protocols
+    protocols_list = list(acq_protocols)
 
-    protocols_list = list(acq_protocols) + list(std_acq_protocols)
+    if enable_standard_names:
+        # Obtain a list of the unique standard acquisition names. Drop any na or None values. Prepend "[standard] " to each entry
+        std_acq_protocols = acq_name_df.sort_values(by=["Standard acquisition name"])["Standard acquisition name"].dropna().unique()
+        std_acq_protocols = "[standard] " + std_acq_protocols
+        protocols_list.extend(list(std_acq_protocols))
 
     protocols_list.sort()
 
