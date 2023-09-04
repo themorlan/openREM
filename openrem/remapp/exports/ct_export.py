@@ -190,6 +190,10 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
         "Requested procedure",
     ]
 
+    if enable_standard_names:
+        exam_cat_fields.append("standard_names__standard_name")
+        exam_cat_field_names.append("Standard study name")
+
     # Exam-level date field names
     exam_date_fields = ["study_date"]
 
@@ -220,11 +224,13 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
 
     # Required acquisition-level integer field names
     acquisition_int_fields = [
+        "ctradiationdose__ctirradiationeventdata__pk",
         "ctradiationdose__ctirradiationeventdata__number_of_xray_sources",
     ]
 
     # Friendly acquisition-level integer field names
     acquisition_int_field_names = [
+        "Acquisition pk",
         "Number of sources",
     ]
 
@@ -413,9 +419,11 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
             wsalldata.write_row(current_row, 0, row.fillna(""))
             current_row = current_row + 1
 
-
         # Write out data to the acquisition protocol sheets
-        df = pd.DataFrame.from_records(data=data, columns=(all_field_names + ct_dose_check_field_names), coerce_float=True)
+        df = pd.DataFrame.from_records(
+            data=data,
+            columns=(all_field_names + ct_dose_check_field_names), coerce_float=True,
+        )
 
         # Create the CT dose check column
         df = create_ct_dose_check_column(ct_dose_check_field_names, df)
