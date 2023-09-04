@@ -358,11 +358,14 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
         data=qs.values_list(*required_fields),
         columns=column_names
     )
+    acq_df["Acquisition protocol"] = acq_df["Acquisition protocol"].astype("category")
+    if enable_standard_names:
+        acq_df["Standard acquisition name"] = acq_df["Standard acquisition name"].astype("category")
     required_sheets = acq_df.sort_values("Acquisition protocol")["Acquisition protocol"].unique()
 
     if enable_standard_names:
         std_name_sheets = acq_df.sort_values("Standard acquisition name")["Standard acquisition name"].dropna().unique()
-        std_name_sheets = "[standard] " + std_name_sheets
+        std_name_sheets = "[standard] " + std_name_sheets.categories
         required_sheets = np.concatenate((required_sheets, std_name_sheets))
 
     worksheet_log = {}
@@ -395,16 +398,16 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
         # Clear the query cache
         django.db.reset_queries()
 
-        df = pd.DataFrame.from_records(
+        df_unprocessed = pd.DataFrame.from_records(
             data=data,
             columns=(all_field_names + ct_dose_check_field_names), coerce_float=True,
         )
 
         # Create the CT dose check column
-        df = create_ct_dose_check_column(ct_dose_check_field_names, df)
+        df_unprocessed = create_ct_dose_check_column(ct_dose_check_field_names, df_unprocessed)
 
         df = transform_to_one_row_per_exam(
-            df,
+            df_unprocessed,
             acquisition_cat_field_names, acquisition_int_field_names, acquisition_val_field_names,
             exam_cat_field_names, exam_date_field_names, exam_int_field_names,
             exam_obj_field_names, exam_time_field_names, exam_val_field_names,
@@ -419,15 +422,49 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
             wsalldata.write_row(current_row, 0, row.fillna(""))
             current_row = current_row + 1
 
-        # Write out data to the acquisition protocol sheets
-        df = pd.DataFrame.from_records(
-            data=data,
-            columns=(all_field_names + ct_dose_check_field_names), coerce_float=True,
-        )
+        # # Write out data to the acquisition protocol sheets
+        df = df_unprocessed
 
-        # Create the CT dose check column
-        df = create_ct_dose_check_column(ct_dose_check_field_names, df)
+        if "Standard study name" in df.columns:
+            std_name_df = df.groupby("pk")["Standard study name"].apply(lambda x: pd.Series(list(x.unique()))).unstack()
+            num_std_name_cols = len(std_name_df.columns)
+            std_name_df.columns = ["Standard study name {}".format(a + 1) for a in std_name_df.columns]
+            std_name_df = std_name_df.reset_index()
 
+            # Join the std_name_df to df using Study ID as an index
+            df = df.join(std_name_df.set_index(["pk"]), on=["pk"])
+
+            # Now move the columns so they are next to the original "Standard Name" column
+            std_name_col_idx = df.columns.get_loc("Standard study name")
+
+            if num_std_name_cols >= 1:
+                col = df.pop("Standard study name 1")
+                df.insert(std_name_col_idx, col.name, col)
+            if num_std_name_cols >= 2:
+                col = df.pop("Standard study name 2")
+                df.insert(std_name_col_idx + 1, col.name, col)
+            else:
+                df["Standard study name 2"] = ""
+                col = df.pop("Standard study name 2")
+                df.insert(std_name_col_idx + 1, col.name, col)
+            if num_std_name_cols >= 3:
+                col = df.pop("Standard study name 3")
+                df.insert(std_name_col_idx + 2, col.name, col)
+            else:
+                df["Standard study name 3"] = ""
+                col = df.pop("Standard study name 3")
+                df.insert(std_name_col_idx + 2, col.name, col)
+
+            # Then drop the original standard name column
+            df.drop(columns=["Standard study name"], inplace=True)
+
+            # Make the exam_cat_field_names a categorical column (saves server memory)
+            df[exam_cat_field_names] = df[exam_cat_field_names].astype("category")
+
+        # Drop any duplicate acquisition pk rows
+        df.drop_duplicates(subset="Acquisition pk", inplace=True)
+
+        # Obtain a list of unique acquisition protocols
         all_acquisitions_in_df = df["Acquisition protocol"].unique()
 
         for acquisition in all_acquisitions_in_df:

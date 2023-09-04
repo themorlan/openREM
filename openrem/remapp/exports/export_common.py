@@ -1027,7 +1027,8 @@ def transform_to_one_row_per_exam(df,
         print("Initial DataFrame created")
         df.info()
 
-    df.to_csv("D:\\temp\\000-df-initial.csv")
+    if settings.DEBUG:
+        df.to_csv("D:\\temp\\000-df-initial.csv")
 
     # Make DataFrame columns category type where appropriate
     cat_field_names = exam_cat_field_names + acquisition_cat_field_names
@@ -1090,12 +1091,14 @@ def transform_to_one_row_per_exam(df,
         # Make the exam_cat_field_names a categorical column (saves server memory)
         df[exam_cat_field_names] = df[exam_cat_field_names].astype("category")
 
-    df.to_csv("D:\\temp\\001-df-added-standard-names.csv")
+    if settings.DEBUG:
+        df.to_csv("D:\\temp\\001-df-added-standard-names.csv")
 
     # Drop any duplicate acquisition pk rows
     df.drop_duplicates(subset="Acquisition pk", inplace=True)
 
-    df.to_csv("D:\\temp\\002-df-dropped-duplicate-acq-pk.csv")
+    if settings.DEBUG:
+        df.to_csv("D:\\temp\\002-df-dropped-duplicate-acq-pk.csv")
 
     # Reformat the DataFrame so that we have one row per exam, with sets of columns for each acquisition data
     g = df.groupby("pk").cumcount().add(1)
@@ -1109,13 +1112,15 @@ def transform_to_one_row_per_exam(df,
     df[exam_int_field_names] = df[exam_int_field_names].astype("UInt32")
     df[exam_val_field_names] = df[exam_val_field_names].astype("float32")
 
-    df.to_csv("D:\\temp\\002-df-one-row-per-exam.csv")
+    if settings.DEBUG:
+        df.to_csv("D:\\temp\\003-df-one-row-per-exam.csv")
 
     # Drop all pk columns
     pk_list = [i for i in df.columns if "pk" in i]
     df = df.drop(pk_list, axis=1)
 
-    df.to_csv("D:\\temp\\003-df-dropped-pk-fields.csv")
+    if settings.DEBUG:
+        df.to_csv("D:\\temp\\004-df-dropped-pk-fields.csv")
 
     if settings.DEBUG:
         print("DataFrame reformatted")
