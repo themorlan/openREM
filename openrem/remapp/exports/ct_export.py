@@ -53,6 +53,9 @@ from .export_common import (
     abort_if_zero_studies,
     create_export_task,
     transform_to_one_row_per_exam,
+    create_standard_name_df_columns,
+    optimise_df_dtypes,
+    write_row_to_acquisition_sheet,
 )
 
 logger = logging.getLogger(__name__)
@@ -132,7 +135,7 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
     #====================================================================================
     # Write the all data sheet
     # This code is taken from the ct_csv method...
-    qs_chunk_size=10000
+    qs_chunk_size=5000
 
     # Exam-level integer field names
     exam_int_fields = [
@@ -316,9 +319,6 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
     acquisition_field_names = acquisition_int_field_names + acquisition_cat_field_names + acquisition_val_field_names
     all_field_names = exam_field_names + acquisition_field_names
 
-    # Add the Dose check alert column to the acquisition category field names
-    acquisition_cat_field_names.append("Dose check alerts")
-
     # Create a series of DataFrames by chunking the queryset into groups of accession numbers.
     # Chunking saves server memory at the expense of speed.
     write_headers = True
@@ -370,16 +370,13 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
 
     worksheet_log = {}
     for name in required_sheets:
-        if name is None:
+        if name in (None, np.nan):
             name = "Unknown"
 
         name = sheet_name(name)
 
         if name not in book.sheetnames.keys():
             new_sheet = book.add_worksheet(name)
-            new_sheet.set_column(11, 11, 10, dateformat)  # Study date
-            new_sheet.set_column(12, 12, 10, timeformat)  # Study time
-
             worksheet_log[name] = 0
 
     current_row = 1
@@ -403,8 +400,19 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
             columns=(all_field_names + ct_dose_check_field_names), coerce_float=True,
         )
 
+        if "Dose check alerts" in acquisition_cat_field_names:
+            acquisition_cat_field_names.remove("Dose check alerts")
+
+        optimise_df_dtypes(df_unprocessed,
+                           acquisition_cat_field_names, acquisition_int_field_names, acquisition_val_field_names,
+                           exam_cat_field_names, exam_date_field_names, exam_int_field_names, exam_val_field_names)
+
+        # Add the Dose check alert column to the acquisition category field names
+        acquisition_cat_field_names.append("Dose check alerts")
+
         # Create the CT dose check column
         df_unprocessed = create_ct_dose_check_column(ct_dose_check_field_names, df_unprocessed)
+        df_unprocessed["Dose check alerts"] = df_unprocessed["Dose check alerts"].astype("category")
 
         df = transform_to_one_row_per_exam(
             df_unprocessed,
@@ -426,40 +434,13 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
         df = df_unprocessed
 
         if "Standard study name" in df.columns:
-            std_name_df = df.groupby("pk")["Standard study name"].apply(lambda x: pd.Series(list(x.unique()))).unstack()
-            num_std_name_cols = len(std_name_df.columns)
-            std_name_df.columns = ["Standard study name {}".format(a + 1) for a in std_name_df.columns]
-            std_name_df = std_name_df.reset_index()
-
-            # Join the std_name_df to df using Study ID as an index
-            df = df.join(std_name_df.set_index(["pk"]), on=["pk"])
-
-            # Now move the columns so they are next to the original "Standard Name" column
-            std_name_col_idx = df.columns.get_loc("Standard study name")
-
-            if num_std_name_cols >= 1:
-                col = df.pop("Standard study name 1")
-                df.insert(std_name_col_idx, col.name, col)
-            if num_std_name_cols >= 2:
-                col = df.pop("Standard study name 2")
-                df.insert(std_name_col_idx + 1, col.name, col)
-            else:
-                df["Standard study name 2"] = ""
-                col = df.pop("Standard study name 2")
-                df.insert(std_name_col_idx + 1, col.name, col)
-            if num_std_name_cols >= 3:
-                col = df.pop("Standard study name 3")
-                df.insert(std_name_col_idx + 2, col.name, col)
-            else:
-                df["Standard study name 3"] = ""
-                col = df.pop("Standard study name 3")
-                df.insert(std_name_col_idx + 2, col.name, col)
-
-            # Then drop the original standard name column
-            df.drop(columns=["Standard study name"], inplace=True)
+            df = create_standard_name_df_columns(df)
 
             # Make the exam_cat_field_names a categorical column (saves server memory)
-            df[exam_cat_field_names] = df[exam_cat_field_names].astype("category")
+            exam_cat_f_names = exam_cat_field_names[:]
+            exam_cat_f_names.remove("Standard study name")
+            exam_cat_f_names.extend(["Standard study name 1", "Standard study name 2", "Standard study name 3"])
+            df[exam_cat_f_names] = df[exam_cat_f_names].astype("category")
 
         # Drop any duplicate acquisition pk rows
         df.drop_duplicates(subset="Acquisition pk", inplace=True)
@@ -471,32 +452,11 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
 
             acq_df = df[df["Acquisition protocol"] == acquisition]
 
-            if acquisition is None:
+            if acquisition in (None, np.nan):
                 acquisition = "Unknown"
                 acq_df = df[df["Acquisition protocol"].isnull()]
 
-            # Make the acquisition name safe for an Excel sheet name
-            acquisition = sheet_name(acquisition)
-
-            sheet = book.get_worksheet_by_name(acquisition)
-
-            sheet_row = worksheet_log[acquisition]
-
-            # Drop any pk columns
-            pk_cols = [i for i in acq_df.columns if "pk" in i]
-            acq_df = acq_df.drop(pk_cols, axis=1)
-
-            if sheet_row == 0:
-                sheet.write_row(0, 0, acq_df.columns)
-                sheet_row = 1
-                worksheet_log[acquisition] = sheet_row
-
-            for idx, row in acq_df.iterrows():
-                sheet.write_row(sheet_row, 0, row.fillna(""))
-                sheet_row = sheet_row + 1
-
-            worksheet_log[acquisition] = sheet_row
-
+            write_row_to_acquisition_sheet(acq_df, acquisition, book, worksheet_log)
 
         # Write out all standard acquisition name data to the sheets
         all_std_acquisitions_in_df = df["Standard acquisition name"].dropna().unique()
@@ -507,27 +467,7 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
 
             acquisition = "[standard] " + acquisition
 
-            # Make the acquisition name safe for an Excel sheet name
-            acquisition = sheet_name(acquisition)
-
-            sheet = book.get_worksheet_by_name(acquisition)
-
-            sheet_row = worksheet_log[acquisition]
-
-            # Drop any pk columns
-            pk_cols = [i for i in acq_df.columns if "pk" in i]
-            acq_df = acq_df.drop(pk_cols, axis=1)
-
-            if sheet_row == 0:
-                sheet.write_row(0, 0, acq_df.columns)
-                sheet_row = 1
-                worksheet_log[acquisition] = sheet_row
-
-            for idx, row in acq_df.iterrows():
-                sheet.write_row(sheet_row, 0, row.fillna(""))
-                sheet_row = sheet_row + 1
-
-            worksheet_log[acquisition] = sheet_row
+            write_row_to_acquisition_sheet(acq_df, acquisition, book, worksheet_log)
 
     # Now write out any None accession number data if any such data is present
     n_entries = qs.filter(accession_number__isnull=True).count()
@@ -579,184 +519,26 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
 
             acq_df = df[df["Acquisition protocol"] == acquisition]
 
-            if acquisition is None:
+            if acquisition in (None, np.nan):
                 acquisition = "Unknown"
                 acq_df = df[df["Acquisition protocol"].isnull()]
 
-            # Make the acquisition name safe for an Excel sheet name
-            acquisition = sheet_name(acquisition)
+            write_row_to_acquisition_sheet(acq_df, acquisition, book, worksheet_log)
 
-            sheet = book.get_worksheet_by_name(acquisition)
-
-            sheet_row = worksheet_log[acquisition]
-
-            # Drop any pk columns
-            pk_cols = [i for i in acq_df.columns if "pk" in i]
-            acq_df = acq_df.drop(pk_cols, axis=1)
-
-            if sheet_row == 0:
-                sheet.write_row(0, 0, acq_df.columns)
-                sheet_row = 1
-                worksheet_log[acquisition] = sheet_row
-
-            for idx, row in acq_df.iterrows():
-                sheet.write_row(sheet_row, 0, row.fillna(""))
-                sheet_row = sheet_row + 1
-
-            worksheet_log[acquisition] = sheet_row
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    # # Some prep
-    # commonheaders = common_headers(pid=pid, name=name, patid=patid)
-    # commonheaders += ["DLP total (mGy.cm)"]
-    # protocolheaders = commonheaders + ["Protocol"]
-    #
-    # if enable_standard_names:
-    #     protocolheaders += ["Standard acquisition name"]
-    #
-    # protocolheaders = protocolheaders + [
-    #     "Type",
-    #     "Exposure time",
-    #     "Scanning length",
-    #     "Slice thickness",
-    #     "Total collimation",
-    #     "Pitch",
-    #     "No. sources",
-    #     "CTDIvol",
-    #     "Phantom",
-    #     "DLP",
-    #     "S1 name",
-    #     "S1 kVp",
-    #     "S1 max mA",
-    #     "S1 mA",
-    #     "S1 Exposure time/rotation",
-    #     "S2 name",
-    #     "S2 kVp",
-    #     "S2 max mA",
-    #     "S2 mA",
-    #     "S2 Exposure time/rotation",
-    #     "mA Modulation type",
-    #     "Dose check details",
-    #     "Comments",
-    # ]
-    #
-    # # Generate list of protocols in queryset and create worksheets for each
-    # tsk.progress = "Generating list of protocols in the dataset..."
-    # tsk.save()
-    #
-    # book, sheet_list = generate_sheets(
-    #     qs, book, protocolheaders, modality="CT", pid=pid, name=name, patid=patid
-    # )
-    #
-    # max_events_dict = qs.aggregate(
-    #     Max(
-    #         "ctradiationdose__ctaccumulateddosedata__total_number_of_irradiation_events"
-    #     )
-    # )
-    # max_events = max_events_dict[
-    #     "ctradiationdose__ctaccumulateddosedata__total_number_of_irradiation_events__max"
-    # ]
-    #
-    # alldataheaders = list(commonheaders)
-    #
-    # tsk.progress = "Generating headers for the all data sheet..."
-    # tsk.save()
-    #
-    # if not max_events:
-    #     max_events = 1
-    # alldataheaders += _generate_all_data_headers_ct(max_events)
-    #
-    # wsalldata.write_row("A1", alldataheaders)
-    # numcolumns = len(alldataheaders) - 1
-    # numrows = n_entries
-    # wsalldata.autofilter(0, 0, numrows, numcolumns)
-    #
-    # for row, exams in enumerate(qs):
-    #     # Translators: CT xlsx export progress
-    #     tsk.progress = _(
-    #         "Writing study {row} of {numrows} to All data sheet and individual protocol sheets".format(
-    #             row=row + 1, numrows=numrows
-    #         )
-    #     )
-    #     # tsk.progress = f"Writing study {row + 1} of {numrows} to All data sheet and individual protocol sheets"
-    #     tsk.save()
-    #
-    #     try:
-    #         common_exam_data = get_common_data("CT", exams, pid, name, patid)
-    #         all_exam_data = list(common_exam_data)
-    #
-    #         for (
-    #             s
-    #         ) in exams.ctradiationdose_set.get().ctirradiationeventdata_set.order_by(
-    #             "id"
-    #         ):
-    #             # Get series data
-    #             series_data = _ct_get_series_data(s)
-    #
-    #             # Add series to all data
-    #             all_exam_data += series_data
-    #
-    #             # Add series data to series tab
-    #             protocol = s.acquisition_protocol
-    #             if not protocol:
-    #                 protocol = "Unknown"
-    #             tabtext = sheet_name(protocol)
-    #             sheet_list[tabtext]["count"] += 1
-    #             sheet_list[tabtext]["sheet"].write_row(
-    #                 sheet_list[tabtext]["count"], 0, common_exam_data + series_data
-    #             )
-    #
-    #             # Add series data to standard acquisition tab
-    #             if enable_standard_names:
-    #                 try:
-    #                     protocol = s.standard_protocols.first().standard_name
-    #                     if protocol:
-    #                         tabtext = sheet_name("[standard] " + protocol)
-    #                         sheet_list[tabtext]["count"] += 1
-    #                         sheet_list[tabtext]["sheet"].write_row(
-    #                             sheet_list[tabtext]["count"],
-    #                             0,
-    #                             common_exam_data + series_data,
-    #                         )
-    #                 except AttributeError:
-    #                     pass
-    #
-    #         wsalldata.write_row(row + 1, 0, all_exam_data)
-    #
-    #     except ObjectDoesNotExist:
-    #         error_message = (
-    #             "DoesNotExist error whilst exporting study {0} of {1},  study UID {2}, accession number"
-    #             " {3} - maybe database entry was deleted as part of importing later version of same"
-    #             " study?".format(
-    #                 row + 1, numrows, exams.study_instance_uid, exams.accession_number
-    #             )
-    #         )
-    #         logger.error(error_message)
-    #         wsalldata.write(row + 1, 0, error_message)
-    #
-
-
-
-
-
-
+    # Now create the summary sheet
     create_summary_sheet(tsk, qs, book, summarysheet, modality="CT")
+
+    # Update the date and time format of each of the acquisition sheets and the all data sheet
+    for name in required_sheets + ["All data"]:
+        if name in (None, np.nan):
+            name = "Unknown"
+
+        name = sheet_name(name)
+
+        if name in book.sheetnames.keys():
+            worksheet = book.get_worksheet_by_name(name)
+            worksheet.set_column(14, 14, 10, dateformat)  # Study date
+            worksheet.set_column(15, 15, 10, timeformat)  # Study time
 
     book.close()
     tsk.progress = "XLSX book written."

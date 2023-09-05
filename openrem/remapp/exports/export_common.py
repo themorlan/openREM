@@ -1030,8 +1030,10 @@ def transform_to_one_row_per_exam(df,
     if settings.DEBUG:
         df.to_csv("D:\\temp\\000-df-initial.csv")
 
+    exam_cat_f_names = exam_cat_field_names[:]
+
     # Make DataFrame columns category type where appropriate
-    cat_field_names = exam_cat_field_names + acquisition_cat_field_names
+    cat_field_names = exam_cat_f_names + acquisition_cat_field_names
     df[cat_field_names] = df[cat_field_names].astype("category")
 
     # Make DataFrame columns datetime type where appropriate
@@ -1051,45 +1053,15 @@ def transform_to_one_row_per_exam(df,
         df.info()
 
     if "Standard study name" in df.columns:
-        std_name_df = df.groupby("pk")["Standard study name"].apply(lambda x: pd.Series(list(x.unique()))).unstack()
-        num_std_name_cols = len(std_name_df.columns)
-        std_name_df.columns = ["Standard study name {}".format(a + 1) for a in std_name_df.columns]
-        std_name_df = std_name_df.reset_index()
-
-        # Join the std_name_df to df using Study ID as an index
-        df = df.join(std_name_df.set_index(["pk"]), on=["pk"])
-
-        # Now move the columns so they are next to the original "Standard Name" column
-        std_name_col_idx = df.columns.get_loc("Standard study name")
-
-        if num_std_name_cols >= 1:
-            col = df.pop("Standard study name 1")
-            df.insert(std_name_col_idx, col.name, col)
-        if num_std_name_cols >= 2:
-            col = df.pop("Standard study name 2")
-            df.insert(std_name_col_idx + 1, col.name, col)
-        else:
-            df["Standard study name 2"] = ""
-            col = df.pop("Standard study name 2")
-            df.insert(std_name_col_idx + 1, col.name, col)
-        if num_std_name_cols >=3:
-            col = df.pop("Standard study name 3")
-            df.insert(std_name_col_idx + 2, col.name, col)
-        else:
-            df["Standard study name 3"] = ""
-            col = df.pop("Standard study name 3")
-            df.insert(std_name_col_idx + 2, col.name, col)
-
-        # Then drop the original standard name column
-        df.drop(columns=["Standard study name"], inplace=True)
+        df = create_standard_name_df_columns(df)
 
         # Remove the original standard study name column from the list of exam category field names and then
         # add the three standard name columns
-        exam_cat_field_names.remove("Standard study name")
-        exam_cat_field_names.extend(["Standard study name 1", "Standard study name 2", "Standard study name 3"])
+        exam_cat_f_names.remove("Standard study name")
+        exam_cat_f_names.extend(["Standard study name 1", "Standard study name 2", "Standard study name 3"])
 
-        # Make the exam_cat_field_names a categorical column (saves server memory)
-        df[exam_cat_field_names] = df[exam_cat_field_names].astype("category")
+        # Make the exam_cat_f_names a categorical column (saves server memory)
+        df[exam_cat_f_names] = df[exam_cat_f_names].astype("category")
 
     if settings.DEBUG:
         df.to_csv("D:\\temp\\001-df-added-standard-names.csv")
@@ -1102,7 +1074,7 @@ def transform_to_one_row_per_exam(df,
 
     # Reformat the DataFrame so that we have one row per exam, with sets of columns for each acquisition data
     g = df.groupby("pk").cumcount().add(1)
-    exam_field_names = exam_obj_field_names + exam_int_field_names + exam_cat_field_names + exam_date_field_names + exam_time_field_names + exam_val_field_names
+    exam_field_names = exam_obj_field_names + exam_int_field_names + exam_cat_f_names + exam_date_field_names + exam_time_field_names + exam_val_field_names
     exam_field_names.append(g)
     df = df.set_index(exam_field_names).unstack().sort_index(axis=1, level=1)
     df.columns = ["E{} {}".format(b, a) for a, b in df.columns]
@@ -1127,3 +1099,80 @@ def transform_to_one_row_per_exam(df,
         df.info()
 
     return df
+
+
+def create_standard_name_df_columns(df):
+    std_name_df = df.groupby("pk")["Standard study name"].apply(lambda x: pd.Series(list(x.unique()))).unstack()
+    num_std_name_cols = len(std_name_df.columns)
+    std_name_df.columns = ["Standard study name {}".format(a + 1) for a in std_name_df.columns]
+    std_name_df = std_name_df.reset_index()
+
+    # Join the std_name_df to df using Study ID as an index
+    df = df.join(std_name_df.set_index(["pk"]), on=["pk"])
+
+    # Now move the columns so they are next to the original "Standard Name" column
+    std_name_col_idx = df.columns.get_loc("Standard study name")
+    if num_std_name_cols >= 1:
+        col = df.pop("Standard study name 1")
+        df.insert(std_name_col_idx, col.name, col)
+
+    if num_std_name_cols >= 2:
+        col = df.pop("Standard study name 2")
+        df.insert(std_name_col_idx + 1, col.name, col)
+    else:
+        df["Standard study name 2"] = ""
+        col = df.pop("Standard study name 2")
+        df.insert(std_name_col_idx + 1, col.name, col)
+
+    if num_std_name_cols >= 3:
+        col = df.pop("Standard study name 3")
+        df.insert(std_name_col_idx + 2, col.name, col)
+    else:
+        df["Standard study name 3"] = ""
+        col = df.pop("Standard study name 3")
+        df.insert(std_name_col_idx + 2, col.name, col)
+
+    # Then drop the original standard name column
+    df.drop(columns=["Standard study name"], inplace=True)
+
+    return df
+
+
+def optimise_df_dtypes(df, acquisition_cat_field_names, acquisition_int_field_names, acquisition_val_field_names,
+                       exam_cat_field_names, exam_date_field_names, exam_int_field_names,
+                       exam_val_field_names):
+    # Optimise the data frame types to minimise memory usage
+    # Make DataFrame columns category type where appropriate
+    cat_field_names = exam_cat_field_names + acquisition_cat_field_names
+    df[cat_field_names] = df[cat_field_names].astype("category")
+    # Make DataFrame columns datetime type where appropriate
+    for date_field in exam_date_field_names:
+        df[date_field] = pd.to_datetime(df[date_field], format="%Y-%m-%d")
+    # Make DataFrame columns float32 type where appropriate
+    val_field_names = exam_val_field_names + acquisition_val_field_names
+    df[val_field_names] = df[val_field_names].astype("float32")
+    # Make DataFrame columns UInt32 type where appropriate
+    int_field_names = exam_int_field_names + acquisition_int_field_names
+    df[int_field_names] = df[int_field_names].astype("UInt32")
+
+
+def write_row_to_acquisition_sheet(acq_df, acquisition, book, worksheet_log):
+    # Make the acquisition name safe for an Excel sheet name
+    acquisition = sheet_name(acquisition)
+    sheet = book.get_worksheet_by_name(acquisition)
+    sheet_row = worksheet_log[acquisition]
+
+    # Drop any pk columns
+    pk_cols = [i for i in acq_df.columns if "pk" in i]
+    acq_df = acq_df.drop(pk_cols, axis=1)
+
+    if sheet_row == 0:
+        sheet.write_row(0, 0, acq_df.columns)
+        sheet_row = 1
+        worksheet_log[acquisition] = sheet_row
+
+    for idx, row in acq_df.iterrows():
+        sheet.write_row(sheet_row, 0, row.fillna(""))
+        sheet_row = sheet_row + 1
+
+    worksheet_log[acquisition] = sheet_row
