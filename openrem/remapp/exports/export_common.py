@@ -50,6 +50,8 @@ from remapp.models import (
     StandardNameSettings,
 )
 
+from remapp.version import __version__
+
 logger = logging.getLogger(__name__)
 
 
@@ -784,15 +786,12 @@ def create_summary_sheet(
     :return: nothing
     """
     import datetime
-    import pkg_resources
-    from django.db.models import Count
 
     # Populate summary sheet
     task.progress = "Now populating the summary sheet..."
     task.save()
 
-    vers = pkg_resources.require("openrem")[0].version
-    version = vers
+    version = __version__
     titleformat = book.add_format()
     titleformat.set_font_size = 22
     titleformat.set_font_color = "#FF0000"

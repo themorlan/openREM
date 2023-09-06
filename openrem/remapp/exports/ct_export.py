@@ -135,7 +135,7 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
     #====================================================================================
     # Write the all data sheet
     # This code is taken from the ct_csv method...
-    qs_chunk_size=5000
+    qs_chunk_size=10000
 
     # Exam-level integer field names
     exam_int_fields = [
@@ -370,7 +370,7 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
 
     worksheet_log = {}
     for name in required_sheets:
-        if name in (None, np.nan):
+        if name in (None, np.nan, ""):
             name = "Unknown"
 
         name = sheet_name(name)
@@ -452,7 +452,7 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
 
             acq_df = df[df["Acquisition protocol"] == acquisition]
 
-            if acquisition in (None, np.nan):
+            if acquisition in (None, np.nan, ""):
                 acquisition = "Unknown"
                 acq_df = df[df["Acquisition protocol"].isnull()]
 
@@ -519,7 +519,7 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
 
             acq_df = df[df["Acquisition protocol"] == acquisition]
 
-            if acquisition in (None, np.nan):
+            if acquisition in (None, np.nan, ""):
                 acquisition = "Unknown"
                 acq_df = df[df["Acquisition protocol"].isnull()]
 
@@ -528,9 +528,12 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
     # Now create the summary sheet
     create_summary_sheet(tsk, qs, book, summarysheet, modality="CT")
 
+    tsk.progress = "Finished populating the summary sheet"
+    tsk.save()
+
     # Update the date and time format of each of the acquisition sheets and the all data sheet
-    for name in required_sheets + ["All data"]:
-        if name in (None, np.nan):
+    for name in list(required_sheets) + ["All data"]:
+        if name in (None, np.nan, ""):
             name = "Unknown"
 
         name = sheet_name(name)
