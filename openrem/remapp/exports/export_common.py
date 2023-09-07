@@ -82,13 +82,26 @@ def text_and_date_formats(
         {"num_format": f"{settings.XLSX_DATE} {settings.XLSX_TIME}"}
     )
 
-    date_column = 7
+    date_column = 11
     patid_column = 0
     if pid and patid:
         date_column += 1
     if pid and name:
         date_column += 1
         patid_column += 1
+
+    # Obtain the system-level enable_standard_names setting
+    try:
+        StandardNameSettings.objects.get()
+    except ObjectDoesNotExist:
+        StandardNameSettings.objects.create()
+    enable_standard_names = StandardNameSettings.objects.values_list(
+        "enable_standard_names", flat=True
+    )[0]
+
+    if enable_standard_names:
+        date_column += 3
+
     if modality == "RF":
         date_column += 1
     sheet.set_column(

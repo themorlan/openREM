@@ -124,13 +124,8 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
     summarysheet = book.add_worksheet("Summary")
     wsalldata = book.add_worksheet("All data")
 
-    book = text_and_date_formats(
-        book, wsalldata, pid=pid, name=name, patid=patid, modality="CT"
-    )
-
-    textformat = book.add_format({"num_format": "@"})
-    dateformat = book.add_format({"num_format": settings.XLSX_DATE})
-    timeformat = book.add_format({"num_format": settings.XLSX_TIME})
+    # Format the columns of the All data sheet
+    book = text_and_date_formats(book, wsalldata, pid=pid, name=name, patid=patid, modality="CT")
 
     #====================================================================================
     # Write the all data sheet
@@ -377,6 +372,7 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
 
         if name not in book.sheetnames.keys():
             new_sheet = book.add_worksheet(name)
+            book = text_and_date_formats(book, new_sheet, pid=pid, name=name, patid=patid, modality="CT")
             worksheet_log[name] = 0
 
     current_row = 1
@@ -459,15 +455,16 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
             write_row_to_acquisition_sheet(acq_df, acquisition, book, worksheet_log)
 
         # Write out all standard acquisition name data to the sheets
-        all_std_acquisitions_in_df = df["Standard acquisition name"].dropna().unique()
+        if enable_standard_names:
+            all_std_acquisitions_in_df = df["Standard acquisition name"].dropna().unique()
 
-        for acquisition in all_std_acquisitions_in_df:
+            for acquisition in all_std_acquisitions_in_df:
 
-            acq_df = df[df["Standard acquisition name"] == acquisition]
+                acq_df = df[df["Standard acquisition name"] == acquisition]
 
-            acquisition = "[standard] " + acquisition
+                acquisition = "[standard] " + acquisition
 
-            write_row_to_acquisition_sheet(acq_df, acquisition, book, worksheet_log)
+                write_row_to_acquisition_sheet(acq_df, acquisition, book, worksheet_log)
 
     # Now write out any None accession number data if any such data is present
     n_entries = qs.filter(accession_number__isnull=True).count()
@@ -504,7 +501,6 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
             wsalldata.write_row(current_row, 0, row.fillna(""))
             current_row = current_row + 1
 
-
         # Write out data to the acquisition protocol sheets
 
         # *****
@@ -530,18 +526,6 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
 
     tsk.progress = "Finished populating the summary sheet"
     tsk.save()
-
-    # Update the date and time format of each of the acquisition sheets and the all data sheet
-    for name in list(required_sheets) + ["All data"]:
-        if name in (None, np.nan, ""):
-            name = "Unknown"
-
-        name = sheet_name(name)
-
-        if name in book.sheetnames.keys():
-            worksheet = book.get_worksheet_by_name(name)
-            worksheet.set_column(14, 14, 10, dateformat)  # Study date
-            worksheet.set_column(15, 15, 10, timeformat)  # Study time
 
     book.close()
     tsk.progress = "XLSX book written."
