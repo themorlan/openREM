@@ -467,26 +467,32 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
                 write_row_to_acquisition_sheet(acq_df, acquisition, book, worksheet_log)
 
     # Now write out any None accession number data if any such data is present
-    n_entries = qs.filter(accession_number__isnull=True).count()
     data = qs.order_by().filter(accession_number__isnull=True).values_list(*(all_fields + ct_dose_check_fields))
-
-    df = pd.DataFrame.from_records(
-        data=data,
-        columns=(all_field_names + ct_dose_check_field_names), coerce_float=True,
-    )
-
-    # Create the CT dose check column
-    df = create_ct_dose_check_column(ct_dose_check_field_names, df)
 
     # Clear the query cache
     django.db.reset_queries()
 
-    if data:
+    df_unprocessed = pd.DataFrame.from_records(
+        data=data,
+        columns=(all_field_names + ct_dose_check_field_names), coerce_float=True,
+    )
+
+    n_entries = len(df_unprocessed.index)
+
+    if n_entries:
+        # Create the CT dose check column
+        df_unprocessed = create_ct_dose_check_column(ct_dose_check_field_names, df_unprocessed)
+
+        optimise_df_dtypes(df_unprocessed,
+                           acquisition_cat_field_names, acquisition_int_field_names, acquisition_val_field_names,
+                           exam_cat_field_names, exam_date_field_names, exam_int_field_names, exam_val_field_names)
+
         tsk.progress = "Working on {0} entries with blank accession numbers".format(n_entries)
         tsk.save()
 
+        # Write out date to the All data sheet
         df = transform_to_one_row_per_exam(
-            df,
+            df_unprocessed,
             acquisition_cat_field_names, acquisition_int_field_names, acquisition_val_field_names,
             exam_cat_field_names, exam_date_field_names, exam_int_field_names,
             exam_obj_field_names, exam_time_field_names, exam_val_field_names,
@@ -501,14 +507,23 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
             wsalldata.write_row(current_row, 0, row.fillna(""))
             current_row = current_row + 1
 
-        # Write out data to the acquisition protocol sheets
 
-        # *****
-        # NB: as it stands the data in "data" will not contain all protocols - the query needs to be re-written to
-        # be a similar format to that in the create_summary_sheet method in export_common. Also, the acquisition-level
-        # fields will need to be altered to start at the irradiation_event level, rather than at the radiationdose level
-        # *****
-        df = pd.DataFrame.from_records(data=data, columns=(all_field_names + ct_dose_check_field_names), coerce_float=True)
+        # Write out data to the acquisition protocol sheets
+        df = df_unprocessed
+
+        if "Standard study name" in df.columns:
+            df = create_standard_name_df_columns(df)
+
+            # Make the exam_cat_field_names a categorical column (saves server memory)
+            exam_cat_f_names = exam_cat_field_names[:]
+            exam_cat_f_names.remove("Standard study name")
+            exam_cat_f_names.extend(["Standard study name 1", "Standard study name 2", "Standard study name 3"])
+            df[exam_cat_f_names] = df[exam_cat_f_names].astype("category")
+
+        # Drop any duplicate acquisition pk rows
+        df.drop_duplicates(subset="Acquisition pk", inplace=True)
+
+        # Obtain a list of unique acquisition protocols
         all_acquisitions_in_df = df["Acquisition protocol"].unique()
 
         for acquisition in all_acquisitions_in_df:
@@ -520,6 +535,18 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
                 acq_df = df[df["Acquisition protocol"].isnull()]
 
             write_row_to_acquisition_sheet(acq_df, acquisition, book, worksheet_log)
+
+        # Write out all standard acquisition name data to the sheets
+        if enable_standard_names:
+            all_std_acquisitions_in_df = df["Standard acquisition name"].dropna().unique()
+
+            for acquisition in all_std_acquisitions_in_df:
+
+                acq_df = df[df["Standard acquisition name"] == acquisition]
+
+                acquisition = "[standard] " + acquisition
+
+                write_row_to_acquisition_sheet(acq_df, acquisition, book, worksheet_log)
 
     # Now create the summary sheet
     create_summary_sheet(tsk, qs, book, summarysheet, modality="CT")
