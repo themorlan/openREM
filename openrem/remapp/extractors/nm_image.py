@@ -418,9 +418,7 @@ def nm_image(filename: str):
         dataset = pydicom.dcmread(filename)
     except FileNotFoundError:
         logger.warning(
-            "mn_image.py not attempting to extract from {0}, the file does not exist".format(
-                filename
-            )
+            f"mn_image.py not attempting to extract from {filename}, the file does not exist"
         )
         record_task_error_exit(
             f"Not attempting to extract from {filename}, the file does not exist"

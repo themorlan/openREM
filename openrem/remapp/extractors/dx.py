@@ -934,9 +934,7 @@ def dx(dig_file):
         dataset = pydicom.dcmread(dig_file)
     except FileNotFoundError:
         logger.warning(
-            "dx.py not attempting to extract from {0}, the file does not exist".format(
-                dig_file
-            )
+            f"dx.py not attempting to extract from {dig_file}, the file does not exist"
         )
         record_task_error_exit(
             f"Not attempting to extract from {dig_file}, the file does not exist"

@@ -398,9 +398,7 @@ def ct_philips(philips_file):
         dataset = pydicom.dcmread(philips_file)
     except FileNotFoundError:
         logger.warning(
-            "ct_philips.py not attempting to extract from {0}, the file does not exist".format(
-                philips_file
-            )
+            f"ct_philips.py not attempting to extract from {philips_file}, the file does not exist"
         )
         record_task_error_exit(
             f"Not attempting to extract from {philips_file}, the file does not exist"

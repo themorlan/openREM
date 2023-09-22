@@ -655,9 +655,7 @@ def mam(mg_file):
         dataset = pydicom.dcmread(mg_file)
     except FileNotFoundError:
         logger.warning(
-            "mam.py not attempting to extract from {0}, the file does not exist".format(
-                mg_file
-            )
+            f"mam.py not attempting to extract from {mg_file}, the file does not exist"
         )
         record_task_error_exit(
             f"Not attempting to extract from {mg_file}, the file does not exist"

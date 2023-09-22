@@ -651,9 +651,7 @@ def rdsr(rdsr_file):
         _rdsr2db(dataset)
     else:
         logger.warning(
-            "rdsr.py not attempting to extract from {0}, not a radiation dose structured report".format(
-                rdsr_file
-            )
+            f"rdsr.py not attempting to extract from {rdsr_file}, not a radiation dose structured report"
         )
         record_task_error_exit(
             f"Not attempting to extract from {rdsr_file}, not an rdsr"
