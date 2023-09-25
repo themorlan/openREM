@@ -606,9 +606,7 @@ def rdsr(rdsr_file):
         dataset = pydicom.dcmread(rdsr_file)
     except FileNotFoundError:
         logger.warning(
-            "rdsr.py not attempting to extract from {0}, the file does not exist".format(
-                rdsr_file
-            )
+            f"rdsr.py not attempting to extract from {rdsr_file}, the file does not exist"
         )
         record_task_error_exit(
             f"Not attempting to extract from {rdsr_file}, the file does not exist"
