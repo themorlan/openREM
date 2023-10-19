@@ -105,6 +105,13 @@ from .models import (
     HomePageAdminSettings,
     UpgradeStatus,
     StandardNameSettings,
+    BackgroundTask,
+)
+from openrem.remapp.tools.background import (
+    record_task_error_exit,
+    record_task_related_query,
+    record_task_info,
+    run_in_background_with_limits,
 )
 from .version import __version__, __docs_version__, __skin_map_version__
 
@@ -539,7 +546,7 @@ def rf_detail_view(request, pk=None):
 
 @login_required
 def rf_detail_view_skin_map(request, pk=None):
-    """View to calculate a skin dose map. Currently just a copy of rf_detail_view."""
+    """View to calculate a skin dose map."""
     try:
         GeneralStudyModuleAttr.objects.get(pk=pk)
     except ObjectDoesNotExist:
@@ -597,6 +604,10 @@ def rf_detail_view_skin_map(request, pk=None):
     loaded_existing_data = False
     pat_mass_unchanged = False
     pat_height_unchanged = False
+
+    return_structure = dict()
+    return_structure["in_progress"] = False
+
     if os.path.exists(skin_map_path):
         with gzip.open(skin_map_path, "rb") as f:
             existing_skin_map_data = pickle.load(f)
@@ -616,14 +627,55 @@ def rf_detail_view_skin_map(request, pk=None):
 
                 if pat_height_unchanged and pat_mass_unchanged:
                     return_structure = existing_skin_map_data
+                    return_structure["in_progress"] = False
                     loaded_existing_data = True
         except KeyError:
             pass
 
     if not loaded_existing_data:
-        make_skin_map(pk)
-        with gzip.open(skin_map_path, "rb") as f:
-            return_structure = pickle.load(f)
+        # Check to see if there is already a background task running to calculate a skin dose map for this study. Need
+        # to have a Django query that matches the following SQL:
+        #   SELECT info
+        #   FROM remapp_backgroundtask
+        #   WHERE task_type='make_skin_map' [just make_skin_map tasks]
+        #     AND info LIKE '%1880069%'     [where the info contains the pk of the study we are interested in - 1880069 in this case]
+        #     AND complete=FALSE;           [it is not yet complete]
+        #
+        # If there are no rows returned from the above query then there is not already a job being run to calculate the
+        # skin dose map for this study, and we can go ahead and create a background task to run it.
+
+        # The following line is equivalent to the above SQL:
+        matching_ongoing_task = BackgroundTask.objects.filter(
+            task_type="make_skin_map",
+            info__contains=pk,
+            complete=False
+            )
+
+        # Probably need to add code so that if we find that the skin dose map is in
+        # the process of being calculated that we update the rf_detail page to say so.
+
+        # Maybe also use the background task to log progress of the calculation so that
+        # this can be updated on the rf_detail page, in a similar way to which the progress
+        # of an ongoing export is updated the export page.
+
+        # Definitely need to pass the task to make_skin_map so that it can be tagged
+        # as completed_successfully or not, as the case may be.
+
+        # Only run make_skin_map if matching_ongoing_task is empty.
+        if matching_ongoing_task.count() == 0:
+            run_in_background_with_limits(
+                make_skin_map,
+                "make_skin_map",
+                0,
+                {"make_skin_map": 1},
+                pk,
+            )
+
+        return_structure["in_progress"] = True
+
+        #make_skin_map(pk)
+        #with gzip.open(skin_map_path, "rb") as f:
+        #    return_structure = pickle.load(f)
 
     return_structure["primary_key"] = pk
     return JsonResponse(return_structure, safe=False)

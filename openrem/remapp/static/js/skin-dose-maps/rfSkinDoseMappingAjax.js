@@ -55,6 +55,7 @@ function arrayToURL(array) {
 // Code to update the page and chart data on initial page load.
 $(document).ready(function() {
     var requestData = arrayToURL(urlToArray(this.URL));
+    var errorMessage = "";
 
     $(".ajax-progress-skin-dose").show();
 
@@ -172,10 +173,21 @@ $(document).ready(function() {
                     skinDoseMapObj.toggleOverlay();
                 }
 
+                else if (json.in_progress) {
+                    $(".ajax-progress-skin-dose").hide();
+
+                    errorMessage = "<h2>OpenSkin radiation exposure incidence map</h2>" +
+                        "<p>Calculation of this skin dose map is in progress</p>"
+
+                    errorMessage += "<p>Create <a href='" + Urls.rfopenskin({pk: json.primary_key}) + "'>openSkin export</a>. (Not available if you don't have export permissions.)</p>";
+
+                    skinDoseMapContainer.html(errorMessage);
+                }
+
                 else {
                     $(".ajax-progress-skin-dose").hide();
 
-                    var errorMessage = "<h2>OpenSkin radiation exposure incidence map</h2>" +
+                    errorMessage = "<h2>OpenSkin radiation exposure incidence map</h2>" +
                         "<p>Sorry, the skin dose map could not be calculated for this study. Possible reasons for this are shown below:</p>" +
                         "<ul>";
 
