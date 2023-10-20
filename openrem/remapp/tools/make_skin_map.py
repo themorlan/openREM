@@ -76,11 +76,13 @@ def make_skin_map(study_pk=None):
     if study_pk:
         study = GeneralStudyModuleAttr.objects.get(pk=study_pk)
         display_name = study.generalequipmentmoduleattr_set.get().unique_equipment_name.display_name
-        background_task.info = (
-            f"Unit: {display_name} | "
-            f"PK: {study_pk} | Study UID: {study.study_instance_uid.replace('.', '. ')}"
-        )
-        background_task.save()
+
+        if background_task is not None:
+            background_task.info = (
+                f"Unit: {display_name} | "
+                f"PK: {study_pk} | Study UID: {study.study_instance_uid.replace('.', '. ')}"
+            )
+            background_task.save()
 
         # Get all OpenSkinSafeList table entries that match the manufacturer and model name of the current study
         entries = OpenSkinSafeList.objects.all().filter(
@@ -213,11 +215,12 @@ def make_skin_map(study_pk=None):
         num_irradiations = all_irradiations.count()
 
         for count, irrad in enumerate(all_irradiations):
-            background_task.info = (
-                f"Unit: {display_name} | "
-                f"PK: {study_pk} | Working on irradiation {count+1} of {num_irradiations}"
-            )
-            background_task.save()
+            if background_task is not None:
+                background_task.info = (
+                    f"Unit: {display_name} | "
+                    f"PK: {study_pk} | Working on irradiation {count+1} of {num_irradiations}"
+                )
+                background_task.save()
 
             try:
                 delta_x = (
@@ -357,11 +360,12 @@ def make_skin_map(study_pk=None):
                     pat_pos=pat_pos,
                 )
 
-        background_task.info = (
-            f"Unit: {display_name} | "
-            f"PK: {study_pk} | Study UID: {study.study_instance_uid.replace('.', '. ')}"
-        )
-        background_task.save()
+        if background_task is not None:
+            background_task.info = (
+                f"Unit: {display_name} | "
+                f"PK: {study_pk} | Study UID: {study.study_instance_uid.replace('.', '. ')}"
+            )
+            background_task.save()
 
         # Flip the skin dose map left-right so the view is from the front
         # my_exp_map.my_dose.fliplr()
