@@ -74,7 +74,10 @@ def make_skin_map(study_pk=None):
     background_task = get_current_task()
 
     if study_pk:
-        study = GeneralStudyModuleAttr.objects.get(pk=study_pk)
+        study = GeneralStudyModuleAttr.objects.prefetch_related(
+            "projectionxrayradiationdose_set__irradeventxraydata_set").get(pk=study_pk)
+        #study = GeneralStudyModuleAttr.objects.get(pk=study_pk)
+
         display_name = study.generalequipmentmoduleattr_set.get().unique_equipment_name.display_name
 
         if background_task is not None:
@@ -211,7 +214,16 @@ def make_skin_map(study_pk=None):
             matt_thick=4.0,
         )
 
-        all_irradiations = study.projectionxrayradiationdose_set.get().irradeventxraydata_set.all()
+        prefetch_set = {
+            "irradeventxraymechanicaldata_set",
+            "irradeventxraymechanicaldata_set__doserelateddistancemeasurements_set",
+            "irradeventxraysourcedata_set",
+            "irradeventxraysourcedata_set__kvp_set",
+            "irradeventxraysourcedata_set__xrayfilters_set"
+        }
+        all_irradiations = study.projectionxrayradiationdose_set.get().irradeventxraydata_set.prefetch_related(*prefetch_set).all()
+        #all_irradiations = study.projectionxrayradiationdose_set.get().irradeventxraydata_set.select_related().all()
+        #all_irradiations = study.projectionxrayradiationdose_set.get().irradeventxraydata_set.all()
         num_irradiations = all_irradiations.count()
 
         for count, irrad in enumerate(all_irradiations):
