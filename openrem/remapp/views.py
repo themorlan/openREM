@@ -112,6 +112,7 @@ from openrem.remapp.tools.background import (
     record_task_related_query,
     record_task_info,
     run_in_background_with_limits,
+    get_current_task,
 )
 from .version import __version__, __docs_version__, __skin_map_version__
 
@@ -651,16 +652,6 @@ def rf_detail_view_skin_map(request, pk=None):
             complete=False
             )
 
-        # Probably need to add code so that if we find that the skin dose map is in
-        # the process of being calculated that we update the rf_detail page to say so.
-
-        # Maybe also use the background task to log progress of the calculation so that
-        # this can be updated on the rf_detail page, in a similar way to which the progress
-        # of an ongoing export is updated the export page.
-
-        # Definitely need to pass the task to make_skin_map so that it can be tagged
-        # as completed_successfully or not, as the case may be.
-
         # Only run make_skin_map if matching_ongoing_task is empty.
         if matching_ongoing_task.count() == 0:
             run_in_background_with_limits(
@@ -670,12 +661,10 @@ def rf_detail_view_skin_map(request, pk=None):
                 {"make_skin_map": 1},
                 pk,
             )
+        else:
+            return_structure["skin_map_progress"] = matching_ongoing_task.values_list("info", flat=True)[0].split("irradiation ", 1)[1]
 
         return_structure["in_progress"] = True
-
-        #make_skin_map(pk)
-        #with gzip.open(skin_map_path, "rb") as f:
-        #    return_structure = pickle.load(f)
 
     return_structure["primary_key"] = pk
     return JsonResponse(return_structure, safe=False)

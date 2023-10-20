@@ -177,9 +177,8 @@ $(document).ready(function() {
                     $(".ajax-progress-skin-dose").hide();
 
                     errorMessage = "<h2>OpenSkin radiation exposure incidence map</h2>" +
-                        "<p>Calculation of this skin dose map is in progress</p>"
-
-                    errorMessage += "<p>Create <a href='" + Urls.rfopenskin({pk: json.primary_key}) + "'>openSkin export</a>. (Not available if you don't have export permissions.)</p>";
+                        "<p>Calculation of this skin dose map is in progress</p>" +
+                        "<p>Working on irradiation " + json.skin_map_progress + "</p>";
 
                     skinDoseMapContainer.html(errorMessage);
                 }

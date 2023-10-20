@@ -51,7 +51,10 @@ from remapp.models import (  # pylint: disable=wrong-import-position
     SkinDoseMapResults,
     OpenSkinSafeList,
 )
-from .background import record_task_info  # pylint: disable=wrong-import-position
+from .background import (  # pylint: disable=wrong-import-position
+    get_current_task,
+)
+
 from .save_skin_map_structure import (  # pylint: disable=wrong-import-position
     save_openskin_structure,
 )
@@ -68,12 +71,16 @@ def make_skin_map(study_pk=None):
     # pylint: disable=too-many-locals
     # noqa: C901
 
+    background_task = get_current_task()
+
     if study_pk:
         study = GeneralStudyModuleAttr.objects.get(pk=study_pk)
-        record_task_info(
-            f"Unit: {study.generalequipmentmoduleattr_set.get().unique_equipment_name.display_name} | "
+        display_name = study.generalequipmentmoduleattr_set.get().unique_equipment_name.display_name
+        background_task.info = (
+            f"Unit: {display_name} | "
             f"PK: {study_pk} | Study UID: {study.study_instance_uid.replace('.', '. ')}"
         )
+        background_task.save()
 
         # Get all OpenSkinSafeList table entries that match the manufacturer and model name of the current study
         entries = OpenSkinSafeList.objects.all().filter(
@@ -202,9 +209,16 @@ def make_skin_map(study_pk=None):
             matt_thick=4.0,
         )
 
-        for (
-            irrad
-        ) in study.projectionxrayradiationdose_set.get().irradeventxraydata_set.all():
+        all_irradiations = study.projectionxrayradiationdose_set.get().irradeventxraydata_set.all()
+        num_irradiations = all_irradiations.count()
+
+        for count, irrad in enumerate(all_irradiations):
+            background_task.info = (
+                f"Unit: {display_name} | "
+                f"PK: {study_pk} | Working on irradiation {count+1} of {num_irradiations}"
+            )
+            background_task.save()
+
             try:
                 delta_x = (
                     float(
@@ -342,6 +356,12 @@ def make_skin_map(study_pk=None):
                     end_angle=end_angle,
                     pat_pos=pat_pos,
                 )
+
+        background_task.info = (
+            f"Unit: {display_name} | "
+            f"PK: {study_pk} | Study UID: {study.study_instance_uid.replace('.', '. ')}"
+        )
+        background_task.save()
 
         # Flip the skin dose map left-right so the view is from the front
         # my_exp_map.my_dose.fliplr()
