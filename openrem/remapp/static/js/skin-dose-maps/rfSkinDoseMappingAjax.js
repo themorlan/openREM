@@ -176,9 +176,15 @@ $(document).ready(function() {
                 else if (json.in_progress) {
                     $(".ajax-progress-skin-dose").hide();
 
+                    var task_admin_text = "<a href='" + Urls.task_admin() + "'>task admin page</a>"
+
                     errorMessage = "<h2>OpenSkin radiation exposure incidence map</h2>" +
-                        "<p>Calculation of this skin dose map is in progress</p>" +
-                        "<p>Working on irradiation " + json.skin_map_progress + "</p>";
+                        "<p>Calculation of this skin dose map is in progress. See the " +
+                        task_admin_text + " for details.</p>";
+
+                    if (json.skin_map_progress) {
+                        errorMessage += "<p>Working on irradiation " + json.skin_map_progress + "</p>";
+                    }
 
                     skinDoseMapContainer.html(errorMessage);
                 }
