@@ -114,6 +114,12 @@ def make_skin_map(study_pk=None):
                 "skin_map_version": __skin_map_version__,
             }
             save_openskin_structure(study, return_structure)
+
+            background_task.complete = True
+            background_task.completed_successfully = False
+            background_task.error = "Skin dose maps disabled for this system"
+            background_task.save()
+
             return
 
         pat_mass_source = "assumed"
@@ -399,6 +405,14 @@ def make_skin_map(study_pk=None):
         # assume that calculation failed if max(peak_skin_dose) == 0 ==> set peak_skin_dose to None
         max_skin_dose = np.max(my_exp_map.my_dose.total_dose, initial=0)
         max_skin_dose = max_skin_dose if max_skin_dose > 0 else None
+
+        if max_skin_dose is None:
+            background_task.complete = True
+            background_task.completed_successfully = False
+            background_task.error = "Skin dose map calculation failed"
+            background_task.save()
+            return
+
         try:
             dap_fraction = my_exp_map.my_dose.dap_count / float(study.total_dap)
         except ZeroDivisionError:
