@@ -87,41 +87,6 @@ def make_skin_map(study_pk=None):
             )
             background_task.save()
 
-        # Get all OpenSkinSafeList table entries that match the manufacturer and model name of the current study
-        entries = OpenSkinSafeList.objects.all().filter(
-            manufacturer=study.generalequipmentmoduleattr_set.get().manufacturer,
-            manufacturer_model_name=study.generalequipmentmoduleattr_set.get().manufacturer_model_name,
-        )
-
-        # Look for an entry which has a matching software version with the current study,
-        # or an entry where the software version is blank (any software version)
-        entry = None
-        for current_entry in entries:
-            if (
-                current_entry.software_version
-                == study.generalequipmentmoduleattr_set.get().software_versions
-                or current_entry.software_version is None
-                or not current_entry.software_version
-            ):
-                entry = current_entry
-                break
-
-        if entry is None:
-            # There is no match, so return a blank dummy openSkin structure without trying
-            # to calculate a skin dose map
-            return_structure = {
-                "skin_map": [0, 0],
-                "skin_map_version": __skin_map_version__,
-            }
-            save_openskin_structure(study, return_structure)
-
-            background_task.complete = True
-            background_task.completed_successfully = False
-            background_task.error = "Skin dose maps disabled for this system"
-            background_task.save()
-
-            return
-
         pat_mass_source = "assumed"
         try:
             pat_mass = float(study.patientstudymoduleattr_set.get().patient_weight)
@@ -455,3 +420,24 @@ def make_skin_map(study_pk=None):
 
         # Save the return_structure as a pickle in a skin_maps sub-folder of the MEDIA_ROOT folder
         save_openskin_structure(study, return_structure)
+
+
+def skin_dose_maps_enabled_for_xray_system(study):
+    # Get all OpenSkinSafeList table entries that match the manufacturer and model name of the current study
+    entries = OpenSkinSafeList.objects.all().filter(
+        manufacturer=study.generalequipmentmoduleattr_set.get().manufacturer,
+        manufacturer_model_name=study.generalequipmentmoduleattr_set.get().manufacturer_model_name,
+    )
+    # Look for an entry which has a matching software version with the current study,
+    # or an entry where the software version is blank (any software version)
+    entry = False
+    for current_entry in entries:
+        if (
+                current_entry.software_version
+                == study.generalequipmentmoduleattr_set.get().software_versions
+                or current_entry.software_version is None
+                or not current_entry.software_version
+        ):
+            entry = True
+            break
+    return entry

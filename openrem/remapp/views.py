@@ -76,7 +76,10 @@ from .interface.mod_filters import (
     MGFilterPlusPidPlusStdNames,
     nm_filter,
 )
-from .tools.make_skin_map import make_skin_map
+from .tools.make_skin_map import (
+    make_skin_map,
+    skin_dose_maps_enabled_for_xray_system,
+)
 from .views_charts_ct import (
     generate_required_ct_charts_list,
     ct_chart_form_processing,
@@ -554,117 +557,142 @@ def rf_detail_view_skin_map(request, pk=None):
         messages.error(request, "That study was not found")
         return redirect(reverse_lazy("rf_summary_list_filter"))
 
-    # Check to see if there is already a skin map pickle with the same study ID.
-    try:
-        study_date = GeneralStudyModuleAttr.objects.get(pk=pk).study_date
-        if study_date:
-            skin_map_path = os.path.join(
-                settings.MEDIA_ROOT,
-                "skin_maps",
-                "{0:0>4}".format(study_date.year),
-                "{0:0>2}".format(study_date.month),
-                "{0:0>2}".format(study_date.day),
-                "skin_map_" + str(pk) + ".p",
-            )
-        else:
+    return_structure = dict()
+
+    # Get the study
+    study = GeneralStudyModuleAttr.objects.get(pk=pk)
+
+    matching_latest_task = BackgroundTask.objects.filter(
+        task_type="make_skin_map",
+        info__contains=pk,
+    ).latest("task_type")
+
+    latest_task_failed = False
+    if matching_latest_task:
+        if matching_latest_task.completed_successfully is False and "failed" in matching_latest_task.error:
+            latest_task_failed = True
+
+    # Check if skin dose maps are enabled for the x-ray system used for the study
+    skin_maps_enabled = skin_dose_maps_enabled_for_xray_system(study)
+    if skin_maps_enabled is False:
+        # Some code to return something that says they are disabled for this system
+        return_structure["disabled_skin_maps"] = True
+
+    elif latest_task_failed:
+            if matching_latest_task.completed_successfully is False and "failed" in matching_latest_task.error:
+                return_structure["skin_map_calculation_failed"] = True
+
+    else:
+        # Check to see if there is already a skin map pickle with the same study ID.
+        try:
+            study_date = GeneralStudyModuleAttr.objects.get(pk=pk).study_date
+            if study_date:
+                skin_map_path = os.path.join(
+                    settings.MEDIA_ROOT,
+                    "skin_maps",
+                    "{0:0>4}".format(study_date.year),
+                    "{0:0>2}".format(study_date.month),
+                    "{0:0>2}".format(study_date.day),
+                    "skin_map_" + str(pk) + ".p",
+                )
+            else:
+                skin_map_path = os.path.join(
+                    settings.MEDIA_ROOT, "skin_maps", "skin_map_" + str(pk) + ".p"
+                )
+        except:
             skin_map_path = os.path.join(
                 settings.MEDIA_ROOT, "skin_maps", "skin_map_" + str(pk) + ".p"
             )
-    except:
-        skin_map_path = os.path.join(
-            settings.MEDIA_ROOT, "skin_maps", "skin_map_" + str(pk) + ".p"
-        )
 
-    # If patient weight is missing from the database then db_pat_mass will be undefined
-    try:
-        db_pat_mass = float(
-            GeneralStudyModuleAttr.objects.get(pk=pk)
-            .patientstudymoduleattr_set.get()
-            .patient_weight
-        )
-    except (ValueError, TypeError):
-        db_pat_mass = 73.2
-    if not db_pat_mass:
-        db_pat_mass = 73.2
-
-    # If patient weight is missing from the database then db_pat_mass will be undefined
-    try:
-        db_pat_height = (
-            float(
+        # If patient weight is missing from the database then db_pat_mass will be undefined
+        try:
+            db_pat_mass = float(
                 GeneralStudyModuleAttr.objects.get(pk=pk)
                 .patientstudymoduleattr_set.get()
-                .patient_size
+                .patient_weight
             )
-            * 100
-        )
-    except (ValueError, TypeError):
-        db_pat_height = 178.6
-    if not db_pat_height:
-        db_pat_height = 178.6
+        except (ValueError, TypeError):
+            db_pat_mass = 73.2
+        if not db_pat_mass:
+            db_pat_mass = 73.2
 
-    loaded_existing_data = False
-    pat_mass_unchanged = False
-    pat_height_unchanged = False
-
-    return_structure = dict()
-    return_structure["in_progress"] = False
-
-    if os.path.exists(skin_map_path):
-        with gzip.open(skin_map_path, "rb") as f:
-            existing_skin_map_data = pickle.load(f)
+        # If patient weight is missing from the database then db_pat_mass will be undefined
         try:
-            if existing_skin_map_data["skin_map_version"] == __skin_map_version__:
-                # Round the float values to 1 decimal place and convert to string before comparing
-                if str(round(existing_skin_map_data["patient_height"], 1)) == str(
-                    round(db_pat_height, 1)
-                ):
-                    pat_height_unchanged = True
-
-                # Round the float values to 1 decimal place and convert to string before comparing
-                if str(round(existing_skin_map_data["patient_mass"], 1)) == str(
-                    round(db_pat_mass, 1)
-                ):
-                    pat_mass_unchanged = True
-
-                if pat_height_unchanged and pat_mass_unchanged:
-                    return_structure = existing_skin_map_data
-                    return_structure["in_progress"] = False
-                    loaded_existing_data = True
-        except KeyError:
-            pass
-
-    if not loaded_existing_data:
-        # Check to see if there is already a background task running to calculate a skin dose map for this study. Need
-        # to have a Django query that matches the following SQL:
-        #   SELECT info
-        #   FROM remapp_backgroundtask
-        #   WHERE task_type='make_skin_map' [just make_skin_map tasks]
-        #     AND info LIKE '%1880069%'     [where the info contains the pk of the study we are interested in - 1880069 in this case]
-        #     AND complete=FALSE;           [it is not yet complete]
-        #
-        # If there are no rows returned from the above query then there is not already a job being run to calculate the
-        # skin dose map for this study, and we can go ahead and create a background task to run it.
-
-        # The following line is equivalent to the above SQL:
-        matching_ongoing_task = BackgroundTask.objects.filter(
-            task_type="make_skin_map",
-            info__contains=pk,
-            complete=False
+            db_pat_height = (
+                float(
+                    GeneralStudyModuleAttr.objects.get(pk=pk)
+                    .patientstudymoduleattr_set.get()
+                    .patient_size
+                )
+                * 100
             )
+        except (ValueError, TypeError):
+            db_pat_height = 178.6
+        if not db_pat_height:
+            db_pat_height = 178.6
 
-        # Only run make_skin_map if matching_ongoing_task is empty.
-        if matching_ongoing_task.count() == 0:
-            run_in_background_with_limits(
-                make_skin_map,
-                "make_skin_map",
-                0,
-                {"make_skin_map": 1},
-                pk,
-            )
-        else:
-            return_structure["skin_map_progress"] = matching_ongoing_task.values_list("info", flat=True)[0].split("irradiation ", 1)[1]
+        loaded_existing_data = False
+        pat_mass_unchanged = False
+        pat_height_unchanged = False
 
-        return_structure["in_progress"] = True
+        return_structure["in_progress"] = False
+
+        if os.path.exists(skin_map_path):
+            with gzip.open(skin_map_path, "rb") as f:
+                existing_skin_map_data = pickle.load(f)
+            try:
+                if existing_skin_map_data["skin_map_version"] == __skin_map_version__:
+                    # Round the float values to 1 decimal place and convert to string before comparing
+                    if str(round(existing_skin_map_data["patient_height"], 1)) == str(
+                        round(db_pat_height, 1)
+                    ):
+                        pat_height_unchanged = True
+
+                    # Round the float values to 1 decimal place and convert to string before comparing
+                    if str(round(existing_skin_map_data["patient_mass"], 1)) == str(
+                        round(db_pat_mass, 1)
+                    ):
+                        pat_mass_unchanged = True
+
+                    if pat_height_unchanged and pat_mass_unchanged:
+                        return_structure = existing_skin_map_data
+                        return_structure["in_progress"] = False
+                        loaded_existing_data = True
+            except KeyError:
+                pass
+
+        if not loaded_existing_data:
+            # Check to see if there is already a background task running to calculate a skin dose map for this study. Need
+            # to have a Django query that matches the following SQL:
+            #   SELECT info
+            #   FROM remapp_backgroundtask
+            #   WHERE task_type='make_skin_map' [just make_skin_map tasks]
+            #     AND info LIKE '%1880069%'     [where the info contains the pk of the study we are interested in - 1880069 in this case]
+            #     AND complete=FALSE;           [it is not yet complete]
+            #
+            # If there are no rows returned from the above query then there is not already a job being run to calculate the
+            # skin dose map for this study, and we can go ahead and create a background task to run it.
+
+            # The following line is equivalent to the above SQL:
+            matching_ongoing_task = BackgroundTask.objects.filter(
+                task_type="make_skin_map",
+                info__contains=pk,
+                complete=False
+                )
+
+            # Only run make_skin_map if matching_ongoing_task is empty.
+            if matching_ongoing_task.count() == 0:
+                run_in_background_with_limits(
+                    make_skin_map,
+                    "make_skin_map",
+                    0,
+                    {"make_skin_map": 1},
+                    pk,
+                )
+            else:
+                return_structure["skin_map_progress"] = matching_ongoing_task.values_list("info", flat=True)[0].split("irradiation ", 1)[1]
+
+            return_structure["in_progress"] = True
 
     return_structure["primary_key"] = pk
     return JsonResponse(return_structure, safe=False)

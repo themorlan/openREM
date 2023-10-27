@@ -173,6 +173,31 @@ $(document).ready(function() {
                     skinDoseMapObj.toggleOverlay();
                 }
 
+                else if (json.disabled_skin_maps) {
+                    $(".ajax-progress-skin-dose").hide();
+
+                    errorMessage = "<h2>OpenSkin radiation exposure incidence map</h2>" +
+                        "<p>Skin maps are disabled for this system: check the settings in <a href='" + Urls.display_names_view() + "'>Display names &amp; modality</a>.</p>";
+
+                    errorMessage += "<p>Create <a href='" + Urls.rfopenskin({pk: json.primary_key}) + "'>openSkin export</a>. (Only available if you have export permissions.)</p>";
+
+                    skinDoseMapContainer.html(errorMessage);
+                }
+
+                else if (json.skin_map_calculation_failed) {
+                    $(".ajax-progress-skin-dose").hide();
+
+                    errorMessage = "<h2>OpenSkin radiation exposure incidence map</h2>" +
+                        "<p>The last time a skin map calculation was attempted for this study it failed.</p>" +
+                        "<p>Click HERE to try again, or disable calculation for this system in <a href='" + Urls.display_names_view() + "'>Display names &amp; modality</a>.</p>";
+
+                    errorMessage += "<p>Create <a href='" + Urls.rfopenskin({pk: json.primary_key}) + "'>openSkin export</a>. (Only available if you have export permissions.)</p>";
+
+                    skinDoseMapContainer.html(errorMessage);
+                }
+
+
+
                 else if (json.in_progress) {
                     $(".ajax-progress-skin-dose").hide();
 
@@ -205,7 +230,7 @@ $(document).ready(function() {
                         "<p>Please consider feeding this back to the <a href='http://bitbucket.org/openskin/openskin/'>openSkin BitBucket project</a> " +
                         "or <a href='http://groups.google.com/forum/#!forum/openrem'>OpenREM discussion group</a> so that the issue can be addressed.</p>";
 
-                    errorMessage += "<p>Create <a href='" + Urls.rfopenskin({pk: json.primary_key}) + "'>openSkin export</a>. (Not available if you don't have export permissions.)</p>";
+                    errorMessage += "<p>Create <a href='" + Urls.rfopenskin({pk: json.primary_key}) + "'>openSkin export</a>. (Only available if you have export permissions.)</p>";
 
                     skinDoseMapContainer.html(errorMessage);
                 }
