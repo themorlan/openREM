@@ -57,6 +57,12 @@ $(document).ready(function() {
     var requestData = arrayToURL(urlToArray(this.URL));
     var errorMessage = "";
 
+    if (window.location.pathname.includes("force_recalculation/")) {
+        var current_url = window.location.origin + window.location.pathname;
+        var new_url = current_url.replace("force_recalculation/", "");
+        window.location.replace(new_url);
+    }
+
     $(".ajax-progress-skin-dose").show();
 
     $.ajax({
@@ -189,7 +195,12 @@ $(document).ready(function() {
 
                     errorMessage = "<h2>OpenSkin radiation exposure incidence map</h2>" +
                         "<p>The last time a skin map calculation was attempted for this study it failed.</p>" +
-                        "<p>Click HERE to try again, or disable calculation for this system in <a href='" + Urls.display_names_view() + "'>Display names &amp; modality</a>.</p>";
+                        "<p>Click <a href='" + window.location.origin + window.location.pathname + "force_recalculation/'>here</a> to force the calculation " +
+                        "to try again, or disable calculation for this system in " +
+                        "<a href='" + Urls.display_names_view() + "'>Display names &amp; modality</a>.</p>";
+
+                    errorMessage += "<p>Please consider feeding this back to the <a href='http://bitbucket.org/openskin/openskin/'>openSkin BitBucket project</a> " +
+                        "or <a href='http://groups.google.com/forum/#!forum/openrem'>OpenREM discussion group</a> so that the issue can be addressed.</p>";
 
                     errorMessage += "<p>Create <a href='" + Urls.rfopenskin({pk: json.primary_key}) + "'>openSkin export</a>. (Only available if you have export permissions.)</p>";
 

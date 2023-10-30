@@ -578,7 +578,7 @@ def rf_detail_view_skin_map(request, pk=None):
         # Some code to return something that says they are disabled for this system
         return_structure["disabled_skin_maps"] = True
 
-    elif latest_task_failed:
+    elif latest_task_failed and "force_recalculation" not in request.resolver_match.url_name:
             if matching_latest_task.completed_successfully is False and "failed" in matching_latest_task.error:
                 return_structure["skin_map_calculation_failed"] = True
 
