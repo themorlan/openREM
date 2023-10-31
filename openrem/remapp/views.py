@@ -562,10 +562,16 @@ def rf_detail_view_skin_map(request, pk=None):
     # Get the study
     study = GeneralStudyModuleAttr.objects.get(pk=pk)
 
-    matching_latest_task = BackgroundTask.objects.filter(
+    # Find the latest task corresponding to this study. This is done in two
+    # stages because using .latest("task_type") on an empty queryset throws
+    # a DoesNotExist error
+    matching_latest_task = None
+    matching_tasks = BackgroundTask.objects.filter(
         task_type="make_skin_map",
         info__contains=pk,
-    ).latest("task_type")
+    )
+    if matching_tasks:
+        matching_latest_task = matching_tasks.latest("task_type")
 
     latest_task_failed = False
     if matching_latest_task:
