@@ -58,9 +58,9 @@ $(document).ready(function() {
     var errorMessage = "";
 
     if (window.location.pathname.includes("force_recalculation/")) {
-        var current_url = window.location.origin + window.location.pathname;
-        var new_url = current_url.replace("force_recalculation/", "");
-        window.location.replace(new_url);
+        var currentUrl = window.location.origin + window.location.pathname;
+        var newUrl = currentUrl.replace("force_recalculation/", "");
+        window.location.replace(newUrl);
     }
 
     $(".ajax-progress-skin-dose").show();
@@ -212,11 +212,11 @@ $(document).ready(function() {
                 else if (json.in_progress) {
                     $(".ajax-progress-skin-dose").hide();
 
-                    var task_admin_text = "<a href='" + Urls.task_admin() + "'>task admin page</a>"
+                    var taskAdminText = "<a href='" + Urls.task_admin() + "'>task admin page</a>";
 
                     errorMessage = "<h2>OpenSkin radiation exposure incidence map</h2>" +
                         "<p>Calculation of this skin dose map is in progress. See the " +
-                        task_admin_text + " for details.</p>";
+                        taskAdminText + " for details.</p>";
 
                     if (json.skin_map_progress) {
                         errorMessage += "<p>Working on irradiation " + json.skin_map_progress + "</p>";

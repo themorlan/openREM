@@ -439,7 +439,7 @@ def _rdsr2db(dataset):
         "calc_on_import", flat=True
     )[0]
     if g.modality_type == "RF" and enable_skin_dose_maps and calc_on_import:
-        skin_maps_enabled = skin_dose_maps_enabled_for_xray_system(study)
+        skin_maps_enabled = skin_dose_maps_enabled_for_xray_system(g)
         if skin_maps_enabled:
             run_in_background_with_limits(
                 make_skin_map,

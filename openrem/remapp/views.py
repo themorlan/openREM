@@ -80,6 +80,7 @@ from .tools.make_skin_map import (
     make_skin_map,
     skin_dose_maps_enabled_for_xray_system,
 )
+from .tools.background import run_in_background_with_limits
 from .views_charts_ct import (
     generate_required_ct_charts_list,
     ct_chart_form_processing,
@@ -109,13 +110,6 @@ from .models import (
     UpgradeStatus,
     StandardNameSettings,
     BackgroundTask,
-)
-from openrem.remapp.tools.background import (
-    record_task_error_exit,
-    record_task_related_query,
-    record_task_info,
-    run_in_background_with_limits,
-    get_current_task,
 )
 from .version import __version__, __docs_version__, __skin_map_version__
 
@@ -575,8 +569,9 @@ def rf_detail_view_skin_map(request, pk=None):
 
     latest_task_failed = False
     if matching_latest_task:
-        if matching_latest_task.completed_successfully is False and "failed" in matching_latest_task.error:
-            latest_task_failed = True
+        if matching_latest_task.error is not None:  # Avoid TypeError in next line if error is None
+            if matching_latest_task.completed_successfully is False and "failed" in matching_latest_task.error:
+                latest_task_failed = True
 
     # Check if skin dose maps are enabled for the x-ray system used for the study
     skin_maps_enabled = skin_dose_maps_enabled_for_xray_system(study)
@@ -585,8 +580,8 @@ def rf_detail_view_skin_map(request, pk=None):
         return_structure["disabled_skin_maps"] = True
 
     elif latest_task_failed and "force_recalculation" not in request.resolver_match.url_name:
-            if matching_latest_task.completed_successfully is False and "failed" in matching_latest_task.error:
-                return_structure["skin_map_calculation_failed"] = True
+        if matching_latest_task.completed_successfully is False and "failed" in matching_latest_task.error:
+            return_structure["skin_map_calculation_failed"] = True
 
     else:
         # Check to see if there is already a skin map pickle with the same study ID.
@@ -668,16 +663,16 @@ def rf_detail_view_skin_map(request, pk=None):
                 pass
 
         if not loaded_existing_data:
-            # Check to see if there is already a background task running to calculate a skin dose map for this study. Need
-            # to have a Django query that matches the following SQL:
+            # Check to see if there is already a background task running to calculate a skin dose map for this study.
+            # Need to have a Django query that matches the following SQL:
             #   SELECT info
             #   FROM remapp_backgroundtask
             #   WHERE task_type='make_skin_map' [just make_skin_map tasks]
-            #     AND info LIKE '%1880069%'     [where the info contains the pk of the study we are interested in - 1880069 in this case]
+            #     AND info LIKE '%1880069%'     [info contains the pk of the study, 1880069 in this case]
             #     AND complete=FALSE;           [it is not yet complete]
             #
-            # If there are no rows returned from the above query then there is not already a job being run to calculate the
-            # skin dose map for this study, and we can go ahead and create a background task to run it.
+            # If there are no rows returned from the above query then there is not already a job being run to calculate
+            # the skin dose map for this study, and we can go ahead and create a background task to run it.
 
             # The following line is equivalent to the above SQL:
             matching_ongoing_task = BackgroundTask.objects.filter(
@@ -696,7 +691,9 @@ def rf_detail_view_skin_map(request, pk=None):
                     pk,
                 )
             else:
-                return_structure["skin_map_progress"] = matching_ongoing_task.values_list("info", flat=True)[0].split("irradiation ", 1)[1]
+                return_structure["skin_map_progress"] = matching_ongoing_task.values_list(
+                    "info", flat=True
+                )[0].split("irradiation ", 1)[1]
 
             return_structure["in_progress"] = True
 
