@@ -1,6 +1,6 @@
 /*global skinDoseMapObj:true, skinDoseMapColourScaleObj, skinDoseMap3dPersonObj, skinDoseMap3dObj:true,
 skinDoseMap3dHUDObj:true, skinDoseMapGroupOrigHeight:true, skinDoseMapGroupOrigWidth:true, show3dSkinDoseMap, render,
-isCanvasSupported*/
+isCanvasSupported, Urls*/
 /*eslint no-undef: "error"*/
 /*eslint security/detect-object-injection: "off" */
 /*eslint object-shorthand: "off" */

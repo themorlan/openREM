@@ -192,9 +192,9 @@ def make_skin_map(study_pk=None):
             "irradeventxraysourcedata_set__kvp_set",
             "irradeventxraysourcedata_set__xrayfilters_set"
         }
-        all_irradiations = study.projectionxrayradiationdose_set.get().irradeventxraydata_set.prefetch_related(*prefetch_set).all()
-        #all_irradiations = study.projectionxrayradiationdose_set.get().irradeventxraydata_set.select_related().all()
-        #all_irradiations = study.projectionxrayradiationdose_set.get().irradeventxraydata_set.all()
+        all_irradiations = study.projectionxrayradiationdose_set.get().irradeventxraydata_set.prefetch_related(
+            *prefetch_set
+        ).all()
         num_irradiations = all_irradiations.count()
 
         for count, irrad in enumerate(all_irradiations):

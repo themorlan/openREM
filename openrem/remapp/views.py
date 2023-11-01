@@ -551,7 +551,7 @@ def rf_detail_view_skin_map(request, pk=None):
         messages.error(request, "That study was not found")
         return redirect(reverse_lazy("rf_summary_list_filter"))
 
-    return_structure = dict()
+    return_structure = {}
 
     # Get the study
     study = GeneralStudyModuleAttr.objects.get(pk=pk)
@@ -640,7 +640,7 @@ def rf_detail_view_skin_map(request, pk=None):
 
         if os.path.exists(skin_map_path):
             with gzip.open(skin_map_path, "rb") as f:
-                existing_skin_map_data = pickle.load(f)
+                existing_skin_map_data = pickle.load(f)  # nosec
             try:
                 if existing_skin_map_data["skin_map_version"] == __skin_map_version__:
                     # Round the float values to 1 decimal place and convert to string before comparing
