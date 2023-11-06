@@ -62,26 +62,26 @@
 
       <tr>
         <td style="width:25%">
-          <a href="{% url url_name %}?generalequipmentmoduleattr__unique_equipment_name__display_name={{ details.generalequipmentmoduleattr__unique_equipment_name__display_name }}&o=-study_date">
+          <a href="{% url url_name %}?generalequipmentmoduleattr__unique_equipment_name__display_name={{ details.generalequipmentmoduleattr__unique_equipment_name__display_name }}&o=-time_date">
             {{ details.generalequipmentmoduleattr__unique_equipment_name__display_name }}
           </a>
         </td>
         <td style="width:25%">
-          <a href="{% url url_name %}?generalequipmentmoduleattr__unique_equipment_name__display_name={{ details.generalequipmentmoduleattr__unique_equipment_name__display_name }}&o=-study_date">
+          <a href="{% url url_name %}?generalequipmentmoduleattr__unique_equipment_name__display_name={{ details.generalequipmentmoduleattr__unique_equipment_name__display_name }}&o=-time_date">
             {{ details.num_studies }}
           </a>
         </td>
         <td style="width:25%" sorttable_customkey="{{ details.latest_entry_date_time|date:"U" }}">
-          <a href="{% url url_name %}?generalequipmentmoduleattr__unique_equipment_name__display_name={{ details.generalequipmentmoduleattr__unique_equipment_name__display_name }}&o=-study_date">
+          <a href="{% url url_name %}?generalequipmentmoduleattr__unique_equipment_name__display_name={{ details.generalequipmentmoduleattr__unique_equipment_name__display_name }}&o=-time_date">
             {{ details.latest_entry_date_time|naturaltime }}
           </a>
         </td>
         {% if home_config.display_workload_stats %}
           <td style="width:12.5%">
-            <a href="{% url url_name %}?generalequipmentmoduleattr__unique_equipment_name__display_name={{ details.generalequipmentmoduleattr__unique_equipment_name__display_name }}&o=-study_date&study_date__gt={{ home_config.date_a }}">{{ details.studies_since_delta_a }}</a>
+            <a href="{% url url_name %}?generalequipmentmoduleattr__unique_equipment_name__display_name={{ details.generalequipmentmoduleattr__unique_equipment_name__display_name }}&o=-time_date&study_date__gt={{ home_config.date_a }}">{{ details.studies_since_delta_a }}</a>
           </td>
           <td style="width:12.5%">
-            <a href="{% url url_name %}?generalequipmentmoduleattr__unique_equipment_name__display_name={{ details.generalequipmentmoduleattr__unique_equipment_name__display_name }}&o=-study_date&study_date__gt={{ home_config.date_b }}">{{ details.studies_since_delta_b }}</a>
+            <a href="{% url url_name %}?generalequipmentmoduleattr__unique_equipment_name__display_name={{ details.generalequipmentmoduleattr__unique_equipment_name__display_name }}&o=-time_date&study_date__gt={{ home_config.date_b }}">{{ details.studies_since_delta_b }}</a>
           </td>
         {% endif %}
       </tr>
