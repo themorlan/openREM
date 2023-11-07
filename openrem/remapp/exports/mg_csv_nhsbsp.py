@@ -78,7 +78,7 @@ def mg_csv_nhsbsp(filterdict, user=None):
             "accummammographyxraydose__accumulated_average_glandular_dose"
         ):
             logger.info("Replacing AGD ordering with study date to avoid duplication")
-            filterdict["o"] = "-study_date"
+            filterdict["o"] = "-time_date"
 
     # Get the data!
     studies_qs = MGSummaryListFilter(

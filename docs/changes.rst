@@ -5,6 +5,7 @@ OpenREM version history
 
 1.0.0b2 (2023-04-20)
 --------------------
+* :issue:`1000`  Interface: fixed incorrect study date ordering on home page hyperlinks and tests
 * :issue:`995`  SkinDose: fixed bug where a missing exposure_time causes an invalid decimal operation
 * :issue:`992`  Charts: fixed bug where an empty x-ray system category caused boxplots to fail
 * :issue:`991`  SkinDose: fixed bug in e-mail alert logic so user options are respected
