@@ -414,7 +414,17 @@ def nm_image(filename: str):
     except ObjectDoesNotExist:
         del_nm_im = False
 
-    dataset = pydicom.dcmread(filename)
+    try:
+        dataset = pydicom.dcmread(filename)
+    except FileNotFoundError:
+        logger.warning(
+            f"mn_image.py not attempting to extract from {filename}, the file does not exist"
+        )
+        record_task_error_exit(
+            f"Not attempting to extract from {filename}, the file does not exist"
+        )
+        return 1
+
     dataset.decode()
 
     if dataset.SOPClassUID in [

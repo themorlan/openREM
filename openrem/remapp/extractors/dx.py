@@ -933,7 +933,18 @@ def dx(dig_file):
     config.convert_wrong_length_to_UN = True
 
     logger.debug("About to read DX")
-    dataset = pydicom.dcmread(dig_file)
+
+    try:
+        dataset = pydicom.dcmread(dig_file)
+    except FileNotFoundError:
+        logger.warning(
+            f"dx.py not attempting to extract from {dig_file}, the file does not exist"
+        )
+        record_task_error_exit(
+            f"Not attempting to extract from {dig_file}, the file does not exist"
+        )
+        return 1
+
     try:
         dataset.decode()
     except ValueError as err:

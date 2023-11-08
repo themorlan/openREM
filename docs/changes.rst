@@ -9,6 +9,7 @@ OpenREM version history
 * :issue:`1003`  Orthanc: modified Windows command to reduce memory use when querying PACS
 * :issue:`1000`  Interface: fixed incorrect study date ordering on home page hyperlinks and tests
 * :issue:`995`  SkinDose: fixed bug where a missing exposure_time causes an invalid decimal operation
+* :issue:`993`  Imports: added check that file exists before reading in ct_philips, dx, mam, nm_image and rdsr extractors
 * :issue:`992`  Charts: fixed bug where an empty x-ray system category caused boxplots to fail
 * :issue:`991`  SkinDose: fixed bug in e-mail alert logic so user options are respected
 * :issue:`990`  SkinDose: fixed bug where a zero study dap causes a TypeError in the e-mail sending code
