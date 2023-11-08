@@ -44,6 +44,7 @@ from time import sleep
 import django
 from django.core.exceptions import ObjectDoesNotExist
 import pydicom
+from pydicom import config
 from pydicom.valuerep import MultiValue
 
 from openrem.remapp.tools.background import (
@@ -927,6 +928,9 @@ def dx(dig_file):
         del_dx_im = del_settings.del_dx_im
     except ObjectDoesNotExist:
         del_dx_im = False
+
+    # Set convert_wrong_length_to_UN = True to prevent the wrong length causing an error.
+    config.convert_wrong_length_to_UN = True
 
     logger.debug("About to read DX")
     dataset = pydicom.dcmread(dig_file)
