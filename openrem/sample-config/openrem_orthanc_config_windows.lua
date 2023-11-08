@@ -32,7 +32,7 @@ local zip_executable = 'E:\\7-Zip\\7z.exe a -r'
 local rmdir_cmd = 'rmdir /s/q'
 -------------------------------------------------------------------------------------
 
--- Set this to true if you use this script on windows, false otherwise
+-- Set this to true if you use this script on Windows, false otherwise
 local use_windows_execute = true
 
 -- Set this to false when using sqlite. In production you probably should use postgres
@@ -270,15 +270,15 @@ function ToAscii(s)
 
      -- Call OpenREM import script. Runs as orthanc user in linux, so log files must be writable by Orthanc
      -- Run in detached mode, so long imports don't lead to network problems
-	 if (use_postgres) then
+     if (use_postgres) then
         if (use_windows_execute) then
-           os.execute('start /b ' .. python_executable .. ' ' .. python_scripts_path .. import_script .. ' ' .. temp_file_path)
+           os.execute(python_executable .. ' ' .. python_scripts_path .. import_script .. ' ' .. temp_file_path)
         else
            os.execute(python_executable .. ' ' .. python_scripts_path .. import_script .. ' ' .. temp_file_path .. ' &')
         end
-	else
-	    os.execute(python_executable .. ' ' .. python_scripts_path .. import_script .. ' ' .. temp_file_path)
-	end
+     else
+        os.execute(python_executable .. ' ' .. python_scripts_path .. import_script .. ' ' .. temp_file_path)
+     end
 
      -- Do not remove the dicom file. It is read async (so probably still needed and if it should be deleted after
      -- import or not should be chosen by the user)
