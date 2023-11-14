@@ -48,8 +48,8 @@ from .extractors import import_views
 
 
 main_patterns = [
-    path("rf/<int:pk>/", views.rf_detail_view, name="rf_detail_view"),
     path("rf/<int:pk>/force_recalculation/", views.rf_detail_view, name="rf_detail_view"),
+    path("rf/<int:pk>/", views.rf_detail_view, name="rf_detail_view"),
     path("", views.openrem_home, name="home"),
     path("homestudies/", views.update_latest_studies, name="update_latest_studies"),
     path("rf/", views.rf_summary_list_filter, name="rf_summary_list_filter"),

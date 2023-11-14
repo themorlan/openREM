@@ -583,6 +583,21 @@ def rf_detail_view_skin_map(request, pk=None):
         if matching_latest_task.completed_successfully is False and "failed" in matching_latest_task.error:
             return_structure["skin_map_calculation_failed"] = True
 
+            # Find out if there is a task running to re-calculate the skin dose map for this study
+            matching_ongoing_task = BackgroundTask.objects.filter(
+                task_type="make_skin_map",
+                info__contains=pk,
+                complete=False
+                )
+
+            # Set the skin_map_progress and in_progress entries if there is a match to a running task.
+            if matching_ongoing_task.count() != 0:
+                return_structure["skin_map_progress"] = matching_ongoing_task.values_list(
+                    "info", flat=True
+                )[0].split("irradiation ", 1)[1]
+
+                return_structure["in_progress"] = True
+
     else:
         # Check to see if there is already a skin map pickle with the same study ID.
         try:
