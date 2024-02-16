@@ -50,7 +50,7 @@ class ExportRFxlsx(
         eurocolumbus.save()
 
     def test_id_as_text(self):  # See https://bitbucket.org/openrem/openrem/issues/443
-        filter_set = {"o": "-study_date"}
+        filter_set = {"o": "-time_date"}
         pid = True
         name = False
         patient_id = True
@@ -114,7 +114,7 @@ class ExportRFxlsx(
 
         TODO: Add test study with no filter
         """
-        filter_set = {"o": "-study_date"}
+        filter_set = {"o": "-time_date"}
         pid = True
         name = False
         patient_id = True
@@ -163,7 +163,7 @@ class ExportRFxlsx(
 
     def test_pulse_level_data(self):
         """Tests that RDSR with pulse level kVp, mA, pulse width data imports and exports with mean values"""
-        filter_set = {"o": "-study_date"}
+        filter_set = {"o": "-time_date"}
         pid = True
         name = False
         patient_id = True
@@ -238,7 +238,7 @@ class ExportRFArcadis(TransactionTestCase):
         rdsr.rdsr(os.path.join(root_tests, rf_siemens_arcadis))
 
     def test_export_arcadis(self):
-        filter_set = {"o": "-study_date"}
+        filter_set = {"o": "-time_date"}
         pid = True
         name = False
         patient_id = True

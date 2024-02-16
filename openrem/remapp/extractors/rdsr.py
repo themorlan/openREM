@@ -602,7 +602,17 @@ def rdsr(rdsr_file):
     except ObjectDoesNotExist:
         del_rdsr = False
 
-    dataset = pydicom.dcmread(rdsr_file)
+    try:
+        dataset = pydicom.dcmread(rdsr_file)
+    except FileNotFoundError:
+        logger.warning(
+            f"rdsr.py not attempting to extract from {rdsr_file}, the file does not exist"
+        )
+        record_task_error_exit(
+            f"Not attempting to extract from {rdsr_file}, the file does not exist"
+        )
+        return 1
+
     try:
         dataset.decode()
     except ValueError as e:
@@ -639,9 +649,7 @@ def rdsr(rdsr_file):
         _rdsr2db(dataset)
     else:
         logger.warning(
-            "rdsr.py not attempting to extract from {0}, not a radiation dose structured report".format(
-                rdsr_file
-            )
+            f"rdsr.py not attempting to extract from {rdsr_file}, not a radiation dose structured report"
         )
         record_task_error_exit(
             f"Not attempting to extract from {rdsr_file}, not an rdsr"

@@ -28,6 +28,7 @@
 ..  moduleauthor:: Ed McDonagh, David Platten, Wens Kong
 
 """
+import decimal
 import os
 import sys
 import logging
@@ -314,7 +315,7 @@ def make_skin_map(study_pk=None):
                         .pulsewidth_set.get()
                         .pulse_width
                     )
-                except (ObjectDoesNotExist, TypeError):
+                except (ObjectDoesNotExist, TypeError, decimal.InvalidOperation):
                     frames = None
             except ObjectDoesNotExist:
                 frames = None
