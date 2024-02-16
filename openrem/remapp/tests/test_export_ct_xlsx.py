@@ -67,40 +67,51 @@ class ExportCTxlsx(TestCase):
             i for i, x in enumerate(headers, start=1) if x.value == "Accession number"
         ][0]
         dlp_total_col = [
-            i for i, x in enumerate(headers, start=1) if x.value == "DLP total (mGy.cm)"
+            i for i, x in enumerate(headers, start=1) if x.value == "Total DLP (mGy.cm)"
         ][0]
         e1_dose_check_col = [
             i
             for i, x in enumerate(headers, start=1)
-            if x.value == "E1 Dose check details"
+            if x.value == "E1 Dose check alerts"
         ][0]
         e2_dose_check_col = [
             i
             for i, x in enumerate(headers, start=1)
-            if x.value == "E2 Dose check details"
+            if x.value == "E2 Dose check alerts"
         ][0]
 
         self.assertEqual(
-            all_data_sheet.cell(row=3, column=patient_id_col).data_type, "s"
+            all_data_sheet.cell(row=2, column=patient_id_col).data_type, "s"
         )
         self.assertEqual(
-            all_data_sheet.cell(row=4, column=patient_id_col).data_type, "s"
+            all_data_sheet.cell(row=2, column=patient_id_col).data_type, "s"
         )
         self.assertEqual(
-            all_data_sheet.cell(row=3, column=accession_number_col).data_type, "s"
+            all_data_sheet.cell(row=2, column=accession_number_col).data_type, "s"
         )
         self.assertEqual(
-            all_data_sheet.cell(row=4, column=accession_number_col).data_type, "s"
+            all_data_sheet.cell(row=2, column=accession_number_col).data_type, "s"
         )
         self.assertEqual(
-            all_data_sheet.cell(row=3, column=dlp_total_col).data_type, "n"
+            all_data_sheet.cell(row=2, column=dlp_total_col).data_type, "n"
         )
 
+        self.assertEqual(
+            all_data_sheet.cell(row=2, column=patient_id_col).value, "00001234"
+        )
         self.assertEqual(
             all_data_sheet.cell(row=3, column=patient_id_col).value, "008F/g234"
         )
         self.assertEqual(
-            all_data_sheet.cell(row=4, column=patient_id_col).value, "00001234"
+            all_data_sheet.cell(row=4, column=patient_id_col).value, "4018119567876617"
+        )
+        self.assertEqual(
+            all_data_sheet.cell(row=5, column=patient_id_col).value, "123456"
+        )
+
+        self.assertEqual(
+            all_data_sheet.cell(row=2, column=accession_number_col).value,
+            "0012345.12345678",
         )
         self.assertEqual(
             all_data_sheet.cell(row=3, column=accession_number_col).value,
@@ -108,28 +119,41 @@ class ExportCTxlsx(TestCase):
         )
         self.assertEqual(
             all_data_sheet.cell(row=4, column=accession_number_col).value,
-            "0012345.12345678",
+            "3599305798462538",
         )
         self.assertEqual(
-            all_data_sheet.cell(row=3, column=dlp_total_col).value, 2002.39
+            all_data_sheet.cell(row=5, column=accession_number_col).value,
+            "ACC12345601",
+        )
+
+        self.assertAlmostEqual(
+            all_data_sheet.cell(row=2, column=dlp_total_col).value, 415.82, places=2
+        )
+        self.assertAlmostEqual(
+            all_data_sheet.cell(row=3, column=dlp_total_col).value, 2002.39, places=2
+        )
+        self.assertAlmostEqual(
+            all_data_sheet.cell(row=4, column=dlp_total_col).value, 502.40, places=2
+        )
+        self.assertAlmostEqual(
+            all_data_sheet.cell(row=5, column=dlp_total_col).value, 724.52, places=2
         )
 
         e1_dose_check_string = (
-            "Dose Check Alerts: DLP alert is configured at 100.00 mGy.cm with an accumulated "
-            "forward estimate of 251.20 mGy.cm. CTDIvol alert is configured at 10.00 mGy with no "
-            "accumulated forward estimate recorded. Person authorizing irradiation: Luuk. "
+            "Dose check alerts:\nDLP alert is configured at 100.0 mGy.cm\nwith an accumulated forward estimate of "
+            "251.2 mGy.cm\nCTDIvol alert is configured at 10.0 mGy\nPerson authorizing irradiation: Luuk"
         )
         e2_dose_check_string = (
-            "Dose Check Alerts: DLP alert is configured at 100.00 mGy.cm with an accumulated "
-            "forward estimate of 502.40 mGy.cm. CTDIvol alert is configured at 10.00 mGy with an "
-            "accumulated forward estimate of 10.60 mGy. Person authorizing irradiation: Luuk. "
+            "Dose check alerts:\nDLP alert is configured at 100.0 mGy.cm\nwith an accumulated forward estimate of "
+            "502.4 mGy.cm\nCTDIvol alert is configured at 10.0 mGy\nwith an accumulated forward estimate of "
+            "10.6 mGy\nPerson authorizing irradiation: Luuk"
         )
         self.assertEqual(
-            all_data_sheet.cell(row=2, column=e1_dose_check_col).value,
+            all_data_sheet.cell(row=4, column=e1_dose_check_col).value,
             e1_dose_check_string,
         )
         self.assertEqual(
-            all_data_sheet.cell(row=2, column=e2_dose_check_col).value,
+            all_data_sheet.cell(row=4, column=e2_dose_check_col).value,
             e2_dose_check_string,
         )
 
