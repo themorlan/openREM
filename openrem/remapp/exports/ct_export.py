@@ -364,16 +364,16 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
         required_sheets = np.concatenate((required_sheets, std_name_sheets))
 
     worksheet_log = {}
-    for name in required_sheets:
-        if name in (None, np.nan, ""):
-            name = "Unknown"
+    for current_name in required_sheets:
+        if current_name in (None, np.nan, ""):
+            current_name = "Unknown"
 
-        name = sheet_name(name)
+        current_name = sheet_name(current_name)
 
-        if name not in book.sheetnames.keys():
-            new_sheet = book.add_worksheet(name)
+        if current_name not in book.sheetnames.keys():
+            new_sheet = book.add_worksheet(current_name)
             book = text_and_date_formats(book, new_sheet, pid=pid, name=name, patid=patid, modality="CT")
-            worksheet_log[name] = 0
+            worksheet_log[current_name] = 0
 
     current_row = 1
 

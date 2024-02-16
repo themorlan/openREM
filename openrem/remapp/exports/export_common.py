@@ -104,16 +104,17 @@ def text_and_date_formats(
 
     if modality == "RF":
         date_column += 1
+
     sheet.set_column(
         date_column, date_column, 10, dateformat
     )  # allow date to be displayed.
     sheet.set_column(
         date_column + 1, date_column + 1, None, timeformat
     )  # allow time to be displayed.
-    if pid and (name or patid):
-        sheet.set_column(
-            date_column + 2, date_column + 2, 10, dateformat
-        )  # Birth date column
+    #if pid and (name or patid):
+    #    sheet.set_column(
+    #        date_column + 2, date_column + 2, 10, dateformat
+    #    )  # Birth date column [DJP: it isn't a date of birth column, it is a patient age column as a decimal]
     if pid and patid:
         sheet.set_column(
             patid_column, patid_column, None, textformat
