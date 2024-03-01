@@ -202,6 +202,12 @@ bottom of the page and click the ``Windows executable that does not require Java
 DCMTK
 -----
 
+.. admonition:: What is DCMTK for?
+
+    The DCMTK binary files are used to import dose summary files from older Toshiba CT scanners that are not able to
+    create DICOM Radiation Dose Structured Reports (see :ref:`toshiba_legacy_imports`). If you don't need to do this
+    then you can skip the installation of the DCMTK.
+
 Download from https://dcmtk.org/dcmtk.php.en - look for the ``DCMTK executable binaries`` section, and download the
 64 bit DLL build for Windows.
 
@@ -219,6 +225,11 @@ Download from https://dcmtk.org/dcmtk.php.en - look for the ``DCMTK executable b
 7Zip
 ----
 
+.. admonition:: What is 7Zip for?
+
+    7Zip is used by Orthanc when saving physics DICOM studies to the server, when this has been enabled
+    (see :ref:`windowsdicomstorescp`).
+
 Download the 64-bit x64 exe file from https://www.7-zip.org/
 
 * Type, or click on the ``...`` to browse to ``E:\7-zip\``
@@ -228,6 +239,11 @@ Download the 64-bit x64 exe file from https://www.7-zip.org/
 WinSW
 -----
 
+.. admonition:: What is WinSW for?
+
+    WinSW enables the Huey workers, which run background OpenREM tasks, to be used as a Windows service
+    (see :ref:`windowstaskqueue`).
+
 Download the 64-bit x64 exe file from https://github.com/winsw/winsw/releases/tag/v2.12.0
 
 * Open a new file browser at ``E:\winsw``
@@ -236,6 +252,11 @@ Download the 64-bit x64 exe file from https://github.com/winsw/winsw/releases/ta
 
 Notepad++
 ---------
+
+.. admonition:: What is Notepad++ for?
+
+    Notepad++ is a popular text file editor which makes editing the OpenREM configuration files easier than if
+    using Windows built-in Notepad application.
 
 Download the latest version of Notepad++ from https://notepad-plus-plus.org/downloads/
 
@@ -645,6 +666,8 @@ Test the webserver
 Browse to http://localhost/ on the server, or browse to the servername in a browser on another machine, and you should
 be able to see the new OpenREM web service.
 
+.. _windowstaskqueue:
+
 Task queue
 ==========
 
@@ -779,6 +802,8 @@ Adjusting IIS Application Pool Identity
 * Click on ``Set...``
 * Enter the credentials of the preivously created account. If you are in an Active Directory prefix ther usernmae with ``<YOUR-DOMAIN>\``
 * Click ``OK`` three times
+
+.. _windowsdicomstorescp:
 
 DICOM Store SCP
 ===============
