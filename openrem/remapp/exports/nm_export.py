@@ -515,7 +515,7 @@ def exportNM2excel(filterdict, pid=False, name=None, patid=None, user=None):
         headings, header_lengths = _nm_headers(pid, name, patid, statistics)
 
         summary = book.add_worksheet("Summary")
-        create_summary_sheet(task, data, book, summary, None, False, modality="NM")
+        create_summary_sheet(task, data, book, summary, None, False)
 
         # We create the detail sheets per study description, other than for other modalities
         study_descriptions = {}

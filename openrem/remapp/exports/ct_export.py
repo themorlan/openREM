@@ -43,7 +43,7 @@ from remapp.models import (
     StandardNameSettings,
     GeneralStudyModuleAttr,
 )
-from .export_common import (
+from .export_common_pandas import (
     get_common_data,
     common_headers,
     create_xlsx,
@@ -74,7 +74,7 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
 
     import datetime
     from django.db.models import Max
-    from .export_common import text_and_date_formats, sheet_name
+    from .export_common_pandas import text_and_date_formats, sheet_name
     from ..interface.mod_filters import ct_acq_filter
 
     modality = "CT"

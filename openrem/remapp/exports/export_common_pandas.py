@@ -35,6 +35,7 @@ import sys
 from tempfile import TemporaryFile
 import uuid
 
+import pandas as pd
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.files.base import ContentFile
@@ -42,7 +43,9 @@ from django.db.models import Q
 from xlsxwriter.workbook import Workbook
 
 from remapp.models import (
+    CtRadiationDose,
     Exports,
+    ProjectionXRayRadiationDose,
     StandardNames,
     StandardNameSettings,
 )
@@ -79,25 +82,39 @@ def text_and_date_formats(
         {"num_format": f"{settings.XLSX_DATE} {settings.XLSX_TIME}"}
     )
 
-    date_column = 7
+    date_column = 11
     patid_column = 0
     if pid and patid:
         date_column += 1
     if pid and name:
         date_column += 1
         patid_column += 1
+
+    # Obtain the system-level enable_standard_names setting
+    try:
+        StandardNameSettings.objects.get()
+    except ObjectDoesNotExist:
+        StandardNameSettings.objects.create()
+    enable_standard_names = StandardNameSettings.objects.values_list(
+        "enable_standard_names", flat=True
+    )[0]
+
+    if enable_standard_names:
+        date_column += 3
+
     if modality == "RF":
         date_column += 1
+
     sheet.set_column(
         date_column, date_column, 10, dateformat
     )  # allow date to be displayed.
     sheet.set_column(
         date_column + 1, date_column + 1, None, timeformat
     )  # allow time to be displayed.
-    if pid and (name or patid):
-        sheet.set_column(
-            date_column + 2, date_column + 2, 10, dateformat
-        )  # Birth date column
+    #if pid and (name or patid):
+    #    sheet.set_column(
+    #        date_column + 2, date_column + 2, 10, dateformat
+    #    )  # Birth date column [DJP: it isn't a date of birth column, it is a patient age column as a decimal]
     if pid and patid:
         sheet.set_column(
             patid_column, patid_column, None, textformat
@@ -231,48 +248,53 @@ def generate_sheets(
     )[0]
 
     sheet_list = {}
-    protocols_list = []
-    for exams in studies:
-        try:
-            if modality in ["DX", "RF", "MG"]:
-                events = exams.projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by(
-                    "id"
-                )
-            elif modality in "CT":
-                events = (
-                    exams.ctradiationdose_set.get().ctirradiationeventdata_set.all()
-                )
-            for s in events:
-                if s.acquisition_protocol:
-                    safe_protocol = s.acquisition_protocol
-                else:
-                    safe_protocol = "Unknown"
-                if safe_protocol not in protocols_list:
-                    protocols_list.append(safe_protocol)
 
-                if enable_standard_names:
-                    try:
-                        if s.standard_protocols.first().standard_name:
-                            safe_protocol = (
-                                "[standard] "
-                                + s.standard_protocols.first().standard_name
-                            )
+    required_fields = []
+    column_names = []
+    acq_name_df = None
+    if modality in ["DX", "RF", "MG"]:
+        required_fields.append("irradeventxraydata__acquisition_protocol")
+        column_names.append("Acquisition protocol")
 
-                        if safe_protocol not in protocols_list:
-                            protocols_list.append(safe_protocol)
+        if enable_standard_names:
+            required_fields.append("irradeventxraydata__standard_protocols__standard_name")
+            column_names.append("Standard acquisition name")
 
-                    except AttributeError:
-                        pass
+        # Obtain a dataframe of all the acquisition protocols and standard acquisition names in the supplied studies
+        acq_name_df = pd.DataFrame.from_records(
+            data=ProjectionXRayRadiationDose.objects.filter(
+                general_study_module_attributes__in=studies.values("pk")
+            ).values_list(*required_fields),
+            columns=column_names
+        )
 
-                    if safe_protocol not in protocols_list:
-                        protocols_list.append(safe_protocol)
+    elif modality in "CT":
+        required_fields.append("ctirradiationeventdata__acquisition_protocol")
+        column_names.append("Acquisition protocol")
 
-        except ObjectDoesNotExist:
-            logger.error(
-                "Study missing during generation of sheet names; most likely due to study being deleted "
-                "whilst export in progress to be replace by later version of RDSR."
-            )
-            continue
+        if enable_standard_names:
+            required_fields.append("ctirradiationeventdata__standard_protocols__standard_name")
+            column_names.append("Standard acquisition name")
+
+        # Obtain a dataframe of all the acquisition protocols and standard acquisition names in the supplied studies
+        acq_name_df = pd.DataFrame.from_records(
+            data=CtRadiationDose.objects.filter(
+                general_study_module_attributes__in=studies.values("pk")
+            ).values_list(*required_fields),
+            columns=column_names
+        )
+
+    # Obtain a list of the unique acquisition protocols. Replace any na or None values with "Unknown"
+    acq_protocols = acq_name_df.sort_values(by=["Acquisition protocol"])["Acquisition protocol"].fillna("Unknown").unique()
+
+    protocols_list = list(acq_protocols)
+
+    if enable_standard_names:
+        # Obtain a list of the unique standard acquisition names. Drop any na or None values. Prepend "[standard] " to each entry
+        std_acq_protocols = acq_name_df.sort_values(by=["Standard acquisition name"])["Standard acquisition name"].dropna().unique()
+        std_acq_protocols = "[standard] " + std_acq_protocols
+        protocols_list.extend(list(std_acq_protocols))
+
     protocols_list.sort()
 
     for protocol in protocols_list:
@@ -705,7 +727,7 @@ def create_xlsx(task):
 
     try:
         temp_xlsx = TemporaryFile()
-        book = Workbook(temp_xlsx, {"strings_to_numbers": False})
+        book = Workbook(temp_xlsx, {"strings_to_numbers": False, "constant_memory": True})
     except (OSError, IOError) as e:
         logger.error(
             "Error saving xlsx temporary file ({0}): {1}".format(e.errno, e.strerror)
@@ -766,7 +788,7 @@ def write_export(task, filename, temp_file, datestamp):
 
 
 def create_summary_sheet(
-    task, studies, book, summary_sheet, sheet_list, has_series_protocol=True
+    task, studies, book, summary_sheet, has_series_protocol=True, modality=None
 ):
     """Create summary sheet for xlsx exports
 
@@ -778,8 +800,6 @@ def create_summary_sheet(
     :return: nothing
     """
     import datetime
-    import pkg_resources
-    from django.db.models import Count
 
     # Populate summary sheet
     task.progress = "Now populating the summary sheet..."
@@ -804,50 +824,6 @@ def create_summary_sheet(
     summary_sheet.write(3, 0, "Total number of exams")
     summary_sheet.write(3, 1, studies.count())
 
-    # Generate list of Study Descriptions
-    summary_sheet.write(5, 0, "Study Description")
-    summary_sheet.write(5, 1, "Frequency")
-    study_descriptions = studies.values("study_description").annotate(
-        n=Count("pk", distinct=True)
-    )
-    for row, item in enumerate(study_descriptions.order_by("n").reverse()):
-        summary_sheet.write(row + 6, 0, item["study_description"])
-        summary_sheet.write(row + 6, 1, item["n"])
-    summary_sheet.set_column("A:A", 25)
-
-    # Generate list of Requested Procedures
-    summary_sheet.write(5, 3, "Requested Procedure")
-    summary_sheet.write(5, 4, "Frequency")
-    requested_procedure = studies.values("requested_procedure_code_meaning").annotate(
-        n=Count("pk", distinct=True)
-    )
-    for row, item in enumerate(requested_procedure.order_by("n").reverse()):
-        summary_sheet.write(row + 6, 3, item["requested_procedure_code_meaning"])
-        summary_sheet.write(row + 6, 4, item["n"])
-    summary_sheet.set_column("D:D", 25)
-
-    # Generate list of Series Protocols
-    if has_series_protocol:
-        summary_sheet.write(5, 6, "Series Protocol")
-        summary_sheet.write(5, 7, "Frequency")
-        sorted_protocols = sorted(
-            iter(sheet_list.items()), key=lambda k_v: k_v[1]["count"], reverse=True
-        )
-
-        # Exclude any [standard] protocols
-        protocols = [
-            x
-            for x in sorted_protocols
-            if not x[1]["protocolname"][0].startswith("[standard]")
-        ]
-        for row, item in enumerate(protocols):
-            if not item[1]["protocolname"][0].startswith("[standard]"):
-                summary_sheet.write(
-                    row + 6, 6, ", ".join(item[1]["protocolname"])
-                )  # Join - can't write list to a single cell.
-                summary_sheet.write(row + 6, 7, item[1]["count"])
-        summary_sheet.set_column("G:G", 15)
-
     # Obtain the system-level enable_standard_names setting
     try:
         StandardNameSettings.objects.get()
@@ -857,36 +833,135 @@ def create_summary_sheet(
         "enable_standard_names", flat=True
     )[0]
 
+    required_fields = ["pk", "study_description", "requested_procedure_code_meaning"]
+    column_names = ["pk", "Study description", "Requested procedure"]
     if enable_standard_names:
-        # Generate list of standard study names
-        summary_sheet.write(5, 9, "Standard study name")
-        summary_sheet.write(5, 10, "Frequency")
-        standard_names = (
-            studies.exclude(standard_names__standard_name__isnull=True)
-            .values("standard_names__standard_name")
-            .annotate(n=Count("pk", distinct=True))
+        required_fields.append("standard_names__standard_name")
+        column_names.append("Standard study name")
+
+    # DataFrame containing study description, requested procedure data and possibly standard study names.
+    # Note that a single exam can have more than one standard study name associated with it because a standard name
+    # can be mapped to study description, requested procedure, and also to procedure. When we are counting up study
+    # description and requested procedure occurences it is important to drop private key duplicates to avoid double
+    # counting.
+    df = pd.DataFrame.from_records(data=studies.values_list(*required_fields), columns=column_names)
+
+    # Get the study descriptions used and their frequency
+    study_description_frequency = df.drop_duplicates(subset="pk")["Study description"].value_counts(dropna=False).sort_index(ascending=True).sort_values(ascending=False)
+    study_description_frequency = study_description_frequency.reset_index()
+    study_description_frequency.columns = ["Study description", "Frequency"]
+    study_description_frequency["Frequency"] = study_description_frequency["Frequency"].astype("UInt32")
+    study_description_frequency["BlankCol"] = None
+
+    # Get the requested procedures used and their frequency
+    requested_procedure_frequency = df.drop_duplicates(subset="pk")["Requested procedure"].value_counts(dropna=False).sort_index(ascending=True).sort_values(ascending=False)
+    requested_procedure_frequency = requested_procedure_frequency.reset_index()
+    requested_procedure_frequency.columns = ["Requested procedure", "Frequency"]
+    requested_procedure_frequency["Frequency"] = requested_procedure_frequency["Frequency"].astype("UInt32")
+    requested_procedure_frequency["BlankCol"] = None
+
+    if enable_standard_names:
+        # Get the standard study names used and their frequency
+        standard_study_name_frequency = df["Standard study name"].value_counts(dropna=False).sort_index(ascending=True).sort_values(ascending=False)
+        standard_study_name_frequency = standard_study_name_frequency.reset_index()
+        standard_study_name_frequency.columns = ["Standard study name", "Frequency"]
+        standard_study_name_frequency["Frequency"] = standard_study_name_frequency["Frequency"].astype("UInt32")
+        standard_study_name_frequency["BlankCol"] = None
+
+    # Get the acquisition protocols used and their frequency
+    required_fields = []
+    column_names = []
+    acq_df = None
+    if modality in ["DX", "RF", "MG"]:
+        required_fields.extend([
+            "irradeventxraydata__pk",
+            "irradeventxraydata__acquisition_protocol"
+        ])
+        column_names.extend(["pk", "Acquisition protocol"])
+
+        if enable_standard_names:
+            required_fields.append("irradeventxraydata__standard_protocols__standard_name")
+            column_names.append("Standard acquisition name")
+
+        acq_df = pd.DataFrame.from_records(
+            data=ProjectionXRayRadiationDose.objects.filter(
+                general_study_module_attributes__in=studies.values("pk")
+            ).values_list(*required_fields),
+            columns=column_names
         )
 
-        for row, item in enumerate(standard_names.order_by("n").reverse()):
-            summary_sheet.write(row + 6, 9, item["standard_names__standard_name"])
-            summary_sheet.write(row + 6, 10, item["n"])
-        summary_sheet.set_column("J:J", 25)
+    elif modality in "CT":
+        required_fields.extend([
+            "ctirradiationeventdata__pk",
+            "ctirradiationeventdata__acquisition_protocol"
+        ])
+        column_names.extend(["pk", "Acquisition protocol"])
 
-        # Write standard acquisition names
-        # Only include [standard] protocols
-        summary_sheet.write(5, 12, "Standard acquisition name")
-        summary_sheet.write(5, 13, "Frequency")
-        protocols = [
-            x
-            for x in sorted_protocols
-            if x[1]["protocolname"][0].startswith("[standard]")
-        ]
+        if enable_standard_names:
+            required_fields.append("ctirradiationeventdata__standard_protocols__standard_name")
+            column_names.append("Standard acquisition name")
 
-        for row, item in enumerate(protocols):
-            summary_sheet.write(row + 6, 12, item[1]["protocolname"][0])
-            summary_sheet.write(row + 6, 13, item[1]["count"])
-        summary_sheet.set_column("M:M", 25)
+        acq_df = pd.DataFrame.from_records(
+            data=CtRadiationDose.objects.filter(
+                general_study_module_attributes__in=studies.values("pk")
+            ).values_list(*required_fields),
+            columns=column_names
+        )
 
+    acquisition_protocol_frequency = None
+    if len(required_fields) != 0:
+
+        acquisition_protocol_frequency = acq_df["Acquisition protocol"].value_counts(dropna=False).sort_index(ascending=True).sort_values(ascending=False).reset_index()
+        acquisition_protocol_frequency.columns = ["Acquisition protocol", "Frequency"]
+        acquisition_protocol_frequency["Frequency"] = acquisition_protocol_frequency["Frequency"].astype("UInt32")
+        acquisition_protocol_frequency["BlankCol"] = None
+
+        if enable_standard_names:
+            std_acquisition_protocol_frequency = acq_df["Standard acquisition name"].value_counts(dropna=False).sort_index(ascending=True).sort_values(ascending=False).reset_index()
+            std_acquisition_protocol_frequency.columns = ["Standard acquisition name", "Frequency"]
+            std_acquisition_protocol_frequency["Frequency"] = std_acquisition_protocol_frequency["Frequency"].astype("UInt32")
+            std_acquisition_protocol_frequency["BlankCol"] = None
+
+    # Now write the data to the worksheet
+    # Write the column titles
+    col_titles = [
+        "Study Description", "Frequency", "",
+        "Requested Procedure", "Frequency", "",
+        "Acquisition protocol", "Frequency", "",
+    ]
+    if enable_standard_names:
+        col_titles.extend([
+            "Standard Study Name", "Frequency", "",
+            "Standard Acquisition Name", "Frequency", "",
+        ])
+
+    summary_sheet.write_row(5, 0, col_titles)
+
+    # Widen the name columns
+    summary_sheet.set_column("A:A", 25)
+    summary_sheet.set_column("D:D", 25)
+    summary_sheet.set_column("G:G", 25)
+    summary_sheet.set_column("J:J", 25)
+    summary_sheet.set_column("M:M", 25)
+
+    # Write the frequency data to the xlsx file
+    combined_df = pd.concat([
+        study_description_frequency,
+        requested_procedure_frequency,
+        acquisition_protocol_frequency
+    ], axis=1)
+
+    if enable_standard_names:
+        combined_df = pd.concat([
+            combined_df, standard_study_name_frequency, std_acquisition_protocol_frequency
+        ], axis=1)
+
+    combined_df = combined_df.where(pd.notnull(combined_df), None)
+
+    for idx in combined_df.index:
+        summary_sheet.write_row(
+            idx + 6, 0, [None if x is pd.NA or not pd.notna(x) else x for x in combined_df.iloc[idx].to_list()]
+        )
 
 def abort_if_zero_studies(num_studies, tsk):
     """Function to update progress and status if filter is empty
@@ -950,3 +1025,167 @@ def create_export_task(
     task.save()
 
     return task
+
+
+def transform_to_one_row_per_exam(df,
+                                  acquisition_cat_field_names, acquisition_int_field_names, acquisition_val_field_names,
+                                  exam_cat_field_names, exam_date_field_names, exam_int_field_names,
+                                  exam_obj_field_names, exam_time_field_names, exam_val_field_names,
+                                  all_field_names):
+    """Transform a DataFrame with one acquisition per row into a DataFrame with
+    one exam per row, including all acquisitions for that exam.
+    """
+
+    if settings.DEBUG:
+        print("Initial DataFrame created")
+        df.info()
+
+    if settings.DEBUG:
+        df.to_csv("D:\\temp\\000-df-initial.csv")
+
+    exam_cat_f_names = exam_cat_field_names[:]
+
+    # Make DataFrame columns category type where appropriate
+    cat_field_names = exam_cat_f_names + acquisition_cat_field_names
+    df[cat_field_names] = df[cat_field_names].astype("category")
+
+    # Make DataFrame columns datetime type where appropriate
+    for date_field in exam_date_field_names:
+        df[date_field] = pd.to_datetime(df[date_field], format="%Y-%m-%d")
+
+    # Make DataFrame columns float32 type where appropriate
+    val_field_names = exam_val_field_names + acquisition_val_field_names
+    df[val_field_names] = df[val_field_names].astype("float32")
+
+    # Make DataFrame columns UInt32 type where appropriate
+    int_field_names = exam_int_field_names + acquisition_int_field_names
+    df[int_field_names] = df[int_field_names].astype("UInt32")
+
+    if settings.DEBUG:
+        print("DataFrame column types changed to reduce memory consumption")
+        df.info()
+
+    if "Standard study name" in df.columns:
+        df = create_standard_name_df_columns(df)
+
+        # Remove the original standard study name column from the list of exam category field names and then
+        # add the three standard name columns
+        exam_cat_f_names.remove("Standard study name")
+        exam_cat_f_names.extend(["Standard study name 1", "Standard study name 2", "Standard study name 3"])
+
+        # Make the exam_cat_f_names a categorical column (saves server memory)
+        df[exam_cat_f_names] = df[exam_cat_f_names].astype("category")
+
+    if settings.DEBUG:
+        df.to_csv("D:\\temp\\001-df-added-standard-names.csv")
+
+    # Drop any duplicate acquisition pk rows
+    df.drop_duplicates(subset="Acquisition pk", inplace=True)
+
+    if settings.DEBUG:
+        df.to_csv("D:\\temp\\002-df-dropped-duplicate-acq-pk.csv")
+
+    # Reformat the DataFrame so that we have one row per exam, with sets of columns for each acquisition data
+    g = df.groupby("pk").cumcount().add(1)
+    exam_field_names = exam_obj_field_names + exam_int_field_names + exam_cat_f_names + exam_date_field_names + exam_time_field_names + exam_val_field_names
+    exam_field_names.append(g)
+    df = df.set_index(exam_field_names).unstack().sort_index(axis=1, level=1)
+    df.columns = ["E{} {}".format(b, a) for a, b in df.columns]
+    df = df.reset_index()
+
+    # Set datatypes of the exam-level integer and value fields again because the reformat undoes the earlier changes
+    df[exam_int_field_names] = df[exam_int_field_names].astype("UInt32")
+    df[exam_val_field_names] = df[exam_val_field_names].astype("float32")
+
+    if settings.DEBUG:
+        df.to_csv("D:\\temp\\003-df-one-row-per-exam.csv")
+
+    # Drop all pk columns
+    pk_list = [i for i in df.columns if "pk" in i]
+    df = df.drop(pk_list, axis=1)
+
+    if settings.DEBUG:
+        df.to_csv("D:\\temp\\004-df-dropped-pk-fields.csv")
+
+    if settings.DEBUG:
+        print("DataFrame reformatted")
+        df.info()
+
+    return df
+
+
+def create_standard_name_df_columns(df):
+    std_name_df = df.groupby("pk")["Standard study name"].apply(lambda x: pd.Series(list(x.unique()))).unstack()
+    num_std_name_cols = len(std_name_df.columns)
+    std_name_df.columns = ["Standard study name {}".format(a + 1) for a in std_name_df.columns]
+    std_name_df = std_name_df.reset_index()
+
+    # Join the std_name_df to df using Study ID as an index
+    df = df.join(std_name_df.set_index(["pk"]), on=["pk"])
+
+    # Now move the columns so they are next to the original "Standard Name" column
+    std_name_col_idx = df.columns.get_loc("Standard study name")
+    if num_std_name_cols >= 1:
+        col = df.pop("Standard study name 1")
+        df.insert(std_name_col_idx, col.name, col)
+
+    if num_std_name_cols >= 2:
+        col = df.pop("Standard study name 2")
+        df.insert(std_name_col_idx + 1, col.name, col)
+    else:
+        df["Standard study name 2"] = ""
+        col = df.pop("Standard study name 2")
+        df.insert(std_name_col_idx + 1, col.name, col)
+
+    if num_std_name_cols >= 3:
+        col = df.pop("Standard study name 3")
+        df.insert(std_name_col_idx + 2, col.name, col)
+    else:
+        df["Standard study name 3"] = ""
+        col = df.pop("Standard study name 3")
+        df.insert(std_name_col_idx + 2, col.name, col)
+
+    # Then drop the original standard name column
+    df.drop(columns=["Standard study name"], inplace=True)
+
+    return df
+
+
+def optimise_df_dtypes(df, acquisition_cat_field_names, acquisition_int_field_names, acquisition_val_field_names,
+                       exam_cat_field_names, exam_date_field_names, exam_int_field_names,
+                       exam_val_field_names):
+    # Optimise the data frame types to minimise memory usage
+    # Make DataFrame columns category type where appropriate
+    cat_field_names = exam_cat_field_names + acquisition_cat_field_names
+    df[cat_field_names] = df[cat_field_names].astype("category")
+    # Make DataFrame columns datetime type where appropriate
+    for date_field in exam_date_field_names:
+        df[date_field] = pd.to_datetime(df[date_field], format="%Y-%m-%d")
+    # Make DataFrame columns float32 type where appropriate
+    val_field_names = exam_val_field_names + acquisition_val_field_names
+    df[val_field_names] = df[val_field_names].astype("float32")
+    # Make DataFrame columns UInt32 type where appropriate
+    int_field_names = exam_int_field_names + acquisition_int_field_names
+    df[int_field_names] = df[int_field_names].astype("UInt32")
+
+
+def write_row_to_acquisition_sheet(acq_df, acquisition, book, worksheet_log):
+    # Make the acquisition name safe for an Excel sheet name
+    acquisition = sheet_name(acquisition)
+    sheet = book.get_worksheet_by_name(acquisition)
+    sheet_row = worksheet_log[acquisition]
+
+    # Drop any pk columns
+    pk_cols = [i for i in acq_df.columns if "pk" in i]
+    acq_df = acq_df.drop(pk_cols, axis=1)
+
+    if sheet_row == 0:
+        sheet.write_row(0, 0, acq_df.columns)
+        sheet_row = 1
+        worksheet_log[acquisition] = sheet_row
+
+    for idx, row in acq_df.iterrows():
+        sheet.write_row(sheet_row, 0, row.fillna(""))
+        sheet_row = sheet_row + 1
+
+    worksheet_log[acquisition] = sheet_row
