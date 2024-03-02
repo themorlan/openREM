@@ -31,7 +31,7 @@ django.setup()
 # -- Project information -----------------------------------------------------
 
 project = "OpenREM"
-copyright = "2013-2022, The Royal Marsden NHS Foundation Trust"  # pylint: disable=redefined-builtin
+copyright = "2013-2024, The Royal Marsden NHS Foundation Trust"  # pylint: disable=redefined-builtin
 author = "OpenREM Contributers"
 
 # The version info for the project you're documenting, acts as replacement for
@@ -56,6 +56,7 @@ extensions = [
     "sphinxarg.ext",
     "sphinx_issues",
     "sphinx_copybutton",
+    "sphinx_rtd_theme",
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -72,7 +73,7 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-# html_theme = 'alabaster'
+html_theme = "sphinx_rtd_theme"
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
