@@ -432,7 +432,7 @@ def dxxlsx(filterdict, pid=False, name=None, patid=None, user=None):
     task_id = get_or_generate_task_uuid()
     tsk = create_export_task(
         task_id=task_id,
-        modality="DX",
+        modality=modality,
         export_type="XLSX export",
         date_stamp=datestamp,
         pid=bool(pid and (name or patid)),
@@ -465,7 +465,7 @@ def dxxlsx(filterdict, pid=False, name=None, patid=None, user=None):
     wsalldata = book.add_worksheet("All data")
 
     # Format the columns of the All data sheet
-    book = text_and_date_formats(book, wsalldata, pid=pid, name=name, patid=patid, modality="DX")
+    book = text_and_date_formats(book, wsalldata, pid=pid, name=name, patid=patid, modality=modality)
 
     #====================================================================================
     # Write the all data sheet

@@ -79,90 +79,21 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
 
     modality = "CT"
 
-    # Obtain the system-level enable_standard_names setting
-    try:
-        StandardNameSettings.objects.get()
-    except ObjectDoesNotExist:
-        StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values_list(
-        "enable_standard_names", flat=True
-    )[0]
-
-    datestamp = datetime.datetime.now()
-    task_id = get_or_generate_task_uuid()
-    tsk = create_export_task(
-        task_id=task_id,
-        modality="CT",
-        export_type="XLSX_export",
-        date_stamp=datestamp,
-        pid=bool(pid and (name or patid)),
-        user=user,
-        filters_dict=filterdict,
-    )
-
-    tmpxlsx, book = create_xlsx(tsk)
-    if not tmpxlsx:
-        exit()
-
-    # Get the data
-    study_pks = ct_acq_filter(filterdict, pid=pid).qs.values("pk")
-
-    # The initial_qs may have filters to remove some acquisition types. For the export we want all acquisitions
-    # that are part of a study to be included. To achieve this, use the pk list from initial_qs to get a
-    # corresponding set of unfiltered studies:
-    qs = GeneralStudyModuleAttr.objects.filter(pk__in=study_pks)
-
-    n_entries = qs.count()
-    tsk.num_records = n_entries
-    if abort_if_zero_studies(tsk.num_records, tsk):
-        return
-
-    tsk.progress = "{0} studies in query.".format(tsk.num_records)
-    tsk.save()
-
-    # Add summary sheet and all data sheet
-    summarysheet = book.add_worksheet("Summary")
-    wsalldata = book.add_worksheet("All data")
-
-    # Format the columns of the All data sheet
-    book = text_and_date_formats(book, wsalldata, pid=pid, name=name, patid=patid, modality="CT")
-
-    #====================================================================================
-    # Write the all data sheet
-    # This code is taken from the ct_csv method...
-    qs_chunk_size=10000
-
-    # Exam-level integer field names
+    # Exam-level integer field names and friendly names
     exam_int_fields = [
         "pk",
         "number_of_events",
     ]
-
-    # Friendly exam-level integer field names
     exam_int_field_names = [
         "pk",
         "Number of events"
     ]
 
     # Exam-level object field names (string data, little or no repetition)
-    exam_obj_fields = [
-        "accession_number",
-    ]
-    if pid and name:
-        exam_obj_fields.append("patientmoduleattr__patient_name")
-    if pid and patid:
-        exam_obj_fields.append("patientmoduleattr__patient_id")
+    exam_obj_fields = ["accession_number"]
+    exam_obj_field_names = ["Accession number"]
 
-    # Friendly exam-level object field names
-    exam_obj_field_names = [
-        "Accession number",
-    ]
-    if pid and name:
-        exam_obj_field_names.append("Patient name")
-    if pid and patid:
-        exam_obj_field_names.append("Patient ID")
-
-    # Exam-level category field names
+    # Exam-level category field names and friendly names
     exam_cat_fields = [
         "generalequipmentmoduleattr__institution_name",
         "generalequipmentmoduleattr__manufacturer",
@@ -174,8 +105,6 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
         "study_description",
         "requested_procedure_code_meaning",
     ]
-
-    # Friendly exam-level category field names
     exam_cat_field_names = [
         "Institution",
         "Manufacturer",
@@ -188,51 +117,37 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
         "Requested procedure",
     ]
 
-    if enable_standard_names:
-        exam_cat_fields.append("standard_names__standard_name")
-        exam_cat_field_names.append("Standard study name")
-
-    # Exam-level date field names
+    # Exam-level date field names and friendly name
     exam_date_fields = ["study_date"]
-
-    # Friendly exam-level date field names
     exam_date_field_names = ["Study date"]
 
-    # Exam-level time field names
+    # Exam-level time field names and friendly name
     exam_time_fields = ["study_time"]
-
-    # Friendly exam-level time field names
     exam_time_field_names = ["Study time"]
 
-    # Exam-level category value names
+    # Exam-level category value names and friendly names
     exam_val_fields = [
         "patientstudymoduleattr__patient_age_decimal",
         "patientstudymoduleattr__patient_size",
         "patientstudymoduleattr__patient_weight",
-        "total_dlp"
+        "total_dlp",
     ]
-
-    # Friendly exam-level value field names
     exam_val_field_names = [
         "Patient age",
         "Patient height (m)",
         "Patient weight (kg)",
-        "Total DLP (mGy.cm)"
+        "Total DLP (mGy.cm)",
     ]
 
-    # Required acquisition-level integer field names
     acquisition_int_fields = [
         "ctradiationdose__ctirradiationeventdata__pk",
         "ctradiationdose__ctirradiationeventdata__number_of_xray_sources",
     ]
-
-    # Friendly acquisition-level integer field names
     acquisition_int_field_names = [
         "Acquisition pk",
         "Number of sources",
     ]
 
-    # Required acquisition-level category field names
     acquisition_cat_fields = [
         "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
         "ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning",
@@ -240,8 +155,6 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
         "ctradiationdose__ctirradiationeventdata__xray_modulation_type",
         "ctradiationdose__ctirradiationeventdata__ctxraysourceparameters__identification_of_the_xray_source",
     ]
-
-    # Friendly acquisition-level category field names
     acquisition_cat_field_names = [
         "Acquisition protocol",
         "Acquisition type",
@@ -250,11 +163,10 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
         "Source name"
     ]
 
-    if enable_standard_names:
-        acquisition_cat_fields.append("ctradiationdose__ctirradiationeventdata__standard_protocols__standard_name")
-        acquisition_cat_field_names.append("Standard acquisition name")
+    acquisition_cat_field_std_name = "ctradiationdose__ctirradiationeventdata__standard_protocols__standard_name"
+    acquisition_cat_field_name_std_name = "Standard acquisition name"
 
-    # Required acquisition-level value field names
+    # Required acquisition-level value field names and friendly names
     acquisition_val_fields = [
         "ctradiationdose__ctirradiationeventdata__dlp",
         "ctradiationdose__ctirradiationeventdata__exposure_time",
@@ -268,8 +180,6 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
         "ctradiationdose__ctirradiationeventdata__ctxraysourceparameters__xray_tube_current",
         "ctradiationdose__ctirradiationeventdata__ctxraysourceparameters__exposure_time_per_rotation",
     ]
-
-    # Friendly acquisition-level value field names
     acquisition_val_field_names = [
         "DLP (mGy.cm)",
         "Exposure time (s)",
@@ -294,7 +204,6 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
         "ctradiationdose__ctirradiationeventdata__ctdosecheckdetails__alert_reason_for_proceeding",
         "ctradiationdose__ctirradiationeventdata__ctdosecheckdetails__tid1020_alert__person_name",
     ]
-
     ct_dose_check_field_names = [
         "DLP alert configured",
         "DLP alert value",
@@ -305,6 +214,95 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
         "Reason for proceeding",
         "Person name",
     ]
+
+    # Fields for obtaining the acquisition protocols in the data
+    fields_for_acquisition_frequency = [
+        "ctradiationdose__ctirradiationeventdata__pk",
+        "ctradiationdose__ctirradiationeventdata__acquisition_protocol"
+
+    ]
+    field_names_for_acquisition_frequency = [
+        "pk",
+        "Acquisition protocol"
+    ]
+    field_for_acquisition_frequency_std_name = "ctradiationdose__ctirradiationeventdata__standard_protocols__standard_name"
+    field_name_for_acquisition_frequency_std_name = "Standard acquisition name"
+
+    # Obtain the system-level enable_standard_names setting
+    try:
+        StandardNameSettings.objects.get()
+    except ObjectDoesNotExist:
+        StandardNameSettings.objects.create()
+    enable_standard_names = StandardNameSettings.objects.values_list(
+        "enable_standard_names", flat=True
+    )[0]
+
+    datestamp = datetime.datetime.now()
+    task_id = get_or_generate_task_uuid()
+    tsk = create_export_task(
+        task_id=task_id,
+        modality=modality,
+        export_type="XLSX_export",
+        date_stamp=datestamp,
+        pid=bool(pid and (name or patid)),
+        user=user,
+        filters_dict=filterdict,
+    )
+
+    tmpxlsx, book = create_xlsx(tsk)
+    if not tmpxlsx:
+        exit()
+
+    # Get the data
+    study_pks = None
+    if modality in ["CT"]:
+        study_pks = ct_acq_filter(filterdict, pid=pid).qs.values("pk")
+    elif modality in ["DX"]:
+        study_pks = dx_acq_filter(filterdict, pid=pid).qs.values("pk")
+
+    # The initial_qs may have filters to remove some acquisition types. For the export we want all acquisitions
+    # that are part of a study to be included. To achieve this, use the pk list from initial_qs to get a
+    # corresponding set of unfiltered studies:
+    qs = GeneralStudyModuleAttr.objects.filter(pk__in=study_pks)
+
+    n_entries = qs.count()
+    tsk.num_records = n_entries
+    if abort_if_zero_studies(tsk.num_records, tsk):
+        return
+
+    tsk.progress = "{0} studies in query.".format(tsk.num_records)
+    tsk.save()
+
+    # Add summary sheet and all data sheet
+    summarysheet = book.add_worksheet("Summary")
+    wsalldata = book.add_worksheet("All data")
+
+    # Format the columns of the All data sheet
+    book = text_and_date_formats(book, wsalldata, pid=pid, name=name, patid=patid, modality=modality)
+
+    #====================================================================================
+    # Write the all data sheet
+    # This code is taken from the ct_csv method...
+    qs_chunk_size=10000
+
+    if pid and name:
+        exam_obj_fields.append("patientmoduleattr__patient_name")
+    if pid and patid:
+        exam_obj_fields.append("patientmoduleattr__patient_id")
+
+    if pid and name:
+        exam_obj_field_names.append("Patient name")
+    if pid and patid:
+        exam_obj_field_names.append("Patient ID")
+
+    if enable_standard_names:
+        exam_cat_fields.append("standard_names__standard_name")
+        exam_cat_field_names.append("Standard study name")
+
+    if enable_standard_names:
+        acquisition_cat_fields.append(acquisition_cat_field_std_name)
+        acquisition_cat_field_names.append(acquisition_cat_field_name_std_name)
+
 
     exam_fields = exam_int_fields + exam_obj_fields + exam_cat_fields + exam_date_fields + exam_time_fields + exam_val_fields
     acquisition_fields = acquisition_int_fields + acquisition_cat_fields + acquisition_val_fields
@@ -325,29 +323,11 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
     # and a dictionary to hold the number of rows that have been written to each protocol sheet
 
     # Get the acquisition protocols used and their frequency
-    required_fields = []
-    column_names = []
-    if modality in ["DX", "RF", "MG"]:
-        required_fields.extend([
-            "projectionxrayradiationdose__irradeventxraydata__pk",
-            "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
-        ])
-        column_names.extend(["pk", "Acquisition protocol"])
-
-        if enable_standard_names:
-            required_fields.append("projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name")
-            column_names.append("Standard acquisition name")
-
-    elif modality in "CT":
-        required_fields.extend([
-            "ctradiationdose__ctirradiationeventdata__pk",
-            "ctradiationdose__ctirradiationeventdata__acquisition_protocol"
-        ])
-        column_names.extend(["pk", "Acquisition protocol"])
-
-        if enable_standard_names:
-            required_fields.append("ctradiationdose__ctirradiationeventdata__standard_protocols__standard_name")
-            column_names.append("Standard acquisition name")
+    required_fields = fields_for_acquisition_frequency
+    column_names = field_names_for_acquisition_frequency
+    if enable_standard_names:
+        required_fields.append(field_for_acquisition_frequency_std_name)
+        column_names.append(field_name_for_acquisition_frequency_std_name)
 
     acq_df = pd.DataFrame.from_records(
         data=qs.values_list(*required_fields),
@@ -396,19 +376,21 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
             columns=(all_field_names + ct_dose_check_field_names), coerce_float=True,
         )
 
-        if "Dose check alerts" in acquisition_cat_field_names:
-            acquisition_cat_field_names.remove("Dose check alerts")
+        if modality in ["CT"]:
+            if "Dose check alerts" in acquisition_cat_field_names:
+                acquisition_cat_field_names.remove("Dose check alerts")
 
         optimise_df_dtypes(df_unprocessed,
                            acquisition_cat_field_names, acquisition_int_field_names, acquisition_val_field_names,
                            exam_cat_field_names, exam_date_field_names, exam_int_field_names, exam_val_field_names)
 
-        # Add the Dose check alert column to the acquisition category field names
-        acquisition_cat_field_names.append("Dose check alerts")
+        if modality in ["CT"]:
+            # Add the Dose check alert column to the acquisition category field names
+            acquisition_cat_field_names.append("Dose check alerts")
 
-        # Create the CT dose check column
-        df_unprocessed = create_ct_dose_check_column(ct_dose_check_field_names, df_unprocessed)
-        df_unprocessed["Dose check alerts"] = df_unprocessed["Dose check alerts"].astype("category")
+            # Create the CT dose check column
+            df_unprocessed = create_ct_dose_check_column(ct_dose_check_field_names, df_unprocessed)
+            df_unprocessed["Dose check alerts"] = df_unprocessed["Dose check alerts"].astype("category")
 
         df = transform_to_one_row_per_exam(
             df_unprocessed,
@@ -467,21 +449,28 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
                 write_row_to_acquisition_sheet(acq_df, acquisition, book, worksheet_log)
 
     # Now write out any None accession number data if any such data is present
-    data = qs.order_by().filter(accession_number__isnull=True).values_list(*(all_fields + ct_dose_check_fields))
+    fields_for_none_accession = all_fields
+    field_names_for_non_accession = all_field_names
+    if modality in ["CT"]:
+        fields_for_none_accession.extend(ct_dose_check_fields)
+        field_names_for_non_accession.extend(ct_dose_check_field_names)
+
+    data = qs.order_by().filter(accession_number__isnull=True).values_list(*(fields_for_none_accession))
 
     # Clear the query cache
     django.db.reset_queries()
 
     df_unprocessed = pd.DataFrame.from_records(
         data=data,
-        columns=(all_field_names + ct_dose_check_field_names), coerce_float=True,
+        columns=(field_names_for_non_accession), coerce_float=True,
     )
 
     n_entries = len(df_unprocessed.index)
 
     if n_entries:
-        # Create the CT dose check column
-        df_unprocessed = create_ct_dose_check_column(ct_dose_check_field_names, df_unprocessed)
+        if modality in ["CT"]:
+            # Create the CT dose check column
+            df_unprocessed = create_ct_dose_check_column(ct_dose_check_field_names, df_unprocessed)
 
         optimise_df_dtypes(df_unprocessed,
                            acquisition_cat_field_names, acquisition_int_field_names, acquisition_val_field_names,
@@ -549,7 +538,7 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
                 write_row_to_acquisition_sheet(acq_df, acquisition, book, worksheet_log)
 
     # Now create the summary sheet
-    create_summary_sheet(tsk, qs, book, summarysheet, modality="CT")
+    create_summary_sheet(tsk, qs, book, summarysheet, modality=modality)
 
     tsk.progress = "Finished populating the summary sheet"
     tsk.save()
