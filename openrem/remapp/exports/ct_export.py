@@ -39,10 +39,8 @@ from django.conf import settings
 
 from openrem.remapp.tools.background import get_or_generate_task_uuid
 
-from remapp.models import (
-    StandardNameSettings,
-    GeneralStudyModuleAttr,
-)
+from remapp.models import GeneralStudyModuleAttr
+
 from .export_common_pandas import (
     get_common_data,
     common_headers,
@@ -56,6 +54,8 @@ from .export_common_pandas import (
     create_standard_name_df_columns,
     optimise_df_dtypes,
     write_row_to_acquisition_sheet,
+    export_using_pandas,
+    are_standard_names_enabled,
 )
 
 logger = logging.getLogger(__name__)
@@ -228,14 +228,7 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
     field_for_acquisition_frequency_std_name = "ctradiationdose__ctirradiationeventdata__standard_protocols__standard_name"
     field_name_for_acquisition_frequency_std_name = "Standard acquisition name"
 
-    # Obtain the system-level enable_standard_names setting
-    try:
-        StandardNameSettings.objects.get()
-    except ObjectDoesNotExist:
-        StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values_list(
-        "enable_standard_names", flat=True
-    )[0]
+    enable_standard_names = are_standard_names_enabled()
 
     datestamp = datetime.datetime.now()
     task_id = get_or_generate_task_uuid()
@@ -255,10 +248,7 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
 
     # Get the data
     study_pks = None
-    if modality in ["CT"]:
-        study_pks = ct_acq_filter(filterdict, pid=pid).qs.values("pk")
-    elif modality in ["DX"]:
-        study_pks = dx_acq_filter(filterdict, pid=pid).qs.values("pk")
+    study_pks = ct_acq_filter(filterdict, pid=pid).qs.values("pk")
 
     # The initial_qs may have filters to remove some acquisition types. For the export we want all acquisitions
     # that are part of a study to be included. To achieve this, use the pk list from initial_qs to get a
@@ -273,342 +263,16 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
     tsk.progress = "{0} studies in query.".format(tsk.num_records)
     tsk.save()
 
-    # Add summary sheet and all data sheet
-    summarysheet = book.add_worksheet("Summary")
-    wsalldata = book.add_worksheet("All data")
-
-    # Format the columns of the All data sheet
-    book = text_and_date_formats(book, wsalldata, pid=pid, name=name, patid=patid, modality=modality)
-
-    #====================================================================================
-    # Write the all data sheet
-    # This code is taken from the ct_csv method...
-    qs_chunk_size=10000
-
-    if pid and name:
-        exam_obj_fields.append("patientmoduleattr__patient_name")
-    if pid and patid:
-        exam_obj_fields.append("patientmoduleattr__patient_id")
-
-    if pid and name:
-        exam_obj_field_names.append("Patient name")
-    if pid and patid:
-        exam_obj_field_names.append("Patient ID")
-
-    if enable_standard_names:
-        exam_cat_fields.append("standard_names__standard_name")
-        exam_cat_field_names.append("Standard study name")
-
-    if enable_standard_names:
-        acquisition_cat_fields.append(acquisition_cat_field_std_name)
-        acquisition_cat_field_names.append(acquisition_cat_field_name_std_name)
-
-
-    exam_fields = exam_int_fields + exam_obj_fields + exam_cat_fields + exam_date_fields + exam_time_fields + exam_val_fields
-    acquisition_fields = acquisition_int_fields + acquisition_cat_fields + acquisition_val_fields
-    all_fields = exam_fields + acquisition_fields
-
-    exam_field_names = exam_int_field_names + exam_obj_field_names + exam_cat_field_names + exam_date_field_names + exam_time_field_names + exam_val_field_names
-    acquisition_field_names = acquisition_int_field_names + acquisition_cat_field_names + acquisition_val_field_names
-    all_field_names = exam_field_names + acquisition_field_names
-
-    # Create a series of DataFrames by chunking the queryset into groups of accession numbers.
-    # Chunking saves server memory at the expense of speed.
-    write_headers = True
-
-    # Generate a list of non-null accession numbers
-    accession_numbers = [x[0] for x in qs.order_by("-study_date", "-study_time").filter(accession_number__isnull=False).values_list("accession_number")]
-
-    # Create a work sheet for each acquisition protocol present in the data in alphabetical order
-    # and a dictionary to hold the number of rows that have been written to each protocol sheet
-
-    # Get the acquisition protocols used and their frequency
-    required_fields = fields_for_acquisition_frequency
-    column_names = field_names_for_acquisition_frequency
-    if enable_standard_names:
-        required_fields.append(field_for_acquisition_frequency_std_name)
-        column_names.append(field_name_for_acquisition_frequency_std_name)
-
-    acq_df = pd.DataFrame.from_records(
-        data=qs.values_list(*required_fields),
-        columns=column_names
-    )
-    acq_df["Acquisition protocol"] = acq_df["Acquisition protocol"].astype("category")
-    if enable_standard_names:
-        acq_df["Standard acquisition name"] = acq_df["Standard acquisition name"].astype("category")
-    required_sheets = acq_df.sort_values("Acquisition protocol")["Acquisition protocol"].unique()
-
-    if enable_standard_names:
-        std_name_sheets = acq_df.sort_values("Standard acquisition name")["Standard acquisition name"].dropna().unique()
-        std_name_sheets = "[standard] " + std_name_sheets.categories
-        required_sheets = np.concatenate((required_sheets, std_name_sheets))
-
-    worksheet_log = {}
-    for current_name in required_sheets:
-        if current_name in (None, np.nan, ""):
-            current_name = "Unknown"
-
-        current_name = sheet_name(current_name)
-
-        if current_name not in book.sheetnames.keys():
-            new_sheet = book.add_worksheet(current_name)
-            book = text_and_date_formats(book, new_sheet, pid=pid, name=name, patid=patid, modality="CT")
-            worksheet_log[current_name] = 0
-
-    current_row = 1
-
-    for chunk_min_idx in range(0, n_entries, qs_chunk_size):
-
-        chunk_max_idx = chunk_min_idx + qs_chunk_size
-        if chunk_max_idx > n_entries:
-            chunk_max_idx = n_entries
-
-        tsk.progress = "Working on entries {0} to {1}".format(chunk_min_idx + 1, chunk_max_idx)
-        tsk.save()
-
-        data = qs.order_by().filter(accession_number__in=accession_numbers[chunk_min_idx:chunk_max_idx]).values_list(*(all_fields + ct_dose_check_fields))
-
-        # Clear the query cache
-        django.db.reset_queries()
-
-        df_unprocessed = pd.DataFrame.from_records(
-            data=data,
-            columns=(all_field_names + ct_dose_check_field_names), coerce_float=True,
-        )
-
-        if modality in ["CT"]:
-            if "Dose check alerts" in acquisition_cat_field_names:
-                acquisition_cat_field_names.remove("Dose check alerts")
-
-        optimise_df_dtypes(df_unprocessed,
-                           acquisition_cat_field_names, acquisition_int_field_names, acquisition_val_field_names,
-                           exam_cat_field_names, exam_date_field_names, exam_int_field_names, exam_val_field_names)
-
-        if modality in ["CT"]:
-            # Add the Dose check alert column to the acquisition category field names
-            acquisition_cat_field_names.append("Dose check alerts")
-
-            # Create the CT dose check column
-            df_unprocessed = create_ct_dose_check_column(ct_dose_check_field_names, df_unprocessed)
-            df_unprocessed["Dose check alerts"] = df_unprocessed["Dose check alerts"].astype("category")
-
-        df = transform_to_one_row_per_exam(
-            df_unprocessed,
-            acquisition_cat_field_names, acquisition_int_field_names, acquisition_val_field_names,
-            exam_cat_field_names, exam_date_field_names, exam_int_field_names,
-            exam_obj_field_names, exam_time_field_names, exam_val_field_names,
-            all_field_names)
-
-        # Write the headings to the sheet (over-writing each time, but this ensures we'll include the study
-        # with the most events without doing anything complicated to generate the headings)
-        wsalldata.write_row(0, 0, df.columns)
-
-        # Write the DataFrame to the all data sheet
-        for idx, row in df.iterrows():
-            wsalldata.write_row(current_row, 0, row.fillna(""))
-            current_row = current_row + 1
-
-        # # Write out data to the acquisition protocol sheets
-        df = df_unprocessed
-
-        if "Standard study name" in df.columns:
-            df = create_standard_name_df_columns(df)
-
-            # Make the exam_cat_field_names a categorical column (saves server memory)
-            exam_cat_f_names = exam_cat_field_names[:]
-            exam_cat_f_names.remove("Standard study name")
-            exam_cat_f_names.extend(["Standard study name 1", "Standard study name 2", "Standard study name 3"])
-            df[exam_cat_f_names] = df[exam_cat_f_names].astype("category")
-
-        # Drop any duplicate acquisition pk rows
-        df.drop_duplicates(subset="Acquisition pk", inplace=True)
-
-        # Obtain a list of unique acquisition protocols
-        all_acquisitions_in_df = df["Acquisition protocol"].unique()
-
-        for acquisition in all_acquisitions_in_df:
-
-            acq_df = df[df["Acquisition protocol"] == acquisition]
-
-            if acquisition in (None, np.nan, ""):
-                acquisition = "Unknown"
-                acq_df = df[df["Acquisition protocol"].isnull()]
-
-            write_row_to_acquisition_sheet(acq_df, acquisition, book, worksheet_log)
-
-        # Write out all standard acquisition name data to the sheets
-        if enable_standard_names:
-            all_std_acquisitions_in_df = df["Standard acquisition name"].dropna().unique()
-
-            for acquisition in all_std_acquisitions_in_df:
-
-                acq_df = df[df["Standard acquisition name"] == acquisition]
-
-                acquisition = "[standard] " + acquisition
-
-                write_row_to_acquisition_sheet(acq_df, acquisition, book, worksheet_log)
-
-    # Now write out any None accession number data if any such data is present
-    fields_for_none_accession = all_fields
-    field_names_for_non_accession = all_field_names
-    if modality in ["CT"]:
-        fields_for_none_accession.extend(ct_dose_check_fields)
-        field_names_for_non_accession.extend(ct_dose_check_field_names)
-
-    data = qs.order_by().filter(accession_number__isnull=True).values_list(*(fields_for_none_accession))
-
-    # Clear the query cache
-    django.db.reset_queries()
-
-    df_unprocessed = pd.DataFrame.from_records(
-        data=data,
-        columns=(field_names_for_non_accession), coerce_float=True,
-    )
-
-    n_entries = len(df_unprocessed.index)
-
-    if n_entries:
-        if modality in ["CT"]:
-            # Create the CT dose check column
-            df_unprocessed = create_ct_dose_check_column(ct_dose_check_field_names, df_unprocessed)
-
-        optimise_df_dtypes(df_unprocessed,
-                           acquisition_cat_field_names, acquisition_int_field_names, acquisition_val_field_names,
-                           exam_cat_field_names, exam_date_field_names, exam_int_field_names, exam_val_field_names)
-
-        tsk.progress = "Working on {0} entries with blank accession numbers".format(n_entries)
-        tsk.save()
-
-        # Write out date to the All data sheet
-        df = transform_to_one_row_per_exam(
-            df_unprocessed,
-            acquisition_cat_field_names, acquisition_int_field_names, acquisition_val_field_names,
-            exam_cat_field_names, exam_date_field_names, exam_int_field_names,
-            exam_obj_field_names, exam_time_field_names, exam_val_field_names,
-            all_field_names)
-
-        # Write the headings to the sheet (over-writing each time, but this ensures we'll include the study
-        # with the most events without doing anything complicated to generate the headings)
-        wsalldata.write_row(0, 0, df.columns)
-
-        # Write the DataFrame to the all data sheet
-        for idx, row in df.iterrows():
-            wsalldata.write_row(current_row, 0, row.fillna(""))
-            current_row = current_row + 1
-
-
-        # Write out data to the acquisition protocol sheets
-        df = df_unprocessed
-
-        if "Standard study name" in df.columns:
-            df = create_standard_name_df_columns(df)
-
-            # Make the exam_cat_field_names a categorical column (saves server memory)
-            exam_cat_f_names = exam_cat_field_names[:]
-            exam_cat_f_names.remove("Standard study name")
-            exam_cat_f_names.extend(["Standard study name 1", "Standard study name 2", "Standard study name 3"])
-            df[exam_cat_f_names] = df[exam_cat_f_names].astype("category")
-
-        # Drop any duplicate acquisition pk rows
-        df.drop_duplicates(subset="Acquisition pk", inplace=True)
-
-        # Obtain a list of unique acquisition protocols
-        all_acquisitions_in_df = df["Acquisition protocol"].unique()
-
-        for acquisition in all_acquisitions_in_df:
-
-            acq_df = df[df["Acquisition protocol"] == acquisition]
-
-            if acquisition in (None, np.nan, ""):
-                acquisition = "Unknown"
-                acq_df = df[df["Acquisition protocol"].isnull()]
-
-            write_row_to_acquisition_sheet(acq_df, acquisition, book, worksheet_log)
-
-        # Write out all standard acquisition name data to the sheets
-        if enable_standard_names:
-            all_std_acquisitions_in_df = df["Standard acquisition name"].dropna().unique()
-
-            for acquisition in all_std_acquisitions_in_df:
-
-                acq_df = df[df["Standard acquisition name"] == acquisition]
-
-                acquisition = "[standard] " + acquisition
-
-                write_row_to_acquisition_sheet(acq_df, acquisition, book, worksheet_log)
-
-    # Now create the summary sheet
-    create_summary_sheet(tsk, qs, book, summarysheet, modality=modality)
-
-    tsk.progress = "Finished populating the summary sheet"
-    tsk.save()
-
-    book.close()
-    tsk.progress = "XLSX book written."
-    tsk.save()
-
-    xlsxfilename = "ctexport{0}.xlsx".format(datestamp.strftime("%Y%m%d-%H%M%S%f"))
-
-    write_export(tsk, xlsxfilename, tmpxlsx, datestamp)
-
-
-def create_ct_dose_check_column(ct_dose_check_field_names, df):
-    if df.empty:
-        return None
-
-    # Combine the dose alert fields
-    # The title if either DLP or CTDIvol alerts are configured
-    indices = df[(df["DLP alert configured"] == True) | (df["CTDIvol alert configured"] == True)].index
-    df.loc[indices, "Dose check alerts"] = "Dose check alerts:"
-    # The DLP alert value
-    indices = df[(df["DLP alert configured"] == True)].index
-    df.loc[indices, "Dose check alerts"] = (
-            df.loc[indices, "Dose check alerts"] +
-            "\nDLP alert is configured at " +
-            df.loc[indices, "DLP alert value"].astype("str") +
-            " mGy.cm"
-    )
-    # The DLP forward estimate
-    indices = df[(df["DLP forward estimate"].notnull())].index
-    df.loc[indices, "Dose check alerts"] = (
-            df.loc[indices, "Dose check alerts"] +
-            "\nwith an accumulated forward estimate of " +
-            df.loc[indices, "DLP forward estimate"].astype("str") +
-            " mGy.cm"
-    )
-    # The CTDIvol alert value
-    indices = df[(df["CTDIvol alert configured"] == True)].index
-    df.loc[indices, "Dose check alerts"] = (
-            df.loc[indices, "Dose check alerts"] +
-            "\nCTDIvol alert is configured at " +
-            df.loc[indices, "CTDIvol alert value"].astype("str") +
-            " mGy"
-    )
-    # The CTDIvol forward estimate
-    indices = df[(df["CTDIvol forward estimate"].notnull())].index
-    df.loc[indices, "Dose check alerts"] = (
-            df.loc[indices, "Dose check alerts"] +
-            "\nwith an accumulated forward estimate of " +
-            df.loc[indices, "CTDIvol forward estimate"].astype("str") +
-            " mGy"
-    )
-    # The reason for proceeding
-    indices = df[(df["Reason for proceeding"].notnull())].index
-    df.loc[indices, "Dose check alerts"] = (
-            df.loc[indices, "Dose check alerts"] +
-            "\nReason for proceeding: " +
-            df.loc[indices, "Reason for proceeding"]
-    )
-    # The person authorizing the exposure
-    indices = df[(df["Person name"].notnull())].index
-    df.loc[indices, "Dose check alerts"] = (
-            df.loc[indices, "Dose check alerts"] +
-            "\nPerson authorizing irradiation: " +
-            df.loc[indices, "Person name"]
-    )
-    # Remove the individual dose check columns from the dataframe
-    df = df.drop(columns=ct_dose_check_field_names)
-    return df
+    export_using_pandas(acquisition_cat_field_name_std_name, acquisition_cat_field_names,
+                        acquisition_cat_field_std_name, acquisition_cat_fields,acquisition_int_field_names,
+                        acquisition_int_fields, acquisition_val_field_names, acquisition_val_fields, book,
+                        ct_dose_check_field_names, ct_dose_check_fields, datestamp, enable_standard_names,
+                        exam_cat_field_names, exam_cat_fields, exam_date_field_names, exam_date_fields,
+                        exam_int_field_names, exam_int_fields, exam_obj_field_names, exam_obj_fields,
+                        exam_time_field_names, exam_time_fields, exam_val_field_names, exam_val_fields,
+                        field_for_acquisition_frequency_std_name, field_name_for_acquisition_frequency_std_name,
+                        field_names_for_acquisition_frequency, fields_for_acquisition_frequency, modality, n_entries,
+                        name, patid, pid, qs, tmpxlsx, tsk)
 
 
 def ct_csv(filterdict, pid=False, name=None, patid=None, user=None):
@@ -721,13 +385,7 @@ def _generate_all_data_headers_ct(max_events):
     """
 
     # Obtain the system-level enable_standard_names setting
-    try:
-        StandardNameSettings.objects.get()
-    except ObjectDoesNotExist:
-        StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values_list(
-        "enable_standard_names", flat=True
-    )[0]
+    enable_standard_names = are_standard_names_enabled()
 
     repeating_series_headers = []
     for h in range(int(max_events)):
@@ -771,13 +429,7 @@ def _ct_get_series_data(s):
     from collections import OrderedDict
 
     # Obtain the system-level enable_standard_names setting
-    try:
-        StandardNameSettings.objects.get()
-    except ObjectDoesNotExist:
-        StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values_list(
-        "enable_standard_names", flat=True
-    )[0]
+    enable_standard_names = are_standard_names_enabled()
 
     try:
         if s.ctdiw_phantom_type.code_value == "113691":
