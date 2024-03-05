@@ -27,8 +27,8 @@
 ..  moduleauthor:: David Platten and Ed McDonagh
 
 """
-import datetime
 import logging
+import datetime
 
 import django.db
 import numpy as np
@@ -37,13 +37,13 @@ import pandas as pd
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.translation import gettext as _
 from django.conf import settings
+from django.db.models import Max
 
 from openrem.remapp.tools.background import get_or_generate_task_uuid
 
-from remapp.models import (
-    StandardNameSettings,
-    GeneralStudyModuleAttr,
-)
+from remapp.models import GeneralStudyModuleAttr
+
+from ..interface.mod_filters import dx_acq_filter
 
 from .export_common_pandas import (
     get_common_data,
@@ -58,23 +58,13 @@ from .export_common_pandas import (
     create_standard_name_df_columns,
     optimise_df_dtypes,
     write_row_to_acquisition_sheet,
+    text_and_date_formats,
+    sheet_name,
+    are_standard_names_enabled,
+    export_using_pandas,
+    get_pulse_data,
+    get_xray_filter_info,
 )
-
-# from .export_common import (
-#     text_and_date_formats,
-#     common_headers,
-#     generate_sheets,
-#     sheet_name,
-#     get_common_data,
-#     get_xray_filter_info,
-#     create_xlsx,
-#     create_csv,
-#     write_export,
-#     create_summary_sheet,
-#     get_pulse_data,
-#     abort_if_zero_studies,
-#     create_export_task,
-# )
 
 logger = logging.getLogger(__name__)
 
@@ -178,13 +168,7 @@ def _series_headers(max_events):
     """
 
     # Obtain the system-level enable_standard_names setting
-    try:
-        StandardNameSettings.objects.get()
-    except ObjectDoesNotExist:
-        StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values_list(
-        "enable_standard_names", flat=True
-    )[0]
+    enable_standard_names = are_standard_names_enabled()
 
     series_headers = []
     for series_number in range(int(max_events)):
@@ -228,13 +212,7 @@ def _dx_get_series_data(s):
     """
 
     # Obtain the system-level enable_standard_names setting
-    try:
-        StandardNameSettings.objects.get()
-    except ObjectDoesNotExist:
-        StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values_list(
-        "enable_standard_names", flat=True
-    )[0]
+    enable_standard_names = are_standard_names_enabled()
 
     source_data = _get_source_data(s)
     detector_data = _get_detector_data(s)
@@ -411,22 +389,137 @@ def dxxlsx(filterdict, pid=False, name=None, patid=None, user=None):
     :param user: User that has started the export
     :return: Saves xlsx file into Media directory for user to download
     """
-
-    import datetime
-    from django.db.models import Max
-    from .export_common_pandas import text_and_date_formats, sheet_name
-    from ..interface.mod_filters import dx_acq_filter
-
     modality = "DX"
 
-    # Obtain the system-level enable_standard_names setting
-    try:
-        StandardNameSettings.objects.get()
-    except ObjectDoesNotExist:
-        StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values_list(
-        "enable_standard_names", flat=True
-    )[0]
+    # Exam-level integer field names and friendly names
+    exam_int_fields = [
+        "pk",
+        "number_of_events",
+    ]
+    exam_int_field_names = [
+        "pk",
+        "Number of events"
+    ]
+
+    # Exam-level object field names (string data, little or no repetition)
+    exam_obj_fields = ["accession_number"]
+    exam_obj_field_names = ["Accession number"]
+
+    # Exam-level category field names and friendly names
+    exam_cat_fields = [
+        "generalequipmentmoduleattr__institution_name",
+        "generalequipmentmoduleattr__manufacturer",
+        "generalequipmentmoduleattr__manufacturer_model_name",
+        "generalequipmentmoduleattr__station_name",
+        "generalequipmentmoduleattr__unique_equipment_name__display_name",
+        "operator_name",
+        "patientmoduleattr__patient_sex",
+        "study_description",
+        "requested_procedure_code_meaning",
+    ]
+    exam_cat_field_names = [
+        "Institution",
+        "Manufacturer",
+        "Model",
+        "Station name",
+        "Display name",
+        "Operator",
+        "Patient sex",
+        "Study description",
+        "Requested procedure",
+    ]
+
+    # Exam-level date field names and friendly names
+    exam_date_fields = ["study_date"]
+    exam_date_field_names = ["Study date"]
+
+    # Exam-level time field names and friendly names
+    exam_time_fields = ["study_time"]
+    exam_time_field_names = ["Study time"]
+
+    # Exam-level category value names and friendly names
+    exam_val_fields = [
+        "patientstudymoduleattr__patient_age_decimal",
+        "patientstudymoduleattr__patient_size",
+        "patientstudymoduleattr__patient_weight",
+        "total_dap"
+    ]
+    exam_val_field_names = [
+        "Patient age",
+        "Patient height (m)",
+        "Patient weight (kg)",
+        "Total DAP (cGy·cm²)"
+    ]
+
+    acquisition_int_fields = ["projectionxrayradiationdose__irradeventxraydata__pk"]
+    acquisition_int_field_names = ["Acquisition pk"]
+
+    acquisition_cat_fields = [
+        "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
+        "projectionxrayradiationdose__irradeventxraydata__anatomical_structure__code_meaning",
+        "projectionxrayradiationdose__irradeventxraydata__image_view__code_meaning",
+        "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure_control_mode",
+    ]
+    acquisition_cat_field_names = [
+        "Acquisition protocol",
+        "Anatomy",
+        "Image view",
+        "Exposure control mode",
+    ]
+
+    acquisition_cat_field_std_name = "projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name"
+    acquisition_cat_field_name_std_name = "Standard acquisition name"
+
+    # Required acquisition-level value field names and friendly names
+    acquisition_val_fields = [
+        "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__kvp__kvp",
+        "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure__exposure",
+        "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__average_xray_tube_current",
+        "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure_time",
+        "projectionxrayradiationdose__irradeventxraydata__irradeventxraydetectordata__exposure_index",
+        "projectionxrayradiationdose__irradeventxraydata__irradeventxraydetectordata__target_exposure_index",
+        "projectionxrayradiationdose__irradeventxraydata__irradeventxraydetectordata__deviation_index",
+        "projectionxrayradiationdose__irradeventxraydata__irradeventxraydetectordata__relative_xray_exposure",
+        "projectionxrayradiationdose__irradeventxraydata__dose_area_product",
+        "projectionxrayradiationdose__irradeventxraydata__entrance_exposure_at_rp",
+        "projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__doserelateddistancemeasurements__distance_source_to_detector",
+        "projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__doserelateddistancemeasurements__distance_source_to_entrance_surface",
+        "projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__doserelateddistancemeasurements__distance_source_to_isocenter",
+        "projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__doserelateddistancemeasurements__table_height_position",
+    ]
+    acquisition_val_field_names = [
+        "kVp",
+        "mAs",
+        "mA",
+        "Exposure time (ms)",
+        "Exposure index",
+        "Target exposure index",
+        "Deviation index",
+        "Relative x-ray exposure",
+        "DAP (cGy·cm²)",
+        "Entrance exposure at RP",
+        "Source to detector distance",
+        "Source to entrance surface distance",
+        "Source to isocentre distance",
+        "Table height",
+    ]
+
+    ct_dose_check_fields = []
+    ct_dose_check_field_names = []
+
+    # Fields for obtaining the acquisition protocols in the data
+    fields_for_acquisition_frequency = [
+        "projectionxrayradiationdose__irradeventxraydata__pk",
+        "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
+    ]
+    field_names_for_acquisition_frequency = [
+        "pk",
+        "Acquisition protocol"
+    ]
+    field_for_acquisition_frequency_std_name = "projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name"
+    field_name_for_acquisition_frequency_std_name = "Standard acquisition name"
+
+    enable_standard_names = are_standard_names_enabled()
 
     datestamp = datetime.datetime.now()
     task_id = get_or_generate_task_uuid()
@@ -445,6 +538,7 @@ def dxxlsx(filterdict, pid=False, name=None, patid=None, user=None):
         exit()
 
     # Get the data
+    study_pks = None
     study_pks = dx_acq_filter(filterdict, pid=pid).qs.values("pk")
 
     # The initial_qs may have filters to remove some acquisition types. For the export we want all acquisitions
@@ -460,592 +554,16 @@ def dxxlsx(filterdict, pid=False, name=None, patid=None, user=None):
     tsk.progress = "{0} studies in query.".format(tsk.num_records)
     tsk.save()
 
-    # Add summary sheet and all data sheet
-    summarysheet = book.add_worksheet("Summary")
-    wsalldata = book.add_worksheet("All data")
-
-    # Format the columns of the All data sheet
-    book = text_and_date_formats(book, wsalldata, pid=pid, name=name, patid=patid, modality=modality)
-
-    #====================================================================================
-    # Write the all data sheet
-    # This code is taken from the ct_csv method...
-    qs_chunk_size=10000
-
-    # Exam-level integer field names
-    exam_int_fields = [
-        "pk",
-        "number_of_events",
-    ]
-
-    # Friendly exam-level integer field names
-    exam_int_field_names = [
-        "pk",
-        "Number of events"
-    ]
-
-    # Exam-level object field names (string data, little or no repetition)
-    exam_obj_fields = [
-        "accession_number",
-    ]
-    if pid and name:
-        exam_obj_fields.append("patientmoduleattr__patient_name")
-    if pid and patid:
-        exam_obj_fields.append("patientmoduleattr__patient_id")
-
-    # Friendly exam-level object field names
-    exam_obj_field_names = [
-        "Accession number",
-    ]
-    if pid and name:
-        exam_obj_field_names.append("Patient name")
-    if pid and patid:
-        exam_obj_field_names.append("Patient ID")
-
-    # Exam-level category field names
-    exam_cat_fields = [
-        "generalequipmentmoduleattr__institution_name",
-        "generalequipmentmoduleattr__manufacturer",
-        "generalequipmentmoduleattr__manufacturer_model_name",
-        "generalequipmentmoduleattr__station_name",
-        "generalequipmentmoduleattr__unique_equipment_name__display_name",
-        "operator_name",
-        "patientmoduleattr__patient_sex",
-        "study_description",
-        "requested_procedure_code_meaning",
-    ]
-
-    # Friendly exam-level category field names
-    exam_cat_field_names = [
-        "Institution",
-        "Manufacturer",
-        "Model",
-        "Station name",
-        "Display name",
-        "Operator",
-        "Patient sex",
-        "Study description",
-        "Requested procedure",
-    ]
-
-    if enable_standard_names:
-        exam_cat_fields.append("standard_names__standard_name")
-        exam_cat_field_names.append("Standard study name")
-
-    # Exam-level date field names
-    exam_date_fields = ["study_date"]
-
-    # Friendly exam-level date field names
-    exam_date_field_names = ["Study date"]
-
-    # Exam-level time field names
-    exam_time_fields = ["study_time"]
-
-    # Friendly exam-level time field names
-    exam_time_field_names = ["Study time"]
-
-    # Exam-level category value names
-    exam_val_fields = [
-        "patientstudymoduleattr__patient_age_decimal",
-        "patientstudymoduleattr__patient_size",
-        "patientstudymoduleattr__patient_weight",
-        "total_dap"
-    ]
-
-    # Friendly exam-level value field names
-    exam_val_field_names = [
-        "Patient age",
-        "Patient height (m)",
-        "Patient weight (kg)",
-        "Total DAP (cGy·cm²)"
-    ]
-
-    # Required acquisition-level integer field names
-    acquisition_int_fields = [
-        "projectionxrayradiationdose__irradeventxraydata__pk",
-    ]
-
-    # Friendly acquisition-level integer field names
-    acquisition_int_field_names = [
-        "Acquisition pk",
-    ]
-
-    # Required acquisition-level category field names
-    acquisition_cat_fields = [
-        "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
-        "projectionxrayradiationdose__irradeventxraydata__anatomical_structure__code_meaning",
-        "projectionxrayradiationdose__irradeventxraydata__image_view__code_meaning",
-        "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure_control_mode",
-    ]
-
-    # Friendly acquisition-level category field names
-    acquisition_cat_field_names = [
-        "Acquisition protocol",
-        "Anatomy",
-        "Image view",
-        "Exposure control mode",
-    ]
-
-    if enable_standard_names:
-        acquisition_cat_fields.append("projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name")
-        acquisition_cat_field_names.append("Standard acquisition name")
-
-    # Required acquisition-level value field names
-    acquisition_val_fields = [
-        "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__kvp__kvp",
-        "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure__exposure",
-        "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__average_xray_tube_current",
-        "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure_time",
-        "projectionxrayradiationdose__irradeventxraydata__irradeventxraydetectordata__exposure_index",
-        "projectionxrayradiationdose__irradeventxraydata__irradeventxraydetectordata__target_exposure_index",
-        "projectionxrayradiationdose__irradeventxraydata__irradeventxraydetectordata__deviation_index",
-        "projectionxrayradiationdose__irradeventxraydata__irradeventxraydetectordata__relative_xray_exposure",
-        "projectionxrayradiationdose__irradeventxraydata__dose_area_product",
-        "projectionxrayradiationdose__irradeventxraydata__entrance_exposure_at_rp",
-        "projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__doserelateddistancemeasurements__distance_source_to_detector",
-        "projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__doserelateddistancemeasurements__distance_source_to_entrance_surface",
-        "projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__doserelateddistancemeasurements__distance_source_to_isocenter",
-        "projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__doserelateddistancemeasurements__table_height_position",
-    ]
-
-    # Friendly acquisition-level value field names
-    acquisition_val_field_names = [
-        "kVp",
-        "mAs",
-        "mA",
-        "Exposure time (ms)",
-        "Exposure index",
-        "Target exposure index",
-        "Deviation index",
-        "Relative x-ray exposure",
-        "DAP (cGy·cm²)",
-        "Entrance exposure at RP",
-        "Source to detector distance",
-        "Source to entrance surface distance",
-        "Source to isocentre distance",
-        "Table height",
-    ]
-
-    exam_fields = exam_int_fields + exam_obj_fields + exam_cat_fields + exam_date_fields + exam_time_fields + exam_val_fields
-    acquisition_fields = acquisition_int_fields + acquisition_cat_fields + acquisition_val_fields
-    all_fields = exam_fields + acquisition_fields
-
-    exam_field_names = exam_int_field_names + exam_obj_field_names + exam_cat_field_names + exam_date_field_names + exam_time_field_names + exam_val_field_names
-    acquisition_field_names = acquisition_int_field_names + acquisition_cat_field_names + acquisition_val_field_names
-    all_field_names = exam_field_names + acquisition_field_names
-
-    # Create a series of DataFrames by chunking the queryset into groups of accession numbers.
-    # Chunking saves server memory at the expense of speed.
-    write_headers = True
-
-    # Generate a list of non-null accession numbers
-    accession_numbers = [x[0] for x in qs.order_by("-study_date", "-study_time").filter(accession_number__isnull=False).values_list("accession_number")]
-
-    # Create a work sheet for each acquisition protocol present in the data in alphabetical order
-    # and a dictionary to hold the number of rows that have been written to each protocol sheet
-
-    # Get the acquisition protocols used and their frequency
-    required_fields = []
-    column_names = []
-    if modality in ["DX", "RF", "MG"]:
-        required_fields.extend([
-            "projectionxrayradiationdose__irradeventxraydata__pk",
-            "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
-        ])
-        column_names.extend(["pk", "Acquisition protocol"])
-
-        if enable_standard_names:
-            required_fields.append("projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name")
-            column_names.append("Standard acquisition name")
-
-    elif modality in "CT":
-        required_fields.extend([
-            "ctradiationdose__ctirradiationeventdata__pk",
-            "ctradiationdose__ctirradiationeventdata__acquisition_protocol"
-        ])
-        column_names.extend(["pk", "Acquisition protocol"])
-
-        if enable_standard_names:
-            required_fields.append("ctradiationdose__ctirradiationeventdata__standard_protocols__standard_name")
-            column_names.append("Standard acquisition name")
-
-    acq_df = pd.DataFrame.from_records(
-        data=qs.values_list(*required_fields),
-        columns=column_names
-    )
-    acq_df["Acquisition protocol"] = acq_df["Acquisition protocol"].astype("category")
-    if enable_standard_names:
-        acq_df["Standard acquisition name"] = acq_df["Standard acquisition name"].astype("category")
-    required_sheets = acq_df.sort_values("Acquisition protocol")["Acquisition protocol"].unique()
-
-    if enable_standard_names:
-        std_name_sheets = acq_df.sort_values("Standard acquisition name")["Standard acquisition name"].dropna().unique()
-        std_name_sheets = "[standard] " + std_name_sheets.categories
-        required_sheets = np.concatenate((required_sheets, std_name_sheets))
-
-    worksheet_log = {}
-    for current_name in required_sheets:
-        if current_name in (None, np.nan, ""):
-            current_name = "Unknown"
-
-        current_name = sheet_name(current_name)
-
-        if current_name not in book.sheetnames.keys():
-            new_sheet = book.add_worksheet(current_name)
-            book = text_and_date_formats(book, new_sheet, pid=pid, name=name, patid=patid, modality="CT")
-            worksheet_log[current_name] = 0
-
-    current_row = 1
-
-    for chunk_min_idx in range(0, n_entries, qs_chunk_size):
-
-        chunk_max_idx = chunk_min_idx + qs_chunk_size
-        if chunk_max_idx > n_entries:
-            chunk_max_idx = n_entries
-
-        tsk.progress = "Working on entries {0} to {1}".format(chunk_min_idx + 1, chunk_max_idx)
-        tsk.save()
-
-        data = qs.order_by().filter(accession_number__in=accession_numbers[chunk_min_idx:chunk_max_idx]).values_list(*(all_fields))
-
-        # Clear the query cache
-        django.db.reset_queries()
-
-        df_unprocessed = pd.DataFrame.from_records(
-            data=data,
-            columns=(all_field_names), coerce_float=True,
-        )
-
-        if "Dose check alerts" in acquisition_cat_field_names:
-            acquisition_cat_field_names.remove("Dose check alerts")
-
-        optimise_df_dtypes(df_unprocessed,
-                           acquisition_cat_field_names, acquisition_int_field_names, acquisition_val_field_names,
-                           exam_cat_field_names, exam_date_field_names, exam_int_field_names, exam_val_field_names)
-
-        # Transform DAP and uAs values into the required units
-        if "Total DAP (cGy·cm²)" in df_unprocessed.columns:
-            df_unprocessed["Total DAP (cGy·cm²)"] = df_unprocessed["Total DAP (cGy·cm²)"] * 1000000
-
-        if "DAP (cGy·cm²)" in df_unprocessed.columns:
-            df_unprocessed["DAP (cGy·cm²)"] = df_unprocessed["DAP (cGy·cm²)"] * 1000000
-
-        if "mAs" in df_unprocessed.columns:
-            df_unprocessed["mAs"] = df_unprocessed["mAs"] / 1000
-
-        df = transform_to_one_row_per_exam(
-            df_unprocessed,
-            acquisition_cat_field_names, acquisition_int_field_names, acquisition_val_field_names,
-            exam_cat_field_names, exam_date_field_names, exam_int_field_names,
-            exam_obj_field_names, exam_time_field_names, exam_val_field_names,
-            all_field_names)
-
-        # Write the headings to the sheet (over-writing each time, but this ensures we'll include the study
-        # with the most events without doing anything complicated to generate the headings)
-        wsalldata.write_row(0, 0, df.columns)
-
-        # Write the DataFrame to the all data sheet
-        for idx, row in df.iterrows():
-            wsalldata.write_row(current_row, 0, row.fillna(""))
-            current_row = current_row + 1
-
-        # # Write out data to the acquisition protocol sheets
-        df = df_unprocessed
-
-        if "Standard study name" in df.columns:
-            df = create_standard_name_df_columns(df)
-
-            # Make the exam_cat_field_names a categorical column (saves server memory)
-            exam_cat_f_names = exam_cat_field_names[:]
-            exam_cat_f_names.remove("Standard study name")
-            exam_cat_f_names.extend(["Standard study name 1", "Standard study name 2", "Standard study name 3"])
-            df[exam_cat_f_names] = df[exam_cat_f_names].astype("category")
-
-        # Drop any duplicate acquisition pk rows
-        df.drop_duplicates(subset="Acquisition pk", inplace=True)
-
-        # Obtain a list of unique acquisition protocols
-        all_acquisitions_in_df = df["Acquisition protocol"].unique()
-
-        for acquisition in all_acquisitions_in_df:
-
-            acq_df = df[df["Acquisition protocol"] == acquisition]
-
-            if acquisition in (None, np.nan, ""):
-                acquisition = "Unknown"
-                acq_df = df[df["Acquisition protocol"].isnull()]
-
-            write_row_to_acquisition_sheet(acq_df, acquisition, book, worksheet_log)
-
-        # Write out all standard acquisition name data to the sheets
-        if enable_standard_names:
-            all_std_acquisitions_in_df = df["Standard acquisition name"].dropna().unique()
-
-            for acquisition in all_std_acquisitions_in_df:
-
-                acq_df = df[df["Standard acquisition name"] == acquisition]
-
-                acquisition = "[standard] " + acquisition
-
-                write_row_to_acquisition_sheet(acq_df, acquisition, book, worksheet_log)
-
-    # Now write out any None accession number data if any such data is present
-    data = qs.order_by().filter(accession_number__isnull=True).values_list(*(all_fields))
-
-    # Clear the query cache
-    django.db.reset_queries()
-
-    df_unprocessed = pd.DataFrame.from_records(
-        data=data,
-        columns=(all_field_names), coerce_float=True,
-    )
-
-    n_entries = len(df_unprocessed.index)
-
-    if n_entries:
-        optimise_df_dtypes(df_unprocessed,
-                           acquisition_cat_field_names, acquisition_int_field_names, acquisition_val_field_names,
-                           exam_cat_field_names, exam_date_field_names, exam_int_field_names, exam_val_field_names)
-
-        # Transform DAP and uAs values into the required units
-        if "Total DAP (cGy·cm²)" in df_unprocessed.columns:
-            df_unprocessed["Total DAP (cGy·cm²)"] = df_unprocessed["Total DAP (cGy·cm²)"] * 1000000
-
-        if "DAP (cGy·cm²)" in df_unprocessed.columns:
-            df_unprocessed["DAP (cGy·cm²)"] = df_unprocessed["DAP (cGy·cm²)"] * 1000000
-
-        if "mAs" in df_unprocessed.columns:
-            df_unprocessed["mAs"] = df_unprocessed["mAs"] / 1000
-
-        tsk.progress = "Working on {0} entries with blank accession numbers".format(n_entries)
-        tsk.save()
-
-        # Write out date to the All data sheet
-        df = transform_to_one_row_per_exam(
-            df_unprocessed,
-            acquisition_cat_field_names, acquisition_int_field_names, acquisition_val_field_names,
-            exam_cat_field_names, exam_date_field_names, exam_int_field_names,
-            exam_obj_field_names, exam_time_field_names, exam_val_field_names,
-            all_field_names)
-
-        # Write the headings to the sheet (over-writing each time, but this ensures we'll include the study
-        # with the most events without doing anything complicated to generate the headings)
-        wsalldata.write_row(0, 0, df.columns)
-
-        # Write the DataFrame to the all data sheet
-        for idx, row in df.iterrows():
-            wsalldata.write_row(current_row, 0, row.fillna(""))
-            current_row = current_row + 1
-
-
-        # Write out data to the acquisition protocol sheets
-        df = df_unprocessed
-
-        if "Standard study name" in df.columns:
-            df = create_standard_name_df_columns(df)
-
-            # Make the exam_cat_field_names a categorical column (saves server memory)
-            exam_cat_f_names = exam_cat_field_names[:]
-            exam_cat_f_names.remove("Standard study name")
-            exam_cat_f_names.extend(["Standard study name 1", "Standard study name 2", "Standard study name 3"])
-            df[exam_cat_f_names] = df[exam_cat_f_names].astype("category")
-
-        # Drop any duplicate acquisition pk rows
-        df.drop_duplicates(subset="Acquisition pk", inplace=True)
-
-        # Obtain a list of unique acquisition protocols
-        all_acquisitions_in_df = df["Acquisition protocol"].unique()
-
-        for acquisition in all_acquisitions_in_df:
-
-            acq_df = df[df["Acquisition protocol"] == acquisition]
-
-            if acquisition in (None, np.nan, ""):
-                acquisition = "Unknown"
-                acq_df = df[df["Acquisition protocol"].isnull()]
-
-            write_row_to_acquisition_sheet(acq_df, acquisition, book, worksheet_log)
-
-        # Write out all standard acquisition name data to the sheets
-        if enable_standard_names:
-            all_std_acquisitions_in_df = df["Standard acquisition name"].dropna().unique()
-
-            for acquisition in all_std_acquisitions_in_df:
-
-                acq_df = df[df["Standard acquisition name"] == acquisition]
-
-                acquisition = "[standard] " + acquisition
-
-                write_row_to_acquisition_sheet(acq_df, acquisition, book, worksheet_log)
-
-    # Now create the summary sheet
-    create_summary_sheet(tsk, qs, book, summarysheet, modality="CT")
-
-    tsk.progress = "Finished populating the summary sheet"
-    tsk.save()
-
-
-
-
-
-
-
-
-    # # Some prep
-    # commonheaders = common_headers(pid=pid, name=name, patid=patid)
-    # commonheaders += ["DAP total (cGy.cm^2)"]
-    #
-    # protocolheaders = commonheaders + ["Protocol"]
-    #
-    # if enable_standard_names:
-    #     protocolheaders += ["Standard acquisition name"]
-    #
-    # protocolheaders = protocolheaders + [
-    #     "Anatomy",
-    #     "Image view",
-    #     "Exposure control mode",
-    #     "kVp",
-    #     "mAs",
-    #     "mA",
-    #     "Exposure time (ms)",
-    #     "Filters",
-    #     "Filter thicknesses (mm)",
-    #     "Exposure index",
-    #     "Target exposure index",
-    #     "Deviation index",
-    #     "Relative x-ray exposure",
-    #     "DAP (cGy.cm^2)",
-    #     "Entrance exposure at RP",
-    #     "SDD Detector Dist",
-    #     "SPD Patient Dist",
-    #     "SIsoD Isocentre Dist",
-    #     "Table Height",
-    #     "Comment",
-    # ]
-    #
-    # # Generate list of protocols in queryset and create worksheets for each
-    # tsk.progress = "Generating list of protocols in the dataset..."
-    # tsk.save()
-    #
-    # tsk.progress = "Creating an Excel safe version of protocol names and creating a worksheet for each..."
-    # tsk.save()
-    #
-    # book, sheet_list = generate_sheets(
-    #     e, book, protocolheaders, modality="DX", pid=pid, name=name, patid=patid
-    # )
-    #
-    # ##################
-    # # All data sheet
-    #
-    # from django.db.models import Max
-    #
-    # max_events_dict = e.aggregate(
-    #     Max(
-    #         "projectionxrayradiationdose__accumxraydose__accumintegratedprojradiogdose__"
-    #         "total_number_of_radiographic_frames"
-    #     )
-    # )
-    # max_events = max_events_dict[
-    #     "projectionxrayradiationdose__accumxraydose__accumintegratedprojradiogdose__"
-    #     "total_number_of_radiographic_frames__max"
-    # ]
-    # if not max_events:
-    #     max_events = 1
-    #
-    # alldataheaders = list(commonheaders)
-    #
-    # tsk.progress = "Generating headers for the all data sheet..."
-    # tsk.save()
-    #
-    # alldataheaders += _series_headers(max_events)
-    # wsalldata.write_row("A1", alldataheaders)
-    # numrows = e.count()
-    # wsalldata.autofilter(0, 0, numrows, len(alldataheaders) - 1)
-    #
-    # for row, exams in enumerate(e):
-    #
-    #     tsk.progress = "Writing study {0} of {1} to All data sheet and individual protocol sheets".format(
-    #         row + 1, numrows
-    #     )
-    #     tsk.save()
-    #
-    #     try:
-    #         common_exam_data = get_common_data(
-    #             "DX", exams, pid=pid, name=name, patid=patid
-    #         )
-    #         all_exam_data = list(common_exam_data)
-    #
-    #         for (
-    #             s
-    #         ) in exams.projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by(
-    #             "id"
-    #         ):
-    #             # Get series data
-    #             series_data = _dx_get_series_data(s)
-    #
-    #             # Add series to all data
-    #             all_exam_data += series_data
-    #
-    #             # Add series data to series tab
-    #             protocol = s.acquisition_protocol
-    #             if not protocol:
-    #                 protocol = "Unknown"
-    #             tabtext = sheet_name(protocol)
-    #             sheet_list[tabtext]["count"] += 1
-    #             sheet_list[tabtext]["sheet"].write_row(
-    #                 sheet_list[tabtext]["count"], 0, common_exam_data + series_data
-    #             )
-    #
-    #             if enable_standard_names:
-    #                 try:
-    #                     protocol = s.standard_protocols.first().standard_name
-    #                     if protocol:
-    #                         tabtext = sheet_name("[standard] " + protocol)
-    #                         sheet_list[tabtext]["count"] += 1
-    #                         sheet_list[tabtext]["sheet"].write_row(
-    #                             sheet_list[tabtext]["count"],
-    #                             0,
-    #                             common_exam_data + series_data,
-    #                         )
-    #                 except AttributeError:
-    #                     pass
-    #
-    #         wsalldata.write_row(row + 1, 0, all_exam_data)
-    #
-    #     except ObjectDoesNotExist:
-    #         error_message = (
-    #             "DoesNotExist error whilst exporting study {0} of {1},  study UID {2}, accession number"
-    #             " {3} - maybe database entry was deleted as part of importing later version of same"
-    #             " study?".format(
-    #                 row + 1, numrows, exams.study_instance_uid, exams.accession_number
-    #             )
-    #         )
-    #         logger.error(error_message)
-    #         wsalldata.write(row + 1, 0, error_message)
-    #
-    # create_summary_sheet(tsk, e, book, summarysheet, sheet_list)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    book.close()
-    tsk.progress = "XLSX book written."
-    tsk.save()
-
-    xlsxfilename = "dxexport{0}.xlsx".format(datestamp.strftime("%Y%m%d-%H%M%S%f"))
-
-    write_export(tsk, xlsxfilename, tmpxlsx, datestamp)
+    export_using_pandas(acquisition_cat_field_name_std_name, acquisition_cat_field_names,
+                        acquisition_cat_field_std_name, acquisition_cat_fields,acquisition_int_field_names,
+                        acquisition_int_fields, acquisition_val_field_names, acquisition_val_fields, book,
+                        ct_dose_check_field_names, ct_dose_check_fields, datestamp, enable_standard_names,
+                        exam_cat_field_names, exam_cat_fields, exam_date_field_names, exam_date_fields,
+                        exam_int_field_names, exam_int_fields, exam_obj_field_names, exam_obj_fields,
+                        exam_time_field_names, exam_time_fields, exam_val_field_names, exam_val_fields,
+                        field_for_acquisition_frequency_std_name, field_name_for_acquisition_frequency_std_name,
+                        field_names_for_acquisition_frequency, fields_for_acquisition_frequency, modality, n_entries,
+                        name, patid, pid, qs, tmpxlsx, tsk)
 
 
 def dx_phe_2019(filterdict, user=None, projection=True, bespoke=False):

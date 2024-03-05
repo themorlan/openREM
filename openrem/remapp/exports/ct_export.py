@@ -28,6 +28,7 @@
 
 """
 import logging
+import datetime
 
 import django.db
 import numpy as np
@@ -36,10 +37,13 @@ import pandas as pd
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.translation import gettext as _
 from django.conf import settings
+from django.db.models import Max
 
 from openrem.remapp.tools.background import get_or_generate_task_uuid
 
 from remapp.models import GeneralStudyModuleAttr
+
+from ..interface.mod_filters import ct_acq_filter
 
 from .export_common_pandas import (
     get_common_data,
@@ -56,6 +60,8 @@ from .export_common_pandas import (
     write_row_to_acquisition_sheet,
     export_using_pandas,
     are_standard_names_enabled,
+    text_and_date_formats,
+    sheet_name,
 )
 
 logger = logging.getLogger(__name__)
@@ -71,12 +77,6 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
     :param user: User that has started the export
     :return: Saves xlsx file into Media directory for user to download
     """
-
-    import datetime
-    from django.db.models import Max
-    from .export_common_pandas import text_and_date_formats, sheet_name
-    from ..interface.mod_filters import ct_acq_filter
-
     modality = "CT"
 
     # Exam-level integer field names and friendly names

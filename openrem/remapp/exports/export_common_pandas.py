@@ -1313,6 +1313,16 @@ def export_using_pandas(acquisition_cat_field_name_std_name, acquisition_cat_fie
                            acquisition_cat_field_names, acquisition_int_field_names, acquisition_val_field_names,
                            exam_cat_field_names, exam_date_field_names, exam_int_field_names, exam_val_field_names)
 
+        # Transform DAP and uAs values into the required units
+        if "Total DAP (cGy·cm²)" in df_unprocessed.columns:
+            df_unprocessed["Total DAP (cGy·cm²)"] = df_unprocessed["Total DAP (cGy·cm²)"] * 1000000
+
+        if "DAP (cGy·cm²)" in df_unprocessed.columns:
+            df_unprocessed["DAP (cGy·cm²)"] = df_unprocessed["DAP (cGy·cm²)"] * 1000000
+
+        if "mAs" in df_unprocessed.columns:
+            df_unprocessed["mAs"] = df_unprocessed["mAs"] / 1000
+
         if modality in ["CT"]:
             # Add the Dose check alert column to the acquisition category field names
             acquisition_cat_field_names.append("Dose check alerts")
@@ -1402,6 +1412,16 @@ def export_using_pandas(acquisition_cat_field_name_std_name, acquisition_cat_fie
         optimise_df_dtypes(df_unprocessed,
                            acquisition_cat_field_names, acquisition_int_field_names, acquisition_val_field_names,
                            exam_cat_field_names, exam_date_field_names, exam_int_field_names, exam_val_field_names)
+
+        # Transform DAP and uAs values into the required units
+        if "Total DAP (cGy·cm²)" in df_unprocessed.columns:
+            df_unprocessed["Total DAP (cGy·cm²)"] = df_unprocessed["Total DAP (cGy·cm²)"] * 1000000
+
+        if "DAP (cGy·cm²)" in df_unprocessed.columns:
+            df_unprocessed["DAP (cGy·cm²)"] = df_unprocessed["DAP (cGy·cm²)"] * 1000000
+
+        if "mAs" in df_unprocessed.columns:
+            df_unprocessed["mAs"] = df_unprocessed["mAs"] / 1000
 
         tsk.progress = "Working on {0} entries with blank accession numbers".format(n_entries)
         tsk.save()
