@@ -84,8 +84,9 @@ def text_and_date_formats(
         {"num_format": f"{settings.XLSX_DATE} {settings.XLSX_TIME}"}
     )
 
-    date_column = 11
-    patid_column = 0
+    date_column = 10
+
+    patid_column = 10
     if pid and patid:
         date_column += 1
     if pid and name:
@@ -93,13 +94,7 @@ def text_and_date_formats(
         patid_column += 1
 
     # Obtain the system-level enable_standard_names setting
-    try:
-        StandardNameSettings.objects.get()
-    except ObjectDoesNotExist:
-        StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values_list(
-        "enable_standard_names", flat=True
-    )[0]
+    enable_standard_names = are_standard_names_enabled()
 
     if enable_standard_names:
         date_column += 3
@@ -110,13 +105,16 @@ def text_and_date_formats(
     sheet.set_column(
         date_column, date_column, 10, dateformat
     )  # allow date to be displayed.
+
     sheet.set_column(
         date_column + 1, date_column + 1, None, timeformat
     )  # allow time to be displayed.
+
     #if pid and (name or patid):
     #    sheet.set_column(
     #        date_column + 2, date_column + 2, 10, dateformat
     #    )  # Birth date column [DJP: it isn't a date of birth column, it is a patient age column as a decimal]
+
     if pid and patid:
         sheet.set_column(
             patid_column, patid_column, None, textformat
@@ -151,13 +149,7 @@ def common_headers(modality=None, pid=False, name=None, patid=None):
     """
 
     # Obtain the system-level enable_standard_names setting
-    try:
-        StandardNameSettings.objects.get()
-    except ObjectDoesNotExist:
-        StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values_list(
-        "enable_standard_names", flat=True
-    )[0]
+    enable_standard_names = are_standard_names_enabled()
 
     pid_headings = []
     if pid and name:
@@ -241,13 +233,7 @@ def generate_sheets(
     :return: book
     """
     # Obtain the system-level enable_standard_names setting
-    try:
-        StandardNameSettings.objects.get()
-    except ObjectDoesNotExist:
-        StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values_list(
-        "enable_standard_names", flat=True
-    )[0]
+    enable_standard_names = are_standard_names_enabled()
 
     sheet_list = {}
 
@@ -362,13 +348,7 @@ def get_common_data(modality, exams, pid=None, name=None, patid=None):
     """
 
     # Obtain the system-level enable_standard_names setting
-    try:
-        StandardNameSettings.objects.get()
-    except ObjectDoesNotExist:
-        StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values_list(
-        "enable_standard_names", flat=True
-    )[0]
+    enable_standard_names = are_standard_names_enabled()
 
     patient_birth_date = None
     patient_name = None
@@ -827,13 +807,7 @@ def create_summary_sheet(
     summary_sheet.write(3, 1, studies.count())
 
     # Obtain the system-level enable_standard_names setting
-    try:
-        StandardNameSettings.objects.get()
-    except ObjectDoesNotExist:
-        StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values_list(
-        "enable_standard_names", flat=True
-    )[0]
+    enable_standard_names = are_standard_names_enabled()
 
     required_fields = ["pk", "study_description", "requested_procedure_code_meaning"]
     column_names = ["pk", "Study description", "Requested procedure"]
@@ -1120,35 +1094,44 @@ def transform_to_one_row_per_exam(df,
 
 
 def create_standard_name_df_columns(df):
-    std_name_df = df.groupby("pk")["Standard study name"].apply(lambda x: pd.Series(list(x.unique()))).unstack()
-    num_std_name_cols = len(std_name_df.columns)
-    std_name_df.columns = ["Standard study name {}".format(a + 1) for a in std_name_df.columns]
-    std_name_df = std_name_df.reset_index()
+    num_std_names = len(df["Standard study name"].unique().categories)
 
-    # Join the std_name_df to df using Study ID as an index
-    df = df.join(std_name_df.set_index(["pk"]), on=["pk"])
+    if num_std_names:
+        std_name_df = df.groupby("pk")["Standard study name"].apply(lambda x: pd.Series(list(x.unique()))).unstack()
+        num_std_name_cols = len(std_name_df.columns)
+        std_name_df.columns = ["Standard study name {}".format(a + 1) for a in std_name_df.columns]
+        std_name_df = std_name_df.reset_index()
 
-    # Now move the columns so they are next to the original "Standard Name" column
-    std_name_col_idx = df.columns.get_loc("Standard study name")
-    if num_std_name_cols >= 1:
-        col = df.pop("Standard study name 1")
-        df.insert(std_name_col_idx, col.name, col)
+        # Join the std_name_df to df using Study ID as an index
+        df = df.join(std_name_df.set_index(["pk"]), on=["pk"])
 
-    if num_std_name_cols >= 2:
-        col = df.pop("Standard study name 2")
-        df.insert(std_name_col_idx + 1, col.name, col)
+        # Now move the columns so they are next to the original "Standard Name" column
+        std_name_col_idx = df.columns.get_loc("Standard study name")
+        if num_std_name_cols >= 1:
+            col = df.pop("Standard study name 1")
+            df.insert(std_name_col_idx, col.name, col)
+
+        if num_std_name_cols >= 2:
+            col = df.pop("Standard study name 2")
+            df.insert(std_name_col_idx + 1, col.name, col)
+        else:
+            df["Standard study name 2"] = ""
+            col = df.pop("Standard study name 2")
+            df.insert(std_name_col_idx + 1, col.name, col)
+
+        if num_std_name_cols >= 3:
+            col = df.pop("Standard study name 3")
+            df.insert(std_name_col_idx + 2, col.name, col)
+        else:
+            df["Standard study name 3"] = ""
+            col = df.pop("Standard study name 3")
+            df.insert(std_name_col_idx + 2, col.name, col)
+
     else:
+        # There were no standard name entries
+        df["Standard study name 1"] = ""
         df["Standard study name 2"] = ""
-        col = df.pop("Standard study name 2")
-        df.insert(std_name_col_idx + 1, col.name, col)
-
-    if num_std_name_cols >= 3:
-        col = df.pop("Standard study name 3")
-        df.insert(std_name_col_idx + 2, col.name, col)
-    else:
         df["Standard study name 3"] = ""
-        col = df.pop("Standard study name 3")
-        df.insert(std_name_col_idx + 2, col.name, col)
 
     # Then drop the original standard name column
     df.drop(columns=["Standard study name"], inplace=True)
