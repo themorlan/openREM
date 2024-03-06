@@ -1089,7 +1089,7 @@ def transform_to_one_row_per_exam(df,
 
     # Reformat the DataFrame so that we have one row per exam, with sets of columns for each acquisition data
     g = df.groupby("pk").cumcount().add(1)
-    exam_field_names = exam_obj_field_names + exam_int_field_names + exam_cat_f_names + exam_date_field_names + exam_time_field_names + exam_val_field_names
+    exam_field_names = exam_cat_f_names + exam_obj_field_names + exam_date_field_names + exam_time_field_names + exam_int_field_names + exam_val_field_names
     exam_field_names.append(g)
     df = df.set_index(exam_field_names).unstack().sort_index(axis=1, level=1)
     df.columns = ["E{} {}".format(b, a) for a, b in df.columns]
@@ -1112,6 +1112,9 @@ def transform_to_one_row_per_exam(df,
     if settings.DEBUG:
         print("DataFrame reformatted")
         df.info()
+
+    # Sort date by descending date and time
+    df.sort_values(by=["Study date", "Study time"], ascending=[False, False], inplace=True)
 
     return df
 
@@ -1230,10 +1233,10 @@ def export_using_pandas(acquisition_cat_field_name_std_name, acquisition_cat_fie
         acquisition_cat_fields.append(acquisition_cat_field_std_name)
         acquisition_cat_field_names.append(acquisition_cat_field_name_std_name)
 
-    exam_fields = exam_int_fields + exam_obj_fields + exam_cat_fields + exam_date_fields + exam_time_fields + exam_val_fields
+    exam_fields = exam_cat_fields + exam_obj_fields + exam_date_fields + exam_time_fields + exam_int_fields + exam_val_fields
     acquisition_fields = acquisition_int_fields + acquisition_cat_fields + acquisition_val_fields
     all_fields = exam_fields + acquisition_fields
-    exam_field_names = exam_int_field_names + exam_obj_field_names + exam_cat_field_names + exam_date_field_names + exam_time_field_names + exam_val_field_names
+    exam_field_names = exam_cat_field_names + exam_obj_field_names + exam_date_field_names + exam_time_field_names + exam_int_field_names + exam_val_field_names
     acquisition_field_names = acquisition_int_field_names + acquisition_cat_field_names + acquisition_val_field_names
     all_field_names = exam_field_names + acquisition_field_names
 
@@ -1362,6 +1365,9 @@ def export_using_pandas(acquisition_cat_field_name_std_name, acquisition_cat_fie
         # Drop any duplicate acquisition pk rows
         df.drop_duplicates(subset="Acquisition pk", inplace=True)
 
+        # Sort the data by descending date and time
+        df.sort_values(by=["Study date", "Study time"], ascending=[False, False], inplace=True)
+
         # Obtain a list of unique acquisition protocols
         all_acquisitions_in_df = df["Acquisition protocol"].unique()
 
@@ -1392,6 +1398,7 @@ def export_using_pandas(acquisition_cat_field_name_std_name, acquisition_cat_fie
     if modality in ["CT"]:
         fields_for_none_accession.extend(ct_dose_check_fields)
         field_names_for_non_accession.extend(ct_dose_check_field_names)
+
     data = qs.order_by().filter(accession_number__isnull=True).values_list(*(fields_for_none_accession))
 
     # Clear the query cache
@@ -1457,6 +1464,9 @@ def export_using_pandas(acquisition_cat_field_name_std_name, acquisition_cat_fie
 
         # Drop any duplicate acquisition pk rows
         df.drop_duplicates(subset="Acquisition pk", inplace=True)
+
+        # Sort the data by descending date and time
+        df.sort_values(by=["Study date", "Study time"], ascending=[False, False], inplace=True)
 
         # Obtain a list of unique acquisition protocols
         all_acquisitions_in_df = df["Acquisition protocol"].unique()
