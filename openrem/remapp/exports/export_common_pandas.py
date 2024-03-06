@@ -1483,7 +1483,7 @@ def export_using_pandas(acquisition_cat_field_name_std_name, acquisition_cat_fie
     book.close()
     tsk.progress = "XLSX book written."
     tsk.save()
-    xlsxfilename = "ctexport{0}.xlsx".format(datestamp.strftime("%Y%m%d-%H%M%S%f"))
+    xlsxfilename = "{0}export{1}.xlsx".format(modality.lower(), datestamp.strftime("%Y%m%d-%H%M%S%f"))
     write_export(tsk, xlsxfilename, tmpxlsx, datestamp)
 
 
