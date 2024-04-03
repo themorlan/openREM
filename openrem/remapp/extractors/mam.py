@@ -556,6 +556,9 @@ def _mammo2db(dataset):
             )
             this_study.save()
 
+            # Update any matching standard names
+            add_standard_names(this_study)
+
     if not study_in_db:
         # study doesn't exist, start from scratch
         g = GeneralStudyModuleAttr.objects.create()
