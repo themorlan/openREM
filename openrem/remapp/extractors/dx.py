@@ -793,6 +793,10 @@ def _dx2db(dataset):
                 this_study.projectionxrayradiationdose_set.get().irradeventxraydata_set.count()
             )
             this_study.save()
+
+            # Update any matching standard names
+            add_standard_names(this_study)
+
         else:
             error = f"Study {study_uid.replace('.', '. ')} already in DB"
             logger.error(error)
