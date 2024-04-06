@@ -78,6 +78,9 @@ On https://bitbucket.org/openrem/docker
     Create tag (git tag x.x.x.x)
     Push tag (git push --tag)
 
+On https://bitbucket.org/openrem/orthanc
+    Run pipline to get latest version of Orthanc built and deployed to Docker Hub
+
 Update demo site for full release
     If release, log into the demo site (ssh deploy@openrem.org)
     Go to the folder /home/deploy/sites/demo.openrem.org/source/
