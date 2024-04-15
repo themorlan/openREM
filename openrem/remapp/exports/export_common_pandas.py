@@ -1317,6 +1317,68 @@ def export_using_pandas(acquisition_cat_field_name_std_name, acquisition_cat_fie
             df_unprocessed = create_ct_dose_check_column(ct_dose_check_field_names, df_unprocessed)
             df_unprocessed["Dose check alerts"] = df_unprocessed["Dose check alerts"].astype("category")
 
+            #----------------------------------------
+            # Create columns for two possible sources
+            df_unprocessed[["S1 Source name", "S1 kVp", "S1 mA", "S1 Maximum mA", "S1 Exposure time per rotation"]] = 5 * [np.nan]
+            df_unprocessed[["S2 Source name", "S2 kVp", "S2 mA", "S2 Maximum mA", "S2 Exposure time per rotation"]] = 5 * [np.nan]
+
+            # Where "Source name" equals "A" copy source data fields to S1
+            df_unprocessed["S1 Source name"], df_unprocessed["S1 kVp"], df_unprocessed["S1 mA"], df_unprocessed["S1 Maximum mA"], df_unprocessed["S1 Exposure time per rotation"] =(
+                np.where(
+                    (df_unprocessed["Number of sources"] == 2) & (df_unprocessed["Source name"] == "A"),
+                    [df_unprocessed["Source name"], df_unprocessed["kVp"], df_unprocessed["mA"], df_unprocessed["Maximum mA"], df_unprocessed["Exposure time per rotation"]],
+                    None
+                )
+            )
+
+            # Where "Source name" equals "B" copy source data fields to S2
+            df_unprocessed["S2 Source name"], df_unprocessed["S2 kVp"], df_unprocessed["S2 mA"], df_unprocessed["S2 Maximum mA"], df_unprocessed["S2 Exposure time per rotation"] =(
+                np.where(
+                    (df_unprocessed["Number of sources"] == 2) & (df_unprocessed["Source name"] == "B"),
+                    [df_unprocessed["Source name"], df_unprocessed["kVp"], df_unprocessed["mA"], df_unprocessed["Maximum mA"], df_unprocessed["Exposure time per rotation"]],
+                    None
+                )
+            )
+
+            # Where "Number of sources" is not 2 copy source data fields to S1, but leave any non-matching ones as the existing values, otherwise
+            # the writing of S1 data for the dual source entries will be over-written. Some of my CT scanners have NA for the "Number of sources"
+            # value, so need to replace these with 0 to ensure the != 2 works.
+            df_unprocessed["Number of sources"] = df_unprocessed["Number of sources"].fillna(0)
+            df_unprocessed["S1 Source name"], df_unprocessed["S1 kVp"], df_unprocessed["S1 mA"], df_unprocessed["S1 Maximum mA"], df_unprocessed["S1 Exposure time per rotation"] =(
+                np.where(
+                    df_unprocessed["Number of sources"] != 2,
+                    [df_unprocessed["Source name"], df_unprocessed["kVp"], df_unprocessed["mA"], df_unprocessed["Maximum mA"], df_unprocessed["Exposure time per rotation"]],
+                    [df_unprocessed["S1 Source name"], df_unprocessed["S1 kVp"], df_unprocessed["S1 mA"], df_unprocessed["S1 Maximum mA"], df_unprocessed["S1 Exposure time per rotation"]]
+                )
+            )
+
+            # Drop the original columns
+            df_unprocessed.drop(["Source name", "kVp", "mA", "Maximum mA", "Exposure time per rotation"], axis=1, inplace=True)
+
+            # For any dual-source data we now have two rows per acquisition: one with source A data, one with source B.
+            # We need to merge these into one row per acquisition.
+            source_a_df = df_unprocessed.loc[df_unprocessed["S1 Source name"] == "A"]
+            source_a_df.reset_index(drop=True, inplace=True)
+            source_b_df = df_unprocessed.loc[df_unprocessed["S2 Source name"] == "B"]
+            source_b_df.reset_index(drop=True, inplace=True)
+            source_ab_df = source_a_df.combine_first(source_b_df)
+
+            # Concatenate the dual source data with the single source data
+            df_unprocessed = pd.concat([source_ab_df, df_unprocessed.loc[df_unprocessed["Number of sources"] != 2]])
+
+            # Update the acquisition_cat_field_names entries to reflect the changes
+            acquisition_cat_field_names[acquisition_cat_field_names.index("Source name")] = "S1 Source name"
+            acquisition_cat_field_names.append("S2 Source name")
+
+            # Update the acquisition_val_field_names entries to reflect the changes
+            acquisition_val_field_names[acquisition_val_field_names.index("kVp")] = "S1 kVp"
+            acquisition_val_field_names[acquisition_val_field_names.index("mA")] = "S1 mA"
+            acquisition_val_field_names[acquisition_val_field_names.index("Maximum mA")] = "S1 Maximum mA"
+            acquisition_val_field_names[acquisition_val_field_names.index("Exposure time per rotation")] = "S1 Exposure time per rotation"
+            new_fields = ["S2 kVp", "S2 mA", "S2 Maximum mA", "S2 Exposure time per rotation"]
+            acquisition_val_field_names.extend(new_fields)
+            #----------------------------------------
+
         df = transform_to_one_row_per_exam(
             df_unprocessed,
             acquisition_cat_field_names, acquisition_int_field_names, acquisition_val_field_names,
