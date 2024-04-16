@@ -1283,159 +1283,160 @@ def export_using_pandas(acquisition_cat_field_name_std_name, acquisition_cat_fie
         data = qs.order_by().filter(accession_number__in=accession_numbers[chunk_min_idx:chunk_max_idx]).values_list(
             *(all_fields + ct_dose_check_fields))
 
-        # Clear the query cache
-        django.db.reset_queries()
+        if data.exists():
+            # Clear the query cache
+            django.db.reset_queries()
 
-        df_unprocessed = pd.DataFrame.from_records(
-            data=data,
-            columns=(all_field_names + ct_dose_check_field_names), coerce_float=True,
-        )
-
-        if modality in ["CT"]:
-            if "Dose check alerts" in acquisition_cat_field_names:
-                acquisition_cat_field_names.remove("Dose check alerts")
-
-        optimise_df_dtypes(df_unprocessed,
-                           acquisition_cat_field_names, acquisition_int_field_names, acquisition_val_field_names,
-                           exam_cat_field_names, exam_date_field_names, exam_int_field_names, exam_val_field_names)
-
-        # Transform DAP and uAs values into the required units
-        if "Total DAP (cGy·cm²)" in df_unprocessed.columns:
-            df_unprocessed["Total DAP (cGy·cm²)"] = df_unprocessed["Total DAP (cGy·cm²)"] * 1000000
-
-        if "DAP (cGy·cm²)" in df_unprocessed.columns:
-            df_unprocessed["DAP (cGy·cm²)"] = df_unprocessed["DAP (cGy·cm²)"] * 1000000
-
-        if "mAs" in df_unprocessed.columns:
-            df_unprocessed["mAs"] = df_unprocessed["mAs"] / 1000
-
-        if modality in ["CT"]:
-            # Add the Dose check alert column to the acquisition category field names
-            acquisition_cat_field_names.append("Dose check alerts")
-
-            # Create the CT dose check column
-            df_unprocessed = create_ct_dose_check_column(ct_dose_check_field_names, df_unprocessed)
-            df_unprocessed["Dose check alerts"] = df_unprocessed["Dose check alerts"].astype("category")
-
-            #----------------------------------------
-            # Create columns for two possible sources
-            df_unprocessed[["S1 Source name", "S1 kVp", "S1 mA", "S1 Maximum mA", "S1 Exposure time per rotation"]] = 5 * [np.nan]
-            df_unprocessed[["S2 Source name", "S2 kVp", "S2 mA", "S2 Maximum mA", "S2 Exposure time per rotation"]] = 5 * [np.nan]
-
-            # Where "Source name" equals "A" copy source data fields to S1
-            df_unprocessed["S1 Source name"], df_unprocessed["S1 kVp"], df_unprocessed["S1 mA"], df_unprocessed["S1 Maximum mA"], df_unprocessed["S1 Exposure time per rotation"] =(
-                np.where(
-                    (df_unprocessed["Number of sources"] == 2) & (df_unprocessed["Source name"] == "A"),
-                    [df_unprocessed["Source name"], df_unprocessed["kVp"], df_unprocessed["mA"], df_unprocessed["Maximum mA"], df_unprocessed["Exposure time per rotation"]],
-                    None
-                )
+            df_unprocessed = pd.DataFrame.from_records(
+                data=data,
+                columns=(all_field_names + ct_dose_check_field_names), coerce_float=True,
             )
 
-            # Where "Source name" equals "B" copy source data fields to S2
-            df_unprocessed["S2 Source name"], df_unprocessed["S2 kVp"], df_unprocessed["S2 mA"], df_unprocessed["S2 Maximum mA"], df_unprocessed["S2 Exposure time per rotation"] =(
-                np.where(
-                    (df_unprocessed["Number of sources"] == 2) & (df_unprocessed["Source name"] == "B"),
-                    [df_unprocessed["Source name"], df_unprocessed["kVp"], df_unprocessed["mA"], df_unprocessed["Maximum mA"], df_unprocessed["Exposure time per rotation"]],
-                    None
+            if modality in ["CT"]:
+                if "Dose check alerts" in acquisition_cat_field_names:
+                    acquisition_cat_field_names.remove("Dose check alerts")
+
+            optimise_df_dtypes(df_unprocessed,
+                               acquisition_cat_field_names, acquisition_int_field_names, acquisition_val_field_names,
+                               exam_cat_field_names, exam_date_field_names, exam_int_field_names, exam_val_field_names)
+
+            # Transform DAP and uAs values into the required units
+            if "Total DAP (cGy·cm²)" in df_unprocessed.columns:
+                df_unprocessed["Total DAP (cGy·cm²)"] = df_unprocessed["Total DAP (cGy·cm²)"] * 1000000
+
+            if "DAP (cGy·cm²)" in df_unprocessed.columns:
+                df_unprocessed["DAP (cGy·cm²)"] = df_unprocessed["DAP (cGy·cm²)"] * 1000000
+
+            if "mAs" in df_unprocessed.columns:
+                df_unprocessed["mAs"] = df_unprocessed["mAs"] / 1000
+
+            if modality in ["CT"]:
+                # Add the Dose check alert column to the acquisition category field names
+                acquisition_cat_field_names.append("Dose check alerts")
+
+                # Create the CT dose check column
+                df_unprocessed = create_ct_dose_check_column(ct_dose_check_field_names, df_unprocessed)
+                df_unprocessed["Dose check alerts"] = df_unprocessed["Dose check alerts"].astype("category")
+
+                #----------------------------------------
+                # Create columns for two possible sources
+                df_unprocessed[["S1 Source name", "S1 kVp", "S1 mA", "S1 Maximum mA", "S1 Exposure time per rotation"]] = 5 * [np.nan]
+                df_unprocessed[["S2 Source name", "S2 kVp", "S2 mA", "S2 Maximum mA", "S2 Exposure time per rotation"]] = 5 * [np.nan]
+
+                # Where "Source name" equals "A" copy source data fields to S1
+                df_unprocessed["S1 Source name"], df_unprocessed["S1 kVp"], df_unprocessed["S1 mA"], df_unprocessed["S1 Maximum mA"], df_unprocessed["S1 Exposure time per rotation"] =(
+                    np.where(
+                        (df_unprocessed["Number of sources"] == 2) & (df_unprocessed["Source name"] == "A"),
+                        [df_unprocessed["Source name"], df_unprocessed["kVp"], df_unprocessed["mA"], df_unprocessed["Maximum mA"], df_unprocessed["Exposure time per rotation"]],
+                        None
+                    )
                 )
-            )
 
-            # Where "Number of sources" is not 2 copy source data fields to S1, but leave any non-matching ones as the existing values, otherwise
-            # the writing of S1 data for the dual source entries will be over-written. Some of my CT scanners have NA for the "Number of sources"
-            # value, so need to replace these with 0 to ensure the != 2 works.
-            df_unprocessed["Number of sources"] = df_unprocessed["Number of sources"].fillna(0)
-            df_unprocessed["S1 Source name"], df_unprocessed["S1 kVp"], df_unprocessed["S1 mA"], df_unprocessed["S1 Maximum mA"], df_unprocessed["S1 Exposure time per rotation"] =(
-                np.where(
-                    df_unprocessed["Number of sources"] != 2,
-                    [df_unprocessed["Source name"], df_unprocessed["kVp"], df_unprocessed["mA"], df_unprocessed["Maximum mA"], df_unprocessed["Exposure time per rotation"]],
-                    [df_unprocessed["S1 Source name"], df_unprocessed["S1 kVp"], df_unprocessed["S1 mA"], df_unprocessed["S1 Maximum mA"], df_unprocessed["S1 Exposure time per rotation"]]
+                # Where "Source name" equals "B" copy source data fields to S2
+                df_unprocessed["S2 Source name"], df_unprocessed["S2 kVp"], df_unprocessed["S2 mA"], df_unprocessed["S2 Maximum mA"], df_unprocessed["S2 Exposure time per rotation"] =(
+                    np.where(
+                        (df_unprocessed["Number of sources"] == 2) & (df_unprocessed["Source name"] == "B"),
+                        [df_unprocessed["Source name"], df_unprocessed["kVp"], df_unprocessed["mA"], df_unprocessed["Maximum mA"], df_unprocessed["Exposure time per rotation"]],
+                        None
+                    )
                 )
-            )
 
-            # Drop the original columns
-            df_unprocessed.drop(["Source name", "kVp", "mA", "Maximum mA", "Exposure time per rotation"], axis=1, inplace=True)
+                # Where "Number of sources" is not 2 copy source data fields to S1, but leave any non-matching ones as the existing values, otherwise
+                # the writing of S1 data for the dual source entries will be over-written. Some of my CT scanners have NA for the "Number of sources"
+                # value, so need to replace these with 0 to ensure the != 2 works.
+                df_unprocessed["Number of sources"] = df_unprocessed["Number of sources"].fillna(0)
+                df_unprocessed["S1 Source name"], df_unprocessed["S1 kVp"], df_unprocessed["S1 mA"], df_unprocessed["S1 Maximum mA"], df_unprocessed["S1 Exposure time per rotation"] =(
+                    np.where(
+                        df_unprocessed["Number of sources"] != 2,
+                        [df_unprocessed["Source name"], df_unprocessed["kVp"], df_unprocessed["mA"], df_unprocessed["Maximum mA"], df_unprocessed["Exposure time per rotation"]],
+                        [df_unprocessed["S1 Source name"], df_unprocessed["S1 kVp"], df_unprocessed["S1 mA"], df_unprocessed["S1 Maximum mA"], df_unprocessed["S1 Exposure time per rotation"]]
+                    )
+                )
 
-            # For any dual-source data we now have two rows per acquisition: one with source A data, one with source B.
-            # We need to merge these into one row per acquisition.
-            source_a_df = df_unprocessed.loc[df_unprocessed["S1 Source name"] == "A"]
-            source_a_df.reset_index(drop=True, inplace=True)
-            source_b_df = df_unprocessed.loc[df_unprocessed["S2 Source name"] == "B"]
-            source_b_df.reset_index(drop=True, inplace=True)
-            source_ab_df = source_a_df.combine_first(source_b_df)
+                # Drop the original columns
+                df_unprocessed.drop(["Source name", "kVp", "mA", "Maximum mA", "Exposure time per rotation"], axis=1, inplace=True)
 
-            # Concatenate the dual source data with the single source data
-            df_unprocessed = pd.concat([source_ab_df, df_unprocessed.loc[df_unprocessed["Number of sources"] != 2]])
+                # For any dual-source data we now have two rows per acquisition: one with source A data, one with source B.
+                # We need to merge these into one row per acquisition.
+                source_a_df = df_unprocessed.loc[df_unprocessed["S1 Source name"] == "A"]
+                source_a_df.reset_index(drop=True, inplace=True)
+                source_b_df = df_unprocessed.loc[df_unprocessed["S2 Source name"] == "B"]
+                source_b_df.reset_index(drop=True, inplace=True)
+                source_ab_df = source_a_df.combine_first(source_b_df)
 
-            # Update the acquisition_cat_field_names entries to reflect the changes
-            acquisition_cat_field_names[acquisition_cat_field_names.index("Source name")] = "S1 Source name"
-            acquisition_cat_field_names.append("S2 Source name")
+                # Concatenate the dual source data with the single source data
+                df_unprocessed = pd.concat([source_ab_df, df_unprocessed.loc[df_unprocessed["Number of sources"] != 2]])
 
-            # Update the acquisition_val_field_names entries to reflect the changes
-            acquisition_val_field_names[acquisition_val_field_names.index("kVp")] = "S1 kVp"
-            acquisition_val_field_names[acquisition_val_field_names.index("mA")] = "S1 mA"
-            acquisition_val_field_names[acquisition_val_field_names.index("Maximum mA")] = "S1 Maximum mA"
-            acquisition_val_field_names[acquisition_val_field_names.index("Exposure time per rotation")] = "S1 Exposure time per rotation"
-            new_fields = ["S2 kVp", "S2 mA", "S2 Maximum mA", "S2 Exposure time per rotation"]
-            acquisition_val_field_names.extend(new_fields)
-            #----------------------------------------
+                # Update the acquisition_cat_field_names entries to reflect the changes
+                acquisition_cat_field_names[acquisition_cat_field_names.index("Source name")] = "S1 Source name"
+                acquisition_cat_field_names.append("S2 Source name")
 
-        df = transform_to_one_row_per_exam(
-            df_unprocessed,
-            acquisition_cat_field_names, acquisition_int_field_names, acquisition_val_field_names,
-            exam_cat_field_names, exam_date_field_names, exam_int_field_names,
-            exam_obj_field_names, exam_time_field_names, exam_val_field_names,
-            all_field_names)
+                # Update the acquisition_val_field_names entries to reflect the changes
+                acquisition_val_field_names[acquisition_val_field_names.index("kVp")] = "S1 kVp"
+                acquisition_val_field_names[acquisition_val_field_names.index("mA")] = "S1 mA"
+                acquisition_val_field_names[acquisition_val_field_names.index("Maximum mA")] = "S1 Maximum mA"
+                acquisition_val_field_names[acquisition_val_field_names.index("Exposure time per rotation")] = "S1 Exposure time per rotation"
+                new_fields = ["S2 kVp", "S2 mA", "S2 Maximum mA", "S2 Exposure time per rotation"]
+                acquisition_val_field_names.extend(new_fields)
+                #----------------------------------------
 
-        # Write the headings to the sheet (over-writing each time, but this ensures we'll include the study
-        # with the most events without doing anything complicated to generate the headings)
-        wsalldata.write_row(0, 0, df.columns)
+            df = transform_to_one_row_per_exam(
+                df_unprocessed,
+                acquisition_cat_field_names, acquisition_int_field_names, acquisition_val_field_names,
+                exam_cat_field_names, exam_date_field_names, exam_int_field_names,
+                exam_obj_field_names, exam_time_field_names, exam_val_field_names,
+                all_field_names)
 
-        # Write the DataFrame to the all data sheet
-        for idx, row in df.iterrows():
-            wsalldata.write_row(current_row, 0, row.fillna(""))
-            current_row = current_row + 1
+            # Write the headings to the sheet (over-writing each time, but this ensures we'll include the study
+            # with the most events without doing anything complicated to generate the headings)
+            wsalldata.write_row(0, 0, df.columns)
 
-        # # Write out data to the acquisition protocol sheets
-        df = df_unprocessed
+            # Write the DataFrame to the all data sheet
+            for idx, row in df.iterrows():
+                wsalldata.write_row(current_row, 0, row.fillna(""))
+                current_row = current_row + 1
 
-        if "Standard study name" in df.columns:
-            df = create_standard_name_df_columns(df)
+            # # Write out data to the acquisition protocol sheets
+            df = df_unprocessed
 
-            # Make the exam_cat_field_names a categorical column (saves server memory)
-            exam_cat_f_names = exam_cat_field_names[:]
-            exam_cat_f_names.remove("Standard study name")
-            exam_cat_f_names.extend(["Standard study name 1", "Standard study name 2", "Standard study name 3"])
-            df[exam_cat_f_names] = df[exam_cat_f_names].astype("category")
+            if "Standard study name" in df.columns:
+                df = create_standard_name_df_columns(df)
 
-        # Drop any duplicate acquisition pk rows
-        df.drop_duplicates(subset="Acquisition pk", inplace=True)
+                # Make the exam_cat_field_names a categorical column (saves server memory)
+                exam_cat_f_names = exam_cat_field_names[:]
+                exam_cat_f_names.remove("Standard study name")
+                exam_cat_f_names.extend(["Standard study name 1", "Standard study name 2", "Standard study name 3"])
+                df[exam_cat_f_names] = df[exam_cat_f_names].astype("category")
 
-        # Sort the data by descending date and time
-        df.sort_values(by=["Study date", "Study time"], ascending=[False, False], inplace=True)
+            # Drop any duplicate acquisition pk rows
+            df.drop_duplicates(subset="Acquisition pk", inplace=True)
 
-        # Obtain a list of unique acquisition protocols
-        all_acquisitions_in_df = df["Acquisition protocol"].unique()
+            # Sort the data by descending date and time
+            df.sort_values(by=["Study date", "Study time"], ascending=[False, False], inplace=True)
 
-        for acquisition in all_acquisitions_in_df:
+            # Obtain a list of unique acquisition protocols
+            all_acquisitions_in_df = df["Acquisition protocol"].unique()
 
-            acq_df = df[df["Acquisition protocol"] == acquisition]
+            for acquisition in all_acquisitions_in_df:
 
-            if acquisition in (None, np.nan, ""):
-                acquisition = "Unknown"
-                acq_df = df[df["Acquisition protocol"].isnull()]
+                acq_df = df[df["Acquisition protocol"] == acquisition]
 
-            write_row_to_acquisition_sheet(acq_df, acquisition, book, worksheet_log)
-
-        # Write out all standard acquisition name data to the sheets
-        if enable_standard_names:
-            all_std_acquisitions_in_df = df["Standard acquisition name"].dropna().unique()
-
-            for acquisition in all_std_acquisitions_in_df:
-                acq_df = df[df["Standard acquisition name"] == acquisition]
-
-                acquisition = "[standard] " + acquisition
+                if acquisition in (None, np.nan, ""):
+                    acquisition = "Unknown"
+                    acq_df = df[df["Acquisition protocol"].isnull()]
 
                 write_row_to_acquisition_sheet(acq_df, acquisition, book, worksheet_log)
+
+            # Write out all standard acquisition name data to the sheets
+            if enable_standard_names:
+                all_std_acquisitions_in_df = df["Standard acquisition name"].dropna().unique()
+
+                for acquisition in all_std_acquisitions_in_df:
+                    acq_df = df[df["Standard acquisition name"] == acquisition]
+
+                    acquisition = "[standard] " + acquisition
+
+                    write_row_to_acquisition_sheet(acq_df, acquisition, book, worksheet_log)
 
     # Now write out any None accession number data if any such data is present
     fields_for_none_accession = all_fields
