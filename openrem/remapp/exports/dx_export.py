@@ -459,12 +459,14 @@ def dxxlsx(filterdict, pid=False, name=None, patid=None, user=None):
         "projectionxrayradiationdose__irradeventxraydata__anatomical_structure__code_meaning",
         "projectionxrayradiationdose__irradeventxraydata__image_view__code_meaning",
         "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure_control_mode",
+        "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__xrayfilters__xray_filter_material__code_meaning",
     ]
     acquisition_cat_field_names = [
         "Acquisition protocol",
         "Anatomy",
         "Image view",
         "Exposure control mode",
+        "Filters",
     ]
 
     acquisition_cat_field_std_name = "projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name"
@@ -476,6 +478,8 @@ def dxxlsx(filterdict, pid=False, name=None, patid=None, user=None):
         "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure__exposure",
         "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__average_xray_tube_current",
         "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure_time",
+        "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__xrayfilters__xray_filter_thickness_minimum",
+        "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__xrayfilters__xray_filter_thickness_maximum",
         "projectionxrayradiationdose__irradeventxraydata__irradeventxraydetectordata__exposure_index",
         "projectionxrayradiationdose__irradeventxraydata__irradeventxraydetectordata__target_exposure_index",
         "projectionxrayradiationdose__irradeventxraydata__irradeventxraydetectordata__deviation_index",
@@ -492,6 +496,8 @@ def dxxlsx(filterdict, pid=False, name=None, patid=None, user=None):
         "mAs",
         "mA",
         "Exposure time (ms)",
+        "Filter thickness min",
+        "Filter thickness max",
         "Exposure index",
         "Target exposure index",
         "Deviation index",

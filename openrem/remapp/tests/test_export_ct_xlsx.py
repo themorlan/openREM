@@ -97,20 +97,20 @@ class ExportCTxlsx(TestCase):
         )
 
         self.assertEqual(
-            all_data_sheet.cell(row=2, column=patient_id_col).value, "00001234"
+            all_data_sheet.cell(row=4, column=patient_id_col).value, "00001234"
         )
         self.assertEqual(
             all_data_sheet.cell(row=3, column=patient_id_col).value, "008F/g234"
         )
         self.assertEqual(
-            all_data_sheet.cell(row=4, column=patient_id_col).value, "4018119567876617"
+            all_data_sheet.cell(row=2, column=patient_id_col).value, "4018119567876617"
         )
         self.assertEqual(
             all_data_sheet.cell(row=5, column=patient_id_col).value, "123456"
         )
 
         self.assertEqual(
-            all_data_sheet.cell(row=2, column=accession_number_col).value,
+            all_data_sheet.cell(row=4, column=accession_number_col).value,
             "0012345.12345678",
         )
         self.assertEqual(
@@ -118,7 +118,7 @@ class ExportCTxlsx(TestCase):
             "001234512345678",
         )
         self.assertEqual(
-            all_data_sheet.cell(row=4, column=accession_number_col).value,
+            all_data_sheet.cell(row=2, column=accession_number_col).value,
             "3599305798462538",
         )
         self.assertEqual(
@@ -127,13 +127,13 @@ class ExportCTxlsx(TestCase):
         )
 
         self.assertAlmostEqual(
-            all_data_sheet.cell(row=2, column=dlp_total_col).value, 415.82, places=2
+            all_data_sheet.cell(row=4, column=dlp_total_col).value, 415.82, places=2
         )
         self.assertAlmostEqual(
             all_data_sheet.cell(row=3, column=dlp_total_col).value, 2002.39, places=2
         )
         self.assertAlmostEqual(
-            all_data_sheet.cell(row=4, column=dlp_total_col).value, 502.40, places=2
+            all_data_sheet.cell(row=2, column=dlp_total_col).value, 502.40, places=2
         )
         self.assertAlmostEqual(
             all_data_sheet.cell(row=5, column=dlp_total_col).value, 724.52, places=2
@@ -149,11 +149,11 @@ class ExportCTxlsx(TestCase):
             "10.6 mGy\nPerson authorizing irradiation: Luuk"
         )
         self.assertEqual(
-            all_data_sheet.cell(row=4, column=e1_dose_check_col).value,
+            all_data_sheet.cell(row=2, column=e1_dose_check_col).value,
             e1_dose_check_string,
         )
         self.assertEqual(
-            all_data_sheet.cell(row=4, column=e2_dose_check_col).value,
+            all_data_sheet.cell(row=2, column=e2_dose_check_col).value,
             e2_dose_check_string,
         )
 
