@@ -1179,6 +1179,29 @@ def write_row_to_acquisition_sheet(acq_df, acquisition, book, worksheet_log):
     worksheet_log[acquisition] = sheet_row
 
 
+def replace_long_filter_with_short(x):
+    if "Aluminum" in x:
+        return "Al"
+    elif "Copper" in x:
+        return "Cu"
+    elif "Tantalum" in x:
+        return "Ta"
+    elif "Molybdenum" in x:
+        return "Mo"
+    elif "Rhodium" in x:
+        return "Rh"
+    elif "Silver" in x:
+        return "Ag"
+    elif "Niobium" in x:
+        return "Nb"
+    elif "Europium" in x:
+        return "Eu"
+    elif "Lead" in x:
+        return "Pb"
+    else:
+        return x
+
+
 def export_using_pandas(acquisition_cat_field_name_std_name, acquisition_cat_field_names,
                         acquisition_cat_field_std_name, acquisition_cat_fields, acquisition_int_field_names,
                         acquisition_int_fields, acquisition_val_field_names, acquisition_val_fields, book,
@@ -1296,6 +1319,10 @@ def export_using_pandas(acquisition_cat_field_name_std_name, acquisition_cat_fie
                 if "Dose check alerts" in acquisition_cat_field_names:
                     acquisition_cat_field_names.remove("Dose check alerts")
 
+            if modality in ["DX"]:
+                if "Filter thicknesses (mm)" in acquisition_cat_field_names:
+                    acquisition_cat_field_names.remove("Filter thicknesses (mm)")
+
             optimise_df_dtypes(df_unprocessed,
                                acquisition_cat_field_names, acquisition_int_field_names, acquisition_val_field_names,
                                exam_cat_field_names, exam_date_field_names, exam_int_field_names, exam_val_field_names)
@@ -1306,6 +1333,9 @@ def export_using_pandas(acquisition_cat_field_name_std_name, acquisition_cat_fie
                 df_unprocessed = create_dose_check_and_source_columns(acquisition_cat_field_names,
                                                                       acquisition_val_field_names,
                                                                       ct_dose_check_field_names, df_unprocessed)
+
+            if modality in ["DX"]:
+                df_unprocessed = create_dx_filter_columns(acquisition_cat_field_names, df_unprocessed)
 
             df = transform_to_one_row_per_exam(
                 df_unprocessed,
@@ -1360,6 +1390,10 @@ def export_using_pandas(acquisition_cat_field_name_std_name, acquisition_cat_fie
         #    # Create the CT dose check column
         #    df_unprocessed = create_ct_dose_check_column(ct_dose_check_field_names, df_unprocessed)
 
+        if modality in ["DX"]:
+            if "Filter thicknesses (mm)" in acquisition_cat_field_names:
+                acquisition_cat_field_names.remove("Filter thicknesses (mm)")
+
         optimise_df_dtypes(df_unprocessed,
                            acquisition_cat_field_names, acquisition_int_field_names, acquisition_val_field_names,
                            exam_cat_field_names, exam_date_field_names, exam_int_field_names, exam_val_field_names)
@@ -1370,6 +1404,9 @@ def export_using_pandas(acquisition_cat_field_name_std_name, acquisition_cat_fie
             df_unprocessed = create_dose_check_and_source_columns(acquisition_cat_field_names,
                                                                   acquisition_val_field_names,
                                                                   ct_dose_check_field_names, df_unprocessed)
+
+        if modality in ["DX"]:
+            df_unprocessed = create_dx_filter_columns(acquisition_cat_field_names, df_unprocessed)
 
         tsk.progress = "Working on {0} entries with blank accession numbers".format(n_entries)
         tsk.save()
@@ -1416,6 +1453,18 @@ def export_using_pandas(acquisition_cat_field_name_std_name, acquisition_cat_fie
     tsk.save()
     xlsxfilename = "{0}export{1}.xlsx".format(modality.lower(), datestamp.strftime("%Y%m%d-%H%M%S%f"))
     write_export(tsk, xlsxfilename, tmpxlsx, datestamp)
+
+
+def create_dx_filter_columns(acquisition_cat_field_names, df_unprocessed):
+    # Replace the long text filter material description with a short one
+    df_unprocessed["Filters"] = df_unprocessed["Filters"].apply(replace_long_filter_with_short)
+    # Calculate the mean filter thickness and put the result in a new column called "Filter thicknesses (mm)"
+    df_unprocessed["Filter thicknesses (mm)"] = df_unprocessed[["Filter thickness min", "Filter thickness max"]].mean(
+        axis=1)
+    if "Filter thicknesses (mm)" not in acquisition_cat_field_names:
+        acquisition_cat_field_names.append("Filter thicknesses (mm)")
+
+    return df_unprocessed
 
 
 def create_dose_check_and_source_columns(acquisition_cat_field_names, acquisition_val_field_names,
