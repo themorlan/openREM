@@ -12,6 +12,8 @@ from pydicom.multival import MultiValue
 import logging
 from testfixtures import LogCapture
 
+from django.core.exceptions import ObjectDoesNotExist
+
 from remapp.extractors import dx
 from remapp.models import (
     GeneralStudyModuleAttr,
@@ -20,6 +22,9 @@ from remapp.models import (
     IrradEventXRaySourceData,
     PatientIDSettings,
     XrayFilters,
+    StandardNameSettings,
+    StandardNames,
+    DicomDeleteSettings,
 )
 from openremproject import settings
 
@@ -118,6 +123,31 @@ class ImportCarestreamDR7500(TestCase):
         pid.id_hashed = False
         pid.dob_stored = True
         pid.save()
+
+        # Ensure test images are not deleted after import
+        try:
+            DicomDeleteSettings.objects.get()
+        except ObjectDoesNotExist:
+            DicomDeleteSettings.objects.create()
+        dicom_delete_settintgs = DicomDeleteSettings.objects.get()
+        dicom_delete_settintgs.del_dx_im = False
+        dicom_delete_settintgs.save()
+
+        # Ensure standard name objects are created and the feature is enabled
+        try:
+            StandardNameSettings.objects.get()
+        except ObjectDoesNotExist:
+            StandardNameSettings.objects.create()
+        standard_name_settings = StandardNameSettings.objects.get()
+        standard_name_settings.enable_standard_names = True
+        standard_name_settings.save()
+
+        # Add a standard acquisition name entry for the acquisition protocol used in the DX-Im-GE_XR220 images
+        standard_name = StandardNames.objects.create()
+        standard_name.modality = "DX"
+        standard_name.standard_name = "AbdoView"
+        standard_name.acquisition_protocol = "ABD_1_VIEW"
+        standard_name.save()
 
         dx_ge_xr220_1 = os.path.join("test_files", "DX-Im-GE_XR220-1.dcm")
         dx_ge_xr220_2 = os.path.join("test_files", "DX-Im-GE_XR220-2.dcm")
@@ -914,6 +944,21 @@ class ImportCarestreamDR7500(TestCase):
             0.194,
         )
 
+    def test_standard_acquisition_names(self):
+        """
+        Testing that all images within the GE 220 study have the correct standard acquisition name.
+        All three images within this study should have the standard study name "AbdoView".
+        :return: None
+        """
+        study = GeneralStudyModuleAttr.objects.filter(procedure_code_meaning="ABD_1_VIEW")[0]
+
+        irradiations = study.projectionxrayradiationdose_set.get().irradeventxraydata_set.all()
+
+        for irradiation in irradiations:
+            std_acq_names = irradiation.standard_protocols.all()
+
+            for std_acq_name in std_acq_names:
+                self.assertEqual(std_acq_name.standard_name, "AbdoView")
 
 class ImportCarestreamDRXRevolution(TestCase):
     def setUp(self):
