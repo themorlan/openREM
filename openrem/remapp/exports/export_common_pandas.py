@@ -1477,10 +1477,10 @@ def create_dx_filter_columns(acquisition_cat_field_names, df_unprocessed):
 
     # Combine the "Filter thicknesses (mm)" values in any rows that have matching "Acquisition pk".
     #   1 Any np.nan values are replaced with None values
-    #   2 The float values are converted to strings with 2 decimal places; any None values are set to an empty string
+    #   2 The float values are converted to strings with 4 decimal places; any None values are set to an empty string
     #   3 The data is grouped by "Acquisition pk" and all "Filter thickness (mm)" strings joined with a " | " between.
     # Steps 1 and 2 are carried out by the first line of code below. Step 3 is carried out by the second line of code.
-    df_unprocessed["Filter thicknesses (mm)"] = df_unprocessed["Filter thicknesses (mm)"].replace(np.nan, None).apply(lambda x: f"{x:.2f}" if (x != None) else "")
+    df_unprocessed["Filter thicknesses (mm)"] = df_unprocessed["Filter thicknesses (mm)"].replace(np.nan, None).apply(lambda x: f"{x:.4f}" if (x != None) else "")
     df_unprocessed["Filter thicknesses (mm)"] = df_unprocessed.groupby(["Acquisition pk"])["Filter thicknesses (mm)"].transform(lambda x: " | ".join(x))
 
     if "Filter thicknesses (mm)" not in acquisition_cat_field_names:
