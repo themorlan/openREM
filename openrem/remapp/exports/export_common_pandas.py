@@ -1336,6 +1336,10 @@ def export_using_pandas(acquisition_cat_field_name_std_name, acquisition_cat_fie
 
             if modality in ["DX"]:
                 df_unprocessed = create_dx_filter_columns(acquisition_cat_field_names, df_unprocessed)
+                if "Filter thickness min" in acquisition_val_field_names:
+                    acquisition_val_field_names.remove("Filter thickness min")
+                if "Filter thickness max" in acquisition_val_field_names:
+                    acquisition_val_field_names.remove("Filter thickness max")
 
             df = transform_to_one_row_per_exam(
                 df_unprocessed,
@@ -1407,6 +1411,10 @@ def export_using_pandas(acquisition_cat_field_name_std_name, acquisition_cat_fie
 
         if modality in ["DX"]:
             df_unprocessed = create_dx_filter_columns(acquisition_cat_field_names, df_unprocessed)
+            if "Filter thickness min" in acquisition_cat_field_names:
+                acquisition_val_field_names.remove("Filter thickness min")
+            if "Filter thickness max" in acquisition_cat_field_names:
+                acquisition_val_field_names.remove("Filter thickness max")
 
         tsk.progress = "Working on {0} entries with blank accession numbers".format(n_entries)
         tsk.save()
@@ -1458,9 +1466,21 @@ def export_using_pandas(acquisition_cat_field_name_std_name, acquisition_cat_fie
 def create_dx_filter_columns(acquisition_cat_field_names, df_unprocessed):
     # Replace the long text filter material description with a short one
     df_unprocessed["Filters"] = df_unprocessed["Filters"].apply(replace_long_filter_with_short)
-    # Calculate the mean filter thickness and put the result in a new column called "Filter thicknesses (mm)"
-    df_unprocessed["Filter thicknesses (mm)"] = df_unprocessed[["Filter thickness min", "Filter thickness max"]].mean(
-        axis=1)
+
+    # Calculate the mean filter thickness and put the result in a new column called "Filter thicknesses (mm)", then
+    # drop the min and max columns
+    df_unprocessed["Filter thicknesses (mm)"] = df_unprocessed[["Filter thickness min", "Filter thickness max"]].mean(axis=1)
+    df_unprocessed.drop(["Filter thickness min", "Filter thickness max"], axis=1, inplace=True)
+
+    # Combine the "Filters" text in any rows that have matching "Acquisition pk" and the "Filters" text is not null
+    df_unprocessed["Filters"] = df_unprocessed[df_unprocessed["Filters"].notnull()].groupby(["Acquisition pk"])["Filters"].transform(lambda x: " | ".join(x))
+
+    # Combine the "Filter thicknesses (mm)" values in any rows that have matching "Acquisition pk". The float
+    # values have to be converted to strings first, and then the strings combined. This could probably be done in
+    # one line of code, but would be difficult to read.
+    df_unprocessed["Filter thicknesses (mm)"] = df_unprocessed["Filter thicknesses (mm)"].apply(lambda x: f'{x:.2f}')
+    df_unprocessed["Filter thicknesses (mm)"] = df_unprocessed.groupby(["Acquisition pk"])["Filter thicknesses (mm)"].transform(lambda x: " | ".join(x))
+
     if "Filter thicknesses (mm)" not in acquisition_cat_field_names:
         acquisition_cat_field_names.append("Filter thicknesses (mm)")
 
