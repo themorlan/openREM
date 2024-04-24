@@ -7,7 +7,7 @@ from collections import Counter
 from django.contrib.auth.models import User, Group
 from django.test import TestCase, RequestFactory
 from remapp.extractors import mam, rdsr
-from remapp.exports.mg_export import exportMG2excel
+from remapp.exports.mg_export import exportMG2csv
 from remapp.exports.mg_csv_nhsbsp import mg_csv_nhsbsp
 from remapp.models import PatientIDSettings, Exports
 
@@ -39,7 +39,7 @@ class ExportMammoCSV(TestCase):
         name = False
         patient_id = False
 
-        exportMG2excel(filter_set, pid=pid, name=name, patid=patient_id, user=self.user)
+        exportMG2csv(filter_set, pid=pid, name=name, patid=patient_id, user=self.user)
 
         task = Exports.objects.all()[0]
         csvdf = pd.read_csv(task.filename.path)

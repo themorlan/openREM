@@ -236,16 +236,15 @@ def _mg_get_series_data(event):
     return series_data
 
 
-def exportMG2excel(filterdict, pid=False, name=None, patid=None, user=None, xlsx=False):
+def exportMG2csv(filterdict, pid=False, name=None, patid=None, user=None):
     """
-    Export filtered mammography database data to a single-sheet CSV file or a multi sheet xlsx file.
+    Export filtered mammography database data to a single-sheet CSV file.
 
     :param filterdict: Queryset of studies to export
     :param pid: does the user have patient identifiable data permission
     :param name: has patient name been selected for export
     :param patid: has patient ID been selected for export
     :param user: User that has started the export
-    :param xlsx: Whether to export a single sheet csv or a multi sheet xlsx
     :return: Saves csv file into Media directory for user to download
     """
 
@@ -267,10 +266,7 @@ def exportMG2excel(filterdict, pid=False, name=None, patid=None, user=None, xlsx
     )[0]
 
     datestamp = datetime.datetime.now()
-    if xlsx:
-        export_type = "XLSX export"
-    else:
-        export_type = "CSV export"
+    export_type = "CSV export"
     task_id = get_or_generate_task_uuid()
     tsk = create_export_task(
         task_id=task_id,
@@ -282,14 +278,9 @@ def exportMG2excel(filterdict, pid=False, name=None, patid=None, user=None, xlsx
         filters_dict=filterdict,
     )
 
-    if xlsx:
-        tmpfile, book = create_xlsx(tsk)
-        if not tmpfile:
-            exit()
-    else:
-        tmpfile, writer = create_csv(tsk)
-        if not tmpfile:
-            exit()
+    tmpfile, writer = create_csv(tsk)
+    if not tmpfile:
+        exit()
 
     # Resetting the ordering key to avoid duplicates
     if isinstance(filterdict, dict):
@@ -342,13 +333,198 @@ def exportMG2excel(filterdict, pid=False, name=None, patid=None, user=None, xlsx
     if abort_if_zero_studies(tsk.num_records, tsk):
         return
 
-    if xlsx:
-        # Add summary sheet and all data sheet
-        summarysheet = book.add_worksheet("Summary")
-        wsalldata = book.add_worksheet("All data")
-        book = text_and_date_formats(
-            book, wsalldata, pid=pid, name=name, patid=patid, modality="MG"
-        )
+    headings = common_headers(modality="MG", pid=pid, name=name, patid=patid)
+    all_data_headings = list(headings)
+    headings += [
+        "View",
+        "View Modifier",
+        "Laterality",
+        "Acquisition",
+    ]
+
+    if enable_standard_names:
+        headings += ["Standard acquisition name"]
+
+    headings += [
+        "Thickness",
+        "Radiological thickness",
+        "Force",
+        "Mag",
+        "Area",
+        "Mode",
+        "Target",
+        "Filter",
+        "Filter thickness",
+        "Focal spot size",
+        "kVp",
+        "mA",
+        "ms",
+        "uAs",
+        "ESD",
+        "AGD",
+        "% Fibroglandular tissue",
+        "Exposure mode description",
+    ]
+
+    writer.writerow(headings)
+
+    max_events = 0
+    for study_index, exam in enumerate(studies):
+        tsk.progress = "{0} of {1}".format(study_index + 1, tsk.num_records)
+        tsk.save()
+
+        try:
+            common_exam_data = get_common_data(
+                "MG", exam, pid=pid, name=name, patid=patid
+            )
+            all_exam_data = list(common_exam_data)
+
+            this_study_max_events = 0
+            for (
+                series
+            ) in exam.projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by(
+                "id"
+            ):
+                this_study_max_events += 1
+                if this_study_max_events > max_events:
+                    max_events = this_study_max_events
+                series_data = _mg_get_series_data(series)
+
+                series_data = list(common_exam_data) + series_data
+                for index, item in enumerate(series_data):
+                    if item is None:
+                        series_data[index] = ""
+                    if isinstance(item, str) and "," in item:
+                        series_data[index] = item.replace(",", ";")
+                writer.writerow([str(data_string) for data_string in series_data])
+
+        except ObjectDoesNotExist:
+            error_message = (
+                "DoesNotExist error whilst exporting study {0} of {1},  study UID {2}, accession number"
+                " {3} - maybe database entry was deleted as part of importing later version of same"
+                " study?".format(
+                    study_index + 1,
+                    tsk.num_records,
+                    exam.study_instance_uid,
+                    exam.accession_number,
+                )
+            )
+            logger.error(error_message)
+
+            writer.writerow([error_message])
+
+    tsk.progress = "All study data written."
+    tsk.save()
+
+    tmpfile.close()
+    tsk.status = "COMPLETE"
+    tsk.processtime = (datetime.datetime.now() - datestamp).total_seconds()
+    tsk.save()
+
+
+def exportMG2excel(filterdict, pid=False, name=None, patid=None, user=None):
+    """
+    Export filtered mammography database data to a multi sheet xlsx file.
+
+    :param filterdict: Queryset of studies to export
+    :param pid: does the user have patient identifiable data permission
+    :param name: has patient name been selected for export
+    :param patid: has patient ID been selected for export
+    :param user: User that has started the export
+    :return: Saves csv file into Media directory for user to download
+    """
+
+    from remapp.models import GeneralStudyModuleAttr
+    from ..interface.mod_filters import (
+        MGSummaryListFilter,
+        MGFilterPlusPid,
+        MGFilterPlusStdNames,
+        MGFilterPlusPidPlusStdNames,
+    )
+
+    # Obtain the system-level enable_standard_names setting
+    try:
+        StandardNameSettings.objects.get()
+    except ObjectDoesNotExist:
+        StandardNameSettings.objects.create()
+    enable_standard_names = StandardNameSettings.objects.values_list(
+        "enable_standard_names", flat=True
+    )[0]
+
+    datestamp = datetime.datetime.now()
+    export_type = "XLSX export"
+    task_id = get_or_generate_task_uuid()
+    tsk = create_export_task(
+        task_id=task_id,
+        modality="MG",
+        export_type=export_type,
+        date_stamp=datestamp,
+        pid=bool(pid and (name or patid)),
+        user=user,
+        filters_dict=filterdict,
+    )
+
+    tmpfile, book = create_xlsx(tsk)
+    if not tmpfile:
+        exit()
+
+    # Resetting the ordering key to avoid duplicates
+    if isinstance(filterdict, dict):
+        if (
+            "o" in filterdict
+            and filterdict["o"] == "-projectionxrayradiationdose__accumxraydose__"
+            "accummammographyxraydose__accumulated_average_glandular_dose"
+        ):
+            logger.info("Replacing AGD ordering with study date to avoid duplication")
+            filterdict["o"] = "-time_date"
+
+    # Get the data!
+    if pid:
+        if enable_standard_names:
+            df_filtered_qs = MGFilterPlusPidPlusStdNames(
+                filterdict,
+                queryset=GeneralStudyModuleAttr.objects.filter(
+                    modality_type__exact="MG"
+                ).distinct(),
+            )
+        else:
+            df_filtered_qs = MGFilterPlusPid(
+                filterdict,
+                queryset=GeneralStudyModuleAttr.objects.filter(
+                    modality_type__exact="MG"
+                ).distinct(),
+            )
+    else:
+        if enable_standard_names:
+            df_filtered_qs = MGFilterPlusStdNames(
+                filterdict,
+                queryset=GeneralStudyModuleAttr.objects.filter(
+                    modality_type__exact="MG"
+                ).distinct(),
+            )
+        else:
+            df_filtered_qs = MGSummaryListFilter(
+                filterdict,
+                queryset=GeneralStudyModuleAttr.objects.filter(
+                    modality_type__exact="MG"
+                ).distinct(),
+            )
+
+    studies = df_filtered_qs.qs
+
+    tsk.progress = "Required study filter complete."
+    tsk.save()
+
+    tsk.num_records = studies.count()
+    if abort_if_zero_studies(tsk.num_records, tsk):
+        return
+
+    # Add summary sheet and all data sheet
+    summarysheet = book.add_worksheet("Summary")
+    wsalldata = book.add_worksheet("All data")
+    book = text_and_date_formats(
+        book, wsalldata, pid=pid, name=name, patid=patid, modality="MG"
+    )
 
     headings = common_headers(modality="MG", pid=pid, name=name, patid=patid)
     all_data_headings = list(headings)
@@ -383,19 +559,16 @@ def exportMG2excel(filterdict, pid=False, name=None, patid=None, user=None, xlsx
         "Exposure mode description",
     ]
 
-    if not xlsx:
-        writer.writerow(headings)
-    else:
-        # Generate list of protocols in queryset and create worksheets for each
-        tsk.progress = "Generating list of protocols in the dataset..."
-        tsk.save()
+    # Generate list of protocols in queryset and create worksheets for each
+    tsk.progress = "Generating list of protocols in the dataset..."
+    tsk.save()
 
-        tsk.progress = "Creating an Excel safe version of protocol names and creating a worksheet for each..."
-        tsk.save()
+    tsk.progress = "Creating an Excel safe version of protocol names and creating a worksheet for each..."
+    tsk.save()
 
-        book, sheet_list = generate_sheets(
-            studies, book, headings, modality="MG", pid=pid, name=name, patid=patid
-        )
+    book, sheet_list = generate_sheets(
+        studies, book, headings, modality="MG", pid=pid, name=name, patid=patid
+    )
 
     max_events = 0
     for study_index, exam in enumerate(studies):
@@ -418,60 +591,52 @@ def exportMG2excel(filterdict, pid=False, name=None, patid=None, user=None, xlsx
                 if this_study_max_events > max_events:
                     max_events = this_study_max_events
                 series_data = _mg_get_series_data(series)
-                if not xlsx:
-                    series_data = list(common_exam_data) + series_data
-                    for index, item in enumerate(series_data):
-                        if item is None:
-                            series_data[index] = ""
-                        if isinstance(item, str) and "," in item:
-                            series_data[index] = item.replace(",", ";")
-                    writer.writerow([str(data_string) for data_string in series_data])
-                else:
-                    all_exam_data += series_data  # For all data
 
-                    protocol = series.acquisition_protocol
-                    if not protocol:
-                        protocol = "Unknown"
-                    tabtext = sheet_name(protocol)
-                    sheet_list[tabtext]["count"] += 1
+                all_exam_data += series_data  # For all data
+
+                protocol = series.acquisition_protocol
+                if not protocol:
+                    protocol = "Unknown"
+                tabtext = sheet_name(protocol)
+                sheet_list[tabtext]["count"] += 1
+                try:
+                    sheet_list[tabtext]["sheet"].write_row(
+                        sheet_list[tabtext]["count"],
+                        0,
+                        common_exam_data + series_data,
+                    )
+                except TypeError:
+                    logger.error(
+                        "Common is |{0}| series is |{1}|".format(
+                            common_exam_data, series_data
+                        )
+                    )
+                    exit()
+
+                if enable_standard_names:
                     try:
-                        sheet_list[tabtext]["sheet"].write_row(
-                            sheet_list[tabtext]["count"],
-                            0,
-                            common_exam_data + series_data,
-                        )
-                    except TypeError:
-                        logger.error(
-                            "Common is |{0}| series is |{1}|".format(
-                                common_exam_data, series_data
-                            )
-                        )
-                        exit()
-
-                    if enable_standard_names:
-                        try:
-                            protocol = series.standard_protocols.first().standard_name
-                            if protocol:
-                                tabtext = sheet_name("[standard] " + protocol)
-                                sheet_list[tabtext]["count"] += 1
-                                try:
-                                    sheet_list[tabtext]["sheet"].write_row(
-                                        sheet_list[tabtext]["count"],
-                                        0,
-                                        common_exam_data + series_data,
+                        protocol = series.standard_protocols.first().standard_name
+                        if protocol:
+                            tabtext = sheet_name("[standard] " + protocol)
+                            sheet_list[tabtext]["count"] += 1
+                            try:
+                                sheet_list[tabtext]["sheet"].write_row(
+                                    sheet_list[tabtext]["count"],
+                                    0,
+                                    common_exam_data + series_data,
+                                )
+                            except TypeError:
+                                logger.error(
+                                    "Common is |{0}| series is |{1}|".format(
+                                        common_exam_data, series_data
                                     )
-                                except TypeError:
-                                    logger.error(
-                                        "Common is |{0}| series is |{1}|".format(
-                                            common_exam_data, series_data
-                                        )
-                                    )
-                                    exit()
-                        except AttributeError:
-                            pass
+                                )
+                                exit()
+                    except AttributeError:
+                        pass
 
-            if xlsx:
-                wsalldata.write_row(study_index + 1, 0, all_exam_data)
+            wsalldata.write_row(study_index + 1, 0, all_exam_data)
+
         except ObjectDoesNotExist:
             error_message = (
                 "DoesNotExist error whilst exporting study {0} of {1},  study UID {2}, accession number"
@@ -484,27 +649,18 @@ def exportMG2excel(filterdict, pid=False, name=None, patid=None, user=None, xlsx
                 )
             )
             logger.error(error_message)
-            if xlsx:
-                wsalldata.write(study_index + 1, 0, error_message)
-            else:
-                writer.writerow([error_message])
 
-    if xlsx:
-        all_data_headings += _series_headers(max_events)
-        wsalldata.write_row("A1", all_data_headings)
-        numrows = studies.count()
-        wsalldata.autofilter(0, 0, numrows, len(all_data_headings) - 1)
-        create_summary_sheet(tsk, studies, book, summarysheet, sheet_list)
+            wsalldata.write(study_index + 1, 0, error_message)
+
+    all_data_headings += _series_headers(max_events)
+    wsalldata.write_row("A1", all_data_headings)
+    numrows = studies.count()
+    wsalldata.autofilter(0, 0, numrows, len(all_data_headings) - 1)
+    create_summary_sheet(tsk, studies, book, summarysheet, sheet_list)
 
     tsk.progress = "All study data written."
     tsk.save()
 
-    if xlsx:
-        book.close()
-        export_filename = f'mgexport{datestamp.strftime("%Y%m%d-%H%M%S%f")}.xlsx'
-        write_export(tsk, export_filename, tmpfile, datestamp)
-    else:
-        tmpfile.close()
-        tsk.status = "COMPLETE"
-        tsk.processtime = (datetime.datetime.now() - datestamp).total_seconds()
-        tsk.save()
+    book.close()
+    export_filename = f'mgexport{datestamp.strftime("%Y%m%d-%H%M%S%f")}.xlsx'
+    write_export(tsk, export_filename, tmpfile, datestamp)

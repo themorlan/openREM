@@ -526,13 +526,13 @@ def mgcsv1(request, name=None, pat_id=None):
     :return:
     """
     from django.shortcuts import redirect
-    from remapp.exports.mg_export import exportMG2excel
+    from remapp.exports.mg_export import exportMG2csv
 
     pid = include_pid(request, name, pat_id)
 
     if request.user.groups.filter(name="exportgroup"):
         job = run_in_background(
-            exportMG2excel,
+            exportMG2csv,
             "export_mg",
             request.GET,
             pid["pidgroup"],
