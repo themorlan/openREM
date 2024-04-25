@@ -1390,6 +1390,8 @@ def export_using_pandas(acquisition_cat_field_name_std_name, acquisition_cat_fie
             columns=(field_names_for_non_accession), coerce_float=True,
         )
 
+        n_entries_no_accession = df_unprocessed.count(axis=1)
+
         #if modality in ["CT"]:
         #    # Create the CT dose check column
         #    df_unprocessed = create_ct_dose_check_column(ct_dose_check_field_names, df_unprocessed)
@@ -1416,7 +1418,7 @@ def export_using_pandas(acquisition_cat_field_name_std_name, acquisition_cat_fie
             if "Filter thickness max" in acquisition_cat_field_names:
                 acquisition_val_field_names.remove("Filter thickness max")
 
-        tsk.progress = "Working on {0} entries with blank accession numbers".format(n_entries)
+        tsk.progress = "Working on {0} entries with blank accession numbers".format(n_entries_no_accession)
         tsk.save()
 
         # Write out date to the All data sheet
