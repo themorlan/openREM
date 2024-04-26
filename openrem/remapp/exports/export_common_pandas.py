@@ -1316,12 +1316,34 @@ def export_using_pandas(acquisition_cat_field_name_std_name, acquisition_cat_fie
             )
 
             if modality in ["CT"]:
-                if "Dose check alerts" in acquisition_cat_field_names:
-                    acquisition_cat_field_names.remove("Dose check alerts")
+                fields_to_remove = ["Dose check alerts", "S1 Source name", "S2 Source name"]
+                for field_name in fields_to_remove:
+                    if field_name in acquisition_cat_field_names:
+                        acquisition_cat_field_names.remove(field_name)
+
+                fields_to_add = ["Source name"]
+                for field_name in fields_to_add:
+                    if field_name not in acquisition_cat_field_names:
+                        acquisition_cat_field_names.append(field_name)
+
+                fields_to_remove = [
+                    "S1 kVp", "S1 mA", "S1 Maximum mA", "S1 Exposure time per rotation",
+                    "S2 kVp", "S2 mA", "S2 Maximum mA", "S2 Exposure time per rotation"
+                ]
+                for field_name in fields_to_remove:
+                    if field_name in acquisition_val_field_names:
+                        acquisition_val_field_names.remove(field_name)
+
+                fields_to_add = ["kVp", "mA", "Maximum mA", "Exposure time per rotation"]
+                for field_name in fields_to_add:
+                    if field_name not in acquisition_val_field_names:
+                        acquisition_val_field_names.append(field_name)
 
             if modality in ["DX"]:
-                if "Filter thicknesses (mm)" in acquisition_cat_field_names:
-                    acquisition_cat_field_names.remove("Filter thicknesses (mm)")
+                fields_to_remove = ["Filter thicknesses (mm)"]
+                for field_name in fields_to_remove:
+                    if field_name in acquisition_cat_field_names:
+                        acquisition_cat_field_names.remove(field_name)
 
             optimise_df_dtypes(df_unprocessed,
                                acquisition_cat_field_names, acquisition_int_field_names, acquisition_val_field_names,
@@ -1336,10 +1358,11 @@ def export_using_pandas(acquisition_cat_field_name_std_name, acquisition_cat_fie
 
             if modality in ["DX"]:
                 df_unprocessed = create_dx_filter_columns(acquisition_cat_field_names, df_unprocessed)
-                if "Filter thickness min" in acquisition_val_field_names:
-                    acquisition_val_field_names.remove("Filter thickness min")
-                if "Filter thickness max" in acquisition_val_field_names:
-                    acquisition_val_field_names.remove("Filter thickness max")
+
+                fields_to_remove = ["Filter thickness min", "Filter thickness max"]
+                for field_name in fields_to_remove:
+                    if field_name in acquisition_val_field_names:
+                        acquisition_val_field_names.remove(field_name)
 
             df = transform_to_one_row_per_exam(
                 df_unprocessed,
@@ -1396,9 +1419,35 @@ def export_using_pandas(acquisition_cat_field_name_std_name, acquisition_cat_fie
         #    # Create the CT dose check column
         #    df_unprocessed = create_ct_dose_check_column(ct_dose_check_field_names, df_unprocessed)
 
+        if modality in ["CT"]:
+            fields_to_remove = ["Dose check alerts", "S1 Source name", "S2 Source name"]
+            for field_name in fields_to_remove:
+                if field_name in acquisition_cat_field_names:
+                    acquisition_cat_field_names.remove(field_name)
+
+            fields_to_add = ["Source name"]
+            for field_name in fields_to_add:
+                if field_name not in acquisition_cat_field_names:
+                    acquisition_cat_field_names.append(field_name)
+
+            fields_to_remove = [
+                "S1 kVp", "S1 mA", "S1 Maximum mA", "S1 Exposure time per rotation",
+                "S2 kVp", "S2 mA", "S2 Maximum mA", "S2 Exposure time per rotation"
+            ]
+            for field_name in fields_to_remove:
+                if field_name in acquisition_val_field_names:
+                    acquisition_val_field_names.remove(field_name)
+
+            fields_to_add = ["kVp", "mA", "Maximum mA", "Exposure time per rotation"]
+            for field_name in fields_to_add:
+                if field_name not in acquisition_val_field_names:
+                    acquisition_val_field_names.append(field_name)
+
         if modality in ["DX"]:
-            if "Filter thicknesses (mm)" in acquisition_cat_field_names:
-                acquisition_cat_field_names.remove("Filter thicknesses (mm)")
+            fields_to_remove = ["Filter thicknesses (mm)"]
+            for field_name in fields_to_remove:
+                if field_name in acquisition_cat_field_names:
+                    acquisition_cat_field_names.remove(field_name)
 
         optimise_df_dtypes(df_unprocessed,
                            acquisition_cat_field_names, acquisition_int_field_names, acquisition_val_field_names,
@@ -1413,10 +1462,10 @@ def export_using_pandas(acquisition_cat_field_name_std_name, acquisition_cat_fie
 
         if modality in ["DX"]:
             df_unprocessed = create_dx_filter_columns(acquisition_cat_field_names, df_unprocessed)
-            if "Filter thickness min" in acquisition_cat_field_names:
-                acquisition_val_field_names.remove("Filter thickness min")
-            if "Filter thickness max" in acquisition_cat_field_names:
-                acquisition_val_field_names.remove("Filter thickness max")
+            fields_to_remove = ["Filter thickness min", "Filter thickness max"]
+            for field_name in fields_to_remove:
+                if field_name in acquisition_val_field_names:
+                    acquisition_val_field_names.remove(field_name)
 
         tsk.progress = "Working on {0} entries with blank accession numbers".format(n_entries_no_accession)
         tsk.save()
