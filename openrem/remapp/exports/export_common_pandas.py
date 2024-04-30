@@ -1287,106 +1287,14 @@ def export_using_pandas(acquisition_cat_field_name_std_name, acquisition_cat_fie
     n_entries = len(values_for_filtering)
     extra_msg_txt = ""
 
-    for chunk_min_idx in range(0, n_entries, qs_chunk_size):
-
-        chunk_max_idx = chunk_min_idx + qs_chunk_size
-        if chunk_max_idx > n_entries:
-            chunk_max_idx = n_entries
-
-        tsk.progress = "Working on entries {0} to {1} with {2}accession numbers".format(chunk_min_idx + 1, chunk_max_idx, extra_msg_txt)
-        tsk.save()
-
-        filter_dict = {filtering_criteria: values_for_filtering[chunk_min_idx:chunk_max_idx]}
-        data = qs.order_by().filter(**filter_dict).values_list(*(values_field_list))
-
-        if data.exists():
-            # Clear the query cache
-            django.db.reset_queries()
-
-            df_unprocessed = pd.DataFrame.from_records(
-                data=data,
-                columns=(field_names_list), coerce_float=True,
-            )
-
-            if modality in ["CT"]:
-                fields_to_remove = ["Dose check alerts", "S1 Source name", "S2 Source name"]
-                for field_name in fields_to_remove:
-                    if field_name in acquisition_cat_field_names:
-                        acquisition_cat_field_names.remove(field_name)
-
-                fields_to_add = ["Source name"]
-                for field_name in fields_to_add:
-                    if field_name not in acquisition_cat_field_names:
-                        acquisition_cat_field_names.append(field_name)
-
-                fields_to_remove = [
-                    "S1 kVp", "S1 mA", "S1 Maximum mA", "S1 Exposure time per rotation",
-                    "S2 kVp", "S2 mA", "S2 Maximum mA", "S2 Exposure time per rotation"
-                ]
-                for field_name in fields_to_remove:
-                    if field_name in acquisition_val_field_names:
-                        acquisition_val_field_names.remove(field_name)
-
-                fields_to_add = ["kVp", "mA", "Maximum mA", "Exposure time per rotation"]
-                for field_name in fields_to_add:
-                    if field_name not in acquisition_val_field_names:
-                        acquisition_val_field_names.append(field_name)
-
-            if modality in ["DX"]:
-                fields_to_remove = ["Filter thicknesses (mm)"]
-                for field_name in fields_to_remove:
-                    if field_name in acquisition_cat_field_names:
-                        acquisition_cat_field_names.remove(field_name)
-
-            optimise_df_dtypes(df_unprocessed,
-                               acquisition_cat_field_names, acquisition_int_field_names, acquisition_val_field_names,
-                               exam_cat_field_names, exam_date_field_names, exam_int_field_names, exam_val_field_names)
-
-            transform_dap_uas_units(df_unprocessed)
-
-            if modality in ["CT"]:
-                df_unprocessed = create_dose_check_and_source_columns(acquisition_cat_field_names,
-                                                                      acquisition_val_field_names,
-                                                                      ct_dose_check_field_names, df_unprocessed)
-
-            if modality in ["DX"]:
-                df_unprocessed = create_dx_filter_columns(acquisition_cat_field_names, df_unprocessed)
-
-                fields_to_remove = ["Filter thickness min", "Filter thickness max"]
-                for field_name in fields_to_remove:
-                    if field_name in acquisition_val_field_names:
-                        acquisition_val_field_names.remove(field_name)
-
-            df = transform_to_one_row_per_exam(
-                df_unprocessed,
-                acquisition_cat_field_names, acquisition_int_field_names, acquisition_val_field_names,
-                exam_cat_field_names, exam_date_field_names, exam_int_field_names,
-                exam_obj_field_names, exam_time_field_names, exam_val_field_names,
-                all_field_names)
-
-            # Write the headings to the sheet (over-writing each time, but this ensures we'll include the study
-            # with the most events without doing anything complicated to generate the headings)
-            wsalldata.write_row(0, 0, df.columns)
-
-            # Write the DataFrame to the all data sheet
-            for idx, row in df.iterrows():
-                wsalldata.write_row(current_row, 0, row.fillna(""))
-                current_row = current_row + 1
-
-            # # Write out data to the acquisition protocol sheets
-            df = df_unprocessed
-
-            df = create_standard_name_columns(df, exam_cat_field_names)
-
-            # Drop any duplicate acquisition pk rows
-            df.drop_duplicates(subset="Acquisition pk", inplace=True)
-
-            # Sort the data by descending date and time
-            df.sort_values(by=["Study date", "Study time"], ascending=[False, False], inplace=True)
-
-            write_acquisition_data(book, df, worksheet_log)
-
-            write_standard_acquisition_data(book, df, enable_standard_names, worksheet_log)
+    current_row = write_out_data_as_chunks(acquisition_cat_field_names, acquisition_int_field_names,
+                                           acquisition_val_field_names, all_field_names, book,
+                                           ct_dose_check_field_names, current_row, enable_standard_names,
+                                           exam_cat_field_names, exam_date_field_names, exam_int_field_names,
+                                           exam_obj_field_names, exam_time_field_names, exam_val_field_names,
+                                           extra_msg_txt, field_names_list, filtering_criteria, modality, n_entries, qs,
+                                           qs_chunk_size, tsk, values_field_list, values_for_filtering, worksheet_log,
+                                           wsalldata)
 
     # Now write out any None accession number data if any such data is present
     fields_for_none_accession = all_fields
@@ -1407,13 +1315,43 @@ def export_using_pandas(acquisition_cat_field_name_std_name, acquisition_cat_fie
     n_entries = len(values_for_filtering)
     extra_msg_txt = "no "
 
+    current_row = write_out_data_as_chunks(acquisition_cat_field_names, acquisition_int_field_names,
+                                           acquisition_val_field_names, all_field_names, book,
+                                           ct_dose_check_field_names, current_row, enable_standard_names,
+                                           exam_cat_field_names, exam_date_field_names, exam_int_field_names,
+                                           exam_obj_field_names, exam_time_field_names, exam_val_field_names,
+                                           extra_msg_txt, field_names_list, filtering_criteria, modality, n_entries, qs,
+                                           qs_chunk_size, tsk, values_field_list, values_for_filtering, worksheet_log,
+                                           wsalldata)
+
+    # Now create the summary sheet
+    create_summary_sheet(tsk, qs, book, summarysheet, modality=modality)
+
+    tsk.progress = "Finished populating the summary sheet"
+    tsk.save()
+    book.close()
+    tsk.progress = "XLSX book written."
+    tsk.save()
+    xlsxfilename = "{0}export{1}.xlsx".format(modality.lower(), datestamp.strftime("%Y%m%d-%H%M%S%f"))
+    write_export(tsk, xlsxfilename, tmpxlsx, datestamp)
+
+
+def write_out_data_as_chunks(acquisition_cat_field_names, acquisition_int_field_names, acquisition_val_field_names,
+                             all_field_names, book, ct_dose_check_field_names, current_row, enable_standard_names,
+                             exam_cat_field_names, exam_date_field_names, exam_int_field_names, exam_obj_field_names,
+                             exam_time_field_names, exam_val_field_names, extra_msg_txt, field_names_list,
+                             filtering_criteria, modality, n_entries, qs, qs_chunk_size, tsk, values_field_list,
+                             values_for_filtering, worksheet_log, wsalldata):
+
     for chunk_min_idx in range(0, n_entries, qs_chunk_size):
 
         chunk_max_idx = chunk_min_idx + qs_chunk_size
         if chunk_max_idx > n_entries:
             chunk_max_idx = n_entries
 
-        tsk.progress = "Working on {0} to {1} with {2}accession number".format(chunk_min_idx + 1, chunk_max_idx, extra_msg_txt)
+        tsk.progress = "Working on {0} to {1} with {2}accession numbers".format(
+            chunk_min_idx + 1, chunk_max_idx, extra_msg_txt
+        )
         tsk.save()
 
         filter_dict = {filtering_criteria: values_for_filtering[chunk_min_idx:chunk_max_idx]}
@@ -1471,6 +1409,7 @@ def export_using_pandas(acquisition_cat_field_name_std_name, acquisition_cat_fie
 
             if modality in ["DX"]:
                 df_unprocessed = create_dx_filter_columns(acquisition_cat_field_names, df_unprocessed)
+
                 fields_to_remove = ["Filter thickness min", "Filter thickness max"]
                 for field_name in fields_to_remove:
                     if field_name in acquisition_val_field_names:
@@ -1506,17 +1445,7 @@ def export_using_pandas(acquisition_cat_field_name_std_name, acquisition_cat_fie
             write_acquisition_data(book, df, worksheet_log)
 
             write_standard_acquisition_data(book, df, enable_standard_names, worksheet_log)
-
-    # Now create the summary sheet
-    create_summary_sheet(tsk, qs, book, summarysheet, modality=modality)
-
-    tsk.progress = "Finished populating the summary sheet"
-    tsk.save()
-    book.close()
-    tsk.progress = "XLSX book written."
-    tsk.save()
-    xlsxfilename = "{0}export{1}.xlsx".format(modality.lower(), datestamp.strftime("%Y%m%d-%H%M%S%f"))
-    write_export(tsk, xlsxfilename, tmpxlsx, datestamp)
+    return current_row
 
 
 def create_dx_filter_columns(acquisition_cat_field_names, df_unprocessed):
