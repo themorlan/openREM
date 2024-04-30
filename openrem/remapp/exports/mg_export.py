@@ -334,7 +334,6 @@ def exportMG2csv(filterdict, pid=False, name=None, patid=None, user=None):
         return
 
     headings = common_headers(modality="MG", pid=pid, name=name, patid=patid)
-    all_data_headings = list(headings)
     headings += [
         "View",
         "View Modifier",
@@ -377,7 +376,6 @@ def exportMG2csv(filterdict, pid=False, name=None, patid=None, user=None):
             common_exam_data = get_common_data(
                 "MG", exam, pid=pid, name=name, patid=patid
             )
-            all_exam_data = list(common_exam_data)
 
             this_study_max_events = 0
             for (
@@ -423,6 +421,9 @@ def exportMG2csv(filterdict, pid=False, name=None, patid=None, user=None):
 
 
 def exportMG2excel(filterdict, pid=False, name=None, patid=None, user=None):
+    # pylint: disable=too-many-branches
+    # pylint: disable=too-many-statements
+    # pylint: disable=too-many-locals
     """
     Export filtered mammography database data to a multi sheet xlsx file.
 
