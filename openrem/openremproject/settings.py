@@ -125,6 +125,7 @@ INSTALLED_APPS = (
     "crispy_forms",
     "django_js_reverse",
     "huey.contrib.djhuey",
+    "django_huey"
 )
 
 CRISPY_TEMPLATE_PACK = "bootstrap3"
@@ -137,18 +138,50 @@ HUEY_NUMBER_OF_WORKERS = int(
     os.environ.get("HUEY_NUMBER_OF_WORKERS", multiprocessing.cpu_count())
 )
 
-HUEY = {
-    "huey_class": HUEY_CLASS,
-    "immediate": False,
-    "connection": {
-        "host": os.environ.get("REDIS_HOST", "localhost"),
-        "port": int(os.environ.get("REDIS_PORT", 6379)),
-    },
-    "consumer": {
-        "workers": HUEY_NUMBER_OF_WORKERS,
-        "worker_type": HUEY_WORKER_TYPE,
-    },
+DJANGO_HUEY = {
+    'default': 'openremqueue', #this name must match with any of the queues defined below.
+    'queues': {
+        'openremqueue': {#this name will be used in decorators below
+            'huey_class': HUEY_CLASS,  
+            'name': 'openremqueue_tasks',  
+            "immediate": False,
+            "connection": {
+                "host": os.environ.get("REDIS_HOST", "localhost"),
+                "port": int(os.environ.get("REDIS_PORT", 6379)),
+            },
+            'consumer': {
+                'workers':  HUEY_NUMBER_OF_WORKERS,
+                'worker_type': HUEY_WORKER_TYPE,
+            },
+        },
+        'openriqqueue': {#this name will be used in decorators below
+            'huey_class': HUEY_CLASS,  
+            'name': 'openriqqueue_tasks',  
+            "immediate": False,
+            "connection": {
+                "host": os.environ.get("REDIS_HOST", "localhost"),
+                "port": int(os.environ.get("REDIS_PORT", 6379)),
+            },
+            'consumer': {
+                'workers': HUEY_NUMBER_OF_WORKERS,
+                'worker_type': HUEY_WORKER_TYPE,
+            },
+        }
+    }
 }
+
+#HUEY = {
+#    "huey_class": HUEY_CLASS,
+#    "immediate": False,
+#    "connection": {
+#        "host": os.environ.get("REDIS_HOST", "localhost"),
+#        "port": int(os.environ.get("REDIS_PORT", 6379)),
+#    },
+#    "consumer": {
+#        "workers": HUEY_NUMBER_OF_WORKERS,
+#        "worker_type": HUEY_WORKER_TYPE,
+#    },
+#}
 
 on_rtd = os.environ.get("READTHEDOCS") == "True"
 if not on_rtd:
