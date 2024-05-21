@@ -569,7 +569,6 @@ def mgxlsx1(request, name=None, pat_id=None):
             name=pid["include_names"],
             patid=pid["include_pat_id"],
             user=request.user.id,
-            xlsx=True,
         )
         logger.debug("Export MG to xlsx job is {0}".format(job.id))
 
