@@ -65,6 +65,9 @@ from ..interface.mod_filters import (
 )
 from ..tools.get_values import return_for_export
 
+from ..tools.check_standard_name_status import are_standard_names_enabled
+
+
 logger = logging.getLogger(__name__)
 
 
@@ -169,13 +172,7 @@ def _get_series_data(event, filter_data):
     """
 
     # Obtain the system-level enable_standard_names setting
-    try:
-        StandardNameSettings.objects.get()
-    except ObjectDoesNotExist:
-        StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values_list(
-        "enable_standard_names", flat=True
-    )[0]
+    enable_standard_names = are_standard_names_enabled()
 
     try:
         source_data = event.irradeventxraysourcedata_set.get()
@@ -290,13 +287,7 @@ def rfxlsx(filterdict, pid=False, name=None, patid=None, user=None):
     """
 
     # Obtain the system-level enable_standard_names setting
-    try:
-        StandardNameSettings.objects.get()
-    except ObjectDoesNotExist:
-        StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values_list(
-        "enable_standard_names", flat=True
-    )[0]
+    enable_standard_names = are_standard_names_enabled()
 
     datestamp = datetime.datetime.now()
     task_id = get_or_generate_task_uuid()
@@ -747,13 +738,7 @@ def exportFL2excel(filterdict, pid=False, name=None, patid=None, user=None):
     """
 
     # Obtain the system-level enable_standard_names setting
-    try:
-        StandardNameSettings.objects.get()
-    except ObjectDoesNotExist:
-        StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values_list(
-        "enable_standard_names", flat=True
-    )[0]
+    enable_standard_names = are_standard_names_enabled()
 
     datestamp = datetime.datetime.now()
     task_id = get_or_generate_task_uuid()

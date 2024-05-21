@@ -1603,18 +1603,6 @@ def create_ct_source_columns(acquisition_cat_field_names, acquisition_val_field_
     return df_unprocessed
 
 
-def are_standard_names_enabled():
-    # Obtain the system-level enable_standard_names setting
-    try:
-        StandardNameSettings.objects.get()
-    except ObjectDoesNotExist:
-        StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values_list(
-        "enable_standard_names", flat=True
-    )[0]
-    return enable_standard_names
-
-
 def create_ct_dose_check_column(ct_dose_check_field_names, df):
     if df.empty:
         return None

@@ -52,6 +52,8 @@ from .export_common import (
     create_export_task,
 )
 
+from ..tools.check_standard_name_status import are_standard_names_enabled
+
 logger = logging.getLogger(__name__)
 
 
@@ -63,13 +65,7 @@ def _series_headers(max_events):
     """
 
     # Obtain the system-level enable_standard_names setting
-    try:
-        StandardNameSettings.objects.get()
-    except ObjectDoesNotExist:
-        StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values_list(
-        "enable_standard_names", flat=True
-    )[0]
+    enable_standard_names = are_standard_names_enabled()
 
     series_headers = []
     for series_number in range(max_events):
@@ -116,13 +112,7 @@ def _mg_get_series_data(event):
     """
 
     # Obtain the system-level enable_standard_names setting
-    try:
-        StandardNameSettings.objects.get()
-    except ObjectDoesNotExist:
-        StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values_list(
-        "enable_standard_names", flat=True
-    )[0]
+    enable_standard_names = are_standard_names_enabled()
 
     try:
         mechanical_data = event.irradeventxraymechanicaldata_set.get()
@@ -257,13 +247,7 @@ def exportMG2csv(filterdict, pid=False, name=None, patid=None, user=None):
     )
 
     # Obtain the system-level enable_standard_names setting
-    try:
-        StandardNameSettings.objects.get()
-    except ObjectDoesNotExist:
-        StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values_list(
-        "enable_standard_names", flat=True
-    )[0]
+    enable_standard_names = are_standard_names_enabled()
 
     datestamp = datetime.datetime.now()
     export_type = "CSV export"
@@ -444,13 +428,7 @@ def exportMG2excel(filterdict, pid=False, name=None, patid=None, user=None):
     )
 
     # Obtain the system-level enable_standard_names setting
-    try:
-        StandardNameSettings.objects.get()
-    except ObjectDoesNotExist:
-        StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values_list(
-        "enable_standard_names", flat=True
-    )[0]
+    enable_standard_names = are_standard_names_enabled()
 
     datestamp = datetime.datetime.now()
     export_type = "XLSX export"

@@ -120,6 +120,7 @@ from .tools.populate_summary import (
     populate_summary_dx,
     populate_summary_rf,
 )
+from .tools.check_standard_name_status import are_standard_names_enabled
 from openrem.remapp.tools.background import (
     run_in_background,
     terminate_background,
@@ -1263,13 +1264,7 @@ def review_failed_imports(request, modality=None):
 def chart_options_view(request):
 
     # Obtain the system-level enable_standard_names setting
-    try:
-        StandardNameSettings.objects.get()
-    except ObjectDoesNotExist:
-        StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values_list(
-        "enable_standard_names", flat=True
-    )[0]
+    enable_standard_names = are_standard_names_enabled()
 
     if request.method == "POST":
         general_form = GeneralChartOptionsDisplayForm(request.POST)
@@ -1437,13 +1432,7 @@ def set_common_chart_options(general_form, user_profile):
 def set_rf_chart_options(rf_form, user_profile):
 
     # Obtain the system-level enable_standard_names setting
-    try:
-        StandardNameSettings.objects.get()
-    except ObjectDoesNotExist:
-        StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values_list(
-        "enable_standard_names", flat=True
-    )[0]
+    enable_standard_names = are_standard_names_enabled()
 
     user_profile.plotRFStudyPerDayAndHour = rf_form.cleaned_data[
         "plotRFStudyPerDayAndHour"
@@ -1491,13 +1480,7 @@ def initialise_rf_form_data(user_profile):
     }
 
     # Obtain the system-level enable_standard_names setting
-    try:
-        StandardNameSettings.objects.get()
-    except ObjectDoesNotExist:
-        StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values_list(
-        "enable_standard_names", flat=True
-    )[0]
+    enable_standard_names = are_standard_names_enabled()
 
     if enable_standard_names:
         rf_form_data["plotRFStandardStudyFreq"] = user_profile.plotRFStandardStudyFreq
@@ -1515,13 +1498,7 @@ def initialise_rf_form_data(user_profile):
 def set_mg_chart_options(mg_form, user_profile):
 
     # Obtain the system-level enable_standard_names setting
-    try:
-        StandardNameSettings.objects.get()
-    except ObjectDoesNotExist:
-        StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values_list(
-        "enable_standard_names", flat=True
-    )[0]
+    enable_standard_names = are_standard_names_enabled()
 
     user_profile.plotMGacquisitionFreq = mg_form.cleaned_data["plotMGacquisitionFreq"]
     user_profile.plotMGaverageAGD = mg_form.cleaned_data["plotMGaverageAGD"]
@@ -1583,13 +1560,7 @@ def initialise_mg_form_data(user_profile):
     }
 
     # Obtain the system-level enable_standard_names setting
-    try:
-        StandardNameSettings.objects.get()
-    except ObjectDoesNotExist:
-        StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values_list(
-        "enable_standard_names", flat=True
-    )[0]
+    enable_standard_names = are_standard_names_enabled()
 
     if enable_standard_names:
         mg_form_data[
@@ -1621,13 +1592,7 @@ def initialise_mg_form_data(user_profile):
 def set_dx_chart_options(dx_form, user_profile):
 
     # Obtain the system-level enable_standard_names setting
-    try:
-        StandardNameSettings.objects.get()
-    except ObjectDoesNotExist:
-        StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values_list(
-        "enable_standard_names", flat=True
-    )[0]
+    enable_standard_names = are_standard_names_enabled()
 
     user_profile.plotDXAcquisitionMeanDAP = dx_form.cleaned_data[
         "plotDXAcquisitionMeanDAP"
@@ -1727,13 +1692,7 @@ def initialise_dx_form_data(user_profile):
     }
 
     # Obtain the system-level enable_standard_names setting
-    try:
-        StandardNameSettings.objects.get()
-    except ObjectDoesNotExist:
-        StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values_list(
-        "enable_standard_names", flat=True
-    )[0]
+    enable_standard_names = are_standard_names_enabled()
 
     if enable_standard_names:
         dx_form_data[
@@ -1825,13 +1784,7 @@ def initialise_nm_form_data(user_profile):
 def set_ct_chart_options(ct_form, user_profile):
 
     # Obtain the system-level enable_standard_names setting
-    try:
-        StandardNameSettings.objects.get()
-    except ObjectDoesNotExist:
-        StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values_list(
-        "enable_standard_names", flat=True
-    )[0]
+    enable_standard_names = are_standard_names_enabled()
 
     user_profile.plotCTAcquisitionMeanDLP = ct_form.cleaned_data[
         "plotCTAcquisitionMeanDLP"
@@ -1979,13 +1932,7 @@ def initialise_ct_form_data(ct_acquisition_types, user_profile):
     }
 
     # Obtain the system-level enable_standard_names setting
-    try:
-        StandardNameSettings.objects.get()
-    except ObjectDoesNotExist:
-        StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values_list(
-        "enable_standard_names", flat=True
-    )[0]
+    enable_standard_names = are_standard_names_enabled()
 
     if enable_standard_names:
         ct_form_data[

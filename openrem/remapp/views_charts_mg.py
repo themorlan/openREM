@@ -43,6 +43,8 @@ from .interface.chart_functions import (
     generate_average_chart_group,
 )
 
+from .tools.check_standard_name_status import are_standard_names_enabled
+
 logger = logging.getLogger(__name__)
 
 
@@ -53,13 +55,7 @@ def generate_required_mg_charts_list(profile):
     variable name for each required chart"""
 
     # Obtain the system-level enable_standard_names setting
-    try:
-        StandardNameSettings.objects.get()
-    except ObjectDoesNotExist:
-        StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values_list(
-        "enable_standard_names", flat=True
-    )[0]
+    enable_standard_names = are_standard_names_enabled()
 
     required_charts = []
 
@@ -295,13 +291,7 @@ def mg_summary_chart_data(request):
     """Obtain data for mammography chart data Ajax view"""
 
     # Obtain the system-level enable_standard_names setting
-    try:
-        StandardNameSettings.objects.get()
-    except ObjectDoesNotExist:
-        StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values_list(
-        "enable_standard_names", flat=True
-    )[0]
+    enable_standard_names = are_standard_names_enabled()
 
     if request.user.groups.filter(name="pidgroup"):
         if enable_standard_names:
@@ -370,13 +360,7 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
         return {}
 
     # Obtain the system-level enable_standard_names setting
-    try:
-        StandardNameSettings.objects.get()
-    except ObjectDoesNotExist:
-        StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values_list(
-        "enable_standard_names", flat=True
-    )[0]
+    enable_standard_names = are_standard_names_enabled()
 
     # Set the Plotly chart theme
     plotly_set_default_theme(user_profile.plotThemeChoice)
@@ -1142,13 +1126,7 @@ def mg_chart_form_processing(request, user_profile):
     # pylint: disable=too-many-statements
 
     # Obtain the system-level enable_standard_names setting
-    try:
-        StandardNameSettings.objects.get()
-    except ObjectDoesNotExist:
-        StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values_list(
-        "enable_standard_names", flat=True
-    )[0]
+    enable_standard_names = are_standard_names_enabled()
 
     # Obtain the chart options from the request
     chart_options_form = None

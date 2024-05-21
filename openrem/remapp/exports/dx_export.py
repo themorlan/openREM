@@ -43,6 +43,8 @@ from openrem.remapp.tools.background import get_or_generate_task_uuid
 
 from remapp.models import GeneralStudyModuleAttr
 
+from ..tools.check_standard_name_status import are_standard_names_enabled
+
 from ..interface.mod_filters import dx_acq_filter
 
 from .export_common_pandas import (
@@ -60,7 +62,6 @@ from .export_common_pandas import (
     write_row_to_acquisition_sheet,
     text_and_date_formats,
     sheet_name,
-    are_standard_names_enabled,
     export_using_pandas,
     get_pulse_data,
     get_xray_filter_info,
