@@ -825,6 +825,7 @@ def create_summary_sheet(
         summary_sheet.write(row + 6, 4, item["n"])
     summary_sheet.set_column("D:D", 25)
 
+    sorted_protocols = None
     # Generate list of Series Protocols
     if has_series_protocol:
         summary_sheet.write(5, 6, "Series Protocol")
@@ -873,18 +874,20 @@ def create_summary_sheet(
 
         # Write standard acquisition names
         # Only include [standard] protocols
-        summary_sheet.write(5, 12, "Standard acquisition name")
-        summary_sheet.write(5, 13, "Frequency")
-        protocols = [
-            x
-            for x in sorted_protocols
-            if x[1]["protocolname"][0].startswith("[standard]")
-        ]
+        
+        if not sorted_protocols is None:
+            summary_sheet.write(5, 12, "Standard acquisition name")
+            summary_sheet.write(5, 13, "Frequency")
+            protocols = [
+                x
+                for x in sorted_protocols
+                if x[1]["protocolname"][0].startswith("[standard]")
+            ]
 
-        for row, item in enumerate(protocols):
-            summary_sheet.write(row + 6, 12, item[1]["protocolname"][0])
-            summary_sheet.write(row + 6, 13, item[1]["count"])
-        summary_sheet.set_column("M:M", 25)
+            for row, item in enumerate(protocols):
+                summary_sheet.write(row + 6, 12, item[1]["protocolname"][0])
+                summary_sheet.write(row + 6, 13, item[1]["count"])
+            summary_sheet.set_column("M:M", 25)
 
 
 def abort_if_zero_studies(num_studies, tsk):
