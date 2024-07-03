@@ -1,5 +1,7 @@
 {% extends "remapp/filteredbase.html" %}
 
+{% load lookup_dict_key %}
+
 {% block navct%}<li class="active">{% endblock %}
 
 {% block toprow %}
@@ -191,9 +193,12 @@
         {% endif %}
             <th scope="col">Number of events</th>
             <th scope="col">Total DLP (mGy.cm)</th>
-            {% if admin.admingroup %}
-                <th>Delete?</th>
-            {% endif %}
+        {% if showStandardNames %}
+            <th scope="col">Max. CTDIvol</th>
+        {% endif %}
+        {% if admin.admingroup %}
+            <th>Delete?</th>
+        {% endif %}
         </tr>
         {% for exam in study_list %}
           {% with equipment=exam.generalequipmentmoduleattr_set.get %}
@@ -250,11 +255,18 @@
                         {{ exam.total_dlp|floatformat:2 }}
                     </a>
                 </td>
-                {% if admin.admingroup %}
-                    <td>
-                        <a href="{% url 'study_delete' exam.id %}">Delete</a>
-                    </td>
-                {% endif %}
+            {% if showStandardNames %}
+                <td>
+                    <a href="{% url 'ct_detail_view' pk=exam.id %}">
+                        {{ study_highest_ctdi_vol|lookup_dict_key:exam.id }}
+                    </a>
+                </td>
+            {% endif %}
+            {% if admin.admingroup %}
+                <td>
+                    <a href="{% url 'study_delete' exam.id %}">Delete</a>
+                </td>
+            {% endif %}
             </tr>
           {% endwith %}
         {% endfor %}

@@ -691,6 +691,28 @@ def ct_summary_list_filter(request):
             user_profile
         )
 
+    studies = return_structure.get('study_list', [])
+ 
+    study_highest_ctdi_vol = {}
+
+    for study in studies:
+        try:
+            events = study.ctradiationdose_set.get().ctirradiationeventdata_set.all()
+            
+            highest_ctdi_vol = None
+                        
+            for event in events:
+                if event.ct_acquisition_type.code_meaning.startswith("Spiral") or event.ct_acquisition_type.code_meaning.startswith("Sequenced"):
+                    if highest_ctdi_vol is None or event.mean_ctdivol > highest_ctdi_vol:
+                        highest_ctdi_vol = event.mean_ctdivol
+
+            study_highest_ctdi_vol[study.pk] = highest_ctdi_vol
+
+        except GeneralStudyModuleAttr.DoesNotExist:
+            study_highest_ctdi_vol[study.pk] = None
+
+    return_structure["study_highest_ctdi_vol"] = study_highest_ctdi_vol
+
     return render(request, "remapp/ctfiltered.html", return_structure)
 
 
