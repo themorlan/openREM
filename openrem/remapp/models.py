@@ -922,6 +922,9 @@ class StandardNames(models.Model):
     diagnostic_reference_level_criteria = models.TextField(blank=True, default="age")
     drl_alert_factor = models.DecimalField(max_digits=16, decimal_places=8, default=Decimal(1.0))
     k_factor_criteria = models.TextField(blank=True, default="age")
+    national_drl = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
+#    relative_threshold_percent = models.PositiveSmallIntegerField(blank=True, null=True)
+#    absolute_threshold = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
 
     class Meta(object):
         """

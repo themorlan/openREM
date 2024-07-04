@@ -191,9 +191,12 @@
         {% endif %}
             <th scope="col">Number of events</th>
             <th scope="col">Total DLP (mGy.cm)</th>
-            {% if admin.admingroup %}
-                <th>Delete?</th>
-            {% endif %}
+        {% if showStandardNames %}
+            <th scope="col">National DRL (mGy)</th>
+        {% endif %}
+        {% if admin.admingroup %}
+            <th>Delete?</th>
+        {% endif %}
         </tr>
         {% for exam in study_list %}
           {% with equipment=exam.generalequipmentmoduleattr_set.get %}
@@ -250,11 +253,22 @@
                         {{ exam.total_dlp|floatformat:2 }}
                     </a>
                 </td>
-                {% if admin.admingroup %}
-                    <td>
-                        <a href="{% url 'study_delete' exam.id %}">Delete</a>
-                    </td>
-                {% endif %}
+            {% if showStandardNames %}
+                <td>
+                    <a href="{% url 'ct_detail_view' pk=exam.id %}">
+                        <table onclick="window.location='{% url 'ct_detail_view' pk=exam.id %}';" aria-describedby="Standard study description, procedure and requested procedure names">
+                            {% for std_name in exam.standard_names.all %}
+                                <tr><td class="nowrap">{{ std_name.national_drl|floatformat:2|default_if_none:"-" }}</td></tr>
+                            {% endfor %}
+                        </table>
+                    </a>
+                </td>
+            {% endif %}
+            {% if admin.admingroup %}
+                <td>
+                    <a href="{% url 'study_delete' exam.id %}">Delete</a>
+                </td>
+            {% endif %}
             </tr>
           {% endwith %}
         {% endfor %}

@@ -254,6 +254,9 @@ def update_standard_name(request, form, standard_name: StandardNames):
     if "drl_alert_factor" in data:
         standard_names.update(drl_alert_factor=data["drl_alert_factor"])
 
+    if "national_drl" in data:
+        standard_names.update(national_drl=data["national_drl"])
+
     if "diagnostic_reference_level_criteria" in data:
         standard_names.update(
             diagnostic_reference_level_criteria=data[
@@ -346,6 +349,7 @@ def _add_standard_name(field_name, field_value, **data):
         standard_name=data["standard_name"],
         modality=data["modality"],
         diagnostic_reference_level_criteria=data["diagnostic_reference_level_criteria"],
+        national_drl=data["national_drl"],
         drl_alert_factor=data["drl_alert_factor"],
         k_factor_criteria=data["k_factor_criteria"],
         **{field_name: field_value}

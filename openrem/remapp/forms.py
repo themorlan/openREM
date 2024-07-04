@@ -1680,8 +1680,12 @@ class StandardNameFormBase(forms.ModelForm):
             "diagnostic_reference_level_criteria",
             "drl_alert_factor",
             "k_factor_criteria",
+            "national_drl",
         ]
-        labels = {"drl_alert_factor": "DRL alert factor"}
+        labels = {
+            "drl_alert_factor": "DRL alert factor",
+            "national_drl": "National DRL [CTDIvol (mGy)]",
+        }
         widgets = {
             "standard_name": forms.TextInput,
             "modality": forms.HiddenInput,
@@ -1710,6 +1714,12 @@ class StandardNameFormBase(forms.ModelForm):
             return None
         else:
             return self.cleaned_data["acquisition_protocol"]
+
+    def clean_national_drl(self):
+        if self.cleaned_data["national_drl"] == "":
+            return None
+        else:
+            return self.cleaned_data["national_drl"]
 
 
 DiagnosticReferenceLevelsFormSet = modelformset_factory(
