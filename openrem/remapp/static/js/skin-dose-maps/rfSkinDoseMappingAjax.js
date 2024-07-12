@@ -1,6 +1,6 @@
 /*global skinDoseMapObj:true, skinDoseMapColourScaleObj, skinDoseMap3dPersonObj, skinDoseMap3dObj:true,
 skinDoseMap3dHUDObj:true, skinDoseMapGroupOrigHeight:true, skinDoseMapGroupOrigWidth:true, show3dSkinDoseMap, render,
-isCanvasSupported*/
+isCanvasSupported, Urls*/
 /*eslint no-undef: "error"*/
 /*eslint security/detect-object-injection: "off" */
 /*eslint object-shorthand: "off" */
@@ -55,6 +55,17 @@ function arrayToURL(array) {
 // Code to update the page and chart data on initial page load.
 $(document).ready(function() {
     var requestData = arrayToURL(urlToArray(this.URL));
+    var errorMessage = "";
+
+    if (window.location.pathname.includes("force_recalculation/")) {
+        var currentUrl = window.location.origin + window.location.pathname;
+        var newUrl = currentUrl.replace("force_recalculation/", "");
+
+        // Replace the url after a 2 second delay to give the new task a chance to start running
+        setTimeout(function(){
+          window.location.replace(newUrl);
+        }, 2000);
+    }
 
     $(".ajax-progress-skin-dose").show();
 
@@ -172,10 +183,54 @@ $(document).ready(function() {
                     skinDoseMapObj.toggleOverlay();
                 }
 
+                else if (json.disabled_skin_maps) {
+                    $(".ajax-progress-skin-dose").hide();
+
+                    errorMessage = "<h2>OpenSkin radiation exposure incidence map</h2>" +
+                        "<p>Skin maps are disabled for this system: check the settings in <a href='" + Urls.display_names_view() + "'>Display names &amp; modality</a>.</p>";
+
+                    errorMessage += "<p>Create <a href='" + Urls.rfopenskin({pk: json.primary_key}) + "'>openSkin export</a>. (Only available if you have export permissions.)</p>";
+
+                    skinDoseMapContainer.html(errorMessage);
+                }
+
+                else if (json.in_progress) {
+                    $(".ajax-progress-skin-dose").hide();
+
+                    var taskAdminText = "<a href='" + Urls.task_admin() + "'>task admin page</a>";
+
+                    errorMessage = "<h2>OpenSkin radiation exposure incidence map</h2>" +
+                        "<p>Calculation of this skin dose map is in progress. See the " +
+                        taskAdminText + " for details.</p>";
+
+                    if (json.skin_map_progress) {
+                        errorMessage += "<p>Working on irradiation " + json.skin_map_progress + "</p>";
+                    }
+
+                    skinDoseMapContainer.html(errorMessage);
+                }
+
+                else if (json.skin_map_calculation_failed) {
+                    $(".ajax-progress-skin-dose").hide();
+
+                    errorMessage = "<h2>OpenSkin radiation exposure incidence map</h2>" +
+                        "<p>The last time a skin map calculation was attempted for this study it failed.</p>" +
+                        "<p>Click <a href='" + window.location.origin + window.location.pathname + "force_recalculation/'>here</a> to force the calculation " +
+                        "to try again, or disable calculation for this system in " +
+                        "<a href='" + Urls.display_names_view() + "'>Display names &amp; modality</a>.</p>";
+
+                    errorMessage += "<p>Please consider feeding this back to the <a href='http://bitbucket.org/openskin/openskin/'>openSkin BitBucket project</a> " +
+                        "or <a href='http://groups.google.com/forum/#!forum/openrem'>OpenREM discussion group</a> so that the issue can be addressed.</p>";
+
+                    errorMessage += "<p>Create <a href='" + Urls.rfopenskin({pk: json.primary_key}) + "'>openSkin export</a>. (Only available if you have export permissions.)</p>";
+
+                    skinDoseMapContainer.html(errorMessage);
+                }
+
                 else {
                     $(".ajax-progress-skin-dose").hide();
 
-                    var errorMessage = "<h2>OpenSkin radiation exposure incidence map</h2>" +
+                    errorMessage = "<h2>OpenSkin radiation exposure incidence map</h2>" +
                         "<p>Sorry, the skin dose map could not be calculated for this study. Possible reasons for this are shown below:</p>" +
                         "<ul>";
 
@@ -188,7 +243,7 @@ $(document).ready(function() {
                         "<p>Please consider feeding this back to the <a href='http://bitbucket.org/openskin/openskin/'>openSkin BitBucket project</a> " +
                         "or <a href='http://groups.google.com/forum/#!forum/openrem'>OpenREM discussion group</a> so that the issue can be addressed.</p>";
 
-                    errorMessage += "<p>Create <a href='" + Urls.rfopenskin({pk: json.primary_key}) + "'>openSkin export</a>. (Not available if you don't have export permissions.)</p>";
+                    errorMessage += "<p>Create <a href='" + Urls.rfopenskin({pk: json.primary_key}) + "'>openSkin export</a>. (Only available if you have export permissions.)</p>";
 
                     skinDoseMapContainer.html(errorMessage);
                 }

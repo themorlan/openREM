@@ -7,6 +7,7 @@ OpenREM version history
 --------------------
 * :issue:`1016`  Imports: fixed error where only the first exposure in a DX or MG study was checked for standard acquisition name
 * :issue:`1006`  Imports: fixing error if a DX file tag has the wrong length
+* :issue:`1007`  SkinDose: made skin dose calculations a background task in all situations
 * :issue:`1003`  Orthanc: modified Windows command to reduce memory use when querying PACS
 * :issue:`1000`  Interface: fixed incorrect study date ordering on home page hyperlinks and tests
 * :issue:`995`  SkinDose: fixed bug where a missing exposure_time causes an invalid decimal operation
