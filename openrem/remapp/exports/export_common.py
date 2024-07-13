@@ -773,6 +773,7 @@ def create_summary_sheet(
     :param book: xlsxwriter book to work on
     :param summary_sheet: worksheet object
     :param sheet_list: list of sheet names
+    :param has_series_protocol: if series protocols exist
     :return: nothing
     """
     import datetime
