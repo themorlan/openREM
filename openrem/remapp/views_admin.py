@@ -2287,13 +2287,10 @@ def tasks(request, stage: Union[str, None] = None):
 def task_abort(request, task_id=None):
     """Function to abort one of the tasks"""
     if task_id and request.user.groups.filter(name="admingroup"):
-        try:
-            background_tasks = get_object_or_404(BackgroundTask, uuid=task_id)
-        except BackgroundTask.MultipleObjectsReturned:
-            background_tasks = BackgroundTask.objects.filter(uuid=task_id)
+        background_tasks = BackgroundTask.objects.filter(uuid=task_id)
+        if background_tasks.count() >= 2:
             abort_logger = logging.getLogger("remapp")
             abort_logger.warning(f"{background_tasks.count()} tasks returned for {task_id} - aborting them all")
-
         for task in background_tasks:
             try:
                 if task.task_type == "query" or task.task_type == "move":
