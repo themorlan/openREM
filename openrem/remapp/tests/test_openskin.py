@@ -5,8 +5,9 @@ import os
 import pickle
 
 from django.conf import settings
-from django.contrib.auth.models import User
-from django.test import TestCase, tag
+from django.contrib.auth.models import User, Group
+from django.urls import reverse
+from django.test import TestCase, tag, RequestFactory
 
 from .test_files.skin_map_alphenix import ALPHENIX_SKIN_MAP
 from .test_files.skin_map_zee import ZEE_SKIN_MAP
@@ -19,6 +20,15 @@ class OpenSkinBlackBox(TestCase):
     """Test openSkin as a black box - known study in, known skin map file out"""
 
     def setUp(self):
+        self.factory = RequestFactory()
+        self.user = User.objects.create_user(
+            username="jacob", email="jacob@…", password="top_secret"
+        )
+        eg = Group(name="viewgroup")
+        eg.save()
+        eg.user_set.add(self.user)
+        eg.save()
+
         """
         Load in all the rf objects
         """
@@ -135,21 +145,18 @@ class OpenSkinBlackBox(TestCase):
             generalequipmentmoduleattr__manufacturer__exact="Siemens"
         )[0]
 
-        make_skin_map(study.pk)
-        study_date = study.study_date
-        skin_map_path = os.path.join(
-            settings.MEDIA_ROOT,
-            "skin_maps",
-            "{0:0>4}".format(study_date.year),
-            "{0:0>2}".format(study_date.month),
-            "{0:0>2}".format(study_date.day),
-            "skin_map_" + str(study.pk) + ".p",
-        )
-        with gzip.open(skin_map_path, "rb") as f:
-            existing_skin_map_data = pickle.load(f)
-            self.assertEqual(existing_skin_map_data["skin_map"], [0, 0])
+        self.client.login(username="jacob", password="top_secret")
 
-        os.remove(skin_map_path)
+        response = self.client.get(
+            reverse("rf_detail_view_skin_map", kwargs={"pk": study.pk}),
+            follow=True
+        )
+
+        self.assertJSONEqual(
+            str(response.content, encoding="utf8"),
+            {"disabled_skin_maps": True, "primary_key": study.pk}
+        )
+
 
     def test_version_match(self):
         """Set software version to match, ensure skin map is created"""
@@ -209,21 +216,17 @@ class OpenSkinBlackBox(TestCase):
             generalequipmentmoduleattr__manufacturer__exact="Siemens"
         )[0]
 
-        make_skin_map(study.pk)
-        study_date = study.study_date
-        skin_map_path = os.path.join(
-            settings.MEDIA_ROOT,
-            "skin_maps",
-            "{0:0>4}".format(study_date.year),
-            "{0:0>2}".format(study_date.month),
-            "{0:0>2}".format(study_date.day),
-            "skin_map_" + str(study.pk) + ".p",
-        )
-        with gzip.open(skin_map_path, "rb") as f:
-            existing_skin_map_data = pickle.load(f)
-            self.assertEqual(existing_skin_map_data["skin_map"], [0, 0])
+        self.client.login(username="jacob", password="top_secret")
 
-        os.remove(skin_map_path)
+        response = self.client.get(
+            reverse("rf_detail_view_skin_map", kwargs={"pk": study.pk}),
+            follow=True
+        )
+
+        self.assertJSONEqual(
+            str(response.content, encoding="utf8"),
+            {"disabled_skin_maps": True, "primary_key": study.pk}
+        )
 
     @tag("slow")
     def test_rotational_exposure(self):
