@@ -57,7 +57,10 @@ from ..tools.check_uid import record_sop_instance_uid
 from ..tools.get_values import (
     get_value_kw,
 )
-from ..tools.make_skin_map import make_skin_map
+from ..tools.make_skin_map import (
+    make_skin_map,
+    skin_dose_maps_enabled_for_xray_system,
+)
 from ..tools.send_high_dose_alert_emails import send_rf_high_dose_alert_email
 from .extract_common import (  # pylint: disable=wrong-import-order, wrong-import-position
     ct_event_type_count,
@@ -436,13 +439,15 @@ def _rdsr2db(dataset):
         "calc_on_import", flat=True
     )[0]
     if g.modality_type == "RF" and enable_skin_dose_maps and calc_on_import:
-        run_in_background_with_limits(
-            make_skin_map,
-            "make_skin_map",
-            0,
-            {"make_skin_map": 1},
-            g.pk,
-        )
+        skin_maps_enabled = skin_dose_maps_enabled_for_xray_system(g)
+        if skin_maps_enabled:
+            run_in_background_with_limits(
+                make_skin_map,
+                "make_skin_map",
+                0,
+                {"make_skin_map": 1},
+                g.pk,
+            )
 
     # Calculate summed total DAP and dose at RP for studies that have this study's patient ID, going back week_delta
     # weeks in time from this study date. Only do this if activated in the fluoro alert settings (check whether

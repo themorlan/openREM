@@ -51,7 +51,10 @@ from remapp.models import (  # pylint: disable=wrong-import-position
     SkinDoseMapResults,
     OpenSkinSafeList,
 )
-from .background import record_task_info  # pylint: disable=wrong-import-position
+from .background import (  # pylint: disable=wrong-import-position
+    get_current_task,
+)
+
 from .save_skin_map_structure import (  # pylint: disable=wrong-import-position
     save_openskin_structure,
 )
@@ -68,41 +71,21 @@ def make_skin_map(study_pk=None):
     # pylint: disable=too-many-locals
     # noqa: C901
 
+    background_task = get_current_task()
+
     if study_pk:
-        study = GeneralStudyModuleAttr.objects.get(pk=study_pk)
-        record_task_info(
-            f"Unit: {study.generalequipmentmoduleattr_set.get().unique_equipment_name.display_name} | "
-            f"PK: {study_pk} | Study UID: {study.study_instance_uid.replace('.', '. ')}"
-        )
+        study = GeneralStudyModuleAttr.objects.prefetch_related(
+            "projectionxrayradiationdose_set__irradeventxraydata_set").get(pk=study_pk)
+        #study = GeneralStudyModuleAttr.objects.get(pk=study_pk)
 
-        # Get all OpenSkinSafeList table entries that match the manufacturer and model name of the current study
-        entries = OpenSkinSafeList.objects.all().filter(
-            manufacturer=study.generalequipmentmoduleattr_set.get().manufacturer,
-            manufacturer_model_name=study.generalequipmentmoduleattr_set.get().manufacturer_model_name,
-        )
+        display_name = study.generalequipmentmoduleattr_set.get().unique_equipment_name.display_name
 
-        # Look for an entry which has a matching software version with the current study,
-        # or an entry where the software version is blank (any software version)
-        entry = None
-        for current_entry in entries:
-            if (
-                current_entry.software_version
-                == study.generalequipmentmoduleattr_set.get().software_versions
-                or current_entry.software_version is None
-                or not current_entry.software_version
-            ):
-                entry = current_entry
-                break
-
-        if entry is None:
-            # There is no match, so return a blank dummy openSkin structure without trying
-            # to calculate a skin dose map
-            return_structure = {
-                "skin_map": [0, 0],
-                "skin_map_version": __skin_map_version__,
-            }
-            save_openskin_structure(study, return_structure)
-            return
+        if background_task is not None:
+            background_task.info = (
+                f"Unit: {display_name} | "
+                f"PK: {study_pk} | Study UID: {study.study_instance_uid.replace('.', '. ')}"
+            )
+            background_task.save()
 
         pat_mass_source = "assumed"
         try:
@@ -202,9 +185,26 @@ def make_skin_map(study_pk=None):
             matt_thick=4.0,
         )
 
-        for (
-            irrad
-        ) in study.projectionxrayradiationdose_set.get().irradeventxraydata_set.all():
+        prefetch_set = {
+            "irradeventxraymechanicaldata_set",
+            "irradeventxraymechanicaldata_set__doserelateddistancemeasurements_set",
+            "irradeventxraysourcedata_set",
+            "irradeventxraysourcedata_set__kvp_set",
+            "irradeventxraysourcedata_set__xrayfilters_set"
+        }
+        all_irradiations = study.projectionxrayradiationdose_set.get().irradeventxraydata_set.prefetch_related(
+            *prefetch_set
+        ).all()
+        num_irradiations = all_irradiations.count()
+
+        for count, irrad in enumerate(all_irradiations):
+            if background_task is not None:
+                background_task.info = (
+                    f"Unit: {display_name} | "
+                    f"PK: {study_pk} | Working on irradiation {count+1} of {num_irradiations}"
+                )
+                background_task.save()
+
             try:
                 delta_x = (
                     float(
@@ -343,6 +343,13 @@ def make_skin_map(study_pk=None):
                     pat_pos=pat_pos,
                 )
 
+        if background_task is not None:
+            background_task.info = (
+                f"Unit: {display_name} | "
+                f"PK: {study_pk} | Study UID: {study.study_instance_uid.replace('.', '. ')}"
+            )
+            background_task.save()
+
         # Flip the skin dose map left-right so the view is from the front
         # my_exp_map.my_dose.fliplr()
         my_exp_map.my_dose.total_dose = np.roll(
@@ -363,6 +370,14 @@ def make_skin_map(study_pk=None):
         # assume that calculation failed if max(peak_skin_dose) == 0 ==> set peak_skin_dose to None
         max_skin_dose = np.max(my_exp_map.my_dose.total_dose, initial=0)
         max_skin_dose = max_skin_dose if max_skin_dose > 0 else None
+
+        if max_skin_dose is None:
+            background_task.complete = True
+            background_task.completed_successfully = False
+            background_task.error = "Skin dose map calculation failed"
+            background_task.save()
+            return
+
         try:
             dap_fraction = my_exp_map.my_dose.dap_count / float(study.total_dap)
         except ZeroDivisionError:
@@ -405,3 +420,24 @@ def make_skin_map(study_pk=None):
 
         # Save the return_structure as a pickle in a skin_maps sub-folder of the MEDIA_ROOT folder
         save_openskin_structure(study, return_structure)
+
+
+def skin_dose_maps_enabled_for_xray_system(study):
+    # Get all OpenSkinSafeList table entries that match the manufacturer and model name of the current study
+    entries = OpenSkinSafeList.objects.all().filter(
+        manufacturer=study.generalequipmentmoduleattr_set.get().manufacturer,
+        manufacturer_model_name=study.generalequipmentmoduleattr_set.get().manufacturer_model_name,
+    )
+    # Look for an entry which has a matching software version with the current study,
+    # or an entry where the software version is blank (any software version)
+    entry = False
+    for current_entry in entries:
+        if (
+                current_entry.software_version
+                == study.generalequipmentmoduleattr_set.get().software_versions
+                or current_entry.software_version is None
+                or not current_entry.software_version
+        ):
+            entry = True
+            break
+    return entry
