@@ -117,11 +117,28 @@
             {% endfor %}
         </td>
         <td>{{ event.irradeventxraymechanicaldata_set.get.compression_thickness|floatformat:0  }}</td>
-        <td>{{ source_data.anode_target_material.code_meaning }}</td>
-        <td>{{ source_data.xrayfilters_set.get.xray_filter_material.code_meaning }}</td>
-        <td>{{ source_data.kvp_set.get.kvp|floatformat:0 }}</td>
-        <td>{{ source_data.average_xray_tube_current|floatformat:1 }}</td>
-        <td>{{ source_data.exposure_time|floatformat:0 }}</td>
+        <td>{{ source_data.anode_target_material.code_meaning.split.0 }}</td>
+        <td>
+            {% for filter_material in source_data.xrayfilters_set.all %}
+                {{ filter_material.xray_filter_material.code_meaning.split.0 }} <br>
+            {% endfor %}
+        </td>
+        <td>
+            {% for kvp_value in source_data.kvp_set.all %}
+                {{ kvp_value.kvp|floatformat:0 }} <br>
+            {% endfor %}
+        </td>
+        <td>
+          {% for tube_current in source_data.xraytubecurrent_set.all %}
+            {{ tube_current.xray_tube_current|floatformat:1 }} <br>
+          {% endfor %}
+        </td>
+        <td>
+            {% for exp_time in source_data.pulsewidth_set.all %}
+                {{ exp_time.pulse_width|floatformat:1 }} <br>
+            {% endfor %}
+            Total: {{ source_data.exposure_time|floatformat:0 }}
+        </td>
         <td>{{ event.entrance_exposure_at_rp|floatformat:3 }}</td>
         <td>{{ source_data.average_glandular_dose|floatformat:3 }}</td>
         <td>{{ source_data.exposure_control_mode }}</td>
