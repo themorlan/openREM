@@ -21,6 +21,9 @@ from openrem.remapp.version import __version__, __short_version__
 os.environ["DJANGO_SETTINGS_MODULE"] = "openrem.openremproject.settings"
 django.setup()
 
+# Define the canonical URL if you are using a custom domain on Read the Docs
+html_baseurl = os.environ.get("READTHEDOCS_CANONICAL_URL", "")
+
 # basepath = os.path.dirname(__file__)
 # projectpath = os.path.abspath(os.path.join(basepath, "..", "openrem", "remapp"))
 # exec(open(os.path.join(projectpath, "version.py")).read())
