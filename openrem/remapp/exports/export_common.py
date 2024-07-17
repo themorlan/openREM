@@ -875,7 +875,6 @@ def create_summary_sheet(
 
         # Write standard acquisition names
         # Only include [standard] protocols
-        
         if sorted_protocols:
             summary_sheet.write(5, 12, "Standard acquisition name")
             summary_sheet.write(5, 13, "Frequency")
