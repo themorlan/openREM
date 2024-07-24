@@ -32,17 +32,14 @@
 from decimal import Decimal, InvalidOperation
 import logging
 
+import django.db
 from django import forms
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
 import django_filters
 
-from remapp.models import (
-    GeneralStudyModuleAttr,
-    CtIrradiationEventData,
-    StandardNames,
-    StandardNameSettings,
-)
+from remapp.models import GeneralStudyModuleAttr
+
 from ..tools.hash_id import hash_id
 from ..tools.check_standard_name_status import are_standard_names_enabled
 
@@ -621,7 +618,6 @@ class CTFilterPlusPidPlusStdNames(CTFilterPlusPid):
         )
     )
 
-
 def ct_acq_filter(filters, pid=False):
 
     # Obtain the system-level enable_standard_names setting
@@ -834,6 +830,30 @@ class MGFilterPlusPidPlusStdNames(MGFilterPlusPid):
         lookup_expr="icontains", label="Standard acquisition name"
     )
 
+def mg_acq_filter(filters, pid=False):
+
+    # Obtain the system-level enable_standard_names setting
+    enable_standard_names = are_standard_names_enabled()
+
+    studies = GeneralStudyModuleAttr.objects.filter(modality_type="MG")
+
+    if pid:
+        if enable_standard_names:
+            return MGFilterPlusPidPlusStdNames(
+                filters, studies.order_by("-study_date", "-study_time").distinct()
+            )
+        else:
+            return MGFilterPlusPid(
+                filters, studies.order_by("-study_date", "-study_time").distinct()
+            )
+    if enable_standard_names:
+        return MGFilterPlusStdNames(
+            filters, studies.order_by("-study_date", "-study_time").distinct()
+        )
+    else:
+        return MGSummaryListFilter(
+            filters, studies.order_by("-study_date", "-study_time").distinct()
+        )
 
 class DXSummaryListFilter(django_filters.FilterSet):
 

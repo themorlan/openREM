@@ -30,30 +30,40 @@
 
 import datetime
 import logging
-from openrem.remapp.tools.background import get_or_generate_task_uuid
+
+from django.forms import CharField
+from ..tools.background import get_or_generate_task_uuid
 
 from django.core.exceptions import ObjectDoesNotExist
 
-from remapp.models import StandardNameSettings
-
-from .export_common import (
-    common_headers,
-    text_and_date_formats,
-    generate_sheets,
-    create_summary_sheet,
-    get_common_data,
-    get_anode_target_material,
-    get_xray_filter_info,
-    create_csv,
-    create_xlsx,
-    write_export,
-    sheet_name,
-    abort_if_zero_studies,
-    create_export_task,
-)
+from remapp.models import GeneralStudyModuleAttr
 
 from ..tools.check_standard_name_status import are_standard_names_enabled
 
+from ..interface.mod_filters import mg_acq_filter
+
+from django.db.models import F, Case, When, Value, TextField
+from django.db.models.functions import Coalesce
+
+from .export_common_pandas import (
+    get_anode_target_material,
+    get_common_data,
+    common_headers,
+    create_xlsx,
+    create_csv,
+    get_xray_filter_info,
+    write_export,
+    create_summary_sheet,
+    abort_if_zero_studies,
+    create_export_task,
+    transform_to_one_row_per_exam,
+    create_standard_name_df_columns,
+    optimise_df_dtypes,
+    write_row_to_acquisition_sheet,
+    export_using_pandas,
+    text_and_date_formats,
+    sheet_name,
+)
 logger = logging.getLogger(__name__)
 
 
@@ -271,7 +281,7 @@ def exportMG2csv(filterdict, pid=False, name=None, patid=None, user=None):
         if (
             "o" in filterdict
             and filterdict["o"] == "-projectionxrayradiationdose__accumxraydose__"
-            "accummammographyxraydose__accumulated_average_glandular_dose"
+            "accummammographyxraydose__accumulated_age_glandular_dose"
         ):
             logger.info("Replacing AGD ordering with study date to avoid duplication")
             filterdict["o"] = "-time_date"
@@ -403,7 +413,230 @@ def exportMG2csv(filterdict, pid=False, name=None, patid=None, user=None):
     tsk.processtime = (datetime.datetime.now() - datestamp).total_seconds()
     tsk.save()
 
+def mgxlsx(filterdict, pid=False, name=None, patid=None, user=None):
+    """Export filtered MG database data to multi-sheet Microsoft XSLX files
 
+    :param filterdict: Queryset of studies to export
+    :param pid: does the user have patient identifiable data permission
+    :param name: has patient name been selected for export
+    :param patid: has patient ID been selected for export
+    :param user: User that has started the export
+    :return: Saves xlsx file into Media directory for user to download
+    """
+    modality = "MG"
+
+    # Exam-level integer field names and friendly names
+    exam_int_fields = [
+        "pk",
+        "number_of_events",
+    ]
+    exam_int_field_names = [
+        "pk",
+        "Number of events"
+    ]
+
+    # Exam-level object field names (string data, little or no repetition)
+    exam_obj_fields = ["accession_number"]
+    exam_obj_field_names = ["Accession number"]
+
+    # Exam-level category field names and friendly names
+    exam_cat_fields = [
+        "generalequipmentmoduleattr__institution_name",
+        "generalequipmentmoduleattr__manufacturer",
+        "generalequipmentmoduleattr__manufacturer_model_name",
+        "generalequipmentmoduleattr__station_name",
+        "generalequipmentmoduleattr__unique_equipment_name__display_name",
+        "operator_name",
+        "patientmoduleattr__patient_sex",
+        "study_description",
+        "requested_procedure_code_meaning",
+        "projectionxrayradiationdose__irradeventxraydata__image_view__code_meaning",
+        'projectionxrayradiationdose__irradeventxraydata__imageviewmodifier__image_view_modifier__code_meaning',
+        "projectionxrayradiationdose__irradeventxraydata__laterality__code_meaning",
+    ]
+    exam_cat_field_names = [
+        "Institution",
+        "Manufacturer",
+        "Model",
+        "Station name",
+        "Display name",
+        "Operator",
+        "Patient sex",
+        "Study description",
+        "Requested procedure",
+        "View",
+        "View Modifier",
+        "Laterality",
+    ]
+
+    # Exam-level date field names and friendly name
+    exam_date_fields = ["study_date"]
+    exam_date_field_names = ["Study date"]
+
+    # Exam-level time field names and friendly name
+    exam_time_fields = ["study_time"]
+    exam_time_field_names = ["Study time"]
+
+    # Exam-level category value names and friendly names
+    exam_val_fields = [
+        "patientstudymoduleattr__patient_age_decimal",
+        "patientstudymoduleattr__patient_size",
+        "patientstudymoduleattr__patient_weight",
+        "total_agd_both",
+    ]
+    exam_val_field_names = [
+        "Patient age",
+        "Patient height (m)",
+        "Patient weight (kg)",
+        "Total AGD",
+    ]
+
+    acquisition_int_fields = [
+        "projectionxrayradiationdose__irradeventxraydata__pk",
+    ]
+    acquisition_int_field_names = [
+        "Acquisition pk",
+    ]
+
+    filter_materials = {
+        "Aluminum": "Al",
+        "Copper": "Cu",
+        "Tantalum": "Ta",
+        "Molybdenum": "Mo",
+        "Rhodium": "Rh",
+        "Silver": "Ag",
+        "Niobium": "Nb",
+        "Europium": "Eu",
+        "Lead": "Pb"
+    }
+
+    cases = [When(projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__xrayfilters__xray_filter_material__code_meaning__icontains=material, then=Value(code))
+         for material, code in filter_materials.items()]
+
+    acquisition_cat_fields = [
+        "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
+        "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__anode_target_material__code_meaning",
+        Case(
+            *cases,
+            default=F('projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__xrayfilters__xray_filter_material__code_meaning'),
+         output_field=TextField()),
+        "projectionxrayradiationdose__irradeventxraydata__comment",
+    ]
+
+    acquisition_cat_field_names = [
+        "Acquisition protocol",
+        "Target",
+        "Filter",
+        "Exposure mode description",
+    ]
+
+    acquisition_cat_field_std_name = "projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name"
+    acquisition_cat_field_name_std_name = "Standard acquisition name"
+
+    # Required acquisition-level value field names and friendly names
+    acquisition_val_fields = [
+        "projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness",
+        "projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__doserelateddistancemeasurements__radiological_thickness",
+        "projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_force",
+        "projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__magnification_factor",
+        "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__collimated_field_area",
+        "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure_control_mode",
+        Coalesce(
+            F('projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__xrayfilters__xray_filter_thickness_minimum'),
+            F('projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__xrayfilters__xray_filter_thickness_maximum'),
+        ),
+        "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__focal_spot_size",
+        "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__kvp__kvp",
+        "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__average_xray_tube_current",
+        "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure_time",
+        "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure__exposure",
+        "projectionxrayradiationdose__irradeventxraydata__entrance_exposure_at_rp",
+        "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__average_glandular_dose",
+        "projectionxrayradiationdose__irradeventxraydata__percent_fibroglandular_tissue",
+    ]
+    acquisition_val_field_names = [
+        "Thickness",
+        "Radiological thickness",
+        "Force",
+        "Mag",
+        "Area",
+        "Mode",
+        "Filter thickness",
+        "Focal spot size",
+        "kVp",
+        "mA",
+        "ms",
+        "uAs",
+        "ESD",
+        "AGD",
+        "% Fibroglandular tissue",
+    ]
+
+    ct_dose_check_fields = [
+    ]
+
+    ct_dose_check_field_names = [
+    ]
+
+    # Fields for obtaining the acquisition protocols in the data
+    fields_for_acquisition_frequency = [
+        "projectionxrayradiationdose__irradeventxraydata__pk",
+        "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
+    ]
+
+    field_names_for_acquisition_frequency = [
+        "pk",
+        "Acquisition protocol"
+    ]
+    field_for_acquisition_frequency_std_name = "projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name"
+    field_name_for_acquisition_frequency_std_name = "Standard acquisition name"
+
+    enable_standard_names = are_standard_names_enabled()
+
+    datestamp = datetime.datetime.now()
+    task_id = get_or_generate_task_uuid()
+    tsk = create_export_task(
+        task_id=task_id,
+        modality=modality,
+        export_type="XLSX_export",
+        date_stamp=datestamp,
+        pid=bool(pid and (name or patid)),
+        user=user,
+        filters_dict=filterdict,
+    )
+
+    tmpxlsx, book = create_xlsx(tsk)
+    if not tmpxlsx:
+        exit()
+
+    # Get the data
+    study_pks = None
+    study_pks = mg_acq_filter(filterdict, pid=pid).qs.values("pk")
+
+    # The initial_qs may have filters to remove some acquisition types. For the export we want all acquisitions
+    # that are part of a study to be included. To achieve this, use the pk list from initial_qs to get a
+    # corresponding set of unfiltered studies:
+    qs = GeneralStudyModuleAttr.objects.filter(pk__in=study_pks)
+
+    n_entries = qs.count()
+    tsk.num_records = n_entries
+    if abort_if_zero_studies(tsk.num_records, tsk):
+        return
+
+    tsk.progress = "{0} studies in query.".format(tsk.num_records)
+    tsk.save()
+
+    export_using_pandas(acquisition_cat_field_name_std_name, acquisition_cat_field_names,
+                        acquisition_cat_field_std_name, acquisition_cat_fields,acquisition_int_field_names,
+                        acquisition_int_fields, acquisition_val_field_names, acquisition_val_fields, book,
+                        ct_dose_check_field_names, ct_dose_check_fields, datestamp, enable_standard_names,
+                        exam_cat_field_names, exam_cat_fields, exam_date_field_names, exam_date_fields,
+                        exam_int_field_names, exam_int_fields, exam_obj_field_names, exam_obj_fields,
+                        exam_time_field_names, exam_time_fields, exam_val_field_names, exam_val_fields,
+                        field_for_acquisition_frequency_std_name, field_name_for_acquisition_frequency_std_name,
+                        field_names_for_acquisition_frequency, fields_for_acquisition_frequency, modality, n_entries,
+                        name, patid, pid, qs, tmpxlsx, tsk)
+    
 def exportMG2excel(filterdict, pid=False, name=None, patid=None, user=None):
     # pylint: disable=too-many-branches
     # pylint: disable=too-many-statements

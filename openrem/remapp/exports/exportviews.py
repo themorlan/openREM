@@ -556,24 +556,30 @@ def mgxlsx1(request, name=None, pat_id=None):
     :return:
     """
     from django.shortcuts import redirect
-    from remapp.exports.mg_export import exportMG2excel
+    from remapp.exports.mg_export import mgxlsx
 
     pid = include_pid(request, name, pat_id)
 
     if request.user.groups.filter(name="exportgroup"):
+        
+        filter_dict = request.GET.dict()
+        if "mg_acquisition_type" in filter_dict:
+            filter_dict["mg_acquisition_type"] = request.GET.getlist(
+                "mg_acquisition_type"
+            )
+
         job = run_in_background(
-            exportMG2excel,
+            mgxlsx,
             "export_mg",
-            request.GET,
-            pid=pid["pidgroup"],
-            name=pid["include_names"],
-            patid=pid["include_pat_id"],
-            user=request.user.id,
+            filter_dict,
+            pid["pidgroup"],
+            pid["include_names"],
+            pid["include_pat_id"],
+            request.user.id,
         )
         logger.debug("Export MG to xlsx job is {0}".format(job.id))
 
     return redirect(reverse_lazy("export"))
-
 
 @csrf_exempt
 @login_required

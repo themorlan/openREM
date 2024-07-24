@@ -52,6 +52,8 @@ from remapp.models import (
     StandardNameSettings,
 )
 
+from ..tools.check_standard_name_status import are_standard_names_enabled
+
 from remapp.version import __version__
 
 logger = logging.getLogger(__name__)
