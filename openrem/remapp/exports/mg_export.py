@@ -281,7 +281,7 @@ def exportMG2csv(filterdict, pid=False, name=None, patid=None, user=None):
         if (
             "o" in filterdict
             and filterdict["o"] == "-projectionxrayradiationdose__accumxraydose__"
-            "accummammographyxraydose__accumulated_age_glandular_dose"
+            "accummammographyxraydose__accumulated_average_glandular_dose"
         ):
             logger.info("Replacing AGD ordering with study date to avoid duplication")
             filterdict["o"] = "-time_date"
