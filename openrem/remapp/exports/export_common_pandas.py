@@ -1409,6 +1409,9 @@ def write_out_data_as_chunks(acquisition_cat_field_names, acquisition_int_field_
                                                                       acquisition_val_field_names,
                                                                       ct_dose_check_field_names, df_unprocessed)
 
+            if modality in ["MG"]:
+                df_unprocessed = create_image_view_modifier_column(df_unprocessed)
+                
             if modality in ["DX"]:
                 df_unprocessed = create_dx_filter_columns(acquisition_cat_field_names, df_unprocessed)
 
@@ -1449,6 +1452,10 @@ def write_out_data_as_chunks(acquisition_cat_field_names, acquisition_int_field_
             write_standard_acquisition_data(book, df, enable_standard_names, worksheet_log)
     return current_row
 
+def create_image_view_modifier_column(df_unprocessed):
+    df_unprocessed["View Modifier"] = df_unprocessed[df_unprocessed["View Modifier"].notnull()].groupby(["Acquisition pk"])["View Modifier"].transform(lambda x: ",".join(x))
+
+    return df_unprocessed
 
 def create_dx_filter_columns(acquisition_cat_field_names, df_unprocessed):
     # Replace the long text filter material description with a short one

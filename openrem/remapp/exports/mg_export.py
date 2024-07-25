@@ -31,7 +31,6 @@
 import datetime
 import logging
 
-from django.forms import CharField
 from ..tools.background import get_or_generate_task_uuid
 
 from django.core.exceptions import ObjectDoesNotExist
@@ -451,7 +450,7 @@ def mgxlsx(filterdict, pid=False, name=None, patid=None, user=None):
         "study_description",
         "requested_procedure_code_meaning",
         "projectionxrayradiationdose__irradeventxraydata__image_view__code_meaning",
-        'projectionxrayradiationdose__irradeventxraydata__imageviewmodifier__image_view_modifier__code_meaning',
+        "projectionxrayradiationdose__irradeventxraydata__imageviewmodifier__image_view_modifier__code_meaning",
         "projectionxrayradiationdose__irradeventxraydata__laterality__code_meaning",
     ]
     exam_cat_field_names = [
