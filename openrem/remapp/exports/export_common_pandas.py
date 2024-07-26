@@ -1460,7 +1460,7 @@ def write_out_data_as_chunks(acquisition_cat_field_names, acquisition_int_field_
     return current_row
 
 def create_image_view_modifier_column(df_unprocessed):
-    df_unprocessed["View Modifier"] = df_unprocessed[df_unprocessed["View Modifier"].notnull()].drop_duplicates(["Acquisition pk", "View Modifier pk"]).groupby(["Acquisition pk"])["View Modifier"].transform(lambda x: ",".join(x))
+    df_unprocessed["View Modifier"] = df_unprocessed[df_unprocessed["View Modifier"].notnull()].drop_duplicates(["Acquisition pk", "View Modifier pk"]).sort_values(by=["Acquisition pk"], ascending=[True], inplace=False).groupby(["Acquisition pk"])["View Modifier"].transform(lambda x: ",".join(x))
 
     return df_unprocessed
 
@@ -1474,7 +1474,7 @@ def create_filter_columns(acquisition_cat_field_names, df_unprocessed):
     df_unprocessed.drop(["Filter thickness min", "Filter thickness max"], axis=1, inplace=True)
 
     # Combine the "Filters" text in any rows that have matching "Acquisition pk" and the "Filters" text is not null
-    df_unprocessed["Filters"] = df_unprocessed[df_unprocessed["Filters"].notnull()].drop_duplicates(["Acquisition pk", "Filter pk"]).groupby(["Acquisition pk"])["Filters"].transform(lambda x: " | ".join(x))
+    df_unprocessed["Filters"] = df_unprocessed[df_unprocessed["Filters"].notnull()].drop_duplicates(["Acquisition pk", "Filter pk"]).sort_values(by=["Filter pk"], ascending=[True], inplace=False).groupby(["Acquisition pk"])["Filters"].transform(lambda x: " | ".join(x))
 
     # Combine the "Filter thicknesses (mm)" values in any rows that have matching "Acquisition pk".
     #   1 Any np.nan values are replaced with None values
@@ -1482,7 +1482,7 @@ def create_filter_columns(acquisition_cat_field_names, df_unprocessed):
     #   3 The data is grouped by "Acquisition pk" and all "Filter thickness (mm)" strings joined with a " | " between.
     # Steps 1 and 2 are carried out by the first line of code below. Step 3 is carried out by the second line of code.
     df_unprocessed["Filter thicknesses (mm)"] = df_unprocessed["Filter thicknesses (mm)"].replace(np.nan, None).apply(lambda x: f"{x:.4f}" if (x != None) else "")
-    df_unprocessed["Filter thicknesses (mm)"] = df_unprocessed.drop_duplicates(["Acquisition pk", "Filter pk"]).groupby(["Acquisition pk"])["Filter thicknesses (mm)"].transform(lambda x: " | ".join(x))
+    df_unprocessed["Filter thicknesses (mm)"] = df_unprocessed.drop_duplicates(["Acquisition pk", "Filter pk"]).sort_values(by=["Filter pk"], ascending=[True], inplace=False).groupby(["Acquisition pk"])["Filter thicknesses (mm)"].transform(lambda x: " | ".join(x))
 
     if "Filter thicknesses (mm)" not in acquisition_cat_field_names:
         acquisition_cat_field_names.append("Filter thicknesses (mm)")
