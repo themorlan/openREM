@@ -427,10 +427,12 @@ def mgxlsx(filterdict, pid=False, name=None, patid=None, user=None):
     # Exam-level integer field names and friendly names
     exam_int_fields = [
         "pk",
+        "projectionxrayradiationdose__irradeventxraydata__imageviewmodifier__pk",
         "number_of_events",
     ]
     exam_int_field_names = [
         "pk",
+        "View Modifier pk",
         "Number of events"
     ]
 
@@ -492,40 +494,24 @@ def mgxlsx(filterdict, pid=False, name=None, patid=None, user=None):
 
     acquisition_int_fields = [
         "projectionxrayradiationdose__irradeventxraydata__pk",
+        "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__xrayfilters__pk",
     ]
     acquisition_int_field_names = [
         "Acquisition pk",
+        "Filter pk",
     ]
-
-    filter_materials = {
-        "Aluminum": "Al",
-        "Copper": "Cu",
-        "Tantalum": "Ta",
-        "Molybdenum": "Mo",
-        "Rhodium": "Rh",
-        "Silver": "Ag",
-        "Niobium": "Nb",
-        "Europium": "Eu",
-        "Lead": "Pb"
-    }
-
-    cases = [When(projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__xrayfilters__xray_filter_material__code_meaning__icontains=material, then=Value(code))
-         for material, code in filter_materials.items()]
 
     acquisition_cat_fields = [
         "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
         "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__anode_target_material__code_meaning",
-        Case(
-            *cases,
-            default=F('projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__xrayfilters__xray_filter_material__code_meaning'),
-         output_field=TextField()),
+        "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__xrayfilters__xray_filter_material__code_meaning",
         "projectionxrayradiationdose__irradeventxraydata__comment",
     ]
 
     acquisition_cat_field_names = [
         "Acquisition protocol",
         "Target",
-        "Filter",
+        "Filters",
         "Exposure mode description",
     ]
 
@@ -540,10 +526,8 @@ def mgxlsx(filterdict, pid=False, name=None, patid=None, user=None):
         "projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__magnification_factor",
         "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__collimated_field_area",
         "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure_control_mode",
-        Coalesce(
-            F('projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__xrayfilters__xray_filter_thickness_minimum'),
-            F('projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__xrayfilters__xray_filter_thickness_maximum'),
-        ),
+        "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__xrayfilters__xray_filter_thickness_minimum",
+        "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__xrayfilters__xray_filter_thickness_maximum",
         "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__focal_spot_size",
         "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__kvp__kvp",
         "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__average_xray_tube_current",
@@ -560,7 +544,8 @@ def mgxlsx(filterdict, pid=False, name=None, patid=None, user=None):
         "Mag",
         "Area",
         "Mode",
-        "Filter thickness",
+        "Filter thickness min",
+        "Filter thickness max",
         "Focal spot size",
         "kVp",
         "mA",

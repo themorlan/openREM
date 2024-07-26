@@ -1412,13 +1412,20 @@ def write_out_data_as_chunks(acquisition_cat_field_names, acquisition_int_field_
             if modality in ["MG"]:
                 df_unprocessed = create_image_view_modifier_column(df_unprocessed)
                 
-            if modality in ["DX"]:
-                df_unprocessed = create_dx_filter_columns(acquisition_cat_field_names, df_unprocessed)
+                fields_to_remove = ["View Modifier pk"]
+                for field_name in fields_to_remove:
+                    if field_name in exam_int_field_names:
+                        exam_int_field_names.remove(field_name)
+                
+            if modality in ["DX", "MG"]:
+                df_unprocessed = create_filter_columns(acquisition_cat_field_names, df_unprocessed)
 
-                fields_to_remove = ["Filter thickness min", "Filter thickness max"]
+                fields_to_remove = ["Filter pk", "Filter thickness min", "Filter thickness max"]
                 for field_name in fields_to_remove:
                     if field_name in acquisition_val_field_names:
                         acquisition_val_field_names.remove(field_name)
+                    if field_name in acquisition_int_field_names:
+                        acquisition_int_field_names.remove(field_name)
 
             df = transform_to_one_row_per_exam(
                 df_unprocessed,
@@ -1453,11 +1460,11 @@ def write_out_data_as_chunks(acquisition_cat_field_names, acquisition_int_field_
     return current_row
 
 def create_image_view_modifier_column(df_unprocessed):
-    df_unprocessed["View Modifier"] = df_unprocessed[df_unprocessed["View Modifier"].notnull()].groupby(["Acquisition pk"])["View Modifier"].transform(lambda x: ",".join(x))
+    df_unprocessed["View Modifier"] = df_unprocessed[df_unprocessed["View Modifier"].notnull()].drop_duplicates(["Acquisition pk", "View Modifier pk"]).groupby(["Acquisition pk"])["View Modifier"].transform(lambda x: ",".join(x))
 
     return df_unprocessed
 
-def create_dx_filter_columns(acquisition_cat_field_names, df_unprocessed):
+def create_filter_columns(acquisition_cat_field_names, df_unprocessed):
     # Replace the long text filter material description with a short one
     df_unprocessed["Filters"] = df_unprocessed["Filters"].apply(replace_long_filter_with_short)
 
@@ -1467,7 +1474,7 @@ def create_dx_filter_columns(acquisition_cat_field_names, df_unprocessed):
     df_unprocessed.drop(["Filter thickness min", "Filter thickness max"], axis=1, inplace=True)
 
     # Combine the "Filters" text in any rows that have matching "Acquisition pk" and the "Filters" text is not null
-    df_unprocessed["Filters"] = df_unprocessed[df_unprocessed["Filters"].notnull()].groupby(["Acquisition pk"])["Filters"].transform(lambda x: " | ".join(x))
+    df_unprocessed["Filters"] = df_unprocessed[df_unprocessed["Filters"].notnull()].drop_duplicates(["Acquisition pk", "Filter pk"]).groupby(["Acquisition pk"])["Filters"].transform(lambda x: " | ".join(x))
 
     # Combine the "Filter thicknesses (mm)" values in any rows that have matching "Acquisition pk".
     #   1 Any np.nan values are replaced with None values
@@ -1475,7 +1482,7 @@ def create_dx_filter_columns(acquisition_cat_field_names, df_unprocessed):
     #   3 The data is grouped by "Acquisition pk" and all "Filter thickness (mm)" strings joined with a " | " between.
     # Steps 1 and 2 are carried out by the first line of code below. Step 3 is carried out by the second line of code.
     df_unprocessed["Filter thicknesses (mm)"] = df_unprocessed["Filter thicknesses (mm)"].replace(np.nan, None).apply(lambda x: f"{x:.4f}" if (x != None) else "")
-    df_unprocessed["Filter thicknesses (mm)"] = df_unprocessed.groupby(["Acquisition pk"])["Filter thicknesses (mm)"].transform(lambda x: " | ".join(x))
+    df_unprocessed["Filter thicknesses (mm)"] = df_unprocessed.drop_duplicates(["Acquisition pk", "Filter pk"]).groupby(["Acquisition pk"])["Filter thicknesses (mm)"].transform(lambda x: " | ".join(x))
 
     if "Filter thicknesses (mm)" not in acquisition_cat_field_names:
         acquisition_cat_field_names.append("Filter thicknesses (mm)")

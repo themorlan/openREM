@@ -452,22 +452,30 @@ def dxxlsx(filterdict, pid=False, name=None, patid=None, user=None):
         "Total DAP (cGy·cm²)"
     ]
 
-    acquisition_int_fields = ["projectionxrayradiationdose__irradeventxraydata__pk"]
-    acquisition_int_field_names = ["Acquisition pk"]
+    acquisition_int_fields = [
+        "projectionxrayradiationdose__irradeventxraydata__pk",
+        "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__xrayfilters__pk"
+    ]
+
+    acquisition_int_field_names = [
+        "Acquisition pk", 
+        "Filter pk"
+    ]
 
     acquisition_cat_fields = [
         "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
         "projectionxrayradiationdose__irradeventxraydata__anatomical_structure__code_meaning",
         "projectionxrayradiationdose__irradeventxraydata__image_view__code_meaning",
         "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure_control_mode",
-        "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__xrayfilters__xray_filter_material__code_meaning",
+        "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__xrayfilters__xray_filter_material__code_meaning"
     ]
+
     acquisition_cat_field_names = [
         "Acquisition protocol",
         "Anatomy",
         "Image view",
         "Exposure control mode",
-        "Filters",
+        "Filters"
     ]
 
     acquisition_cat_field_std_name = "projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name"
