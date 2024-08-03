@@ -7,6 +7,7 @@ OpenREM version history
 --------------------
 * :issue:`1016`  Imports: fixed error where only the first exposure in a DX or MG study was checked for standard acquisition name
 * :issue:`1015`  Exports: enabled export of NM studies
+* :issue:`1009`  Tasks: handles abort where more than one task has the same ID
 * :issue:`1006`  Imports: fixing error if a DX file tag has the wrong length
 * :issue:`1007`  SkinDose: made skin dose calculations a background task in all situations
 * :issue:`1003`  Orthanc: modified Windows command to reduce memory use when querying PACS
