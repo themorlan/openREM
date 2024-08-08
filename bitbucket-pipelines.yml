@@ -116,7 +116,7 @@ definitions:
           - coverage run openrem/manage.py test remapp --parallel --tag=slow
           - coverage combine
           - coveralls
-          - coverage xml-o cobertura.xml
+          - coverage xml -o cobertura.xml
           - bash <(curl -Ls https://coverage.codacy.com/get.sh)
         artifacts:
           - cobertura.xml
@@ -290,7 +290,7 @@ pipelines:
       - step: *test-slow
   default:  # Standard commits are tested but not deployed
     - step: *test
-    - step: *test-slow
+#    - step: *test-slow
     - step: *flake8
     - step: *sonarcloud
     - step: *sonarcloudqualitygate
