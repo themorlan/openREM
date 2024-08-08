@@ -31,22 +31,14 @@ definitions:
         name: run sonarcloud scan
         caches:
           - sonar
-#          - docker
         script:
           - pipe: sonarsource/sonarcloud-scan:2.0.0
-#        services:
-#          - docker
     - step: &sonarcloudqualitygate
         name: run sonarcloud quality gate
         caches:
           - sonar
-#          - docker
         script:
           - pipe: sonarsource/sonarcloud-quality-gate:0.1.6
-#            variables:
-#              DEBUG: 'true'
-#        services:
-#          - docker
     - step: &test
         name: run django tests except slow tags  # excludes tests tagged as slow
         script:
