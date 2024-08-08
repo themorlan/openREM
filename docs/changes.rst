@@ -5,6 +5,7 @@ OpenREM version history
 
 1.0.0b2 (2023-04-20)
 --------------------
+* :issue:`1032`  Tests: Re-enables sonarcloud integration
 * :issue:`1016`  Imports: fixed error where only the first exposure in a DX or MG study was checked for standard acquisition name
 * :issue:`1015`  Exports: enabled export of NM studies
 * :issue:`1009`  Tasks: handles abort where more than one task has the same ID
