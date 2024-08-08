@@ -154,7 +154,7 @@ definitions:
           - coverage run openrem/manage.py test remapp --parallel
           - coverage combine
           - coveralls
-          - coverage xml-o cobertura.xml
+          - coverage xml -o cobertura.xml
           - bash <(curl -Ls https://coverage.codacy.com/get.sh)
         artifacts:
           - cobertura.xml
@@ -194,7 +194,7 @@ definitions:
           - coverage run openrem/manage.py test remapp --parallel
           - coverage combine
           - coveralls
-          - coverage xml-o cobertura.xml
+          - coverage xml -o cobertura.xml
           - bash <(curl -Ls https://coverage.codacy.com/get.sh)
         artifacts:
           - cobertura.xml
@@ -233,7 +233,7 @@ definitions:
           - coverage run openrem/manage.py test remapp --parallel
           - coverage combine
           - coveralls
-          - coverage xml-o cobertura.xml
+          - coverage xml -o cobertura.xml
           - bash <(curl -Ls https://coverage.codacy.com/get.sh)
         artifacts:
           - cobertura.xml
