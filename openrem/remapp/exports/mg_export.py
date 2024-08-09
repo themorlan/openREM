@@ -41,9 +41,6 @@ from ..tools.check_standard_name_status import are_standard_names_enabled
 
 from ..interface.mod_filters import mg_acq_filter
 
-from django.db.models import F, Case, When, Value, TextField
-from django.db.models.functions import Coalesce
-
 from .export_common_pandas import (
     get_anode_target_material,
     get_common_data,

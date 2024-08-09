@@ -33,15 +33,21 @@ import traceback
 import sys
 
 from django.core.exceptions import ObjectDoesNotExist
-from django.db.models import Max, Count
+from django.db.models import Max, Count, F
+from django.db.models.functions import Coalesce
 
-from openrem.remapp.tools.background import (
+from ..tools.check_standard_name_status import are_standard_names_enabled
+
+from remapp.models import GeneralStudyModuleAttr
+
+from ..tools.background import (
     get_or_generate_task_uuid,
     record_task_error_exit,
 )
 
 from ..interface.mod_filters import nm_filter
-from .export_common import (
+
+from .export_common_pandas import (
     create_summary_sheet,
     get_common_data,
     common_headers,
@@ -52,6 +58,7 @@ from .export_common import (
     abort_if_zero_studies,
     create_export_task,
     sheet_name,
+    export_using_pandas,
 )
 
 logger = logging.getLogger(__name__)
@@ -481,6 +488,195 @@ def _write_nm_excel_sheet(
 
         task.progress = f"{i+1} of {task.num_records} written on sheet {sheet_index} of {sheet_total}"
         task.save()
+
+
+def nmxlsx(filterdict, pid=False, name=None, patid=None, user=None):
+    """Export filtered NM database data to multi-sheet Microsoft XSLX files
+
+    :param filterdict: Queryset of studies to export
+    :param pid: does the user have patient identifiable data permission
+    :param name: has patient name been selected for export
+    :param patid: has patient ID been selected for export
+    :param user: User that has started the export
+    :return: Saves xlsx file into Media directory for user to download
+    """
+    modality = "NM"
+
+    # Exam-level integer field names and friendly names
+    exam_int_fields = [
+        "pk",
+        "number_of_events",
+    ]
+    exam_int_field_names = [
+        "pk",
+        "Number of events"
+    ]
+
+    # Exam-level object field names (string data, little or no repetition)
+    exam_obj_fields = ["accession_number"]
+    exam_obj_field_names = ["Accession number"]
+
+    # Exam-level category field names and friendly names
+    exam_cat_fields = [
+        "generalequipmentmoduleattr__institution_name",
+        "generalequipmentmoduleattr__manufacturer",
+        "generalequipmentmoduleattr__manufacturer_model_name",
+        "generalequipmentmoduleattr__station_name",
+        "generalequipmentmoduleattr__unique_equipment_name__display_name",
+        "operator_name",
+        "patientmoduleattr__patient_sex",
+        "study_description",
+        "requested_procedure_code_meaning",
+        "patientmoduleattr__not_patient_indicator",
+    ]
+    exam_cat_field_names = [
+        "Institution",
+        "Manufacturer",
+        "Model",
+        "Station name",
+        "Display name",
+        "Operator",
+        "Patient sex",
+        "Study description",
+        "Requested procedure",
+        "Test patient",
+    ]
+
+    # Exam-level date field names and friendly name
+    exam_date_fields = ["study_date"]
+    
+    exam_date_field_names = ["Study date"]
+
+    # Exam-level time field names and friendly name
+    exam_time_fields = ["study_time"]
+    exam_time_field_names = ["Study time"]
+
+    # Exam-level category value names and friendly names
+    exam_val_fields = [
+        "patientstudymoduleattr__patient_age_decimal",
+        "patientstudymoduleattr__patient_size",
+        "patientstudymoduleattr__patient_weight",
+    ]
+    exam_val_field_names = [
+        "Patient age",
+        "Patient height (m)",
+        "Patient weight (kg)",
+    ]
+
+    acquisition_int_fields = [
+        "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__pk",
+    ]
+    acquisition_int_field_names = [
+        "Acquisition pk",
+    ]
+
+    acquisition_cat_fields = [
+        "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__radionuclide_half_life",
+        "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__administered_activity",
+        "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__effective_dose",
+        Coalesce(
+            F("radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__radiopharmaceutical_agent__code_meaning"),
+            F("radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__radiopharmaceutical_agent_string"),
+        ),
+        "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__radionuclide__code_meaning",
+        "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__radiopharmaceutical_start_datetime",
+        "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__radiopharmaceutical_stop_datetime",
+        "radiopharmaceuticalradiationdose__associated_procedure__code_meaning",
+        "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__route_of_administration__code_meaning",
+        "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__laterality__code_meaning",
+        "radiopharmaceuticalradiationdose__comment",
+        "study_description",
+    ]
+
+    acquisition_cat_field_names = [
+        "Radionuclide Half Live",
+        "Administered activity (MBq)",
+        "Effective dose (mSv)",
+        "Radiopharmaceutical Agent",
+        "Radionuclide",
+        "Radiopharmaceutical Start Time",
+        "Radiopharmaceutical Stop Time",
+        "Associated Procedure",
+        "Route of Administration",
+        "Route of Administration Laterality",
+        "Comment",
+        "Acquisition protocol",
+    ]
+
+    acquisition_cat_field_std_name = "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__standard_protocols__standard_name"
+    acquisition_cat_field_name_std_name = "Standard acquisition name"
+
+    # Required acquisition-level value field names and friendly names
+    acquisition_val_fields = [
+    ]
+    acquisition_val_field_names = [
+    ]
+
+    ct_dose_check_fields = [
+    ]
+
+    ct_dose_check_field_names = [
+    ]
+
+    # Fields for obtaining the acquisition protocols in the data
+    fields_for_acquisition_frequency = [
+        "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__pk",
+        "study_description",
+    
+    ]
+
+    field_names_for_acquisition_frequency = [
+        "pk",
+        "Acquisition protocol"
+    ]
+
+    field_for_acquisition_frequency_std_name = "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__standard_protocols__standard_name"
+    field_name_for_acquisition_frequency_std_name = "Standard acquisition name"
+
+    enable_standard_names = are_standard_names_enabled()
+
+    datestamp = datetime.datetime.now()
+    task_id = get_or_generate_task_uuid()
+    tsk = create_export_task(
+        task_id=task_id,
+        modality=modality,
+        export_type="XLSX_export",
+        date_stamp=datestamp,
+        pid=bool(pid and (name or patid)),
+        user=user,
+        filters_dict=filterdict,
+    )
+
+    tmpxlsx, book = create_xlsx(tsk)
+    if not tmpxlsx:
+        exit()
+
+    # Get the data
+    study_pks = None
+    study_pks = nm_filter(filterdict, pid=pid).qs.values("pk")
+
+    # The initial_qs may have filters to remove some acquisition types. For the export we want all acquisitions
+    # that are part of a study to be included. To achieve this, use the pk list from initial_qs to get a
+    # corresponding set of unfiltered studies:
+    qs = GeneralStudyModuleAttr.objects.filter(pk__in=study_pks)
+
+    n_entries = qs.count()
+    tsk.num_records = n_entries
+    if abort_if_zero_studies(tsk.num_records, tsk):
+        return
+
+    tsk.progress = "{0} studies in query.".format(tsk.num_records)
+    tsk.save()
+    export_using_pandas(acquisition_cat_field_name_std_name, acquisition_cat_field_names,
+                        acquisition_cat_field_std_name, acquisition_cat_fields,acquisition_int_field_names,
+                        acquisition_int_fields, acquisition_val_field_names, acquisition_val_fields, book,
+                        ct_dose_check_field_names, ct_dose_check_fields, datestamp, enable_standard_names,
+                        exam_cat_field_names, exam_cat_fields, exam_date_field_names, exam_date_fields,
+                        exam_int_field_names, exam_int_fields, exam_obj_field_names, exam_obj_fields,
+                        exam_time_field_names, exam_time_fields, exam_val_field_names, exam_val_fields,
+                        field_for_acquisition_frequency_std_name, field_name_for_acquisition_frequency_std_name,
+                        field_names_for_acquisition_frequency, fields_for_acquisition_frequency, modality, n_entries,
+                        name, patid, pid, qs, tmpxlsx, tsk)
 
 
 def exportNM2excel(filterdict, pid=False, name=None, patid=None, user=None):

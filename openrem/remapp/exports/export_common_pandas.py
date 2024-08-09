@@ -41,7 +41,8 @@ import pandas as pd
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.files.base import ContentFile
-from django.db.models import Q
+from django.db.models import Q, F
+from django.db.models.functions import Coalesce
 from xlsxwriter.workbook import Workbook
 
 from remapp.models import (
@@ -49,7 +50,6 @@ from remapp.models import (
     Exports,
     ProjectionXRayRadiationDose,
     StandardNames,
-    StandardNameSettings,
 )
 
 from ..tools.check_standard_name_status import are_standard_names_enabled
@@ -124,18 +124,6 @@ def text_and_date_formats(
     sheet.set_column(
         date_column - 2, date_column - 2, None, textformat
     )  # Accession number as text
-
-    if modality == "NM":
-        t = headers.index("Radiopharmaceutical Start Time")
-        sheet.set_column(t, t, None, datetimeformat)
-        t = headers.index("Radiopharmaceutical Stop Time")
-        sheet.set_column(t, t, None, datetimeformat)
-        c = 1
-        series_date = lambda i: f"Series {i} date"
-        while series_date(c) in headers:
-            t = headers.index(series_date(c))
-            sheet.set_column(t, t, None, datetimeformat)
-            c += 1
 
     return book
 
@@ -303,6 +291,7 @@ def generate_sheets(
                 name=name,
                 patid=patid,
                 modality=modality,
+                headers=protocol_headers
             )
         else:
             if protocol not in sheet_list[tab_text]["protocolname"]:
@@ -477,7 +466,7 @@ def get_common_data(modality, exams, pid=None, name=None, patid=None):
         exams.accession_number,
         exams.operator_name,
     ]
-    if modality == "RF":
+    if modality in ["RF"]:
         examdata += [exams.performing_physician_name]
     examdata += [exams.study_date, exams.study_time]
     if pid and (name or patid):
@@ -711,7 +700,7 @@ def create_xlsx(task):
 
     try:
         temp_xlsx = TemporaryFile()
-        book = Workbook(temp_xlsx, {"strings_to_numbers": False, "constant_memory": True})
+        book = Workbook(temp_xlsx, {"strings_to_numbers": False, "remove_timezone": True, "constant_memory": True})
     except (OSError, IOError) as e:
         logger.error(
             "Error saving xlsx temporary file ({0}): {1}".format(e.errno, e.strerror)
@@ -1144,7 +1133,7 @@ def optimise_df_dtypes(df, acquisition_cat_field_names, acquisition_int_field_na
     df[int_field_names] = df[int_field_names].astype("UInt32")
 
 
-def write_row_to_acquisition_sheet(acq_df, acquisition, book, worksheet_log):
+def write_row_to_acquisition_sheet(acq_df, acquisition, book, worksheet_log, modality):
     # Make the acquisition name safe for an Excel sheet name
     acquisition = sheet_name(acquisition)
     sheet = book.get_worksheet_by_name(acquisition)
@@ -1162,6 +1151,9 @@ def write_row_to_acquisition_sheet(acq_df, acquisition, book, worksheet_log):
     for idx, row in acq_df.iterrows():
         sheet.write_row(sheet_row, 0, row.fillna(""))
         sheet_row = sheet_row + 1
+
+    if modality in ["NM"]:
+        transform_nm_datetime_columns(book, sheet, acq_df)
 
     worksheet_log[acquisition] = sheet_row
 
@@ -1272,7 +1264,7 @@ def export_using_pandas(acquisition_cat_field_name_std_name, acquisition_cat_fie
 
         if current_name not in book.sheetnames.keys():
             new_sheet = book.add_worksheet(current_name)
-            book = text_and_date_formats(book, new_sheet, pid=pid, name=name, patid=patid, modality="CT")
+            book = text_and_date_formats(book, new_sheet, pid=pid, name=name, patid=patid, modality=modality)
             worksheet_log[current_name] = 0
 
     current_row = 1
@@ -1368,6 +1360,9 @@ def write_out_data_as_chunks(acquisition_cat_field_names, acquisition_int_field_
                 columns=(field_names_list), coerce_float=True,
             )
 
+            if modality in ["NM"]:
+                df_unprocessed = create_nm_columns(qs, filter_dict, df_unprocessed)
+
             if modality in ["CT"]:
                 fields_to_remove = ["Dose check alerts", "S1 Source name", "S2 Source name"]
                 for field_name in fields_to_remove:
@@ -1434,6 +1429,9 @@ def write_out_data_as_chunks(acquisition_cat_field_names, acquisition_int_field_
                 exam_obj_field_names, exam_time_field_names, exam_val_field_names,
                 all_field_names)
 
+            if modality in ["NM"]:
+                transform_nm_datetime_columns(book, wsalldata, df)
+
             # Write the headings to the sheet (over-writing each time, but this ensures we'll include the study
             # with the most events without doing anything complicated to generate the headings)
             wsalldata.write_row(0, 0, df.columns)
@@ -1454,10 +1452,206 @@ def write_out_data_as_chunks(acquisition_cat_field_names, acquisition_int_field_
             # Sort the data by descending date and time
             df.sort_values(by=["Study date", "Study time"], ascending=[False, False], inplace=True)
 
-            write_acquisition_data(book, df, worksheet_log)
+            write_acquisition_data(book, df, worksheet_log, modality)
 
-            write_standard_acquisition_data(book, df, enable_standard_names, worksheet_log)
+            write_standard_acquisition_data(book, df, enable_standard_names, worksheet_log, modality)
     return current_row
+
+def create_nm_columns(qs, filter_dict, df_unprocessed):
+    
+    # person_participant
+    person_participant_val_fields = [
+        "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__personparticipant__person_name",
+        "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__personparticipant__person_role_in_procedure_cid__code_meaning",
+    ]
+
+    person_participant_val_fields_names = [
+        "Person participant name",
+        "Person participant role",
+    ]
+
+    person_participant_int_fields = [
+        "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__pk",
+        "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__personparticipant__pk",
+    ]
+
+    person_participant_int_fields_names = [
+        "Acquisition pk",
+        "Person Participant pk",
+    ]
+
+    person_participant_values_field_list = person_participant_int_fields + person_participant_val_fields
+    person_participant_field_names_list = person_participant_int_fields_names + person_participant_val_fields_names
+
+    df_unprocessed = create_multiindex_columns(qs, filter_dict, df_unprocessed, person_participant_values_field_list, person_participant_field_names_list)
+
+    # organ_dose
+    organ_dose_val_fields = [
+        Coalesce(
+            F("radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__organdose__reference_authority_code_id__code_meaning"),
+            F("radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__organdose__reference_authority_text"),
+        ),
+        "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__organdose__finding_site__code_meaning",
+        "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__organdose__laterality__code_meaning",
+    ]
+
+    organ_dose_val_fields_names = [
+        "Organ Dose Reference Authority",
+        "Organ Dose Finding Site",
+        "Organ Dose Laterality",
+    ]
+
+    organ_dose_int_fields = [
+        "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__pk",
+        "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__organdose__pk",
+        "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__organdose__organ_dose",
+        "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__organdose__mass",
+        "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__organdose__measurement_method",
+    ]
+
+    organ_dose_int_fields_names = [
+        "Acquisition pk",
+        "Organ Dose pk",
+        "Organ Dose (mGy)",
+        "Organ Dose Mass (g)",
+        "Organ Dose Measurement Method",
+    ]
+
+    organ_dose_values_field_list = organ_dose_int_fields + organ_dose_val_fields
+    organ_dose_field_names_list = organ_dose_int_fields_names + organ_dose_val_fields_names
+
+    df_unprocessed = create_multiindex_columns(qs, filter_dict, df_unprocessed, organ_dose_values_field_list, organ_dose_field_names_list)
+
+    # patient_state
+    patient_state_val_fields = [
+        "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationpatientcharacteristics__patientstate__patient_state__code_meaning",
+    ]
+
+    patient_state_val_fields_names = [
+        "Patient state",
+    ]
+
+    patient_state_int_fields = [
+        "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__pk",
+        "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationpatientcharacteristics__patientstate__pk",
+    ]
+
+    patient_state_int_fields_names = [
+        "Acquisition pk",
+        "Organ Dose pk",
+    ]
+
+    patient_state_values_field_list = patient_state_int_fields + patient_state_val_fields
+    patient_state_field_names_list = patient_state_int_fields_names + patient_state_val_fields_names
+
+    df_unprocessed = create_multiindex_columns(qs, filter_dict, df_unprocessed, patient_state_values_field_list, patient_state_field_names_list)
+
+    # glomerular
+    glomerular_val_fields = [
+        "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationpatientcharacteristics__glomerularfiltrationrate__measurement_method__code_meaning",
+        "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationpatientcharacteristics__glomerularfiltrationrate__equivalent_meaning_of_concept_name__code_meaning",
+    ]
+
+    glomerular_val_fields_names = [
+        "Measurement Method",
+        "Equivalent meaning of concept name",
+    ]
+
+    glomerular_int_fields = [
+        "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__pk",
+        "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationpatientcharacteristics__glomerularfiltrationrate__pk",
+        "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationpatientcharacteristics__glomerularfiltrationrate__glomerular_filtration_rate",
+    ]
+
+    glomerular_int_fields_names = [
+        "Acquisition pk",
+        "Organ Dose pk",
+        "Glomerular Filtration Rate (ml/min/1.73m^2)",
+    ]
+
+    glomerular_values_field_list = glomerular_int_fields + glomerular_val_fields
+    glomerular_field_names_list = glomerular_int_fields_names + glomerular_val_fields_names
+
+    df_unprocessed = create_multiindex_columns(qs, filter_dict, df_unprocessed, glomerular_values_field_list, glomerular_field_names_list)
+
+    # pet_series
+    pet_series_val_fields = [
+        "radiopharmaceuticalradiationdose__petseries__series_datetime",
+        "radiopharmaceuticalradiationdose__petseries__reconstruction_method",
+        "radiopharmaceuticalradiationdose__petseries__scan_progression_direction",
+    ]
+
+    pet_series_val_fields_names = [
+        "PET Series Datetime",
+        "Reconstruction Method",
+        "Scan Progression Direction",
+    ]
+
+    pet_series_int_fields = [
+        "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__pk",
+        "radiopharmaceuticalradiationdose__petseries__pk",
+        "radiopharmaceuticalradiationdose__petseries__number_of_slices",
+        "radiopharmaceuticalradiationdose__petseries__coincidence_window_width",
+        "radiopharmaceuticalradiationdose__petseries__energy_window_lower_limit",
+        "radiopharmaceuticalradiationdose__petseries__energy_window_upper_limit",
+        "radiopharmaceuticalradiationdose__petseries__number_of_rr_intervals",
+        "radiopharmaceuticalradiationdose__petseries__number_of_time_slots",
+        "radiopharmaceuticalradiationdose__petseries__number_of_time_slices",
+    ]
+
+    pet_series_int_fields_names = [
+        "Acquisition pk",
+        "Organ Dose pk",
+        "Number Of Slices",
+        "Coincidence Window Width",
+        "Energy Window Lower Limit",
+        "Energy Window Upper Limit",
+        "Number Of RR Intervals",
+        "Number Of Time Slots",
+        "Number Of Time Slices",
+    ]
+
+    pet_series_values_field_list = pet_series_int_fields + pet_series_val_fields
+    pet_series_field_names_list = pet_series_int_fields_names + pet_series_val_fields_names
+
+    df_unprocessed = create_multiindex_columns(qs, filter_dict, df_unprocessed, pet_series_values_field_list, pet_series_field_names_list)
+
+    return df_unprocessed
+
+def create_multiindex_columns(qs, filter_dict, df_unprocessed, secondary_values_field_list, secondary_field_names_list):
+    organ_dose_data = qs.order_by().filter(**filter_dict).values_list(*(secondary_values_field_list))
+    df_unprocessed_organ_dose = pd.DataFrame.from_records(
+        data=organ_dose_data,
+        columns=(secondary_field_names_list), coerce_float=True,
+    )
+
+    df_pivot = df_unprocessed_organ_dose.pivot_table(
+        index='Acquisition pk',
+        fill_value='',
+        columns=df_unprocessed_organ_dose.groupby('Acquisition pk').cumcount() + 1,
+        values=secondary_field_names_list,
+        aggfunc='first'
+    )
+
+    df_pivot.columns = [f"{a} {b}" for a, b in df_pivot.columns]
+    sorted_columns = sorted(df_pivot.columns, key=lambda x: int(x.rsplit(' ', 1)[1]))
+    df_pivot = df_pivot[sorted_columns]
+    df_unprocessed = df_unprocessed.merge(df_pivot, on='Acquisition pk', how='left')
+
+    return df_unprocessed
+
+def transform_nm_datetime_columns(book, sheet, df):
+    datetimeformat = book.add_format(
+        {"num_format": f"{settings.XLSX_DATE} {settings.XLSX_TIME}"}
+    )
+    for column in df.columns:
+        if column.endswith("Radiopharmaceutical Start Time") or column.endswith("Radiopharmaceutical Stop Time"):
+            date_column = df.columns.get_loc(column)
+            sheet.set_column(date_column, date_column, None, datetimeformat)
+
+        if "PET Series Datetime" in column:
+            date_column = df.columns.get_loc(column)
+            sheet.set_column(date_column, date_column, None, datetimeformat)
 
 def create_image_view_modifier_column(df_unprocessed):
     df_unprocessed["View Modifier"] = df_unprocessed[df_unprocessed["View Modifier"].notnull()].drop_duplicates(["Acquisition pk", "View Modifier pk"]).sort_values(by=["Acquisition pk"], ascending=[True], inplace=False).groupby(["Acquisition pk"])["View Modifier"].transform(lambda x: ",".join(x))
@@ -1503,7 +1697,7 @@ def create_dose_check_and_source_columns(acquisition_cat_field_names, acquisitio
     return df_unprocessed
 
 
-def write_standard_acquisition_data(book, df, enable_standard_names, worksheet_log):
+def write_standard_acquisition_data(book, df, enable_standard_names, worksheet_log, modality):
     # Write out all standard acquisition name data to the sheets
     if enable_standard_names:
         all_std_acquisitions_in_df = df["Standard acquisition name"].dropna().unique()
@@ -1513,10 +1707,10 @@ def write_standard_acquisition_data(book, df, enable_standard_names, worksheet_l
 
             acquisition = "[standard] " + acquisition
 
-            write_row_to_acquisition_sheet(acq_df, acquisition, book, worksheet_log)
+            write_row_to_acquisition_sheet(acq_df, acquisition, book, worksheet_log, modality)
 
 
-def write_acquisition_data(book, df, worksheet_log):
+def write_acquisition_data(book, df, worksheet_log, modality):
     # Obtain a list of unique acquisition protocols
     all_acquisitions_in_df = df["Acquisition protocol"].unique()
     for acquisition in all_acquisitions_in_df:
@@ -1527,7 +1721,7 @@ def write_acquisition_data(book, df, worksheet_log):
             acquisition = "Unknown"
             acq_df = df[df["Acquisition protocol"].isnull()]
 
-        write_row_to_acquisition_sheet(acq_df, acquisition, book, worksheet_log)
+        write_row_to_acquisition_sheet(acq_df, acquisition, book, worksheet_log, modality)
 
 
 def create_standard_name_columns(df, exam_cat_field_names):

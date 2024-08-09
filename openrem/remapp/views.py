@@ -105,7 +105,6 @@ from .models import (
     AdminTaskQuestions,
     HomePageAdminSettings,
     UpgradeStatus,
-    StandardNameSettings,
 )
 from .version import __version__, __docs_version__, __skin_map_version__
 

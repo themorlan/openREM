@@ -220,15 +220,21 @@ def nmxlsx1(request, name=None, pat_id=None):
     :type request: GET
     """
     from django.shortcuts import redirect
-    from remapp.exports.nm_export import exportNM2excel
+    from remapp.exports.nm_export import nmxlsx
 
     pid = include_pid(request, name, pat_id)
 
     if request.user.groups.filter(name="exportgroup"):
+        filter_dict = request.GET.dict()
+        if "nm_acquisition_type" in filter_dict:
+            filter_dict["nm_acquisition_type"] = request.GET.getlist(
+                "nm_acquisition_type"
+            )
+
         job = run_in_background(
-            exportNM2excel,
+            nmxlsx,
             "export_nm",
-            request.GET,
+            filter_dict,
             pid["pidgroup"],
             pid["include_names"],
             pid["include_pat_id"],
