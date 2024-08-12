@@ -103,6 +103,9 @@ def text_and_date_formats(
 
     if modality == "RF":
         date_column += 1
+        
+    if modality == "NM":
+        date_column += 1
 
     sheet.set_column(
         date_column, date_column, 10, dateformat
@@ -1644,14 +1647,15 @@ def transform_nm_datetime_columns(book, sheet, df):
     datetimeformat = book.add_format(
         {"num_format": f"{settings.XLSX_DATE} {settings.XLSX_TIME}"}
     )
-    for column in df.columns:
-        if column.endswith("Radiopharmaceutical Start Time") or column.endswith("Radiopharmaceutical Stop Time"):
-            date_column = df.columns.get_loc(column)
-            sheet.set_column(date_column, date_column, None, datetimeformat)
+    conditionaldatetimeformat = {'type': 'no_blanks', 'format': datetimeformat}
+    maxrows = 1048576
+    datetimecolumns = ["Radiopharmaceutical Start Time", "Radiopharmaceutical Stop Time", "PET Series Datetime"]
 
-        if "PET Series Datetime" in column:
-            date_column = df.columns.get_loc(column)
-            sheet.set_column(date_column, date_column, None, datetimeformat)
+    for column in df.columns:
+        for datetimecolumn in datetimecolumns:
+            if datetimecolumn in column:
+                date_column = df.columns.get_loc(column)
+                sheet.conditional_format(1, date_column, maxrows, date_column, conditionaldatetimeformat)
 
 def create_image_view_modifier_column(df_unprocessed):
     df_unprocessed["View Modifier"] = df_unprocessed[df_unprocessed["View Modifier"].notnull()].drop_duplicates(["Acquisition pk", "View Modifier pk"]).sort_values(by=["Acquisition pk"], ascending=[True], inplace=False).groupby(["Acquisition pk"])["View Modifier"].transform(lambda x: ",".join(x))
