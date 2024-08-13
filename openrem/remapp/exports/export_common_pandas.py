@@ -1432,9 +1432,6 @@ def write_out_data_as_chunks(acquisition_cat_field_names, acquisition_int_field_
                 exam_obj_field_names, exam_time_field_names, exam_val_field_names,
                 all_field_names)
 
-            if modality in ["NM"]:
-                transform_nm_datetime_columns(book, wsalldata, df)
-
             # Write the headings to the sheet (over-writing each time, but this ensures we'll include the study
             # with the most events without doing anything complicated to generate the headings)
             wsalldata.write_row(0, 0, df.columns)
@@ -1444,6 +1441,9 @@ def write_out_data_as_chunks(acquisition_cat_field_names, acquisition_int_field_
                 wsalldata.write_row(current_row, 0, row.fillna(""))
                 current_row = current_row + 1
 
+            if modality in ["NM"]:
+                transform_nm_datetime_columns(book, wsalldata, df)
+                
             # Write out data to the acquisition protocol sheets
             df = df_unprocessed
 
@@ -1458,6 +1458,7 @@ def write_out_data_as_chunks(acquisition_cat_field_names, acquisition_int_field_
             write_acquisition_data(book, df, worksheet_log, modality)
 
             write_standard_acquisition_data(book, df, enable_standard_names, worksheet_log, modality)
+
     return current_row
 
 def create_nm_columns(qs, filter_dict, df_unprocessed):
@@ -1643,12 +1644,13 @@ def create_multiindex_columns(qs, filter_dict, df_unprocessed, secondary_values_
 
     return df_unprocessed
 
+
 def transform_nm_datetime_columns(book, sheet, df):
     datetimeformat = book.add_format(
         {"num_format": f"{settings.XLSX_DATE} {settings.XLSX_TIME}"}
     )
     conditionaldatetimeformat = {'type': 'no_blanks', 'format': datetimeformat}
-    maxrows = 1048576
+    maxrows = 1048575
     datetimecolumns = ["Radiopharmaceutical Start Time", "Radiopharmaceutical Stop Time", "PET Series Datetime"]
 
     for column in df.columns:
