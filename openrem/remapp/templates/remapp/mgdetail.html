@@ -90,7 +90,8 @@
     <th scope="col">Filter</th>
     <th scope="col">kVp</th>
     <th scope="col">mA</th>
-    <th scope="col">Exposure time (ms)</th>
+    <th scope="col">ms</th>
+    <th scope="col">mAs</th>
     <th scope="col">ESD (mGy)</th>
     <th scope="col">AGD (mGy)</th>
     <th scope="col">Exposure control mode</th>
@@ -137,7 +138,11 @@
             {% for exp_time in source_data.pulsewidth_set.all %}
                 {{ exp_time.pulse_width|floatformat:1 }} <br>
             {% endfor %}
-            Total: {{ source_data.exposure_time|floatformat:0 }}
+        </td>
+        <td>
+            {% for exposure_value in source_data.exposure_set.all %}
+                {{ exposure_value.convert_uAs_to_mAs|floatformat:1 }} <br>
+            {% endfor %}
         </td>
         <td>{{ event.entrance_exposure_at_rp|floatformat:3 }}</td>
         <td>{{ source_data.average_glandular_dose|floatformat:3 }}</td>
