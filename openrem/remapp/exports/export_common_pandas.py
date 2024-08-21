@@ -1390,7 +1390,7 @@ def write_out_data_as_chunks(acquisition_cat_field_names, acquisition_int_field_
                     if field_name not in acquisition_val_field_names:
                         acquisition_val_field_names.append(field_name)
 
-            if modality in ["DX"]:
+            if modality in ["DX", "MG"]:
                 fields_to_remove = ["Filter thicknesses (mm)"]
                 for field_name in fields_to_remove:
                     if field_name in acquisition_cat_field_names:

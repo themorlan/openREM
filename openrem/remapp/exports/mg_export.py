@@ -502,6 +502,7 @@ def mgxlsx(filterdict, pid=False, name=None, patid=None, user=None):
         "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
         "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__anode_target_material__code_meaning",
         "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__xrayfilters__xray_filter_material__code_meaning",
+        "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure_control_mode",
         "projectionxrayradiationdose__irradeventxraydata__comment",
     ]
 
@@ -509,6 +510,7 @@ def mgxlsx(filterdict, pid=False, name=None, patid=None, user=None):
         "Acquisition protocol",
         "Target",
         "Filters",
+        "Mode",
         "Exposure mode description",
     ]
 
@@ -522,7 +524,6 @@ def mgxlsx(filterdict, pid=False, name=None, patid=None, user=None):
         "projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_force",
         "projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__magnification_factor",
         "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__collimated_field_area",
-        "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure_control_mode",
         "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__xrayfilters__xray_filter_thickness_minimum",
         "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__xrayfilters__xray_filter_thickness_maximum",
         "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__focal_spot_size",
@@ -540,7 +541,6 @@ def mgxlsx(filterdict, pid=False, name=None, patid=None, user=None):
         "Force",
         "Mag",
         "Area",
-        "Mode",
         "Filter thickness min",
         "Filter thickness max",
         "Focal spot size",
