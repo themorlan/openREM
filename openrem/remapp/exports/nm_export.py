@@ -603,7 +603,7 @@ def nmxlsx(filterdict, pid=False, name=None, patid=None, user=None):
         "Acquisition protocol",
     ]
 
-    acquisition_cat_field_std_name = "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__standard_protocols__standard_name"
+    acquisition_cat_field_std_name = "study_description"
     acquisition_cat_field_name_std_name = "Standard acquisition name"
 
     # Required acquisition-level value field names and friendly names
@@ -630,7 +630,7 @@ def nmxlsx(filterdict, pid=False, name=None, patid=None, user=None):
         "Acquisition protocol"
     ]
 
-    field_for_acquisition_frequency_std_name = "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__standard_protocols__standard_name"
+    field_for_acquisition_frequency_std_name = "study_description"
     field_name_for_acquisition_frequency_std_name = "Standard acquisition name"
 
     enable_standard_names = are_standard_names_enabled()

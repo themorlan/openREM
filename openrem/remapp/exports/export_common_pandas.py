@@ -803,6 +803,9 @@ def create_summary_sheet(
     # Obtain the system-level enable_standard_names setting
     enable_standard_names = are_standard_names_enabled()
 
+    if modality in ["NM"]:
+        enable_standard_names = False
+
     required_fields = ["pk", "study_description", "requested_procedure_code_meaning"]
     column_names = ["pk", "Study description", "Requested procedure"]
     if enable_standard_names:
