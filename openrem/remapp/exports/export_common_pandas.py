@@ -95,8 +95,11 @@ def text_and_date_formats(
         date_column += 1
         patid_column += 1
 
-    # Obtain the system-level enable_standard_names setting
-    enable_standard_names = are_standard_names_enabled()
+    # Obtain the system-level enable_standard_names setting. If the modality is nuclear medicine force standard
+    # names feature off because standard names not implemented for this modality yet.
+    enable_standard_names = False
+    if modality != "NM":
+        enable_standard_names = are_standard_names_enabled()
 
     if enable_standard_names:
         date_column += 3
@@ -171,14 +174,14 @@ def common_headers(modality=None, pid=False, name=None, patid=None):
         "Test patient?",
         "Study description",
     ]
-    if enable_standard_names:
+    if enable_standard_names and modality != "NM":
         headers += [
             "Standard study name (study)",
         ]
     headers += [
         "Requested procedure",
     ]
-    if enable_standard_names:
+    if enable_standard_names and modality != "NM":
         headers += [
             "Standard study name (request)",
         ]

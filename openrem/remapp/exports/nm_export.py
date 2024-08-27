@@ -603,8 +603,10 @@ def nmxlsx(filterdict, pid=False, name=None, patid=None, user=None):
         "Acquisition protocol",
     ]
 
-    acquisition_cat_field_std_name = "study_description"
-    acquisition_cat_field_name_std_name = "Standard acquisition name"
+    # Set acquisition-level acquisition standard name field and label to empty strings:
+    # standard name feature not available for nuclear medicine at the moment.
+    acquisition_cat_field_std_name = ""
+    acquisition_cat_field_name_std_name = ""
 
     # Required acquisition-level value field names and friendly names
     acquisition_val_fields = [
@@ -630,10 +632,14 @@ def nmxlsx(filterdict, pid=False, name=None, patid=None, user=None):
         "Acquisition protocol"
     ]
 
-    field_for_acquisition_frequency_std_name = "study_description"
-    field_name_for_acquisition_frequency_std_name = "Standard acquisition name"
+    # Set acquisition-level acquisition standard name field and label to empty strings:
+    # standard name feature not available for nuclear medicine at the moment.
+    field_for_acquisition_frequency_std_name = ""
+    field_name_for_acquisition_frequency_std_name = ""
 
-    enable_standard_names = are_standard_names_enabled()
+    # Force standard name feature off because standard name feature not available for nuclear medicine at the moment.
+    #enable_standard_names = are_standard_names_enabled()
+    enable_standard_names = False
 
     datestamp = datetime.datetime.now()
     task_id = get_or_generate_task_uuid()
