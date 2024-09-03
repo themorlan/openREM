@@ -473,13 +473,17 @@ def mgxlsx(filterdict, pid=False, name=None, patid=None, user=None):
         "patientstudymoduleattr__patient_age_decimal",
         "patientstudymoduleattr__patient_size",
         "patientstudymoduleattr__patient_weight",
+        "total_agd_left",
+        "total_agd_right",
         "total_agd_both",
     ]
     exam_val_field_names = [
         "Patient age",
         "Patient height (m)",
         "Patient weight (kg)",
-        "Total AGD",
+        "Total AGD Left",
+        "Total AGD Right",
+        "Total AGD Both",
     ]
 
     acquisition_int_fields = [
