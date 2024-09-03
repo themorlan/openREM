@@ -1214,24 +1214,28 @@ def export_using_pandas(acquisition_cat_field_name_std_name, acquisition_cat_fie
     wsalldata = book.add_worksheet("All data")
 
     # Format the columns of the All data sheet
-    book = text_and_date_formats(book, wsalldata, pid=pid, name=name, patid=patid, modality=modality)
+    # book = text_and_date_formats(book, wsalldata, pid=pid, name=name, patid=patid, modality=modality)
 
     # ====================================================================================
     # Write the all data sheet
     # This code is taken from the ct_csv method...
     qs_chunk_size = 10000
+    
     if pid and name:
         exam_obj_fields.append("patientmoduleattr__patient_name")
+        exam_obj_field_names.append("Patient name")
+
     if pid and patid:
         exam_obj_fields.append("patientmoduleattr__patient_id")
-    if pid and name:
-        exam_obj_field_names.append("Patient name")
-    if pid and patid:
         exam_obj_field_names.append("Patient ID")
+        
+    if pid and (patid or name):
+        exam_obj_fields.append("patientmoduleattr__patient_birth_date")
+        exam_obj_field_names.append("Patient date of birth")
+
     if enable_standard_names:
         exam_cat_fields.append("standard_names__standard_name")
         exam_cat_field_names.append("Standard study name")
-    if enable_standard_names:
         acquisition_cat_fields.append(acquisition_cat_field_std_name)
         acquisition_cat_field_names.append(acquisition_cat_field_name_std_name)
 
@@ -1455,6 +1459,8 @@ def write_out_data_as_chunks(acquisition_cat_field_names, acquisition_int_field_
             if modality in ["NM"]:
                 transform_nm_datetime_columns(book, wsalldata, df)
                 
+            transform_datetime_columns(book, wsalldata, df)
+
             # Write out data to the acquisition protocol sheets
             df = df_unprocessed
 
@@ -1655,6 +1661,20 @@ def create_multiindex_columns(qs, filter_dict, df_unprocessed, secondary_values_
 
     return df_unprocessed
 
+def transform_datetime_columns(book, sheet, df):
+    dateformat = book.add_format({"num_format": settings.XLSX_DATE})
+    timeformat = book.add_format({"num_format": settings.XLSX_TIME})
+    conditionaldateformat = {'type': 'no_blanks', 'format': dateformat}
+    conditionaltimeformat = {'type': 'no_blanks', 'format': timeformat}
+    maxrows = 1048575
+
+    for column in df.columns:
+        if " date" in column.lower():
+            date_column = df.columns.get_loc(column)
+            sheet.conditional_format(1, date_column, maxrows, date_column, conditionaldateformat)
+        if " time" in column.lower():
+            date_column = df.columns.get_loc(column)
+            sheet.conditional_format(1, date_column, maxrows, date_column, conditionaltimeformat)
 
 def transform_nm_datetime_columns(book, sheet, df):
     datetimeformat = book.add_format(
@@ -1680,6 +1700,7 @@ def create_mg_pulse_columns(df_unprocessed):
     df_unprocessed["uAs Concatenated"] = df_unprocessed[df_unprocessed["uAs"].notnull()].drop_duplicates(["Acquisition pk", "exposure pk"]).sort_values(by=["exposure pk"], ascending=[True], inplace=False).groupby(["Acquisition pk"])["uAs"].transform(lambda x: " | ".join(map(str, x)))
     df_unprocessed["ms Concatenated"] = df_unprocessed[df_unprocessed["ms"].notnull()].drop_duplicates(["Acquisition pk", "pulsewidth pk"]).sort_values(by=["pulsewidth pk"], ascending=[True], inplace=False).groupby(["Acquisition pk"])["ms"].transform(lambda x: " | ".join(map(str, x)))
     df_unprocessed["mA Concatenated"] = df_unprocessed[df_unprocessed["mA"].notnull()].drop_duplicates(["Acquisition pk", "xraytubecurrent pk"]).sort_values(by=["xraytubecurrent pk"], ascending=[True], inplace=False).groupby(["Acquisition pk"])["mA"].transform(lambda x: " | ".join(map(str, x)))
+    
     df_unprocessed["kVp Mean"] = df_unprocessed[df_unprocessed["kVp"].notnull()].drop_duplicates(["Acquisition pk", "kVp pk"]).sort_values(by=["kVp pk"], ascending=[True], inplace=False).groupby(["Acquisition pk"])["kVp"].transform('mean')
     df_unprocessed["uAs Mean"] = df_unprocessed[df_unprocessed["uAs"].notnull()].drop_duplicates(["Acquisition pk", "exposure pk"]).sort_values(by=["exposure pk"], ascending=[True], inplace=False).groupby(["Acquisition pk"])["uAs"].transform('mean')
     df_unprocessed["ms Mean"] = df_unprocessed[df_unprocessed["ms"].notnull()].drop_duplicates(["Acquisition pk", "pulsewidth pk"]).sort_values(by=["pulsewidth pk"], ascending=[True], inplace=False).groupby(["Acquisition pk"])["ms"].transform('mean')
@@ -1691,6 +1712,7 @@ def create_mg_pulse_columns(df_unprocessed):
     df_unprocessed["mA"] = df_unprocessed[df_unprocessed["mA"].notnull()].drop_duplicates(["Acquisition pk", "xraytubecurrent pk"]).sort_values(by=["xraytubecurrent pk"], ascending=[True], inplace=False).groupby(["Acquisition pk"])["mA"].transform('first')
     
     return df_unprocessed
+
 def create_target_column(df_unprocessed):
     df_unprocessed["Target"] = df_unprocessed["Target"].apply(replace_long_target_with_short)
     return df_unprocessed
