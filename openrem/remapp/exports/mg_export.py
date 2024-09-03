@@ -42,6 +42,7 @@ from ..tools.check_standard_name_status import are_standard_names_enabled
 from ..interface.mod_filters import mg_acq_filter
 
 from .export_common_pandas import (
+    generate_sheets,
     get_anode_target_material,
     get_common_data,
     common_headers,
@@ -424,12 +425,10 @@ def mgxlsx(filterdict, pid=False, name=None, patid=None, user=None):
     # Exam-level integer field names and friendly names
     exam_int_fields = [
         "pk",
-        "projectionxrayradiationdose__irradeventxraydata__imageviewmodifier__pk",
         "number_of_events",
     ]
     exam_int_field_names = [
         "pk",
-        "View Modifier pk",
         "Number of events"
     ]
 
@@ -448,9 +447,6 @@ def mgxlsx(filterdict, pid=False, name=None, patid=None, user=None):
         "patientmoduleattr__patient_sex",
         "study_description",
         "requested_procedure_code_meaning",
-        "projectionxrayradiationdose__irradeventxraydata__image_view__code_meaning",
-        "projectionxrayradiationdose__irradeventxraydata__imageviewmodifier__image_view_modifier__code_meaning",
-        "projectionxrayradiationdose__irradeventxraydata__laterality__code_meaning",
     ]
     exam_cat_field_names = [
         "Institution",
@@ -462,9 +458,6 @@ def mgxlsx(filterdict, pid=False, name=None, patid=None, user=None):
         "Patient sex",
         "Study description",
         "Requested procedure",
-        "View",
-        "View Modifier",
-        "Laterality",
     ]
 
     # Exam-level date field names and friendly name
@@ -491,22 +484,39 @@ def mgxlsx(filterdict, pid=False, name=None, patid=None, user=None):
 
     acquisition_int_fields = [
         "projectionxrayradiationdose__irradeventxraydata__pk",
+        "projectionxrayradiationdose__irradeventxraydata__imageviewmodifier__pk",
         "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__xrayfilters__pk",
+        "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__kvp__pk",
+        "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure__pk",
+        "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__pulsewidth__pk",
+        "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__xraytubecurrent__pk",
+        "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__number_of_pulses",
     ]
     acquisition_int_field_names = [
         "Acquisition pk",
+        "View Modifier pk",
         "Filter pk",
+        "kVp pk",
+        "exposure pk",
+        "pulsewidth pk",
+        "xraytubecurrent pk",
+        "Number of pulses",
     ]
 
     acquisition_cat_fields = [
+        "projectionxrayradiationdose__irradeventxraydata__image_view__code_meaning",
+        "projectionxrayradiationdose__irradeventxraydata__imageviewmodifier__image_view_modifier__code_meaning",
+        "projectionxrayradiationdose__irradeventxraydata__laterality__code_meaning",
         "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
         "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__anode_target_material__code_meaning",
         "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__xrayfilters__xray_filter_material__code_meaning",
         "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure_control_mode",
         "projectionxrayradiationdose__irradeventxraydata__comment",
     ]
-
     acquisition_cat_field_names = [
+        "View",
+        "View Modifier",
+        "Laterality",
         "Acquisition protocol",
         "Target",
         "Filters",
@@ -528,8 +538,8 @@ def mgxlsx(filterdict, pid=False, name=None, patid=None, user=None):
         "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__xrayfilters__xray_filter_thickness_maximum",
         "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__focal_spot_size",
         "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__kvp__kvp",
-        "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__average_xray_tube_current",
-        "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure_time",
+        "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__xraytubecurrent__xray_tube_current",
+        "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__pulsewidth__pulse_width",
         "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure__exposure",
         "projectionxrayradiationdose__irradeventxraydata__entrance_exposure_at_rp",
         "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__average_glandular_dose",

@@ -1166,6 +1166,14 @@ def write_row_to_acquisition_sheet(acq_df, acquisition, book, worksheet_log, mod
 
     worksheet_log[acquisition] = sheet_row
 
+def replace_long_target_with_short(x):
+    if "Molybdenum" in x:
+        return "Mo"
+    elif "Rhodium" in x:
+        return "Rh"
+    elif "Tungsten" in x:
+        return "W"
+    return x
 
 def replace_long_filter_with_short(x):
     if "Aluminum" in x:
@@ -1415,16 +1423,13 @@ def write_out_data_as_chunks(acquisition_cat_field_names, acquisition_int_field_
 
             if modality in ["MG"]:
                 df_unprocessed = create_image_view_modifier_column(df_unprocessed)
-                
-                fields_to_remove = ["View Modifier pk"]
-                for field_name in fields_to_remove:
-                    if field_name in exam_int_field_names:
-                        exam_int_field_names.remove(field_name)
+                df_unprocessed = create_mg_pulse_columns(df_unprocessed)
+                df_unprocessed = create_target_column(df_unprocessed)
                 
             if modality in ["DX", "MG"]:
                 df_unprocessed = create_filter_columns(acquisition_cat_field_names, df_unprocessed)
 
-                fields_to_remove = ["Filter pk", "Filter thickness min", "Filter thickness max"]
+                fields_to_remove = ["Filter thickness min", "Filter thickness max"]
                 for field_name in fields_to_remove:
                     if field_name in acquisition_val_field_names:
                         acquisition_val_field_names.remove(field_name)
@@ -1668,6 +1673,26 @@ def transform_nm_datetime_columns(book, sheet, df):
 def create_image_view_modifier_column(df_unprocessed):
     df_unprocessed["View Modifier"] = df_unprocessed[df_unprocessed["View Modifier"].notnull()].drop_duplicates(["Acquisition pk", "View Modifier pk"]).sort_values(by=["Acquisition pk"], ascending=[True], inplace=False).groupby(["Acquisition pk"])["View Modifier"].transform(lambda x: ",".join(x))
 
+    return df_unprocessed
+
+def create_mg_pulse_columns(df_unprocessed):
+    df_unprocessed["kVp Concatenated"] = df_unprocessed[df_unprocessed["kVp"].notnull()].drop_duplicates(["Acquisition pk", "kVp pk"]).sort_values(by=["kVp pk"], ascending=[True], inplace=False).groupby(["Acquisition pk"])["kVp"].transform(lambda x: " | ".join(map(str, x)))
+    df_unprocessed["uAs Concatenated"] = df_unprocessed[df_unprocessed["uAs"].notnull()].drop_duplicates(["Acquisition pk", "exposure pk"]).sort_values(by=["exposure pk"], ascending=[True], inplace=False).groupby(["Acquisition pk"])["uAs"].transform(lambda x: " | ".join(map(str, x)))
+    df_unprocessed["ms Concatenated"] = df_unprocessed[df_unprocessed["ms"].notnull()].drop_duplicates(["Acquisition pk", "pulsewidth pk"]).sort_values(by=["pulsewidth pk"], ascending=[True], inplace=False).groupby(["Acquisition pk"])["ms"].transform(lambda x: " | ".join(map(str, x)))
+    df_unprocessed["mA Concatenated"] = df_unprocessed[df_unprocessed["mA"].notnull()].drop_duplicates(["Acquisition pk", "xraytubecurrent pk"]).sort_values(by=["xraytubecurrent pk"], ascending=[True], inplace=False).groupby(["Acquisition pk"])["mA"].transform(lambda x: " | ".join(map(str, x)))
+    df_unprocessed["kVp Mean"] = df_unprocessed[df_unprocessed["kVp"].notnull()].drop_duplicates(["Acquisition pk", "kVp pk"]).sort_values(by=["kVp pk"], ascending=[True], inplace=False).groupby(["Acquisition pk"])["kVp"].transform('mean')
+    df_unprocessed["uAs Mean"] = df_unprocessed[df_unprocessed["uAs"].notnull()].drop_duplicates(["Acquisition pk", "exposure pk"]).sort_values(by=["exposure pk"], ascending=[True], inplace=False).groupby(["Acquisition pk"])["uAs"].transform('mean')
+    df_unprocessed["ms Mean"] = df_unprocessed[df_unprocessed["ms"].notnull()].drop_duplicates(["Acquisition pk", "pulsewidth pk"]).sort_values(by=["pulsewidth pk"], ascending=[True], inplace=False).groupby(["Acquisition pk"])["ms"].transform('mean')
+    df_unprocessed["mA Mean"] = df_unprocessed[df_unprocessed["mA"].notnull()].drop_duplicates(["Acquisition pk", "xraytubecurrent pk"]).sort_values(by=["xraytubecurrent pk"], ascending=[True], inplace=False).groupby(["Acquisition pk"])["mA"].transform('mean')
+    
+    df_unprocessed["kVp"] = df_unprocessed[df_unprocessed["kVp"].notnull()].drop_duplicates(["Acquisition pk", "kVp pk"]).sort_values(by=["kVp pk"], ascending=[True], inplace=False).groupby(["Acquisition pk"])["kVp"].transform('first')
+    df_unprocessed["uAs"] = df_unprocessed[df_unprocessed["uAs"].notnull()].drop_duplicates(["Acquisition pk", "exposure pk"]).sort_values(by=["exposure pk"], ascending=[True], inplace=False).groupby(["Acquisition pk"])["uAs"].transform('first')
+    df_unprocessed["ms"] = df_unprocessed[df_unprocessed["ms"].notnull()].drop_duplicates(["Acquisition pk", "pulsewidth pk"]).sort_values(by=["pulsewidth pk"], ascending=[True], inplace=False).groupby(["Acquisition pk"])["ms"].transform('first')
+    df_unprocessed["mA"] = df_unprocessed[df_unprocessed["mA"].notnull()].drop_duplicates(["Acquisition pk", "xraytubecurrent pk"]).sort_values(by=["xraytubecurrent pk"], ascending=[True], inplace=False).groupby(["Acquisition pk"])["mA"].transform('first')
+    
+    return df_unprocessed
+def create_target_column(df_unprocessed):
+    df_unprocessed["Target"] = df_unprocessed["Target"].apply(replace_long_target_with_short)
     return df_unprocessed
 
 def create_filter_columns(acquisition_cat_field_names, df_unprocessed):
