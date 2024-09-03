@@ -636,23 +636,24 @@ def get_xray_filter_info(source):
         filters = ""
         filter_thicknesses = ""
         for current_filter in source.xrayfilters_set.all():
-            if "Aluminum" in str(current_filter.xray_filter_material.code_meaning):
+            xray_filter_material = str(current_filter.xray_filter_material.code_meaning).lower()
+            if "aluminum" in xray_filter_material:
                 filters += "Al"
-            elif "Copper" in str(current_filter.xray_filter_material.code_meaning):
+            elif "copper" in xray_filter_material:
                 filters += "Cu"
-            elif "Tantalum" in str(current_filter.xray_filter_material.code_meaning):
+            elif "tantalum" in xray_filter_material:
                 filters += "Ta"
-            elif "Molybdenum" in str(current_filter.xray_filter_material.code_meaning):
+            elif "molybdenum" in xray_filter_material:
                 filters += "Mo"
-            elif "Rhodium" in str(current_filter.xray_filter_material.code_meaning):
+            elif "rhodium" in xray_filter_material:
                 filters += "Rh"
-            elif "Silver" in str(current_filter.xray_filter_material.code_meaning):
+            elif "silver" in xray_filter_material:
                 filters += "Ag"
-            elif "Niobium" in str(current_filter.xray_filter_material.code_meaning):
+            elif "niobium" in xray_filter_material:
                 filters += "Nb"
-            elif "Europium" in str(current_filter.xray_filter_material.code_meaning):
+            elif "europium" in xray_filter_material:
                 filters += "Eu"
-            elif "Lead" in str(current_filter.xray_filter_material.code_meaning):
+            elif "lead" in xray_filter_material:
                 filters += "Pb"
             else:
                 filters += str(current_filter.xray_filter_material.code_meaning)
@@ -685,16 +686,23 @@ def get_anode_target_material(source):
     :param source: x-ray source data for the exposure
     :return: string containing target material abbreviation
     """
-    if "Molybdenum" in str(source.anode_target_material.code_meaning):
-        anode = "Mo"
-    elif "Rhodium" in str(source.anode_target_material.code_meaning):
-        anode = "Rh"
-    elif "Tungsten" in str(source.anode_target_material.code_meaning):
-        anode = "W"
-    else:
-        anode = str(source.anode_target_material.code_meaning)
+    try:
+        anode_target_material = str(source.anode_target_material.code_meaning).lower()
+        
+        if "molybdenum" in anode_target_material:
+            anode = "Mo"
+        elif "rhodium" in anode_target_material:
+            anode = "Rh"
+        elif "tungsten" in anode_target_material:
+            anode = "W"
+        else:
+            anode = str(source.anode_target_material.code_meaning)
 
+    except (ObjectDoesNotExist, AttributeError):
+        anode = None
+        filter_thicknesses = None
     return anode
+
 
 
 def create_xlsx(task):
@@ -1167,32 +1175,34 @@ def write_row_to_acquisition_sheet(acq_df, acquisition, book, worksheet_log, mod
     worksheet_log[acquisition] = sheet_row
 
 def replace_long_target_with_short(x):
-    if "Molybdenum" in x:
+    x = str(x)
+    if "molybdenum" in x.lower():
         return "Mo"
-    elif "Rhodium" in x:
+    elif "rhodium" in x.lower():
         return "Rh"
-    elif "Tungsten" in x:
+    elif "tungsten" in x.lower():
         return "W"
     return x
 
 def replace_long_filter_with_short(x):
-    if "Aluminum" in x:
+    x = str(x)
+    if "aluminum" in x.lower():
         return "Al"
-    elif "Copper" in x:
+    elif "copper" in x.lower():
         return "Cu"
-    elif "Tantalum" in x:
+    elif "tantalum" in x.lower():
         return "Ta"
-    elif "Molybdenum" in x:
+    elif "molybdenum" in x.lower():
         return "Mo"
-    elif "Rhodium" in x:
+    elif "rhodium" in x.lower():
         return "Rh"
-    elif "Silver" in x:
+    elif "silver" in x.lower():
         return "Ag"
-    elif "Niobium" in x:
+    elif "niobium" in x.lower():
         return "Nb"
-    elif "Europium" in x:
+    elif "europium" in x.lower():
         return "Eu"
-    elif "Lead" in x:
+    elif "lead" in x.lower():
         return "Pb"
     else:
         return x
