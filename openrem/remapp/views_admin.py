@@ -2234,36 +2234,39 @@ def tasks(request, stage: Union[str, None] = None):
 def task_abort(request, task_id=None):
     """Function to abort one of the tasks"""
     if task_id and request.user.groups.filter(name="admingroup"):
-        task = get_object_or_404(BackgroundTask, uuid=task_id)
-
-        try:
-            if task.task_type == "query" or task.task_type == "move":
-                abort_logger = logging.getLogger("remapp.netdicom.qrscu")
-                abort_logger.info(
-                    "Query or move task {0} terminated from the Tasks interface".format(
-                        task_id
+        background_tasks = BackgroundTask.objects.filter(uuid=task_id)
+        if background_tasks.count() >= 2:
+            abort_logger = logging.getLogger("remapp")
+            abort_logger.warning(f"{background_tasks.count()} tasks returned for {task_id} - aborting them all")
+        for task in background_tasks:
+            try:
+                if task.task_type == "query" or task.task_type == "move":
+                    abort_logger = logging.getLogger("remapp.netdicom.qrscu")
+                    abort_logger.info(
+                        "Query or move task {0} terminated from the Tasks interface".format(
+                            task_id
+                        )
                     )
-                )
-                if task.task_type == "query":
-                    DicomQuery.objects.filter(query_id=task_id).delete()
-            else:
-                if task.task_type.startswith("export"):
-                    Exports.objects.filter(task_id=task_id).delete()
-                elif task.task_type.startswith("import_size"):
-                    SizeUpload.objects.filter(task_id=task_id).delete()
-                abort_logger = logging.getLogger("remapp")
-                abort_logger.info(
-                    "Task {0} of type {1} terminated from the Tasks interface".format(
-                        task_id, task.task_type
+                    if task.task_type == "query":
+                        DicomQuery.objects.filter(query_id=task_id).delete()
+                else:
+                    if task.task_type.startswith("export"):
+                        Exports.objects.filter(task_id=task_id).delete()
+                    elif task.task_type.startswith("import_size"):
+                        SizeUpload.objects.filter(task_id=task_id).delete()
+                    abort_logger = logging.getLogger("remapp")
+                    abort_logger.info(
+                        "Task {0} of type {1} terminated from the Tasks interface".format(
+                            task_id, task.task_type
+                        )
                     )
-                )
-        except ObjectDoesNotExist:
-            pass
-        terminate_background(task)
-        messages.success(
-            request,
-            "Task {0} terminated".format(task_id),
-        )
+            except ObjectDoesNotExist:
+                pass
+            terminate_background(task)
+            messages.success(
+                request,
+                "Task {0} terminated".format(task_id),
+            )
 
     return redirect(reverse_lazy("task_admin"))
 

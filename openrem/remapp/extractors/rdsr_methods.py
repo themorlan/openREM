@@ -777,12 +777,15 @@ def _irradiationeventxraydata(dataset, proj, fulldataset):  # TID 10003
             event.irradiation_event_uid = cont.UID
         elif cont.ConceptNameCodeSequence[0].CodeMeaning == "Irradiation Event Label":
             event.irradiation_event_label = cont.TextValue
-            for cont2 in cont.ContentSequence:
-                if cont.ConceptNameCodeSequence[0].CodeMeaning == "Label Type":
-                    event.label_type = get_or_create_cid(
-                        cont2.ConceptCodeSequence[0].CodeValue,
-                        cont2.ConceptCodeSequence[0].CodeMeaning,
-                    )
+            try:
+                for cont2 in cont.ContentSequence:
+                    if cont.ConceptNameCodeSequence[0].CodeMeaning == "Label Type":
+                        event.label_type = get_or_create_cid(
+                            cont2.ConceptCodeSequence[0].CodeValue,
+                            cont2.ConceptCodeSequence[0].CodeMeaning,
+                        )
+            except AttributeError:
+                continue
         elif (
             cont.ConceptNameCodeSequence[0].CodeValue == "111526"
         ):  # 'DateTime Started'
