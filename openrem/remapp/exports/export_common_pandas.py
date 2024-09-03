@@ -700,7 +700,6 @@ def get_anode_target_material(source):
 
     except (ObjectDoesNotExist, AttributeError):
         anode = None
-        filter_thicknesses = None
     return anode
 
 
