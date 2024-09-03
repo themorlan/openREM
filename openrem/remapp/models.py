@@ -31,6 +31,7 @@
 # Following two lines added so that sphinx autodocumentation works.
 from builtins import object  # pylint: disable=redefined-builtin
 import json
+import logging
 from django.db import models
 from django.urls import reverse
 from solo.models import SingletonModel
@@ -3413,3 +3414,26 @@ class UpgradeStatus(SingletonModel):
     """
 
     from_0_9_1_summary_fields = models.BooleanField(default=False)
+
+
+class LogViewer(SingletonModel):
+    """
+    Table to store the maximum number of rows allowed in the BackgroundTask table
+    """
+    
+    loggers_touple = []
+    for name in logging.root.manager.loggerDict:
+        for handler in logging.getLogger(name).handlers:
+            if isinstance(handler, logging.FileHandler):
+                loggers_touple.append(tuple([name, name]))
+                continue
+    loggers_touple = tuple(loggers_touple)
+
+    selected_logger = models.CharField(
+        max_length=120,
+        choices=loggers_touple,
+        verbose_name="The log file to view",
+    )
+
+    def get_absolute_url(self):
+        return reverse("view_logs", kwargs={"pk": 1})

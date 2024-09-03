@@ -40,7 +40,7 @@ from django.utils.safestring import mark_safe
 from django.urls import reverse
 from django.utils.translation import gettext as _
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Submit, HTML, Div
+from crispy_forms.layout import Layout, Submit, HTML, Div, Button
 from crispy_forms.bootstrap import (
     FormActions,
     PrependedText,
@@ -53,6 +53,7 @@ from .models import (
     DicomDeleteSettings,
     DicomRemoteQR,
     DicomStoreSCP,
+    LogViewer,
     SkinDoseMapCalcSettings,
     NotPatientIndicatorsName,
     NotPatientIndicatorsID,
@@ -2273,3 +2274,45 @@ class BackgroundTaskMaximumRowsForm(forms.ModelForm):
     class Meta(object):
         model = BackgroundTaskMaximumRows
         fields = ["max_background_task_rows"]
+
+class LogViewerForm(forms.ModelForm):
+    """Form for showing log files in the browser"""
+
+    log_content_field = forms.CharField(
+        widget=forms.Textarea, 
+        required=False,
+        disabled=True,
+        label=_("Log content:"),
+    )
+
+    def __init__(self, *args, **kwargs):
+        super(LogViewerForm, self).__init__(*args, **kwargs)
+        self.initial["log_content_field"] = "-"
+        selected_logger = self.initial.get("selected_logger")
+
+        if selected_logger:
+            job_logger = logging.getLogger(selected_logger)
+            log_paths = [handler.baseFilename for handler in job_logger.handlers if isinstance(handler, logging.FileHandler)]
+            if len(log_paths) > 0:
+                file = open(log_paths[0])
+                log_content = file.read()
+                log_content = log_content[-25000:]
+                empty_log = not log_content or log_content is None
+                if empty_log:
+                    log_content = "-"
+                self.initial["log_content_field"] = log_content
+                file.close()
+
+        self.helper = FormHelper(self)
+        self.helper.form_class = "form-horizontal"
+        self.helper.layout = Layout(
+            Div("selected_logger"),
+            FormActions(Submit("_read", "Read"),
+                        Submit("_download", "Download"),
+                        ),
+            "log_content_field",
+        )
+
+    class Meta(object):
+        model = LogViewer
+        fields = ["selected_logger"]

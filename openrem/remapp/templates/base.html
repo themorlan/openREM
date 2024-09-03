@@ -155,6 +155,7 @@
                       <li><a href="{% url 'standard_names_view' %}">{% trans "Standard name mapping" %}</a></li>
                       {% if admin.admingroup %}
                           <li><a href="{% url 'background_task_settings' 1 %}">{% trans "Task settings" %}</a></li>
+                          <li><a href="{% url 'view_logs' 1 %}">{% trans "View logs" %}</a></li>
                       {% endif %}
                     </ul>
                 </li>

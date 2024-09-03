@@ -31,11 +31,14 @@
 ..  moduleauthor:: Ed McDonagh
 
 """
+import mimetypes
 import os
 import json
 import logging
 import operator
 from datetime import timedelta
+from wsgiref.util import FileWrapper
+from django.conf import settings
 import numpy as np
 from builtins import map  # pylint: disable=redefined-builtin
 
@@ -56,6 +59,7 @@ from django.utils.safestring import mark_safe
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.utils import timezone
+from django.utils.encoding import smart_str
 from functools import reduce
 
 from .extractors.extract_common import populate_rf_delta_weeks_summary
@@ -83,6 +87,7 @@ from .forms import (
     StandardNameSettingsForm,
     NMChartOptionsDisplayForm,
     BackgroundTaskMaximumRowsForm,
+    LogViewerForm,
 )
 from .models import (
     AccumIntegratedProjRadiogDose,
@@ -97,6 +102,7 @@ from .models import (
     HighDoseMetricAlertSettings,
     HomePageAdminSettings,
     IrradEventXRayData,
+    LogViewer,
     MergeOnDeviceObserverUIDSettings,
     NotPatientIndicatorsID,
     NotPatientIndicatorsName,
@@ -3875,3 +3881,48 @@ class BackgroundTaskMaximumRowsUpdate(UpdateView):  # pylint: disable=unused-var
                 "No changes made",
             )
             return redirect(reverse_lazy("background_task_settings", kwargs={"pk": 1}))
+
+
+class LogViewerUpdate(UpdateView):  # pylint: disable=unused-variable
+    """UpdateView to update the background task maximum rows value"""
+
+    try:
+        LogViewer.get_solo()  # will create item if it doesn't exist
+    except (AvoidDataMigrationErrorPostgres, AvoidDataMigrationErrorSQLite):
+        pass
+
+    model = LogViewer
+    form_class = LogViewerForm
+
+    def get_context_data(self, **context):
+        context = super(LogViewerUpdate, self).get_context_data(
+            **context
+        )
+        admin = {
+            "openremversion": __version__,
+            "docsversion": __docs_version__,
+        }
+        for group in self.request.user.groups.all():
+            admin[group.name] = True
+        context["admin"] = admin
+        return context
+
+    def form_valid(self, form):
+        selected_logger = form.cleaned_data["selected_logger"]
+        if selected_logger:
+            if '_download' in self.request.POST:
+                job_logger = logging.getLogger(selected_logger)
+                log_paths = [handler.baseFilename for handler in job_logger.handlers if isinstance(handler, logging.FileHandler)]
+                file_path = os.path.join(settings.MEDIA_ROOT, log_paths[0])
+                file_wrapper = FileWrapper(open(file_path, mode="rb"))
+                file_mimetype = mimetypes.guess_type(file_path)
+                response = HttpResponse(file_wrapper, content_type=file_mimetype)
+                response["X-Sendfile"] = file_path
+                response["Content-Length"] = os.stat(file_path).st_size
+                response["Content-Disposition"] = "attachment; filename=%s" % smart_str(
+                    selected_logger+'.log'
+                )
+                messages.success(self.request, "log downloaded")
+                return response
+            
+        return super(LogViewerUpdate, self).form_valid(form)

@@ -303,6 +303,11 @@ settings_patterns = [
         views_admin.BackgroundTaskMaximumRowsUpdate.as_view(),
         name="background_task_settings",
     ),
+    path(
+        "view_logs/<int:pk>/",
+        views_admin.LogViewerUpdate.as_view(),
+        name="view_logs",
+    ),
 ]
 
 
