@@ -37,6 +37,9 @@ from solo.models import SingletonModel
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.core.files.base import ContentFile
+from PIL import Image
+import numpy as np
 
 # hoping to remove the next two lines
 # import os
@@ -2245,6 +2248,15 @@ class PatientStudyModuleAttr(models.Model):  # C.7.2.2
             ),
         ]
 
+class GeneralThumbnailModuleAttr(models.Model):
+    general_study_module_attributes = models.ForeignKey(
+        GeneralStudyModuleAttr, on_delete=models.CASCADE
+    )
+    thumbnail = models.ImageField(
+        upload_to="thumbnail_images",
+        blank=True,
+        null=True,
+    )
 
 class GeneralEquipmentModuleAttr(models.Model):  # C.7.5.1
     """General Equipment Module C.7.5.1

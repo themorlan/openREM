@@ -53,6 +53,7 @@ django.setup()
 from .extract_common import (  # pylint: disable=wrong-import-order, wrong-import-position
     patient_module_attributes,
     add_standard_names,
+    generalthumbnailmoduleattributes,
 )
 
 
@@ -490,6 +491,7 @@ def _generalstudymoduleattributes(dataset, g):
     g.save()
 
     _generalequipmentmoduleattributes(dataset, g)
+    generalthumbnailmoduleattributes(dataset, g)
     _projectionxrayradiationdose(dataset, g)
     _patientstudymoduleattributes(dataset, g)
     patient_module_attributes(dataset, g)

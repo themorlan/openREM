@@ -75,6 +75,7 @@ from ..tools.get_values import (
 )
 from .extract_common import (
     generalequipmentmoduleattributes,
+    generalthumbnailmoduleattributes,
     generalstudymoduleattributes,
     patientstudymoduleattributes,
     patient_module_attributes,
@@ -389,6 +390,7 @@ def _nm2db(dataset):
     study = GeneralStudyModuleAttr.objects.create()
     generalequipmentmoduleattributes(dataset, study)
     study.modality_type = "NM"  # will be saved by generalstudymoduleattributes call
+    generalthumbnailmoduleattributes(dataset, study)
     generalstudymoduleattributes(dataset, study, logger)
     patientstudymoduleattributes(dataset, study)
     patient_module_attributes(dataset, study)

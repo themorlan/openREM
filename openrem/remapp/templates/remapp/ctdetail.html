@@ -7,46 +7,57 @@
 <h1>Detail list of events</h1>
 {% with patientstudy=generalstudymoduleattr.patientstudymoduleattr_set.get %}
 {% with equipment=generalstudymoduleattr.generalequipmentmoduleattr_set.get %}
+{% with thumbnail=generalstudymoduleattr.generalthumbnailmoduleattr_set.get %}
 {% with accum_dose=generalstudymoduleattr.ctradiationdose_set.get.ctaccumulateddosedata_set.get %}
-  <ul>
-    <li>
-        Accession number:
-        {% if not generalstudymoduleattr.accession_hashed %}
-            {{ generalstudymoduleattr.accession_number }}
-        {% else %}
-            <em>hidden</em>
-        {% endif %}
-    </li>
-    <li>Study date: {{ generalstudymoduleattr.study_date }}</li>
-    <li>Study time: {{ generalstudymoduleattr.study_time|date:"H:i" }}</li>
-    <li>Study description: {{ generalstudymoduleattr.study_description }}</li>
-    <li>Procedure: {{ generalstudymoduleattr.procedure_code_meaning }}</li>
-    <li>Requested procedure: {{ generalstudymoduleattr.requested_procedure_code_meaning }}</li>
-  {% if showStandardNames %}
-    <li>Standard study names:
-        <ul>
-        {% for std_name in generalstudymoduleattr.standard_names.all %}
-            <li>{{ std_name.standard_name }}</li>
-        {% endfor %}
-        </ul>
-    </li>
-  {% endif %}
-    <li>Patient age: {{ patientstudy.patient_age_decimal|floatformat:1 }} years</li>
-    <li>Patient height and weight: {{ patientstudy.patient_size|floatformat:2 }} m, {{ patientstudy.patient_weight|floatformat:1 }} kg</li>
-    <li>Hospital: {{ equipment.institution_name }}</li>
-    <li>
-        Scanner:
-        {{ equipment.manufacturer }} |
-        {{ equipment.manufacturer_model_name }} |
-        {{ equipment.station_name }}
-    </li>
-    <li>Display name: {{ equipment.unique_equipment_name.display_name }}</li>
-    <li>Study UID: {{ generalstudymoduleattr.study_instance_uid }}</li>
-    <li>Comment: {{ generalstudymoduleattr.ctradiationdose_set.get.comment }} </li>
-    <li>Performing physician(s): {{ generalstudymoduleattr.performing_physician_name }}</li>
-    <li>Operator(s): {{ generalstudymoduleattr.operator_name }}</li>
-    <li>Test patient indicators? {{ generalstudymoduleattr.patientmoduleattr_set.get.not_patient_indicator }}</li>
-  </ul>
+
+<div class="row">
+  <div class="col-md-6">  
+    <ul>
+      <li>
+          Accession number:
+          {% if not generalstudymoduleattr.accession_hashed %}
+              {{ generalstudymoduleattr.accession_number }}
+          {% else %}
+              <em>hidden</em>
+          {% endif %}
+      </li>
+      <li>Study date: {{ generalstudymoduleattr.study_date }}</li>
+      <li>Study time: {{ generalstudymoduleattr.study_time|date:"H:i" }}</li>
+      <li>Study description: {{ generalstudymoduleattr.study_description }}</li>
+      <li>Procedure: {{ generalstudymoduleattr.procedure_code_meaning }}</li>
+      <li>Requested procedure: {{ generalstudymoduleattr.requested_procedure_code_meaning }}</li>
+    {% if showStandardNames %}
+      <li>Standard study names:
+          <ul>
+          {% for std_name in generalstudymoduleattr.standard_names.all %}
+              <li>{{ std_name.standard_name }}</li>
+          {% endfor %}
+          </ul>
+      </li>
+    {% endif %}
+      <li>Patient age: {{ patientstudy.patient_age_decimal|floatformat:1 }} years</li>
+      <li>Patient height and weight: {{ patientstudy.patient_size|floatformat:2 }} m, {{ patientstudy.patient_weight|floatformat:1 }} kg</li>
+      <li>Hospital: {{ equipment.institution_name }}</li>
+      <li>
+          Scanner:
+          {{ equipment.manufacturer }} |
+          {{ equipment.manufacturer_model_name }} |
+          {{ equipment.station_name }}
+      </li>
+      <li>Display name: {{ equipment.unique_equipment_name.display_name }}</li>
+      <li>Study UID: {{ generalstudymoduleattr.study_instance_uid }}</li>
+      <li>Comment: {{ generalstudymoduleattr.ctradiationdose_set.get.comment }} </li>
+      <li>Performing physician(s): {{ generalstudymoduleattr.performing_physician_name }}</li>
+      <li>Operator(s): {{ generalstudymoduleattr.operator_name }}</li>
+      <li>Test patient indicators? {{ generalstudymoduleattr.patientmoduleattr_set.get.not_patient_indicator }}</li>
+    </ul>
+  </div>
+  <div class="col-md-6">
+    {% if thumbnail.thumbnail %}
+      <img src="/media/{{ thumbnail.thumbnail }}" style="max-height:256px;max-width:256px;height:auto;width:auto;"/>
+    {% endif %}
+  </div>
+</div>
 <div class="row">
   <div class="col-md-3">
     <table class="table table-condensed table-bordered small" aria-describedby="Total number of events and DLP in the study">
@@ -231,5 +242,5 @@
     {% endif %}
 </p>
 {% endif %}
-{% endwith %}{% endwith %}{% endwith %}
+{% endwith %}{% endwith %}{% endwith %}{% endwith %}
 {% endblock %}

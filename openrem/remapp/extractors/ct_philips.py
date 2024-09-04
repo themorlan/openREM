@@ -67,6 +67,7 @@ from .extract_common import (  # pylint: disable=wrong-import-order, wrong-impor
     ct_event_type_count,
     patient_module_attributes,
     add_standard_names,
+    generalthumbnailmoduleattributes,
 )
 from remapp.models import (  # pylint: disable=wrong-import-order, wrong-import-position
     CtAccumulatedDoseData,
@@ -370,6 +371,7 @@ def _philips_ct2db(dataset):
     g = GeneralStudyModuleAttr.objects.create()
     _generalstudymoduleattributes(dataset, g)
     _generalequipmentmoduleattributes(dataset, g)
+    generalthumbnailmoduleattributes(dataset, g)
     _patientstudymoduleattributes(dataset, g)
     patient_module_attributes(dataset, g)
 

@@ -27,9 +27,13 @@
     :synopsis: Module of functions common to multiple extractor routines
 """
 
+from io import BytesIO
 from datetime import datetime
 from decimal import Decimal
 import logging
+from django.core.files.base import ContentFile
+from PIL import Image
+import numpy as np
 
 from django.db.models import (
     ObjectDoesNotExist,
@@ -46,6 +50,7 @@ from remapp.models import (
     StandardNames,
     PersonParticipant,
     GeneralEquipmentModuleAttr,
+    GeneralThumbnailModuleAttr,
     UniqueEquipmentNames,
     MergeOnDeviceObserverUIDSettings,
 )
@@ -742,6 +747,37 @@ def generalequipmentmoduleattributes(dataset, study):  # C.7.5.1
 
     equip.save()
 
+def generalthumbnailmoduleattributes(dataset, study):
+    pixel_array = dataset.get("pixel_array")
+    
+    if not pixel_array is None:
+        thumbnail = GeneralThumbnailModuleAttr.objects.create(
+            general_study_module_attributes=study
+        )
+        
+        img = pixel_array.astype(float)
+        img = (np.maximum(img, 0) / img.max()) * 255.0
+        img = np.uint8(img)
+        img = Image.fromarray(img)
+
+        img = img.convert("RGB")
+
+        new_height = 128
+        original_width, original_height = img.size
+        new_width = int((new_height / original_height) * original_width)
+
+        img = img.resize((new_width, new_height), Image.LANCZOS)
+
+        img_name = (str(study.study_instance_uid) + ".jpg").upper()
+
+        thumb_io = BytesIO()
+        img.save(thumb_io, 'JPEG')
+        thumb_io.seek(0)
+
+        thumbnail.thumbnail.save(img_name, ContentFile(thumb_io.read(), name=img_name), save=False)
+        thumb_io.close()
+
+        thumbnail.save()
 
 def patientstudymoduleattributes(dataset, g):  # C.7.2.2
 

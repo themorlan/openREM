@@ -71,6 +71,7 @@ from .extract_common import (  # pylint: disable=wrong-import-order, wrong-impor
     add_standard_names,
     generalstudymoduleattributes,
     generalequipmentmoduleattributes,
+    generalthumbnailmoduleattributes,
     patientstudymoduleattributes,
 )
 from .rdsr_methods import projectionxrayradiationdose
@@ -423,6 +424,7 @@ def _rdsr2db(dataset):
         _update_recorded_objects(g, dataset)
     generalstudymoduleattributes(dataset, g, logger)
     generalequipmentmoduleattributes(dataset, g)
+    generalthumbnailmoduleattributes(dataset, g)
     _rdsr_rrdsr_contents(dataset, g)
     patientstudymoduleattributes(dataset, g)
     patient_module_attributes(dataset, g)
