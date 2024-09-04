@@ -448,6 +448,8 @@ class DicomQRRspStudy(models.Model):
     modality = models.CharField(max_length=16, blank=True, null=True)
     modalities_in_study = models.CharField(max_length=100, blank=True, null=True)
     study_description = models.TextField(blank=True, null=True)
+    institution_name = models.TextField(blank=True, null=True)
+    study_date = models.DateField(blank=True, null=True)
     number_of_study_related_series = models.IntegerField(blank=True, null=True)
     sop_classes_in_study = models.TextField(blank=True, null=True)
     station_name = models.CharField(max_length=32, blank=True, null=True)
@@ -845,7 +847,17 @@ class UserProfile(models.Model, CommonVariables):
         default=28,
         verbose_name="Number of days over which to sum studies B",
     )
-
+    summaryCutoffDays = models.IntegerField(
+        blank=True,
+        null=True,
+        verbose_name="Hide studies older then this amount of days",
+    )
+    institution = models.CharField(
+        max_length=128, 
+        blank=True,
+        null=True,
+        verbose_name="Institution to show",
+    )
 
 def create_user_profile(sender, instance, created, **kwargs):
     if created:

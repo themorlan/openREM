@@ -34,7 +34,6 @@
 import os
 import json
 import logging
-import operator
 from datetime import timedelta
 import numpy as np
 from builtins import map  # pylint: disable=redefined-builtin
@@ -2099,6 +2098,12 @@ def homepage_options_view(request):
             user_profile.summaryWorkloadDaysB = homepage_options_form.cleaned_data[
                 "dayDeltaB"
             ]
+            user_profile.summaryCutoffDays = homepage_options_form.cleaned_data[
+                "dayCutoff"
+            ]
+            user_profile.institution = homepage_options_form.cleaned_data[
+                "institution"
+            ]
 
             user_profile.save()
 
@@ -2139,6 +2144,8 @@ def homepage_options_view(request):
     homepage_form_data = {
         "dayDeltaA": user_profile.summaryWorkloadDaysA,
         "dayDeltaB": user_profile.summaryWorkloadDaysB,
+        "dayCutoff": user_profile.summaryCutoffDays,
+        "institution": user_profile.institution,
         "enable_workload_stats": display_workload_stats,
     }
 

@@ -1286,6 +1286,13 @@ class HomepageOptionsForm(forms.Form):
     dayDeltaB = forms.IntegerField(
         label=_("Secondary time period to sum studies (days)"), required=False
     )
+    dayCutoff = forms.IntegerField(
+        label=_("Must have sent in this time period (days)"), required=False
+    )
+    institution = forms.CharField(
+        required=False,
+        label=_("Only show this institution:"),
+    )
     enable_workload_stats = forms.BooleanField(
         label=_("Enable calculation and display of workload stats on home page?"),
         required=False,

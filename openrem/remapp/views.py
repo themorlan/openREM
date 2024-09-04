@@ -47,6 +47,7 @@ from django.db.models import (
     Max,
     Count,
 )
+from django.db.models.functions import TruncDate
 from django.contrib import messages
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
@@ -962,13 +963,31 @@ def openrem_home(request):
             user_profile = request.user.userprofile
 
     allstudies = GeneralStudyModuleAttr.objects.all()
+     
     study_counts = allstudies.aggregate(
-        all_count=Count("pk"),
-        ct_count=Count("pk", filter=Q(modality_type="CT")),
-        rf_count=Count("pk", filter=Q(modality_type="RF")),
-        mg_count=Count("pk", filter=Q(modality_type="MG")),
-        nm_count=Count("pk", filter=Q(modality_type="NM")),
-        dx_count=Count("pk", filter=Q(modality_type__in=["DX", "CR", "PX"])),
+        all_count=Count("pk")
+    )
+
+    if request.user.is_authenticated:
+        if user_profile.institution is not None and user_profile.institution:
+            allstudies = allstudies.filter(
+                generalequipmentmoduleattr__unique_equipment_name__institution_name=user_profile.institution)
+
+        if user_profile.summaryCutoffDays is not None and user_profile.summaryCutoffDays > 0:
+            today = datetime.now()
+            date_cutoff = today.date() - timedelta(days=user_profile.summaryCutoffDays)
+            systems = allstudies.filter(test_date_time__gte=TruncDate(date_cutoff)).values("generalequipmentmoduleattr__unique_equipment_name__display_name")
+            allstudies = allstudies.filter(generalequipmentmoduleattr__unique_equipment_name__display_name__in=systems)
+
+    study_counts.update(
+        allstudies.aggregate(
+            filtered_count=Count("pk"),
+            ct_count=Count("pk", filter=Q(modality_type="CT")),
+            rf_count=Count("pk", filter=Q(modality_type="RF")),
+            mg_count=Count("pk", filter=Q(modality_type="MG")),
+            nm_count=Count("pk", filter=Q(modality_type="NM")),
+            dx_count=Count("pk", filter=Q(modality_type__in=["DX", "CR", "PX"])),
+        )
     )
 
     modalities = OrderedDict()
@@ -983,7 +1002,7 @@ def openrem_home(request):
     if study_counts["nm_count"]:
         modalities["NM"] = {"name": _("Nuclear Medicine"), "count": study_counts["nm_count"]}
 
-    homedata = {"total": study_counts["all_count"]}
+    homedata = {"total": study_counts["all_count"], "filtered": study_counts["filtered_count"]}
 
     # Determine whether to calculate workload settings
     display_workload_stats = HomePageAdminSettings.objects.values_list(
@@ -994,9 +1013,17 @@ def openrem_home(request):
         if request.user.is_authenticated:
             home_config["day_delta_a"] = user_profile.summaryWorkloadDaysA
             home_config["day_delta_b"] = user_profile.summaryWorkloadDaysB
+            home_config["day_cutoff"] = request.user.userprofile.summaryCutoffDays
         else:
             home_config["day_delta_a"] = 7
             home_config["day_delta_b"] = 28
+            home_config["day_cutoff"] = 0
+
+    
+    if request.user.is_authenticated:
+        home_config["institution"] = user_profile.institution
+    else:
+        home_config["institution"] = None
 
     admin = dict(openremversion=__version__, docsversion=__docs_version__)
 
@@ -1088,27 +1115,41 @@ def update_latest_studies(request):
                 modality_type=modality
             ).all()
 
-        today = datetime.now()
-        study_data = studies.values("generalequipmentmoduleattr__unique_equipment_name__display_name").annotate(
-            num_studies=Count("pk"),
-            latest_entry_date_time=Max("test_date_time"),
-            # timedelta=ExpressionWrapper(today - F("latest_entry_date_time"), output_field=DurationField()),
-        ).order_by("-latest_entry_date_time")
-
         display_workload_stats = HomePageAdminSettings.objects.values_list("enable_workload_stats", flat=True)[0]
         if request.user.is_authenticated:
             day_delta_a = request.user.userprofile.summaryWorkloadDaysA
             day_delta_b = request.user.userprofile.summaryWorkloadDaysB
+            day_cutoff = request.user.userprofile.summaryCutoffDays
+            institution = request.user.userprofile.institution
         else:
             day_delta_a = 7
             day_delta_b = 28
+            day_cutoff = 0
+            institution = None
+
+        today = datetime.now()
+        study_data = studies.values("generalequipmentmoduleattr__unique_equipment_name__display_name")
+        if institution is not None and institution:
+            study_data = study_data.filter(
+                generalequipmentmoduleattr__unique_equipment_name__institution_name=institution)
+        
+        if day_cutoff is not None and day_cutoff > 0:
+            today = datetime.now()
+            date_cutoff = today.date() - timedelta(days=day_cutoff)
+            systems = study_data.filter(test_date_time__gte=TruncDate(date_cutoff)).values("generalequipmentmoduleattr__unique_equipment_name__display_name")
+            study_data = study_data.filter(generalequipmentmoduleattr__unique_equipment_name__display_name__in=systems)
+
+        study_data = study_data.annotate(
+            num_studies=Count("pk"),
+            latest_entry_date_time=Max("test_date_time"),
+        ).order_by("-latest_entry_date_time")
 
         date_a = today.date() - timedelta(days=day_delta_a)
         date_b = today.date() - timedelta(days=day_delta_b)
         if display_workload_stats:
             study_data = study_data.annotate(
-                studies_since_delta_a=Count("pk", filter=Q(test_date_time__gte=date_a)),
-                studies_since_delta_b=Count("pk", filter=Q(test_date_time__gte=date_b))
+                studies_since_delta_a=Count("pk", filter=Q(test_date_time__gte=TruncDate(date_a))),
+                studies_since_delta_b=Count("pk", filter=Q(test_date_time__gte=TruncDate(date_b)))
             ).order_by("-latest_entry_date_time")
 
         admin = {}
@@ -1121,6 +1162,8 @@ def update_latest_studies(request):
             "display_workload_stats": display_workload_stats,
             "day_delta_a": day_delta_a,
             "day_delta_b": day_delta_b,
+            "day_cutoff": day_cutoff,
+            "institution": institution,
             "date_a": datetime.strftime(date_a, "%Y-%m-%d"),
             "date_b": datetime.strftime(date_b, "%Y-%m-%d"),
         }
