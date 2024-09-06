@@ -1368,12 +1368,12 @@ def _query_for_each_modality(all_mods, query, d, assoc, ae, remote):
             for mod in details["mods"]:
                 if modality_matching:
                     query.stage = _(
-                        "Currently querying for {modality} studies…".format(
+                        "Currently querying for {modality} studiesâ€¦".format(
                             modality=mod
                         )
                     )
                     query.save()
-                    logger.debug(f"{query_id_8} Currently querying for {mod} studies…")
+                    logger.debug(f"{query_id_8} Currently querying for {mod} studiesâ€¦")
                     d.ModalitiesInStudy = mod
                     if query.qr_scp_fk.use_modality_tag:
                         logger.debug(
