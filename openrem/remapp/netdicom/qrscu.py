@@ -1333,7 +1333,7 @@ def _query_study(ae, remote, assoc, d, query, study_query_id):
                     query, status.Status, query_id_8, study_query_id.hex[:8]
                 )
         else:
-            if assoc.is_aborted():
+            if assoc.is_aborted:
                 status_msg = "Connection was aborted - check remote server logs."
             else:
                 status_msg = "Connection timed out or received an invalid response. Check remote server logs"
@@ -1368,12 +1368,12 @@ def _query_for_each_modality(all_mods, query, d, assoc, ae, remote):
             for mod in details["mods"]:
                 if modality_matching:
                     query.stage = _(
-                        "Currently querying for {modality} studiesâ€¦".format(
+                        "Currently querying for {modality} studies…".format(
                             modality=mod
                         )
                     )
                     query.save()
-                    logger.debug(f"{query_id_8} Currently querying for {mod} studiesâ€¦")
+                    logger.debug(f"{query_id_8} Currently querying for {mod} studies…")
                     d.ModalitiesInStudy = mod
                     if query.qr_scp_fk.use_modality_tag:
                         logger.debug(
