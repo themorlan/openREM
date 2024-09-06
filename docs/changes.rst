@@ -5,6 +5,7 @@ OpenREM version history
 
 1.0.0b2 (2023-04-20)
 --------------------
+* :issue:`1036`  Docker: enabled Orthanc container to access VIRTUAL_DIRECTORY env variable in .env.prod
 * :issue:`1035`  DICOM Networking: fixed calling abort bool as function
 * :issue:`1032`  Tests: re-enables sonarcloud integration
 * :issue:`1016`  Imports: fixed error where only the first exposure in a DX or MG study was checked for standard acquisition name
