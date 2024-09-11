@@ -1234,3 +1234,29 @@ class ImportSiemensDX(TestCase):
             ),
             0.2,
         )
+
+class ImportDRGEMDX(TestCase):
+    def setUp(self):
+        """
+        Imports a known radigraphic image file derived from a DRGEM DIAMOND image.
+        """
+
+        pid = PatientIDSettings.objects.create()
+        pid.name_stored = True
+        pid.name_hashed = False
+        pid.id_stored = True
+        pid.id_hashed = False
+        pid.dob_stored = True
+        pid.save()
+
+        dx_drgem = os.path.join("test_files", "DX-Im-DRGEM.dcm")
+        root_tests = os.path.dirname(os.path.abspath(__file__))
+        dx.dx(os.path.join(root_tests, dx_drgem))
+
+    def test_drgem_dx_exposure_data(self):
+        """Check exposure information is extracted"""
+        studies = GeneralStudyModuleAttr.objects.order_by("id")
+
+        # Test that one study have been imported
+        self.assertEqual(studies.count(), 1)
+
