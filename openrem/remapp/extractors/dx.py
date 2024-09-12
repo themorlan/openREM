@@ -940,7 +940,8 @@ def _fix_exposure_values(dataset):
         exposure_time = _remove_spaces_decimal(exposure_time)
         del dataset.ExposureTime
         dataset.ExposureTime = round(exposure_time, 0)
-        dataset.ExposureTimeInuS = round(exposure_time * 1000, 0)
+        if "ExposureTimeInuS" not in dataset:
+            dataset.ExposureTimeInuS = round(exposure_time * 1000, 0)
     try:
         dataset.XRayTubeCurrent
     except TypeError:
@@ -948,7 +949,8 @@ def _fix_exposure_values(dataset):
         xray_tube_current = _remove_spaces_decimal(xray_tube_current)
         del dataset.XRayTubeCurrent
         dataset.XRayTubeCurrent = round(xray_tube_current, 0)
-        dataset.XRayTubeCurrentInuA = round(xray_tube_current * 1000, 0)
+        if "XRayTubeCurrentInuA" not in dataset:
+            dataset.XRayTubeCurrentInuA = round(xray_tube_current * 1000, 0)
     try:
         dataset.Exposure
     except TypeError:
@@ -956,8 +958,8 @@ def _fix_exposure_values(dataset):
         exposure = _remove_spaces_decimal(exposure)
         del dataset.Exposure
         dataset.Exposure = round(exposure, 0)
-        dataset.ExposureInuAs = round(exposure * 1000, 0)
-    return dataset
+        if "ExposureInuAs" not in dataset:
+            dataset.ExposureInuAs = round(exposure * 1000, 0)
 
 
 def dx(dig_file):
@@ -998,7 +1000,7 @@ def dx(dig_file):
             dataset.decode()
     except TypeError as err:
         if "Could not convert value to integer without loss" in str(err):
-            dataset = _fix_exposure_values(dataset)
+            _fix_exposure_values(dataset)
             dataset.decode()
     isdx = _test_if_dx(dataset)
     if not isdx:
