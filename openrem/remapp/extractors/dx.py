@@ -919,6 +919,36 @@ def _fix_kodak_filters(dataset):
             dict.__setitem__(dataset, 0x187054, thick2)
 
 
+def _fix_exposure_values(dataset):
+    """
+    Replace decimal values in ExposureTime, XRayTubeCurrent and Exposure with integer values; move original values to
+    appropriate fields
+    :param dataset: DICOM dataset
+    :return: Repaired DICOM dataset
+    """
+    try:
+        dataset.ExposureTime
+    except TypeError:
+        exposure_time = Decimal(dataset.get_item('ExposureTime').value.decode().replace('\x00',''))
+        del dataset.ExposureTime
+        dataset.ExposureTime = round(exposure_time, 0)
+        dataset.ExposureTimeInuS = round(exposure_time * 1000, 0)
+    try:
+        dataset.XRayTubeCurrent
+    except TypeError:
+        xray_tube_current = Decimal(dataset.get_item('XRayTubeCurrent').value.decode().replace('\x00',''))
+        del dataset.XRayTubeCurrent
+        dataset.XRayTubeCurrent = round(xray_tube_current, 0)
+        dataset.XRayTubeCurrentInuA = round(xray_tube_current * 1000, 0)
+    try:
+        dataset.Exposure
+    except TypeError:
+        exposure = Decimal(dataset.get_item('Exposure').value.decode().replace('\x00',''))
+        del dataset.Exposure
+        dataset.Exposure = round(exposure, 0)
+        dataset.ExposureInuAs = round(exposure * 1000, 0)
+    return dataset
+
 def dx(dig_file):
     """Extract radiation dose structured report related data from DX radiographic images
 
@@ -954,6 +984,10 @@ def dx(dig_file):
     except ValueError as err:
         if "could not convert string to float" in str(err):
             _fix_kodak_filters(dataset)
+            dataset.decode()
+    except TypeError as err:
+        if "Could not convert value to integer without loss" in str(err):
+            dataset = _fix_exposure_values(dataset)
             dataset.decode()
     isdx = _test_if_dx(dataset)
     if not isdx:
