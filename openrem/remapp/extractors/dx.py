@@ -921,7 +921,7 @@ def _fix_kodak_filters(dataset):
 
 def _remove_spaces_decimal(value):
     """Remove padding and convert to decimal"""
-    while value and value.endswith((' ', '\x00')):
+    while value and value.endswith((" ", "\x00")):
         value = value[:-1]
     return Decimal(value)
 
@@ -936,7 +936,7 @@ def _fix_exposure_values(dataset):
     try:
         dataset.ExposureTime
     except TypeError:
-        exposure_time = dataset.get_item('ExposureTime').value.decode()
+        exposure_time = dataset.get_item("ExposureTime").value.decode()
         exposure_time = _remove_spaces_decimal(exposure_time)
         del dataset.ExposureTime
         dataset.ExposureTime = round(exposure_time, 0)
@@ -945,7 +945,7 @@ def _fix_exposure_values(dataset):
     try:
         dataset.XRayTubeCurrent
     except TypeError:
-        xray_tube_current = dataset.get_item('XRayTubeCurrent').value.decode()
+        xray_tube_current = dataset.get_item("XRayTubeCurrent").value.decode()
         xray_tube_current = _remove_spaces_decimal(xray_tube_current)
         del dataset.XRayTubeCurrent
         dataset.XRayTubeCurrent = round(xray_tube_current, 0)
@@ -954,7 +954,7 @@ def _fix_exposure_values(dataset):
     try:
         dataset.Exposure
     except TypeError:
-        exposure = dataset.get_item('Exposure').value.decode()
+        exposure = dataset.get_item("Exposure").value.decode()
         exposure = _remove_spaces_decimal(exposure)
         del dataset.Exposure
         dataset.Exposure = round(exposure, 0)
