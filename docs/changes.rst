@@ -7,6 +7,7 @@ OpenREM version history
 --------------------
 * :issue:`1036`  Docker: enabled Orthanc container to access VIRTUAL_DIRECTORY env variable in .env.prod
 * :issue:`1035`  DICOM Networking: fixed calling abort bool as function
+* :issue:`1033`  Imports: enables imports of DX with decimal values in integer exposure fields
 * :issue:`1032`  Tests: re-enables sonarcloud integration
 * :issue:`1016`  Imports: fixed error where only the first exposure in a DX or MG study was checked for standard acquisition name
 * :issue:`1015`  Exports: enabled export of NM studies
