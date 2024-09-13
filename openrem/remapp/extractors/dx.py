@@ -942,6 +942,11 @@ def _fix_exposure_values(dataset):
         dataset.ExposureTime = round(exposure_time, 0)
         if "ExposureTimeInuS" not in dataset:
             dataset.ExposureTimeInuS = round(exposure_time * 1000, 0)
+        logger.warning(
+            f"ExposureTime (VR=IS) contained illegal value {exposure_time}. Now set "
+            f"to {dataset.ExposureTime}. ExposureTimeInuS now set to "
+            f"{dataset.ExposureTimeInuS}."
+        )
     try:
         dataset.XRayTubeCurrent
     except TypeError:
@@ -951,6 +956,11 @@ def _fix_exposure_values(dataset):
         dataset.XRayTubeCurrent = round(xray_tube_current, 0)
         if "XRayTubeCurrentInuA" not in dataset:
             dataset.XRayTubeCurrentInuA = round(xray_tube_current * 1000, 0)
+        logger.warning(
+            f"ExposureTime (VR=IS) contained illegal value {xray_tube_current}. Now set "
+            f"to {dataset.XRayTubeCurrent}. ExposureTimeInuS now set to "
+            f"{dataset.XRayTubeCurrentInuA}."
+        )
     try:
         dataset.Exposure
     except TypeError:
@@ -960,6 +970,11 @@ def _fix_exposure_values(dataset):
         dataset.Exposure = round(exposure, 0)
         if "ExposureInuAs" not in dataset:
             dataset.ExposureInuAs = round(exposure * 1000, 0)
+        logger.warning(
+            f"Exposure (VR=IS) contained illegal value {exposure}. Now set "
+            f"to {dataset.Exposure}. ExposureTimeInuS now set to "
+            f"{dataset.ExposureInuAs}."
+        )
 
 
 def dx(dig_file):
