@@ -25,7 +25,7 @@
 ..  module:: export_common.
     :synopsis: Module to deduplicate some of the export code
 
-..  moduleauthor:: Ed McDonagh
+..  moduleauthor:: David Platten and Jordan Suter
 
 """
 import codecs
@@ -1171,6 +1171,8 @@ def write_row_to_acquisition_sheet(acq_df, acquisition, book, worksheet_log, mod
     if modality in ["NM"]:
         transform_nm_datetime_columns(book, sheet, acq_df)
 
+    transform_datetime_columns(book, sheet, acq_df)
+
     worksheet_log[acquisition] = sheet_row
 
 def replace_long_target_with_short(x):
@@ -1221,9 +1223,6 @@ def export_using_pandas(acquisition_cat_field_name_std_name, acquisition_cat_fie
     # Add summary sheet and all data sheet
     summarysheet = book.add_worksheet("Summary")
     wsalldata = book.add_worksheet("All data")
-
-    # Format the columns of the All data sheet
-    # book = text_and_date_formats(book, wsalldata, pid=pid, name=name, patid=patid, modality=modality)
 
     # ====================================================================================
     # Write the all data sheet
@@ -1293,8 +1292,7 @@ def export_using_pandas(acquisition_cat_field_name_std_name, acquisition_cat_fie
         current_name = sheet_name(current_name)
 
         if current_name not in book.sheetnames.keys():
-            new_sheet = book.add_worksheet(current_name)
-            book = text_and_date_formats(book, new_sheet, pid=pid, name=name, patid=patid, modality=modality)
+            book.add_worksheet(current_name)
             worksheet_log[current_name] = 0
 
     current_row = 1
@@ -1681,7 +1679,7 @@ def transform_datetime_columns(book, sheet, df):
         if " date" in column.lower():
             date_column = df.columns.get_loc(column)
             sheet.conditional_format(1, date_column, maxrows, date_column, conditionaldateformat)
-        if " time" in column.lower():
+        if "study time" in column.lower():
             date_column = df.columns.get_loc(column)
             sheet.conditional_format(1, date_column, maxrows, date_column, conditionaltimeformat)
 
