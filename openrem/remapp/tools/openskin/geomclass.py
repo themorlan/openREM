@@ -103,17 +103,17 @@ class PhantomFlat:
             while not iterator.finished:
                 my_x = iterator.multi_index[0] * scale - origin[0]
                 my_y = iterator.multi_index[1] * scale - origin[1]
-                self.phantom_map[
-                    iterator.multi_index[0], iterator.multi_index[1]
-                ] = np.array([my_x, my_y, z_offset])
+                self.phantom_map[iterator.multi_index[0], iterator.multi_index[1]] = (
+                    np.array([my_x, my_y, z_offset])
+                )
 
                 plane_point = np.array([my_x, my_y, z_offset])
                 outside_point = np.array([my_x, my_y, z_offset - 1])
                 # The normal is defined going back in to the plane, to make checking alignment easier
                 normal = Segment3(outside_point, plane_point)
-                self.normal_map[
-                    iterator.multi_index[0], iterator.multi_index[1]
-                ] = normal
+                self.normal_map[iterator.multi_index[0], iterator.multi_index[1]] = (
+                    normal
+                )
                 iterator.iternext()
 
 
@@ -378,9 +378,9 @@ class Phantom3:
                 # for now a trick to have single phantom map for both head and torso, it would be neater to
                 # implement a phantom map for both head and torso.
                 # this region of the phantom map will never intersect with ray segments and will not be used in JS
-            self.phantom_map[
-                iterator.multi_index[0], iterator.multi_index[1]
-            ] = np.array([my_x, my_y, my_z])
+            self.phantom_map[iterator.multi_index[0], iterator.multi_index[1]] = (
+                np.array([my_x, my_y, my_z])
+            )
             self.normal_map[iterator.multi_index[0], iterator.multi_index[1]] = normal
             iterator.iternext()
         # Flip to correct left and right so iterator becomes a view of the back.

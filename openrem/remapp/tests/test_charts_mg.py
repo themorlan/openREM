@@ -581,7 +581,8 @@ class ChartsMG(TestCase):
                 ),
                 "name": "",
                 "hovertext": np.array(
-                    ["中心医院 SENODS01", "中心医院 SENODS01", "中心医院 SENODS01"], dtype=object
+                    ["中心医院 SENODS01", "中心医院 SENODS01", "中心医院 SENODS01"],
+                    dtype=object,
                 ),
                 "x": np.array(["Friday", "Sunday", "Thursday"], dtype=object),
                 "y": np.array([1, 0, 0]),

@@ -74,8 +74,10 @@ def _radiopharmaceutical_patient_state(dataset, rad_admin_pat_charac):
 
 
 def _radiopharmaceutical_glomerular_filtration_rate(dataset, rad_admin_pat_charac):
-    glomerular_filtration_rate: GlomerularFiltrationRate = GlomerularFiltrationRate.objects.create(
-        radiopharmaceutical_administration_patient_characteristics=rad_admin_pat_charac
+    glomerular_filtration_rate: GlomerularFiltrationRate = (
+        GlomerularFiltrationRate.objects.create(
+            radiopharmaceutical_administration_patient_characteristics=rad_admin_pat_charac
+        )
     )
     glomerular_filtration_rate.glomerular_filtration_rate = test_numeric_value(
         dataset.MeasuredValueSequence[0].NumericValue
@@ -297,8 +299,10 @@ def _radiopharmaceutical_billing_code(
 
 
 def _drug_product_identifier(dataset, radiopharmaceutical_administration_event):
-    drug_product_identifier: DrugProductIdentifier = DrugProductIdentifier.objects.create(
-        radiopharmaceutical_administration_event_data=radiopharmaceutical_administration_event
+    drug_product_identifier: DrugProductIdentifier = (
+        DrugProductIdentifier.objects.create(
+            radiopharmaceutical_administration_event_data=radiopharmaceutical_administration_event
+        )
     )
     drug_product_identifier.drug_product_identifier = get_or_create_cid(
         dataset.ConceptCodeSequence[0].CodeValue,
@@ -320,16 +324,20 @@ def _radiopharmaceutical_lot_identifier(
 
 
 def _reagent_vial_identifier(dataset, radiopharmaceutical_administration_event):
-    reagent_vial_identifier: ReagentVialIdentifier = ReagentVialIdentifier.objects.create(
-        radiopharmaceutical_administration_event_data=radiopharmaceutical_administration_event
+    reagent_vial_identifier: ReagentVialIdentifier = (
+        ReagentVialIdentifier.objects.create(
+            radiopharmaceutical_administration_event_data=radiopharmaceutical_administration_event
+        )
     )
     reagent_vial_identifier.reagent_vial_identifier = dataset.TextValue
     reagent_vial_identifier.save()
 
 
 def _radionuclide_identifier(dataset, radiopharmaceutical_administration_event):
-    radionuclide_identifier: RadionuclideIdentifier = RadionuclideIdentifier.objects.create(
-        radiopharmaceutical_administration_event_data=radiopharmaceutical_administration_event
+    radionuclide_identifier: RadionuclideIdentifier = (
+        RadionuclideIdentifier.objects.create(
+            radiopharmaceutical_administration_event_data=radiopharmaceutical_administration_event
+        )
     )
     radionuclide_identifier.radionuclide_identifier = dataset.TextValue
     radionuclide_identifier.save()

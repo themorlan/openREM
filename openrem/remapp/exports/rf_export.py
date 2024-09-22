@@ -80,37 +80,37 @@ def _get_accumulated_data(accumXrayDose):
         accumulated_integrated_projection_dose = (
             accumXrayDose.accumintegratedprojradiogdose_set.get()
         )
-        accum[
-            "dose_area_product_total"
-        ] = accumulated_integrated_projection_dose.dose_area_product_total
+        accum["dose_area_product_total"] = (
+            accumulated_integrated_projection_dose.dose_area_product_total
+        )
         accum["dose_rp_total"] = accumulated_integrated_projection_dose.dose_rp_total
-        accum[
-            "reference_point_definition"
-        ] = accumulated_integrated_projection_dose.reference_point_definition_code
+        accum["reference_point_definition"] = (
+            accumulated_integrated_projection_dose.reference_point_definition_code
+        )
         if not accum["reference_point_definition"]:
-            accum[
-                "reference_point_definition"
-            ] = accumulated_integrated_projection_dose.reference_point_definition
+            accum["reference_point_definition"] = (
+                accumulated_integrated_projection_dose.reference_point_definition
+            )
     except ObjectDoesNotExist:
         accum["dose_area_product_total"] = None
         accum["dose_rp_total"] = None
         accum["reference_point_definition_code"] = None
     try:
         accumulated_projection_dose = accumXrayDose.accumprojxraydose_set.get()
-        accum[
-            "fluoro_dose_area_product_total"
-        ] = accumulated_projection_dose.fluoro_dose_area_product_total
+        accum["fluoro_dose_area_product_total"] = (
+            accumulated_projection_dose.fluoro_dose_area_product_total
+        )
         accum["fluoro_dose_rp_total"] = accumulated_projection_dose.fluoro_dose_rp_total
         accum["total_fluoro_time"] = accumulated_projection_dose.total_fluoro_time
-        accum[
-            "acquisition_dose_area_product_total"
-        ] = accumulated_projection_dose.acquisition_dose_area_product_total
-        accum[
-            "acquisition_dose_rp_total"
-        ] = accumulated_projection_dose.acquisition_dose_rp_total
-        accum[
-            "total_acquisition_time"
-        ] = accumulated_projection_dose.total_acquisition_time
+        accum["acquisition_dose_area_product_total"] = (
+            accumulated_projection_dose.acquisition_dose_area_product_total
+        )
+        accum["acquisition_dose_rp_total"] = (
+            accumulated_projection_dose.acquisition_dose_rp_total
+        )
+        accum["total_acquisition_time"] = (
+            accumulated_projection_dose.total_acquisition_time
+        )
     except ObjectDoesNotExist:
         accum["fluoro_dose_area_product_total"] = None
         accum["fluoro_dose_rp_total"] = None

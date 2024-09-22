@@ -380,49 +380,88 @@ def display_name_populate(request):
         for group in request.user.groups.all():
             admin[group.name] = True
         if modality in ["MG", "CT", "NM"]:
-            name_set = f.filter(
-                generalequipmentmoduleattr__general_study_module_attributes__modality_type=modality).distinct().annotate(
-                num_entries=Count("generalequipmentmoduleattr__pk"),
-                latest_entry_date=Max("generalequipmentmoduleattr__general_study_module_attributes__study_date"))
+            name_set = (
+                f.filter(
+                    generalequipmentmoduleattr__general_study_module_attributes__modality_type=modality
+                )
+                .distinct()
+                .annotate(
+                    num_entries=Count("generalequipmentmoduleattr__pk"),
+                    latest_entry_date=Max(
+                        "generalequipmentmoduleattr__general_study_module_attributes__study_date"
+                    ),
+                )
+            )
             dual = False
         elif modality == "DX":
-            name_set = f.filter(
-                Q(user_defined_modality__in=["DX", "dual"])
-                | (
-                    Q(user_defined_modality__isnull=True)
-                    & (
-                        Q(generalequipmentmoduleattr__general_study_module_attributes__modality_type__in=["DX", "CR",
-                                                                                                          "PX"])
+            name_set = (
+                f.filter(
+                    Q(user_defined_modality__in=["DX", "dual"])
+                    | (
+                        Q(user_defined_modality__isnull=True)
+                        & (
+                            Q(
+                                generalequipmentmoduleattr__general_study_module_attributes__modality_type__in=[
+                                    "DX",
+                                    "CR",
+                                    "PX",
+                                ]
+                            )
+                        )
                     )
                 )
-            ).distinct().annotate(
-                num_entries=Count("generalequipmentmoduleattr__pk"),
-                latest_entry_date=Max("generalequipmentmoduleattr__general_study_module_attributes__study_date")
+                .distinct()
+                .annotate(
+                    num_entries=Count("generalequipmentmoduleattr__pk"),
+                    latest_entry_date=Max(
+                        "generalequipmentmoduleattr__general_study_module_attributes__study_date"
+                    ),
+                )
             )
 
             dual = True
         elif modality == "RF":
-            name_set = f.filter(
-                Q(user_defined_modality__in=["RF", "dual"])
-                | (
-                    Q(user_defined_modality__isnull=True)
-                    & Q(
-                        generalequipmentmoduleattr__general_study_module_attributes__modality_type="RF"
+            name_set = (
+                f.filter(
+                    Q(user_defined_modality__in=["RF", "dual"])
+                    | (
+                        Q(user_defined_modality__isnull=True)
+                        & Q(
+                            generalequipmentmoduleattr__general_study_module_attributes__modality_type="RF"
+                        )
                     )
                 )
-            ).distinct().annotate(
-                num_entries=Count("generalequipmentmoduleattr__pk"),
-                latest_entry_date=Max("generalequipmentmoduleattr__general_study_module_attributes__study_date")
+                .distinct()
+                .annotate(
+                    num_entries=Count("generalequipmentmoduleattr__pk"),
+                    latest_entry_date=Max(
+                        "generalequipmentmoduleattr__general_study_module_attributes__study_date"
+                    ),
+                )
             )
             dual = True
         elif modality == "OT":
-            name_set = f.filter(  # ~Q(user_defined_modality__isnull=True) | (
-                ~Q(generalequipmentmoduleattr__general_study_module_attributes__modality_type__in=[
-                    "RF", "MG", "CT", "DX", "CR", "PX", "NM"
-                ])
-            ).distinct().annotate(
-                num_entries=Count("generalequipmentmoduleattr__pk"),
-                latest_entry_date=Max("generalequipmentmoduleattr__general_study_module_attributes__study_date")
+            name_set = (
+                f.filter(  # ~Q(user_defined_modality__isnull=True) | (
+                    ~Q(
+                        generalequipmentmoduleattr__general_study_module_attributes__modality_type__in=[
+                            "RF",
+                            "MG",
+                            "CT",
+                            "DX",
+                            "CR",
+                            "PX",
+                            "NM",
+                        ]
+                    )
+                )
+                .distinct()
+                .annotate(
+                    num_entries=Count("generalequipmentmoduleattr__pk"),
+                    latest_entry_date=Max(
+                        "generalequipmentmoduleattr__general_study_module_attributes__study_date"
+                    ),
+                )
             )
             dual = False
         else:
@@ -462,11 +501,17 @@ def display_name_modality_filter(equip_name_pk=None, modality=None):
         studies = studies_all.filter(modality_type=modality)
     elif modality == "DX":
         studies = studies_all.filter(
-            Q(generalequipmentmoduleattr__general_study_module_attributes__modality_type__in=["DX", "CR", "PX"])
+            Q(
+                generalequipmentmoduleattr__general_study_module_attributes__modality_type__in=[
+                    "DX",
+                    "CR",
+                    "PX",
+                ]
+            )
         )
     else:  # modality == 'OT'
-        studies = (
-            studies_all.filter(~Q(modality_type__in=["CT", "MG", "DX", "CR", "PX", "RF", "NM"]))
+        studies = studies_all.filter(
+            ~Q(modality_type__in=["CT", "MG", "DX", "CR", "PX", "RF", "NM"])
         )
     return studies, count_all
 
@@ -942,9 +987,9 @@ def _get_review_study_data(study):
                 accumcassproj = {}
                 study_data["accumcassproj"] = ""
                 for index, accumxraydose in enumerate(accumxraydose_set):
-                    accumcassproj[
-                        index
-                    ] = accumxraydose.accumcassettebsdprojradiogdose_set.get()
+                    accumcassproj[index] = (
+                        accumxraydose.accumcassettebsdprojradiogdose_set.get()
+                    )
                     study_data["accumcassproj"] += "Number of frames {0}".format(
                         accumcassproj[index].total_number_of_radiographic_frames
                     )
@@ -954,9 +999,9 @@ def _get_review_study_data(study):
                 accumproj = {}
                 study_data["accumproj"] = ""
                 for index, accumxraydose in enumerate(accumxraydose_set):
-                    accumproj[
-                        index
-                    ] = accumxraydose.accumintegratedprojradiogdose_set.get()
+                    accumproj[index] = (
+                        accumxraydose.accumintegratedprojradiogdose_set.get()
+                    )
                     study_data[
                         "accumproj"
                     ] += "DAP total {0:.2f}&nbsp;cGy.cm<sup>2</sup> ".format(
@@ -1122,9 +1167,9 @@ def review_failed_study_details(request):
             study_data["manufacturer"] = equipment.manufacturer
             study_data["manufacturer_model_name"] = equipment.manufacturer_model_name
             study_data["institution_name"] = equipment.institution_name
-            study_data[
-                "institution_department_name"
-            ] = equipment.institutional_department_name
+            study_data["institution_department_name"] = (
+                equipment.institutional_department_name
+            )
             study_data["device_serial_number"] = equipment.device_serial_number
             study_data["equipmentattr"] = True
         except ObjectDoesNotExist:
@@ -1162,7 +1207,8 @@ def _get_broken_studies_count():
     :return: Query filter of study counts
     """
     all_mod = GeneralStudyModuleAttr.objects.filter(
-        generalequipmentmoduleattr__unique_equipment_name__display_name__isnull=True).aggregate(
+        generalequipmentmoduleattr__unique_equipment_name__display_name__isnull=True
+    ).aggregate(
         broken_dx=Count("pk", filter=Q(modality_type__in=["DX", "CR", "PX"])),
         broken_ct=Count("pk", filter=Q(modality_type="CT")),
         broken_rf=Count("pk", filter=Q(modality_type="RF")),
@@ -1502,12 +1548,12 @@ def initialise_rf_form_data(user_profile):
     if enable_standard_names:
         rf_form_data["plotRFStandardStudyFreq"] = user_profile.plotRFStandardStudyFreq
         rf_form_data["plotRFStandardStudyDAP"] = user_profile.plotRFStandardStudyDAP
-        rf_form_data[
-            "plotRFStandardStudyDAPOverTime"
-        ] = user_profile.plotRFStandardStudyDAPOverTime
-        rf_form_data[
-            "plotRFStandardStudyPerDayAndHour"
-        ] = user_profile.plotRFStandardStudyPerDayAndHour
+        rf_form_data["plotRFStandardStudyDAPOverTime"] = (
+            user_profile.plotRFStandardStudyDAPOverTime
+        )
+        rf_form_data["plotRFStandardStudyPerDayAndHour"] = (
+            user_profile.plotRFStandardStudyPerDayAndHour
+        )
 
     return rf_form_data
 
@@ -1592,28 +1638,28 @@ def initialise_mg_form_data(user_profile):
     )[0]
 
     if enable_standard_names:
-        mg_form_data[
-            "plotMGStandardAcquisitionFreq"
-        ] = user_profile.plotMGStandardAcquisitionFreq
+        mg_form_data["plotMGStandardAcquisitionFreq"] = (
+            user_profile.plotMGStandardAcquisitionFreq
+        )
         mg_form_data["plotMGStandardAverageAGD"] = user_profile.plotMGStandardAverageAGD
-        mg_form_data[
-            "plotMGStandardAverageAGDvsThickness"
-        ] = user_profile.plotMGStandardAverageAGDvsThickness
-        mg_form_data[
-            "plotMGStandardAcquisitionAGDOverTime"
-        ] = user_profile.plotMGStandardAcquisitionAGDOverTime
-        mg_form_data[
-            "plotMGStandardAGDvsThickness"
-        ] = user_profile.plotMGStandardAGDvsThickness
-        mg_form_data[
-            "plotMGStandardkVpvsThickness"
-        ] = user_profile.plotMGStandardkVpvsThickness
-        mg_form_data[
-            "plotMGStandardmAsvsThickness"
-        ] = user_profile.plotMGStandardmAsvsThickness
-        mg_form_data[
-            "plotMGStandardStudyPerDayAndHour"
-        ] = user_profile.plotMGStandardStudyPerDayAndHour
+        mg_form_data["plotMGStandardAverageAGDvsThickness"] = (
+            user_profile.plotMGStandardAverageAGDvsThickness
+        )
+        mg_form_data["plotMGStandardAcquisitionAGDOverTime"] = (
+            user_profile.plotMGStandardAcquisitionAGDOverTime
+        )
+        mg_form_data["plotMGStandardAGDvsThickness"] = (
+            user_profile.plotMGStandardAGDvsThickness
+        )
+        mg_form_data["plotMGStandardkVpvsThickness"] = (
+            user_profile.plotMGStandardkVpvsThickness
+        )
+        mg_form_data["plotMGStandardmAsvsThickness"] = (
+            user_profile.plotMGStandardmAsvsThickness
+        )
+        mg_form_data["plotMGStandardStudyPerDayAndHour"] = (
+            user_profile.plotMGStandardStudyPerDayAndHour
+        )
 
     return mg_form_data
 
@@ -1736,40 +1782,40 @@ def initialise_dx_form_data(user_profile):
     )[0]
 
     if enable_standard_names:
-        dx_form_data[
-            "plotDXStandardAcquisitionFreq"
-        ] = user_profile.plotDXStandardAcquisitionFreq
-        dx_form_data[
-            "plotDXStandardAcquisitionMeanDAP"
-        ] = user_profile.plotDXStandardAcquisitionMeanDAP
-        dx_form_data[
-            "plotDXStandardAcquisitionMeanmAs"
-        ] = user_profile.plotDXStandardAcquisitionMeanmAs
-        dx_form_data[
-            "plotDXStandardAcquisitionMeankVp"
-        ] = user_profile.plotDXStandardAcquisitionMeankVp
-        dx_form_data[
-            "plotDXStandardAcquisitionMeanDAPOverTime"
-        ] = user_profile.plotDXStandardAcquisitionMeanDAPOverTime
-        dx_form_data[
-            "plotDXStandardAcquisitionMeanmAsOverTime"
-        ] = user_profile.plotDXStandardAcquisitionMeanmAsOverTime
-        dx_form_data[
-            "plotDXStandardAcquisitionMeankVpOverTime"
-        ] = user_profile.plotDXStandardAcquisitionMeankVpOverTime
-        dx_form_data[
-            "plotDXStandardAcquisitionDAPvsMass"
-        ] = user_profile.plotDXStandardAcquisitionDAPvsMass
-        dx_form_data[
-            "plotDXStandardStudyMeanDAP"
-        ] = user_profile.plotDXStandardStudyMeanDAP
+        dx_form_data["plotDXStandardAcquisitionFreq"] = (
+            user_profile.plotDXStandardAcquisitionFreq
+        )
+        dx_form_data["plotDXStandardAcquisitionMeanDAP"] = (
+            user_profile.plotDXStandardAcquisitionMeanDAP
+        )
+        dx_form_data["plotDXStandardAcquisitionMeanmAs"] = (
+            user_profile.plotDXStandardAcquisitionMeanmAs
+        )
+        dx_form_data["plotDXStandardAcquisitionMeankVp"] = (
+            user_profile.plotDXStandardAcquisitionMeankVp
+        )
+        dx_form_data["plotDXStandardAcquisitionMeanDAPOverTime"] = (
+            user_profile.plotDXStandardAcquisitionMeanDAPOverTime
+        )
+        dx_form_data["plotDXStandardAcquisitionMeanmAsOverTime"] = (
+            user_profile.plotDXStandardAcquisitionMeanmAsOverTime
+        )
+        dx_form_data["plotDXStandardAcquisitionMeankVpOverTime"] = (
+            user_profile.plotDXStandardAcquisitionMeankVpOverTime
+        )
+        dx_form_data["plotDXStandardAcquisitionDAPvsMass"] = (
+            user_profile.plotDXStandardAcquisitionDAPvsMass
+        )
+        dx_form_data["plotDXStandardStudyMeanDAP"] = (
+            user_profile.plotDXStandardStudyMeanDAP
+        )
         dx_form_data["plotDXStandardStudyFreq"] = user_profile.plotDXStandardStudyFreq
-        dx_form_data[
-            "plotDXStandardStudyDAPvsMass"
-        ] = user_profile.plotDXStandardStudyDAPvsMass
-        dx_form_data[
-            "plotDXStandardStudyPerDayAndHour"
-        ] = user_profile.plotDXStandardStudyPerDayAndHour
+        dx_form_data["plotDXStandardStudyDAPvsMass"] = (
+            user_profile.plotDXStandardStudyDAPvsMass
+        )
+        dx_form_data["plotDXStandardStudyPerDayAndHour"] = (
+            user_profile.plotDXStandardStudyPerDayAndHour
+        )
 
     return dx_form_data
 
@@ -1988,41 +2034,41 @@ def initialise_ct_form_data(ct_acquisition_types, user_profile):
     )[0]
 
     if enable_standard_names:
-        ct_form_data[
-            "plotCTStandardAcquisitionFreq"
-        ] = user_profile.plotCTStandardAcquisitionFreq
-        ct_form_data[
-            "plotCTStandardAcquisitionMeanDLP"
-        ] = user_profile.plotCTStandardAcquisitionMeanDLP
-        ct_form_data[
-            "plotCTStandardAcquisitionMeanCTDI"
-        ] = user_profile.plotCTStandardAcquisitionMeanCTDI
-        ct_form_data[
-            "plotCTStandardAcquisitionDLPOverTime"
-        ] = user_profile.plotCTStandardAcquisitionDLPOverTime
-        ct_form_data[
-            "plotCTStandardAcquisitionCTDIOverTime"
-        ] = user_profile.plotCTStandardAcquisitionCTDIOverTime
-        ct_form_data[
-            "plotCTStandardAcquisitionDLPvsMass"
-        ] = user_profile.plotCTStandardAcquisitionDLPvsMass
-        ct_form_data[
-            "plotCTStandardAcquisitionCTDIvsMass"
-        ] = user_profile.plotCTStandardAcquisitionCTDIvsMass
+        ct_form_data["plotCTStandardAcquisitionFreq"] = (
+            user_profile.plotCTStandardAcquisitionFreq
+        )
+        ct_form_data["plotCTStandardAcquisitionMeanDLP"] = (
+            user_profile.plotCTStandardAcquisitionMeanDLP
+        )
+        ct_form_data["plotCTStandardAcquisitionMeanCTDI"] = (
+            user_profile.plotCTStandardAcquisitionMeanCTDI
+        )
+        ct_form_data["plotCTStandardAcquisitionDLPOverTime"] = (
+            user_profile.plotCTStandardAcquisitionDLPOverTime
+        )
+        ct_form_data["plotCTStandardAcquisitionCTDIOverTime"] = (
+            user_profile.plotCTStandardAcquisitionCTDIOverTime
+        )
+        ct_form_data["plotCTStandardAcquisitionDLPvsMass"] = (
+            user_profile.plotCTStandardAcquisitionDLPvsMass
+        )
+        ct_form_data["plotCTStandardAcquisitionCTDIvsMass"] = (
+            user_profile.plotCTStandardAcquisitionCTDIvsMass
+        )
 
-        ct_form_data[
-            "plotCTStandardStudyMeanDLP"
-        ] = user_profile.plotCTStandardStudyMeanDLP
-        ct_form_data[
-            "plotCTStandardStudyNumEvents"
-        ] = user_profile.plotCTStandardStudyNumEvents
+        ct_form_data["plotCTStandardStudyMeanDLP"] = (
+            user_profile.plotCTStandardStudyMeanDLP
+        )
+        ct_form_data["plotCTStandardStudyNumEvents"] = (
+            user_profile.plotCTStandardStudyNumEvents
+        )
         ct_form_data["plotCTStandardStudyFreq"] = user_profile.plotCTStandardStudyFreq
-        ct_form_data[
-            "plotCTStandardStudyPerDayAndHour"
-        ] = user_profile.plotCTStandardStudyPerDayAndHour
-        ct_form_data[
-            "plotCTStandardStudyMeanDLPOverTime"
-        ] = user_profile.plotCTStandardStudyMeanDLPOverTime
+        ct_form_data["plotCTStandardStudyPerDayAndHour"] = (
+            user_profile.plotCTStandardStudyPerDayAndHour
+        )
+        ct_form_data["plotCTStandardStudyMeanDLPOverTime"] = (
+            user_profile.plotCTStandardStudyMeanDLPOverTime
+        )
 
     return ct_form_data
 
@@ -2290,7 +2336,9 @@ def task_abort(request, task_id=None):
         background_tasks = BackgroundTask.objects.filter(uuid=task_id)
         if background_tasks.count() >= 2:
             abort_logger = logging.getLogger("remapp")
-            abort_logger.warning(f"{background_tasks.count()} tasks returned for {task_id} - aborting them all")
+            abort_logger.warning(
+                f"{background_tasks.count()} tasks returned for {task_id} - aborting them all"
+            )
         for task in background_tasks:
             try:
                 if task.task_type == "query" or task.task_type == "move":
@@ -2531,9 +2579,7 @@ def rf_recalculate_accum_doses(request):  # pylint: disable=unused-variable
             "accum_dose_delta_weeks", flat=True
         )[0]
 
-        all_rf_studies = GeneralStudyModuleAttr.objects.filter(
-            modality_type="RF"
-        ).all()
+        all_rf_studies = GeneralStudyModuleAttr.objects.filter(modality_type="RF").all()
 
         for study in all_rf_studies:
             try:
@@ -3016,9 +3062,7 @@ class StandardNameAddCore(CreateView):
             elif form.cleaned_data["modality"] == "RF":
                 studies = studies.filter(modality_type="RF")
             else:
-                studies = studies.filter(
-                    Q(modality_type__in=["DX", "CR", "PX"])
-                )
+                studies = studies.filter(Q(modality_type__in=["DX", "CR", "PX"]))
 
             # Add the standard names to the studies
             self.add_multiple_standard_studies(
@@ -3038,7 +3082,9 @@ class StandardNameAddCore(CreateView):
                     q = ["RF"]
 
                 acquisitions = IrradEventXRayData.objects.filter(
-                    Q(projection_xray_radiation_dose__general_study_module_attributes__modality_type__in=q)
+                    Q(
+                        projection_xray_radiation_dose__general_study_module_attributes__modality_type__in=q
+                    )
                 )
 
             # Add the standard names to the acquisitions
@@ -3283,7 +3329,9 @@ class StandardNameDelete(DeleteView):  # pylint: disable=unused-variable
                 q = ["RF"]
 
             acquisitions = IrradEventXRayData.objects.filter(
-                Q(projection_xray_radiation_dose__general_study_module_attributes__modality_type__in=q)
+                Q(
+                    projection_xray_radiation_dose__general_study_module_attributes__modality_type__in=q
+                )
             )
 
             # Remove the standard names from the acquisitions
@@ -3377,7 +3425,9 @@ class StandardNameUpdateCore(UpdateView):
                         q = ["RF"]
 
                     acquisitions = IrradEventXRayData.objects.filter(
-                        Q(projection_xray_radiation_dose__general_study_module_attributes__modality_type__in=q)
+                        Q(
+                            projection_xray_radiation_dose__general_study_module_attributes__modality_type__in=q
+                        )
                     )
 
                     # Remove reference to these standard names from entries from IrradEventXRayData
@@ -3745,7 +3795,9 @@ def standard_name_update_all(request, modality=None):
                 q = ["RF"]
 
             acquisitions = IrradEventXRayData.objects.filter(
-                Q(projection_xray_radiation_dose__general_study_module_attributes__modality_type__in=q)
+                Q(
+                    projection_xray_radiation_dose__general_study_module_attributes__modality_type__in=q
+                )
             )
 
         for standard_name in std_names.filter(acquisition_protocol__isnull=False):

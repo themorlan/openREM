@@ -173,29 +173,29 @@ def send_rf_high_dose_alert_email(study_pk=None, test_message=None, test_user=No
         peak_skin_dose = 0
     accum_peak_skin_dose = peak_skin_dose
     if included_studies:
-        accum_peak_skin_dose = list(included_studies.aggregate(Sum("skindosemapresults__peak_skin_dose")).values())[0]
+        accum_peak_skin_dose = list(
+            included_studies.aggregate(
+                Sum("skindosemapresults__peak_skin_dose")
+            ).values()
+        )[0]
         if accum_peak_skin_dose is None:
             accum_peak_skin_dose = 0
 
-    alert_for_dap_or_rp_dose = (
-            alert_levels["send_high_dose_metric_alert_emails_ref"] and
-            (
-                    this_study_dap >= alert_levels["alert_total_dap_rf"] or
-                    this_study_rp_dose >= alert_levels["alert_total_rp_dose_rf"] or
-                    accum_dap >= alert_levels["alert_total_dap_rf"] or
-                    accum_rp_dose >= alert_levels["alert_total_rp_dose_rf"]
-            )
+    alert_for_dap_or_rp_dose = alert_levels[
+        "send_high_dose_metric_alert_emails_ref"
+    ] and (
+        this_study_dap >= alert_levels["alert_total_dap_rf"]
+        or this_study_rp_dose >= alert_levels["alert_total_rp_dose_rf"]
+        or accum_dap >= alert_levels["alert_total_dap_rf"]
+        or accum_rp_dose >= alert_levels["alert_total_rp_dose_rf"]
     )
 
-    alert_for_skin_dose = (
-            alert_levels["send_high_dose_metric_alert_emails_skin"] and
-            (
-                    peak_skin_dose >= alert_levels["alert_skindose"] or
-                    accum_peak_skin_dose >= alert_levels["alert_skindose"]
-            )
+    alert_for_skin_dose = alert_levels["send_high_dose_metric_alert_emails_skin"] and (
+        peak_skin_dose >= alert_levels["alert_skindose"]
+        or accum_peak_skin_dose >= alert_levels["alert_skindose"]
     )
 
-    if (alert_for_dap_or_rp_dose or alert_for_skin_dose):
+    if alert_for_dap_or_rp_dose or alert_for_skin_dose:
 
         projection_xray_dose_set = study.projectionxrayradiationdose_set.get()
         accumxraydose_set_all_planes = (
