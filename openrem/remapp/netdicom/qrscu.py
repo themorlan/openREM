@@ -1333,7 +1333,7 @@ def _query_study(ae, remote, assoc, d, query, study_query_id):
                     query, status.Status, query_id_8, study_query_id.hex[:8]
                 )
         else:
-            if assoc.is_aborted():
+            if assoc.is_aborted:
                 status_msg = "Connection was aborted - check remote server logs."
             else:
                 status_msg = "Connection timed out or received an invalid response. Check remote server logs"
