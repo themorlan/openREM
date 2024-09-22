@@ -163,7 +163,6 @@ def display_name_skin_enabled(request):
 
 
 class SkinDoseMapCalcSettingsUpdate(UpdateView):  # pylint: disable=unused-variable
-
     """Update skin dose map calculation settings."""
 
     try:
@@ -196,7 +195,6 @@ class SkinDoseMapCalcSettingsUpdate(UpdateView):  # pylint: disable=unused-varia
 
 
 class SkinSafeListCreate(CreateView):
-
     """Enable skin map calculations by adding model, or model and software version to `OpenSkinSafeList`."""
 
     model = OpenSkinSafeList
@@ -225,9 +223,9 @@ class SkinSafeListCreate(CreateView):
         )
         context["manufacturer_model"] = manufacturer_model
         context["manufacturer_model_version"] = manufacturer_model_version
-        context[
-            "allow_safelist_modify"
-        ] = SkinDoseMapCalcSettings.get_solo().allow_safelist_modify
+        context["allow_safelist_modify"] = (
+            SkinDoseMapCalcSettings.get_solo().allow_safelist_modify
+        )
         admin = {
             "openremversion": __version__,
             "docsversion": __docs_version__,
@@ -257,7 +255,6 @@ class SkinSafeListCreate(CreateView):
 
 
 class SkinSafeListUpdate(UpdateView):
-
     """Add or remove the software version restriction."""
 
     model = OpenSkinSafeList
@@ -295,9 +292,9 @@ class SkinSafeListUpdate(UpdateView):
         context["manufacturer_model"] = manufacturer_model
         context["manufacturer_model_version"] = manufacturer_model_version
         context["model_exists"] = model_exists
-        context[
-            "allow_safelist_modify"
-        ] = SkinDoseMapCalcSettings.get_solo().allow_safelist_modify
+        context["allow_safelist_modify"] = (
+            SkinDoseMapCalcSettings.get_solo().allow_safelist_modify
+        )
         admin = {
             "openremversion": __version__,
             "docsversion": __docs_version__,
@@ -325,7 +322,6 @@ class SkinSafeListUpdate(UpdateView):
 
 
 class SkinSafeListDelete(DeleteView):  # pylint: disable=unused-variable
-
     """Disable skin map calculations for particular model or model and software version."""
 
     model = OpenSkinSafeList
@@ -352,9 +348,9 @@ class SkinSafeListDelete(DeleteView):  # pylint: disable=unused-variable
                 model_and_version = True
         context["equipment"] = rf_names
         context["model_and_version"] = model_and_version
-        context[
-            "allow_safelist_modify"
-        ] = SkinDoseMapCalcSettings.get_solo().allow_safelist_modify
+        context["allow_safelist_modify"] = (
+            SkinDoseMapCalcSettings.get_solo().allow_safelist_modify
+        )
         admin = {
             "openremversion": __version__,
             "docsversion": __docs_version__,

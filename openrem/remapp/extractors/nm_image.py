@@ -255,10 +255,8 @@ def _isotope(study, dataset):
         conversion_func = to_decimal_value
     else:
         # Convert to MBq from Bq
-        conversion_func = (
-            lambda x: None
-            if to_decimal_value(x) is None
-            else to_decimal_value(x) / 10**6
+        conversion_func = lambda x: (
+            None if to_decimal_value(x) is None else to_decimal_value(x) / 10**6
         )
     _try_set_value(
         radio,

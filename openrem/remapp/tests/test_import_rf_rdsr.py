@@ -49,7 +49,9 @@ class ImportRFRDSRPhilips(TestCase):
         )
 
         performing_physician_name = study.performing_physician_name
-        self.assertEqual(performing_physician_name, "Yamada^Tarou=山田^太郎=やまだ^たろう")
+        self.assertEqual(
+            performing_physician_name, "Yamada^Tarou=山田^太郎=やまだ^たろう"
+        )
 
 
 class ImportRFRDSRPhilipsAzurion(TestCase):

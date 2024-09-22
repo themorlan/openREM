@@ -15,6 +15,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 """
+
 import math
 import numpy as np
 from .geomclass import Triangle3, Segment3

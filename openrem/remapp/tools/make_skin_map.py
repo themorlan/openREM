@@ -75,10 +75,13 @@ def make_skin_map(study_pk=None):
 
     if study_pk:
         study = GeneralStudyModuleAttr.objects.prefetch_related(
-            "projectionxrayradiationdose_set__irradeventxraydata_set").get(pk=study_pk)
-        #study = GeneralStudyModuleAttr.objects.get(pk=study_pk)
+            "projectionxrayradiationdose_set__irradeventxraydata_set"
+        ).get(pk=study_pk)
+        # study = GeneralStudyModuleAttr.objects.get(pk=study_pk)
 
-        display_name = study.generalequipmentmoduleattr_set.get().unique_equipment_name.display_name
+        display_name = (
+            study.generalequipmentmoduleattr_set.get().unique_equipment_name.display_name
+        )
 
         if background_task is not None:
             background_task.info = (
@@ -190,11 +193,13 @@ def make_skin_map(study_pk=None):
             "irradeventxraymechanicaldata_set__doserelateddistancemeasurements_set",
             "irradeventxraysourcedata_set",
             "irradeventxraysourcedata_set__kvp_set",
-            "irradeventxraysourcedata_set__xrayfilters_set"
+            "irradeventxraysourcedata_set__xrayfilters_set",
         }
-        all_irradiations = study.projectionxrayradiationdose_set.get().irradeventxraydata_set.prefetch_related(
-            *prefetch_set
-        ).all()
+        all_irradiations = (
+            study.projectionxrayradiationdose_set.get()
+            .irradeventxraydata_set.prefetch_related(*prefetch_set)
+            .all()
+        )
         num_irradiations = all_irradiations.count()
 
         for count, irrad in enumerate(all_irradiations):
@@ -433,10 +438,10 @@ def skin_dose_maps_enabled_for_xray_system(study):
     entry = False
     for current_entry in entries:
         if (
-                current_entry.software_version
-                == study.generalequipmentmoduleattr_set.get().software_versions
-                or current_entry.software_version is None
-                or not current_entry.software_version
+            current_entry.software_version
+            == study.generalequipmentmoduleattr_set.get().software_versions
+            or current_entry.software_version is None
+            or not current_entry.software_version
         ):
             entry = True
             break

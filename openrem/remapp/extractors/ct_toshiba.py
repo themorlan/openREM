@@ -263,9 +263,9 @@ def _find_extra_info(dicom_path):
                         try:
                             # For some Toshiba CT scanners there is information on the detector configuration
                             if dcm.Manufacturer.lower() == "toshiba":
-                                info_dictionary[
-                                    "NominalSingleCollimationWidth"
-                                ] = float(dcm[0x7005, 0x1008].value)
+                                info_dictionary["NominalSingleCollimationWidth"] = (
+                                    float(dcm[0x7005, 0x1008].value)
+                                )
                                 info_dictionary["NominalTotalCollimationWidth"] = dcm[
                                     0x7005, 0x1009
                                 ].value.count("1") * float(dcm[0x7005, 0x1008].value)
@@ -342,9 +342,9 @@ def _find_extra_info(dicom_path):
                             logger.debug(traceback.format_exc())
 
                         try:
-                            info_dictionary[
-                                "ExposureModulationType"
-                            ] = dcm.ExposureModulationType
+                            info_dictionary["ExposureModulationType"] = (
+                                dcm.ExposureModulationType
+                            )
                         except AttributeError:
                             pass
                         except Exception:
@@ -384,9 +384,9 @@ def _find_extra_info(dicom_path):
                             try:
                                 if study_info["StudyDescription"] == "":
                                     # Only update study_info['StudyDescription'] if it's empty
-                                    study_info[
-                                        "StudyDescription"
-                                    ] = dcm.StudyDescription
+                                    study_info["StudyDescription"] = (
+                                        dcm.StudyDescription
+                                    )
                             except KeyError:
                                 # study_info['StudyDescription'] isn't present, so add it
                                 study_info["StudyDescription"] = dcm.StudyDescription
@@ -400,14 +400,14 @@ def _find_extra_info(dicom_path):
                                 try:
                                     if study_info["StudyDescription"] == "":
                                         # Only update study_info['StudyDescription'] if it's empty
-                                        study_info[
-                                            "StudyDescription"
-                                        ] = dcm.ProcedureCodeSequence[0].CodeMeaning
+                                        study_info["StudyDescription"] = (
+                                            dcm.ProcedureCodeSequence[0].CodeMeaning
+                                        )
                                 except KeyError:
                                     # study_info['StudyDescription'] isn't present, so add it
-                                    study_info[
-                                        "StudyDescription"
-                                    ] = dcm.ProcedureCodeSequence[0].CodeMeaning
+                                    study_info["StudyDescription"] = (
+                                        dcm.ProcedureCodeSequence[0].CodeMeaning
+                                    )
                                 except Exception:
                                     logger.debug(traceback.format_exc())
                         except AttributeError:
@@ -423,14 +423,14 @@ def _find_extra_info(dicom_path):
                             try:
                                 if study_info["RequestedProcedureDescription"] == "":
                                     # Only update study_info['RequestedProcedureDescription'] if it's empty
-                                    study_info[
-                                        "RequestedProcedureDescription"
-                                    ] = dcm.RequestedProcedureDescription
+                                    study_info["RequestedProcedureDescription"] = (
+                                        dcm.RequestedProcedureDescription
+                                    )
                             except KeyError:
                                 # study_info['RequestedProcedureDescription'] doesn't exist yet, so create it
-                                study_info[
-                                    "RequestedProcedureDescription"
-                                ] = dcm.RequestedProcedureDescription
+                                study_info["RequestedProcedureDescription"] = (
+                                    dcm.RequestedProcedureDescription
+                                )
                             except Exception:
                                 logger.debug(traceback.format_exc())
                     except AttributeError:
@@ -444,14 +444,14 @@ def _find_extra_info(dicom_path):
                                         == ""
                                     ):
                                         # Only update study_info['RequestedProcedureDescription'] if it's empty
-                                        study_info[
-                                            "RequestedProcedureDescription"
-                                        ] = dcm.ProcedureCodeSequence[0].CodeMeaning
+                                        study_info["RequestedProcedureDescription"] = (
+                                            dcm.ProcedureCodeSequence[0].CodeMeaning
+                                        )
                                 except KeyError:
                                     # study_info['RequestedProcedureDescription'] isn't present, so add it
-                                    study_info[
-                                        "RequestedProcedureDescription"
-                                    ] = dcm.ProcedureCodeSequence[0].CodeMeaning
+                                    study_info["RequestedProcedureDescription"] = (
+                                        dcm.ProcedureCodeSequence[0].CodeMeaning
+                                    )
                                 except Exception:
                                     logger.debug(traceback.format_exc())
                         except AttributeError:
@@ -465,9 +465,9 @@ def _find_extra_info(dicom_path):
                             try:
                                 if study_info["SoftwareVersions"] == "":
                                     # Only update study_info['SoftwareVersions'] if it's empty
-                                    study_info[
-                                        "SoftwareVersions"
-                                    ] = dcm.SoftwareVersions
+                                    study_info["SoftwareVersions"] = (
+                                        dcm.SoftwareVersions
+                                    )
                             except KeyError:
                                 # study_info['SoftwareVersions'] doesn't exist yet, so create it
                                 study_info["SoftwareVersions"] = dcm.SoftwareVersions
@@ -481,14 +481,14 @@ def _find_extra_info(dicom_path):
                             try:
                                 if study_info["DeviceSerialNumber"] == "":
                                     # Only update study_info['DeviceSerialNumber'] if it's empty
-                                    study_info[
-                                        "SoftwareVersions"
-                                    ] = dcm.DeviceSerialNumber
+                                    study_info["SoftwareVersions"] = (
+                                        dcm.DeviceSerialNumber
+                                    )
                             except KeyError:
                                 # study_info['DeviceSerialNumber'] doesn't exist yet, so create it
-                                study_info[
-                                    "DeviceSerialNumber"
-                                ] = dcm.DeviceSerialNumber
+                                study_info["DeviceSerialNumber"] = (
+                                    dcm.DeviceSerialNumber
+                                )
                             except Exception:
                                 logger.debug(traceback.format_exc())
                     except AttributeError:
@@ -1337,14 +1337,18 @@ def _update_dicom_rdsr(
                                                                             container2b.ContentSequence.append(
                                                                                 source_container
                                                                             )
-                                                                        except TypeError:
+                                                                        except (
+                                                                            TypeError
+                                                                        ):
                                                                             # ContentSequence doesn't exist, so add it
                                                                             container2b.ContentSequence = Sequence(
                                                                                 [
                                                                                     source_container
                                                                                 ]
                                                                             )
-                                                                        except Exception:
+                                                                        except (
+                                                                            Exception
+                                                                        ):
                                                                             logger.debug(
                                                                                 traceback.format_exc()
                                                                             )
@@ -1589,14 +1593,18 @@ def _update_dicom_rdsr(
                                                                             container2b.ContentSequence.append(
                                                                                 source_container
                                                                             )
-                                                                        except TypeError:
+                                                                        except (
+                                                                            TypeError
+                                                                        ):
                                                                             # ContentSequence doesn't exist, so add it
                                                                             container2b.ContentSequence = Sequence(
                                                                                 [
                                                                                     source_container
                                                                                 ]
                                                                             )
-                                                                        except Exception:
+                                                                        except (
+                                                                            Exception
+                                                                        ):
                                                                             logger.debug(
                                                                                 traceback.format_exc()
                                                                             )

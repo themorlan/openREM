@@ -101,9 +101,7 @@ def populate_summary_ct():
         task = SummaryFields.objects.get(modality_type="CT")
     except ObjectDoesNotExist:
         task = SummaryFields.objects.create(modality_type="CT")
-    all_ct = GeneralStudyModuleAttr.objects.filter(modality_type="CT").order_by(
-        "pk"
-    )
+    all_ct = GeneralStudyModuleAttr.objects.filter(modality_type="CT").order_by("pk")
     task.total_studies = all_ct.count()
     to_process_ct = all_ct.filter(number_of_const_angle__isnull=True)
     task.current_study = task.total_studies - to_process_ct.count()
@@ -125,9 +123,7 @@ def populate_summary_mg():
         task = SummaryFields.objects.get(modality_type="MG")
     except ObjectDoesNotExist:
         task = SummaryFields.objects.create(modality_type="MG")
-    all_mg = GeneralStudyModuleAttr.objects.filter(modality_type="MG").order_by(
-        "pk"
-    )
+    all_mg = GeneralStudyModuleAttr.objects.filter(modality_type="MG").order_by("pk")
     task.total_studies = all_mg.count()
     to_process_mg = (
         all_mg.filter(total_agd_right__isnull=True)
@@ -177,9 +173,7 @@ def populate_summary_rf():
         task = SummaryFields.objects.get(modality_type="RF")
     except ObjectDoesNotExist:
         task = SummaryFields.objects.create(modality_type="RF")
-    all_rf = GeneralStudyModuleAttr.objects.filter(modality_type="RF").order_by(
-        "pk"
-    )
+    all_rf = GeneralStudyModuleAttr.objects.filter(modality_type="RF").order_by("pk")
     task.total_studies = all_rf.count()
     to_process_rf = all_rf.filter(number_of_events_a__isnull=True)
     task.current_study = task.total_studies - to_process_rf.count()

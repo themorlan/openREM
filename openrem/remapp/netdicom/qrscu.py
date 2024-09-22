@@ -1039,7 +1039,7 @@ def _query_images(
 
     im_rsp_no = 0
 
-    for (status, identifier) in responses:
+    for status, identifier in responses:
         if status:
             if status.Status == 0x0000:
                 logger.debug(
@@ -1151,7 +1151,7 @@ def _query_series(ae, remote, assoc, d2, studyrsp, query):
 
     se_rsp_no = 0
 
-    for (status, identifier) in responses:
+    for status, identifier in responses:
         if status:
             if status.Status == 0x0000:
                 logger.debug(
@@ -1265,7 +1265,7 @@ def _query_study(ae, remote, assoc, d, query, study_query_id):
 
     rspno = 0
 
-    for (status, identifier) in responses:
+    for status, identifier in responses:
         if status:
             if status.Status == 0x0000:
                 query.stage = _(
@@ -2066,7 +2066,7 @@ def _move_req(my_ae, assoc, d, study_no, series_no, query):
     completed_sub_ops = 0
     failed_sub_ops = 0
     warning_sub_ops = 0
-    for (status, identifier) in responses:
+    for status, identifier in responses:
         if status:
             # LO: Changed from status.NumberOfCompletedSubOperations to getattr
             #     status is actually the move-response and may not contain these items (e.g. in case of error)

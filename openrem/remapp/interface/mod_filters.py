@@ -121,7 +121,6 @@ def _dap_filter(queryset, name, value):
 
 
 class DateTimeOrderingFilter(django_filters.OrderingFilter):
-
     """Custom filter to order by date and time as they are two seperate fields"""
 
     def __init__(self, *args, **kwargs):
@@ -149,7 +148,6 @@ class DateTimeOrderingFilter(django_filters.OrderingFilter):
 
 
 class RFSummaryListFilter(django_filters.FilterSet):
-
     """Filter for fluoroscopy studies to display in web interface."""
 
     study_date__gt = django_filters.DateFilter(
@@ -312,7 +310,6 @@ class RFFilterPlusStdNames(RFSummaryListFilter):
 
 
 class RFFilterPlusPid(RFSummaryListFilter):
-
     """Adding patient name and ID to filter if permissions allow"""
 
     def __init__(self, *args, **kwargs):
@@ -356,7 +353,6 @@ EVENT_NUMBER_CHOICES = (
 
 
 def _specify_event_numbers(queryset, name, value):
-
     """Method filter for specifying number of events in each study
 
     :param queryset: Study list
@@ -402,7 +398,6 @@ def _specify_event_numbers(queryset, name, value):
 
 
 class CTSummaryListFilter(django_filters.FilterSet):
-
     """Filter for CT studies to display in web interface."""
 
     study_date__gt = django_filters.DateFilter(
@@ -595,7 +590,6 @@ class CTFilterPlusStdNames(CTSummaryListFilter):
 
 
 class CTFilterPlusPid(CTSummaryListFilter):
-
     """Adding patient name and ID to filter if permissions allow"""
 
     def __init__(self, *args, **kwargs):
@@ -654,7 +648,6 @@ def ct_acq_filter(filters, pid=False):
 
 
 class MGSummaryListFilter(django_filters.FilterSet):
-
     """Filter for mammography studies to display in web interface."""
 
     study_date__gt = django_filters.DateFilter(
@@ -841,7 +834,6 @@ class MGFilterPlusPidPlusStdNames(MGFilterPlusPid):
 
 
 class DXSummaryListFilter(django_filters.FilterSet):
-
     """Filter for DX studies to display in web interface."""
 
     study_date__gt = django_filters.DateFilter(
@@ -1012,7 +1004,6 @@ class DXFilterPlusStdNames(DXSummaryListFilter):
 
 
 class DXFilterPlusPid(DXSummaryListFilter):
-
     """Adding patient name and ID to filter if permissions allow"""
 
     def __init__(self, *args, **kwargs):
@@ -1217,7 +1208,6 @@ class NMSummaryListFilter(django_filters.FilterSet):
 
 
 class NMFilterPlusPid(NMSummaryListFilter):
-
     """Adding patient name and ID to filter if permissions allow"""
 
     def __init__(self, *args, **kwargs):
