@@ -181,9 +181,8 @@ def status_update_store(request):
             "<span class='sr-only'>Error:</span> Server is down - see status</h3>"
         )
         resp["delbutton"] = (
-            "<a class='btn btn-primary' href='{0}' role='button'>Delete</a>".format(
-                reverse_lazy("dicomstore_delete", kwargs={"pk": scp_pk})
-            )
+            f"<a class='btn btn-primary' href='{reverse_lazy('dicomstore_delete', kwargs={'pk': scp_pk})}' "
+            f"role='button'>Delete</a>"
         )
 
     return HttpResponse(json.dumps(resp), content_type="application/json")
@@ -304,12 +303,8 @@ def q_update(request):
             "</div></div></div></div>".format(__docs_version__)
         )
         resp["message"] = (
-            "<h4>Query complete - there are {1} studies we can move</h4> {0} {2} {3}".format(
-                tablestr,
-                study_rsp.count(),
-                query_details_text,
-                not_as_expected_help_text,
-            )
+            f"<h4>Query complete - there are {study_rsp.count()} studies we can move</h4> "
+            f"{tablestr} {query_details_text} {not_as_expected_help_text}"
         )
         resp["subops"] = ""
 
