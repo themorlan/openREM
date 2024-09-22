@@ -119,7 +119,7 @@ def _dap_filter(queryset, name, value):
 
 
 class DateTimeOrderingFilter(django_filters.OrderingFilter):
-    """Custom filter to order by date and time as they are two seperate fields"""
+    """Custom filter to order by date and time as they are two separate fields"""
 
     def __init__(self, *args, **kwargs):
         super(DateTimeOrderingFilter, self).__init__(*args, **kwargs)
@@ -612,6 +612,7 @@ class CTFilterPlusPidPlusStdNames(CTFilterPlusPid):
         )
     )
 
+
 def ct_acq_filter(filters, pid=False):
 
     # Obtain the system-level enable_standard_names setting
@@ -823,6 +824,7 @@ class MGFilterPlusPidPlusStdNames(MGFilterPlusPid):
         lookup_expr="icontains", label="Standard acquisition name"
     )
 
+
 def mg_acq_filter(filters, pid=False):
 
     # Obtain the system-level enable_standard_names setting
@@ -847,6 +849,7 @@ def mg_acq_filter(filters, pid=False):
         return MGSummaryListFilter(
             filters, studies.order_by("-study_date", "-study_time").distinct()
         )
+
 
 class DXSummaryListFilter(django_filters.FilterSet):
     """Filter for DX studies to display in web interface."""

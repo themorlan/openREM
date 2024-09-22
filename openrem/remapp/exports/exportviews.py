@@ -567,7 +567,7 @@ def mgxlsx1(request, name=None, pat_id=None):
     pid = include_pid(request, name, pat_id)
 
     if request.user.groups.filter(name="exportgroup"):
-        
+
         filter_dict = request.GET.dict()
         if "mg_acquisition_type" in filter_dict:
             filter_dict["mg_acquisition_type"] = request.GET.getlist(
@@ -586,6 +586,7 @@ def mgxlsx1(request, name=None, pat_id=None):
         logger.debug("Export MG to xlsx job is {0}".format(job.id))
 
     return redirect(reverse_lazy("export"))
+
 
 @csrf_exempt
 @login_required

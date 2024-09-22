@@ -507,10 +507,7 @@ def nmxlsx(filterdict, pid=False, name=None, patid=None, user=None):
         "pk",
         "number_of_events",
     ]
-    exam_int_field_names = [
-        "pk",
-        "Number of events"
-    ]
+    exam_int_field_names = ["pk", "Number of events"]
 
     # Exam-level object field names (string data, little or no repetition)
     exam_obj_fields = ["accession_number"]
@@ -544,7 +541,7 @@ def nmxlsx(filterdict, pid=False, name=None, patid=None, user=None):
 
     # Exam-level date field names and friendly name
     exam_date_fields = ["study_date"]
-    
+
     exam_date_field_names = ["Study date"]
 
     # Exam-level time field names and friendly name
@@ -575,8 +572,12 @@ def nmxlsx(filterdict, pid=False, name=None, patid=None, user=None):
         "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__administered_activity",
         "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__effective_dose",
         Coalesce(
-            F("radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__radiopharmaceutical_agent__code_meaning"),
-            F("radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__radiopharmaceutical_agent_string"),
+            F(
+                "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__radiopharmaceutical_agent__code_meaning"
+            ),
+            F(
+                "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__radiopharmaceutical_agent_string"
+            ),
         ),
         "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__radionuclide__code_meaning",
         "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__radiopharmaceutical_start_datetime",
@@ -609,28 +610,20 @@ def nmxlsx(filterdict, pid=False, name=None, patid=None, user=None):
     acquisition_cat_field_name_std_name = ""
 
     # Required acquisition-level value field names and friendly names
-    acquisition_val_fields = [
-    ]
-    acquisition_val_field_names = [
-    ]
+    acquisition_val_fields = []
+    acquisition_val_field_names = []
 
-    ct_dose_check_fields = [
-    ]
+    ct_dose_check_fields = []
 
-    ct_dose_check_field_names = [
-    ]
+    ct_dose_check_field_names = []
 
     # Fields for obtaining the acquisition protocols in the data
     fields_for_acquisition_frequency = [
         "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__pk",
         "study_description",
-    
     ]
 
-    field_names_for_acquisition_frequency = [
-        "pk",
-        "Acquisition protocol"
-    ]
+    field_names_for_acquisition_frequency = ["pk", "Acquisition protocol"]
 
     # Set acquisition-level acquisition standard name field and label to empty strings:
     # standard name feature not available for nuclear medicine at the moment.
@@ -638,7 +631,7 @@ def nmxlsx(filterdict, pid=False, name=None, patid=None, user=None):
     field_name_for_acquisition_frequency_std_name = ""
 
     # Force standard name feature off because standard name feature not available for nuclear medicine at the moment.
-    #enable_standard_names = are_standard_names_enabled()
+    # enable_standard_names = are_standard_names_enabled()
     enable_standard_names = False
 
     datestamp = datetime.datetime.now()
@@ -673,16 +666,45 @@ def nmxlsx(filterdict, pid=False, name=None, patid=None, user=None):
 
     tsk.progress = "{0} studies in query.".format(tsk.num_records)
     tsk.save()
-    export_using_pandas(acquisition_cat_field_name_std_name, acquisition_cat_field_names,
-                        acquisition_cat_field_std_name, acquisition_cat_fields,acquisition_int_field_names,
-                        acquisition_int_fields, acquisition_val_field_names, acquisition_val_fields, book,
-                        ct_dose_check_field_names, ct_dose_check_fields, datestamp, enable_standard_names,
-                        exam_cat_field_names, exam_cat_fields, exam_date_field_names, exam_date_fields,
-                        exam_int_field_names, exam_int_fields, exam_obj_field_names, exam_obj_fields,
-                        exam_time_field_names, exam_time_fields, exam_val_field_names, exam_val_fields,
-                        field_for_acquisition_frequency_std_name, field_name_for_acquisition_frequency_std_name,
-                        field_names_for_acquisition_frequency, fields_for_acquisition_frequency, modality, n_entries,
-                        name, patid, pid, qs, tmpxlsx, tsk)
+    export_using_pandas(
+        acquisition_cat_field_name_std_name,
+        acquisition_cat_field_names,
+        acquisition_cat_field_std_name,
+        acquisition_cat_fields,
+        acquisition_int_field_names,
+        acquisition_int_fields,
+        acquisition_val_field_names,
+        acquisition_val_fields,
+        book,
+        ct_dose_check_field_names,
+        ct_dose_check_fields,
+        datestamp,
+        enable_standard_names,
+        exam_cat_field_names,
+        exam_cat_fields,
+        exam_date_field_names,
+        exam_date_fields,
+        exam_int_field_names,
+        exam_int_fields,
+        exam_obj_field_names,
+        exam_obj_fields,
+        exam_time_field_names,
+        exam_time_fields,
+        exam_val_field_names,
+        exam_val_fields,
+        field_for_acquisition_frequency_std_name,
+        field_name_for_acquisition_frequency_std_name,
+        field_names_for_acquisition_frequency,
+        fields_for_acquisition_frequency,
+        modality,
+        n_entries,
+        name,
+        patid,
+        pid,
+        qs,
+        tmpxlsx,
+        tsk,
+    )
 
 
 def exportNM2excel(filterdict, pid=False, name=None, patid=None, user=None):

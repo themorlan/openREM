@@ -106,7 +106,7 @@ def text_and_date_formats(
 
     if modality == "RF":
         date_column += 1
-        
+
     if modality == "NM":
         date_column += 1
 
@@ -118,7 +118,7 @@ def text_and_date_formats(
         date_column + 1, date_column + 1, None, timeformat
     )  # allow time to be displayed.
 
-    #if pid and (name or patid):
+    # if pid and (name or patid):
     #    sheet.set_column(
     #        date_column + 2, date_column + 2, 10, dateformat
     #    )  # Birth date column [DJP: it isn't a date of birth column, it is a patient age column as a decimal]
@@ -241,7 +241,9 @@ def generate_sheets(
         column_names.append("Acquisition protocol")
 
         if enable_standard_names:
-            required_fields.append("irradeventxraydata__standard_protocols__standard_name")
+            required_fields.append(
+                "irradeventxraydata__standard_protocols__standard_name"
+            )
             column_names.append("Standard acquisition name")
 
         # Obtain a dataframe of all the acquisition protocols and standard acquisition names in the supplied studies
@@ -249,7 +251,7 @@ def generate_sheets(
             data=ProjectionXRayRadiationDose.objects.filter(
                 general_study_module_attributes__in=studies.values("pk")
             ).values_list(*required_fields),
-            columns=column_names
+            columns=column_names,
         )
 
     elif modality in "CT":
@@ -257,7 +259,9 @@ def generate_sheets(
         column_names.append("Acquisition protocol")
 
         if enable_standard_names:
-            required_fields.append("ctirradiationeventdata__standard_protocols__standard_name")
+            required_fields.append(
+                "ctirradiationeventdata__standard_protocols__standard_name"
+            )
             column_names.append("Standard acquisition name")
 
         # Obtain a dataframe of all the acquisition protocols and standard acquisition names in the supplied studies
@@ -265,17 +269,27 @@ def generate_sheets(
             data=CtRadiationDose.objects.filter(
                 general_study_module_attributes__in=studies.values("pk")
             ).values_list(*required_fields),
-            columns=column_names
+            columns=column_names,
         )
 
     # Obtain a list of the unique acquisition protocols. Replace any na or None values with "Unknown"
-    acq_protocols = acq_name_df.sort_values(by=["Acquisition protocol"])["Acquisition protocol"].fillna("Unknown").unique()
+    acq_protocols = (
+        acq_name_df.sort_values(by=["Acquisition protocol"])["Acquisition protocol"]
+        .fillna("Unknown")
+        .unique()
+    )
 
     protocols_list = list(acq_protocols)
 
     if enable_standard_names:
         # Obtain a list of the unique standard acquisition names. Drop any na or None values. Prepend "[standard] " to each entry
-        std_acq_protocols = acq_name_df.sort_values(by=["Standard acquisition name"])["Standard acquisition name"].dropna().unique()
+        std_acq_protocols = (
+            acq_name_df.sort_values(by=["Standard acquisition name"])[
+                "Standard acquisition name"
+            ]
+            .dropna()
+            .unique()
+        )
         std_acq_protocols = "[standard] " + std_acq_protocols
         protocols_list.extend(list(std_acq_protocols))
 
@@ -297,7 +311,7 @@ def generate_sheets(
                 name=name,
                 patid=patid,
                 modality=modality,
-                headers=protocol_headers
+                headers=protocol_headers,
             )
         else:
             if protocol not in sheet_list[tab_text]["protocolname"]:
@@ -636,7 +650,9 @@ def get_xray_filter_info(source):
         filters = ""
         filter_thicknesses = ""
         for current_filter in source.xrayfilters_set.all():
-            xray_filter_material = str(current_filter.xray_filter_material.code_meaning).lower()
+            xray_filter_material = str(
+                current_filter.xray_filter_material.code_meaning
+            ).lower()
             if "aluminum" in xray_filter_material:
                 filters += "Al"
             elif "copper" in xray_filter_material:
@@ -688,7 +704,7 @@ def get_anode_target_material(source):
     """
     try:
         anode_target_material = str(source.anode_target_material.code_meaning).lower()
-        
+
         if "molybdenum" in anode_target_material:
             anode = "Mo"
         elif "rhodium" in anode_target_material:
@@ -703,7 +719,6 @@ def get_anode_target_material(source):
     return anode
 
 
-
 def create_xlsx(task):
     """Function to create the xlsx temporary file
 
@@ -713,7 +728,14 @@ def create_xlsx(task):
 
     try:
         temp_xlsx = TemporaryFile()
-        book = Workbook(temp_xlsx, {"strings_to_numbers": False, "remove_timezone": True, "constant_memory": True})
+        book = Workbook(
+            temp_xlsx,
+            {
+                "strings_to_numbers": False,
+                "remove_timezone": True,
+                "constant_memory": True,
+            },
+        )
     except (OSError, IOError) as e:
         logger.error(
             "Error saving xlsx temporary file ({0}): {1}".format(e.errno, e.strerror)
@@ -827,28 +849,51 @@ def create_summary_sheet(
     # can be mapped to study description, requested procedure, and also to procedure. When we are counting up study
     # description and requested procedure occurences it is important to drop private key duplicates to avoid double
     # counting.
-    df = pd.DataFrame.from_records(data=studies.values_list(*required_fields), columns=column_names)
+    df = pd.DataFrame.from_records(
+        data=studies.values_list(*required_fields), columns=column_names
+    )
 
     # Get the study descriptions used and their frequency
-    study_description_frequency = df.drop_duplicates(subset="pk")["Study description"].value_counts(dropna=False).sort_index(ascending=True).sort_values(ascending=False)
+    study_description_frequency = (
+        df.drop_duplicates(subset="pk")["Study description"]
+        .value_counts(dropna=False)
+        .sort_index(ascending=True)
+        .sort_values(ascending=False)
+    )
     study_description_frequency = study_description_frequency.reset_index()
     study_description_frequency.columns = ["Study description", "Frequency"]
-    study_description_frequency["Frequency"] = study_description_frequency["Frequency"].astype("UInt32")
+    study_description_frequency["Frequency"] = study_description_frequency[
+        "Frequency"
+    ].astype("UInt32")
     study_description_frequency["BlankCol"] = None
 
     # Get the requested procedures used and their frequency
-    requested_procedure_frequency = df.drop_duplicates(subset="pk")["Requested procedure"].value_counts(dropna=False).sort_index(ascending=True).sort_values(ascending=False)
+    requested_procedure_frequency = (
+        df.drop_duplicates(subset="pk")["Requested procedure"]
+        .value_counts(dropna=False)
+        .sort_index(ascending=True)
+        .sort_values(ascending=False)
+    )
     requested_procedure_frequency = requested_procedure_frequency.reset_index()
     requested_procedure_frequency.columns = ["Requested procedure", "Frequency"]
-    requested_procedure_frequency["Frequency"] = requested_procedure_frequency["Frequency"].astype("UInt32")
+    requested_procedure_frequency["Frequency"] = requested_procedure_frequency[
+        "Frequency"
+    ].astype("UInt32")
     requested_procedure_frequency["BlankCol"] = None
 
     if enable_standard_names:
         # Get the standard study names used and their frequency
-        standard_study_name_frequency = df["Standard study name"].value_counts(dropna=False).sort_index(ascending=True).sort_values(ascending=False)
+        standard_study_name_frequency = (
+            df["Standard study name"]
+            .value_counts(dropna=False)
+            .sort_index(ascending=True)
+            .sort_values(ascending=False)
+        )
         standard_study_name_frequency = standard_study_name_frequency.reset_index()
         standard_study_name_frequency.columns = ["Standard study name", "Frequency"]
-        standard_study_name_frequency["Frequency"] = standard_study_name_frequency["Frequency"].astype("UInt32")
+        standard_study_name_frequency["Frequency"] = standard_study_name_frequency[
+            "Frequency"
+        ].astype("UInt32")
         standard_study_name_frequency["BlankCol"] = None
 
     # Get the acquisition protocols used and their frequency
@@ -856,67 +901,103 @@ def create_summary_sheet(
     column_names = []
     acq_df = None
     if modality in ["DX", "RF", "MG"]:
-        required_fields.extend([
-            "irradeventxraydata__pk",
-            "irradeventxraydata__acquisition_protocol"
-        ])
+        required_fields.extend(
+            ["irradeventxraydata__pk", "irradeventxraydata__acquisition_protocol"]
+        )
         column_names.extend(["pk", "Acquisition protocol"])
 
         if enable_standard_names:
-            required_fields.append("irradeventxraydata__standard_protocols__standard_name")
+            required_fields.append(
+                "irradeventxraydata__standard_protocols__standard_name"
+            )
             column_names.append("Standard acquisition name")
 
         acq_df = pd.DataFrame.from_records(
             data=ProjectionXRayRadiationDose.objects.filter(
                 general_study_module_attributes__in=studies.values("pk")
             ).values_list(*required_fields),
-            columns=column_names
+            columns=column_names,
         )
 
     elif modality in "CT":
-        required_fields.extend([
-            "ctirradiationeventdata__pk",
-            "ctirradiationeventdata__acquisition_protocol"
-        ])
+        required_fields.extend(
+            [
+                "ctirradiationeventdata__pk",
+                "ctirradiationeventdata__acquisition_protocol",
+            ]
+        )
         column_names.extend(["pk", "Acquisition protocol"])
 
         if enable_standard_names:
-            required_fields.append("ctirradiationeventdata__standard_protocols__standard_name")
+            required_fields.append(
+                "ctirradiationeventdata__standard_protocols__standard_name"
+            )
             column_names.append("Standard acquisition name")
 
         acq_df = pd.DataFrame.from_records(
             data=CtRadiationDose.objects.filter(
                 general_study_module_attributes__in=studies.values("pk")
             ).values_list(*required_fields),
-            columns=column_names
+            columns=column_names,
         )
 
     acquisition_protocol_frequency = None
     if len(required_fields) != 0:
 
-        acquisition_protocol_frequency = acq_df["Acquisition protocol"].value_counts(dropna=False).sort_index(ascending=True).sort_values(ascending=False).reset_index()
+        acquisition_protocol_frequency = (
+            acq_df["Acquisition protocol"]
+            .value_counts(dropna=False)
+            .sort_index(ascending=True)
+            .sort_values(ascending=False)
+            .reset_index()
+        )
         acquisition_protocol_frequency.columns = ["Acquisition protocol", "Frequency"]
-        acquisition_protocol_frequency["Frequency"] = acquisition_protocol_frequency["Frequency"].astype("UInt32")
+        acquisition_protocol_frequency["Frequency"] = acquisition_protocol_frequency[
+            "Frequency"
+        ].astype("UInt32")
         acquisition_protocol_frequency["BlankCol"] = None
 
         if enable_standard_names:
-            std_acquisition_protocol_frequency = acq_df["Standard acquisition name"].value_counts(dropna=False).sort_index(ascending=True).sort_values(ascending=False).reset_index()
-            std_acquisition_protocol_frequency.columns = ["Standard acquisition name", "Frequency"]
-            std_acquisition_protocol_frequency["Frequency"] = std_acquisition_protocol_frequency["Frequency"].astype("UInt32")
+            std_acquisition_protocol_frequency = (
+                acq_df["Standard acquisition name"]
+                .value_counts(dropna=False)
+                .sort_index(ascending=True)
+                .sort_values(ascending=False)
+                .reset_index()
+            )
+            std_acquisition_protocol_frequency.columns = [
+                "Standard acquisition name",
+                "Frequency",
+            ]
+            std_acquisition_protocol_frequency["Frequency"] = (
+                std_acquisition_protocol_frequency["Frequency"].astype("UInt32")
+            )
             std_acquisition_protocol_frequency["BlankCol"] = None
 
     # Now write the data to the worksheet
     # Write the column titles
     col_titles = [
-        "Study Description", "Frequency", "",
-        "Requested Procedure", "Frequency", "",
-        "Acquisition protocol", "Frequency", "",
+        "Study Description",
+        "Frequency",
+        "",
+        "Requested Procedure",
+        "Frequency",
+        "",
+        "Acquisition protocol",
+        "Frequency",
+        "",
     ]
     if enable_standard_names:
-        col_titles.extend([
-            "Standard Study Name", "Frequency", "",
-            "Standard Acquisition Name", "Frequency", "",
-        ])
+        col_titles.extend(
+            [
+                "Standard Study Name",
+                "Frequency",
+                "",
+                "Standard Acquisition Name",
+                "Frequency",
+                "",
+            ]
+        )
 
     summary_sheet.write_row(5, 0, col_titles)
 
@@ -928,23 +1009,37 @@ def create_summary_sheet(
     summary_sheet.set_column("M:M", 25)
 
     # Write the frequency data to the xlsx file
-    combined_df = pd.concat([
-        study_description_frequency,
-        requested_procedure_frequency,
-        acquisition_protocol_frequency
-    ], axis=1)
+    combined_df = pd.concat(
+        [
+            study_description_frequency,
+            requested_procedure_frequency,
+            acquisition_protocol_frequency,
+        ],
+        axis=1,
+    )
 
     if enable_standard_names:
-        combined_df = pd.concat([
-            combined_df, standard_study_name_frequency, std_acquisition_protocol_frequency
-        ], axis=1)
+        combined_df = pd.concat(
+            [
+                combined_df,
+                standard_study_name_frequency,
+                std_acquisition_protocol_frequency,
+            ],
+            axis=1,
+        )
 
     combined_df = combined_df.where(pd.notnull(combined_df), None)
 
     for idx in combined_df.index:
         summary_sheet.write_row(
-            idx + 6, 0, [None if x is pd.NA or not pd.notna(x) else x for x in combined_df.iloc[idx].to_list()]
+            idx + 6,
+            0,
+            [
+                None if x is pd.NA or not pd.notna(x) else x
+                for x in combined_df.iloc[idx].to_list()
+            ],
         )
+
 
 def abort_if_zero_studies(num_studies, tsk):
     """Function to update progress and status if filter is empty
@@ -1010,11 +1105,19 @@ def create_export_task(
     return task
 
 
-def transform_to_one_row_per_exam(df,
-                                  acquisition_cat_field_names, acquisition_int_field_names, acquisition_val_field_names,
-                                  exam_cat_field_names, exam_date_field_names, exam_int_field_names,
-                                  exam_obj_field_names, exam_time_field_names, exam_val_field_names,
-                                  all_field_names):
+def transform_to_one_row_per_exam(
+    df,
+    acquisition_cat_field_names,
+    acquisition_int_field_names,
+    acquisition_val_field_names,
+    exam_cat_field_names,
+    exam_date_field_names,
+    exam_int_field_names,
+    exam_obj_field_names,
+    exam_time_field_names,
+    exam_val_field_names,
+    all_field_names,
+):
     """Transform a DataFrame with one acquisition per row into a DataFrame with
     one exam per row, including all acquisitions for that exam.
     """
@@ -1051,7 +1154,9 @@ def transform_to_one_row_per_exam(df,
         # Remove the original standard study name column from the list of exam category field names and then
         # add the three standard name columns
         exam_cat_f_names.remove("Standard study name")
-        exam_cat_f_names.extend(["Standard study name 1", "Standard study name 2", "Standard study name 3"])
+        exam_cat_f_names.extend(
+            ["Standard study name 1", "Standard study name 2", "Standard study name 3"]
+        )
 
         # Make the exam_cat_f_names a categorical column (saves server memory)
         df[exam_cat_f_names] = df[exam_cat_f_names].astype("category")
@@ -1061,7 +1166,14 @@ def transform_to_one_row_per_exam(df,
 
     # Reformat the DataFrame so that we have one row per exam, with sets of columns for each acquisition data
     g = df.groupby("pk").cumcount().add(1)
-    exam_field_names = exam_cat_f_names + exam_obj_field_names + exam_date_field_names + exam_time_field_names + exam_int_field_names + exam_val_field_names
+    exam_field_names = (
+        exam_cat_f_names
+        + exam_obj_field_names
+        + exam_date_field_names
+        + exam_time_field_names
+        + exam_int_field_names
+        + exam_val_field_names
+    )
     exam_field_names.append(g)
     df = df.set_index(exam_field_names).unstack().sort_index(axis=1, level=1)
     df.columns = ["E{} {}".format(b, a) for a, b in df.columns]
@@ -1080,7 +1192,9 @@ def transform_to_one_row_per_exam(df,
         df.info()
 
     # Sort date by descending date and time
-    df.sort_values(by=["Study date", "Study time"], ascending=[False, False], inplace=True)
+    df.sort_values(
+        by=["Study date", "Study time"], ascending=[False, False], inplace=True
+    )
 
     return df
 
@@ -1089,9 +1203,15 @@ def create_standard_name_df_columns(df):
     num_std_names = len(df["Standard study name"].unique().categories)
 
     if num_std_names:
-        std_name_df = df.groupby("pk")["Standard study name"].apply(lambda x: pd.Series(list(x.unique()))).unstack()
+        std_name_df = (
+            df.groupby("pk")["Standard study name"]
+            .apply(lambda x: pd.Series(list(x.unique())))
+            .unstack()
+        )
         num_std_name_cols = len(std_name_df.columns)
-        std_name_df.columns = ["Standard study name {}".format(a + 1) for a in std_name_df.columns]
+        std_name_df.columns = [
+            "Standard study name {}".format(a + 1) for a in std_name_df.columns
+        ]
         std_name_df = std_name_df.reset_index()
 
         # Join the std_name_df to df using Study ID as an index
@@ -1131,9 +1251,16 @@ def create_standard_name_df_columns(df):
     return df
 
 
-def optimise_df_dtypes(df, acquisition_cat_field_names, acquisition_int_field_names, acquisition_val_field_names,
-                       exam_cat_field_names, exam_date_field_names, exam_int_field_names,
-                       exam_val_field_names):
+def optimise_df_dtypes(
+    df,
+    acquisition_cat_field_names,
+    acquisition_int_field_names,
+    acquisition_val_field_names,
+    exam_cat_field_names,
+    exam_date_field_names,
+    exam_int_field_names,
+    exam_val_field_names,
+):
     # Optimise the data frame types to minimise memory usage
     # Make DataFrame columns category type where appropriate
     cat_field_names = exam_cat_field_names + acquisition_cat_field_names
@@ -1175,6 +1302,7 @@ def write_row_to_acquisition_sheet(acq_df, acquisition, book, worksheet_log, mod
 
     worksheet_log[acquisition] = sheet_row
 
+
 def replace_long_target_with_short(x):
     x = str(x)
     if "molybdenum" in x.lower():
@@ -1184,6 +1312,7 @@ def replace_long_target_with_short(x):
     elif "tungsten" in x.lower():
         return "W"
     return x
+
 
 def replace_long_filter_with_short(x):
     x = str(x)
@@ -1209,16 +1338,45 @@ def replace_long_filter_with_short(x):
         return x
 
 
-def export_using_pandas(acquisition_cat_field_name_std_name, acquisition_cat_field_names,
-                        acquisition_cat_field_std_name, acquisition_cat_fields, acquisition_int_field_names,
-                        acquisition_int_fields, acquisition_val_field_names, acquisition_val_fields, book,
-                        ct_dose_check_field_names, ct_dose_check_fields, datestamp, enable_standard_names,
-                        exam_cat_field_names, exam_cat_fields, exam_date_field_names, exam_date_fields,
-                        exam_int_field_names, exam_int_fields, exam_obj_field_names, exam_obj_fields,
-                        exam_time_field_names, exam_time_fields, exam_val_field_names, exam_val_fields,
-                        field_for_acquisition_frequency_std_name, field_name_for_acquisition_frequency_std_name,
-                        field_names_for_acquisition_frequency, fields_for_acquisition_frequency, modality, n_entries,
-                        name, patid, pid, qs, tmpxlsx, tsk):
+def export_using_pandas(
+    acquisition_cat_field_name_std_name,
+    acquisition_cat_field_names,
+    acquisition_cat_field_std_name,
+    acquisition_cat_fields,
+    acquisition_int_field_names,
+    acquisition_int_fields,
+    acquisition_val_field_names,
+    acquisition_val_fields,
+    book,
+    ct_dose_check_field_names,
+    ct_dose_check_fields,
+    datestamp,
+    enable_standard_names,
+    exam_cat_field_names,
+    exam_cat_fields,
+    exam_date_field_names,
+    exam_date_fields,
+    exam_int_field_names,
+    exam_int_fields,
+    exam_obj_field_names,
+    exam_obj_fields,
+    exam_time_field_names,
+    exam_time_fields,
+    exam_val_field_names,
+    exam_val_fields,
+    field_for_acquisition_frequency_std_name,
+    field_name_for_acquisition_frequency_std_name,
+    field_names_for_acquisition_frequency,
+    fields_for_acquisition_frequency,
+    modality,
+    n_entries,
+    name,
+    patid,
+    pid,
+    qs,
+    tmpxlsx,
+    tsk,
+):
 
     # Add summary sheet and all data sheet
     summarysheet = book.add_worksheet("Summary")
@@ -1228,7 +1386,7 @@ def export_using_pandas(acquisition_cat_field_name_std_name, acquisition_cat_fie
     # Write the all data sheet
     # This code is taken from the ct_csv method...
     qs_chunk_size = 10000
-    
+
     if pid and name:
         exam_obj_fields.append("patientmoduleattr__patient_name")
         exam_obj_field_names.append("Patient name")
@@ -1236,7 +1394,7 @@ def export_using_pandas(acquisition_cat_field_name_std_name, acquisition_cat_fie
     if pid and patid:
         exam_obj_fields.append("patientmoduleattr__patient_id")
         exam_obj_field_names.append("Patient ID")
-        
+
     if pid and (patid or name):
         exam_obj_fields.append("patientmoduleattr__patient_birth_date")
         exam_obj_field_names.append("Patient date of birth")
@@ -1247,11 +1405,31 @@ def export_using_pandas(acquisition_cat_field_name_std_name, acquisition_cat_fie
         acquisition_cat_fields.append(acquisition_cat_field_std_name)
         acquisition_cat_field_names.append(acquisition_cat_field_name_std_name)
 
-    exam_fields = exam_cat_fields + exam_obj_fields + exam_date_fields + exam_time_fields + exam_int_fields + exam_val_fields
-    acquisition_fields = acquisition_int_fields + acquisition_cat_fields + acquisition_val_fields
+    exam_fields = (
+        exam_cat_fields
+        + exam_obj_fields
+        + exam_date_fields
+        + exam_time_fields
+        + exam_int_fields
+        + exam_val_fields
+    )
+    acquisition_fields = (
+        acquisition_int_fields + acquisition_cat_fields + acquisition_val_fields
+    )
     all_fields = exam_fields + acquisition_fields
-    exam_field_names = exam_cat_field_names + exam_obj_field_names + exam_date_field_names + exam_time_field_names + exam_int_field_names + exam_val_field_names
-    acquisition_field_names = acquisition_int_field_names + acquisition_cat_field_names + acquisition_val_field_names
+    exam_field_names = (
+        exam_cat_field_names
+        + exam_obj_field_names
+        + exam_date_field_names
+        + exam_time_field_names
+        + exam_int_field_names
+        + exam_val_field_names
+    )
+    acquisition_field_names = (
+        acquisition_int_field_names
+        + acquisition_cat_field_names
+        + acquisition_val_field_names
+    )
     all_field_names = exam_field_names + acquisition_field_names
 
     # Create a series of DataFrames by chunking the queryset into groups of accession numbers.
@@ -1269,18 +1447,25 @@ def export_using_pandas(acquisition_cat_field_name_std_name, acquisition_cat_fie
         column_names.append(field_name_for_acquisition_frequency_std_name)
 
     acq_df = pd.DataFrame.from_records(
-        data=qs.values_list(*required_fields),
-        columns=column_names
+        data=qs.values_list(*required_fields), columns=column_names
     )
     acq_df["Acquisition protocol"] = acq_df["Acquisition protocol"].astype("category")
 
     if enable_standard_names:
-        acq_df["Standard acquisition name"] = acq_df["Standard acquisition name"].astype("category")
+        acq_df["Standard acquisition name"] = acq_df[
+            "Standard acquisition name"
+        ].astype("category")
 
-    required_sheets = acq_df.sort_values("Acquisition protocol")["Acquisition protocol"].unique()
+    required_sheets = acq_df.sort_values("Acquisition protocol")[
+        "Acquisition protocol"
+    ].unique()
 
     if enable_standard_names:
-        std_name_sheets = acq_df.sort_values("Standard acquisition name")["Standard acquisition name"].dropna().unique()
+        std_name_sheets = (
+            acq_df.sort_values("Standard acquisition name")["Standard acquisition name"]
+            .dropna()
+            .unique()
+        )
         std_name_sheets = "[standard] " + std_name_sheets.categories
         required_sheets = np.concatenate((required_sheets, std_name_sheets))
 
@@ -1300,23 +1485,44 @@ def export_using_pandas(acquisition_cat_field_name_std_name, acquisition_cat_fie
     # Generate a list of non-null accession numbers
     filtering_criteria = "accession_number__in"
     values_for_filtering = [
-        x[0] for x in qs.order_by("-study_date", "-study_time").filter(accession_number__isnull=False).values_list(
-            "accession_number"
-        )
+        x[0]
+        for x in qs.order_by("-study_date", "-study_time")
+        .filter(accession_number__isnull=False)
+        .values_list("accession_number")
     ]
     values_field_list = all_fields + ct_dose_check_fields
     field_names_list = all_field_names + ct_dose_check_field_names
     n_entries = len(values_for_filtering)
     extra_msg_txt = ""
 
-    current_row = write_out_data_as_chunks(acquisition_cat_field_names, acquisition_int_field_names,
-                                           acquisition_val_field_names, all_field_names, book,
-                                           ct_dose_check_field_names, current_row, enable_standard_names,
-                                           exam_cat_field_names, exam_date_field_names, exam_int_field_names,
-                                           exam_obj_field_names, exam_time_field_names, exam_val_field_names,
-                                           extra_msg_txt, field_names_list, filtering_criteria, modality, n_entries, qs,
-                                           qs_chunk_size, tsk, values_field_list, values_for_filtering, worksheet_log,
-                                           wsalldata)
+    current_row = write_out_data_as_chunks(
+        acquisition_cat_field_names,
+        acquisition_int_field_names,
+        acquisition_val_field_names,
+        all_field_names,
+        book,
+        ct_dose_check_field_names,
+        current_row,
+        enable_standard_names,
+        exam_cat_field_names,
+        exam_date_field_names,
+        exam_int_field_names,
+        exam_obj_field_names,
+        exam_time_field_names,
+        exam_val_field_names,
+        extra_msg_txt,
+        field_names_list,
+        filtering_criteria,
+        modality,
+        n_entries,
+        qs,
+        qs_chunk_size,
+        tsk,
+        values_field_list,
+        values_for_filtering,
+        worksheet_log,
+        wsalldata,
+    )
 
     # Now write out any None accession number data if any such data is present
     fields_for_none_accession = all_fields
@@ -1328,23 +1534,44 @@ def export_using_pandas(acquisition_cat_field_name_std_name, acquisition_cat_fie
     # Generate a list of non-null private keys
     filtering_criteria = "pk__in"
     values_for_filtering = [
-        x[0] for x in qs.order_by("-study_date", "-study_time").filter(accession_number__isnull=True).values_list(
-            "pk"
-        )
+        x[0]
+        for x in qs.order_by("-study_date", "-study_time")
+        .filter(accession_number__isnull=True)
+        .values_list("pk")
     ]
     values_field_list = fields_for_none_accession
     field_names_list = field_names_for_non_accession
     n_entries = len(values_for_filtering)
     extra_msg_txt = "no "
 
-    current_row = write_out_data_as_chunks(acquisition_cat_field_names, acquisition_int_field_names,
-                                           acquisition_val_field_names, all_field_names, book,
-                                           ct_dose_check_field_names, current_row, enable_standard_names,
-                                           exam_cat_field_names, exam_date_field_names, exam_int_field_names,
-                                           exam_obj_field_names, exam_time_field_names, exam_val_field_names,
-                                           extra_msg_txt, field_names_list, filtering_criteria, modality, n_entries, qs,
-                                           qs_chunk_size, tsk, values_field_list, values_for_filtering, worksheet_log,
-                                           wsalldata)
+    current_row = write_out_data_as_chunks(
+        acquisition_cat_field_names,
+        acquisition_int_field_names,
+        acquisition_val_field_names,
+        all_field_names,
+        book,
+        ct_dose_check_field_names,
+        current_row,
+        enable_standard_names,
+        exam_cat_field_names,
+        exam_date_field_names,
+        exam_int_field_names,
+        exam_obj_field_names,
+        exam_time_field_names,
+        exam_val_field_names,
+        extra_msg_txt,
+        field_names_list,
+        filtering_criteria,
+        modality,
+        n_entries,
+        qs,
+        qs_chunk_size,
+        tsk,
+        values_field_list,
+        values_for_filtering,
+        worksheet_log,
+        wsalldata,
+    )
 
     # Now create the summary sheet
     create_summary_sheet(tsk, qs, book, summarysheet, modality=modality)
@@ -1354,16 +1581,40 @@ def export_using_pandas(acquisition_cat_field_name_std_name, acquisition_cat_fie
     book.close()
     tsk.progress = "XLSX book written."
     tsk.save()
-    xlsxfilename = "{0}export{1}.xlsx".format(modality.lower(), datestamp.strftime("%Y%m%d-%H%M%S%f"))
+    xlsxfilename = "{0}export{1}.xlsx".format(
+        modality.lower(), datestamp.strftime("%Y%m%d-%H%M%S%f")
+    )
     write_export(tsk, xlsxfilename, tmpxlsx, datestamp)
 
 
-def write_out_data_as_chunks(acquisition_cat_field_names, acquisition_int_field_names, acquisition_val_field_names,
-                             all_field_names, book, ct_dose_check_field_names, current_row, enable_standard_names,
-                             exam_cat_field_names, exam_date_field_names, exam_int_field_names, exam_obj_field_names,
-                             exam_time_field_names, exam_val_field_names, extra_msg_txt, field_names_list,
-                             filtering_criteria, modality, n_entries, qs, qs_chunk_size, tsk, values_field_list,
-                             values_for_filtering, worksheet_log, wsalldata):
+def write_out_data_as_chunks(
+    acquisition_cat_field_names,
+    acquisition_int_field_names,
+    acquisition_val_field_names,
+    all_field_names,
+    book,
+    ct_dose_check_field_names,
+    current_row,
+    enable_standard_names,
+    exam_cat_field_names,
+    exam_date_field_names,
+    exam_int_field_names,
+    exam_obj_field_names,
+    exam_time_field_names,
+    exam_val_field_names,
+    extra_msg_txt,
+    field_names_list,
+    filtering_criteria,
+    modality,
+    n_entries,
+    qs,
+    qs_chunk_size,
+    tsk,
+    values_field_list,
+    values_for_filtering,
+    worksheet_log,
+    wsalldata,
+):
 
     for chunk_min_idx in range(0, n_entries, qs_chunk_size):
 
@@ -1376,7 +1627,9 @@ def write_out_data_as_chunks(acquisition_cat_field_names, acquisition_int_field_
         )
         tsk.save()
 
-        filter_dict = {filtering_criteria: values_for_filtering[chunk_min_idx:chunk_max_idx]}
+        filter_dict = {
+            filtering_criteria: values_for_filtering[chunk_min_idx:chunk_max_idx]
+        }
         data = qs.order_by().filter(**filter_dict).values_list(*(values_field_list))
 
         if data.exists():
@@ -1385,14 +1638,19 @@ def write_out_data_as_chunks(acquisition_cat_field_names, acquisition_int_field_
 
             df_unprocessed = pd.DataFrame.from_records(
                 data=data,
-                columns=(field_names_list), coerce_float=True,
+                columns=(field_names_list),
+                coerce_float=True,
             )
 
             if modality in ["NM"]:
                 df_unprocessed = create_nm_columns(qs, filter_dict, df_unprocessed)
 
             if modality in ["CT"]:
-                fields_to_remove = ["Dose check alerts", "S1 Source name", "S2 Source name"]
+                fields_to_remove = [
+                    "Dose check alerts",
+                    "S1 Source name",
+                    "S2 Source name",
+                ]
                 for field_name in fields_to_remove:
                     if field_name in acquisition_cat_field_names:
                         acquisition_cat_field_names.remove(field_name)
@@ -1403,14 +1661,25 @@ def write_out_data_as_chunks(acquisition_cat_field_names, acquisition_int_field_
                         acquisition_cat_field_names.append(field_name)
 
                 fields_to_remove = [
-                    "S1 kVp", "S1 mA", "S1 Maximum mA", "S1 Exposure time per rotation",
-                    "S2 kVp", "S2 mA", "S2 Maximum mA", "S2 Exposure time per rotation"
+                    "S1 kVp",
+                    "S1 mA",
+                    "S1 Maximum mA",
+                    "S1 Exposure time per rotation",
+                    "S2 kVp",
+                    "S2 mA",
+                    "S2 Maximum mA",
+                    "S2 Exposure time per rotation",
                 ]
                 for field_name in fields_to_remove:
                     if field_name in acquisition_val_field_names:
                         acquisition_val_field_names.remove(field_name)
 
-                fields_to_add = ["kVp", "mA", "Maximum mA", "Exposure time per rotation"]
+                fields_to_add = [
+                    "kVp",
+                    "mA",
+                    "Maximum mA",
+                    "Exposure time per rotation",
+                ]
                 for field_name in fields_to_add:
                     if field_name not in acquisition_val_field_names:
                         acquisition_val_field_names.append(field_name)
@@ -1421,24 +1690,36 @@ def write_out_data_as_chunks(acquisition_cat_field_names, acquisition_int_field_
                     if field_name in acquisition_cat_field_names:
                         acquisition_cat_field_names.remove(field_name)
 
-            optimise_df_dtypes(df_unprocessed,
-                               acquisition_cat_field_names, acquisition_int_field_names, acquisition_val_field_names,
-                               exam_cat_field_names, exam_date_field_names, exam_int_field_names, exam_val_field_names)
+            optimise_df_dtypes(
+                df_unprocessed,
+                acquisition_cat_field_names,
+                acquisition_int_field_names,
+                acquisition_val_field_names,
+                exam_cat_field_names,
+                exam_date_field_names,
+                exam_int_field_names,
+                exam_val_field_names,
+            )
 
             transform_dap_uas_units(df_unprocessed)
 
             if modality in ["CT"]:
-                df_unprocessed = create_dose_check_and_source_columns(acquisition_cat_field_names,
-                                                                      acquisition_val_field_names,
-                                                                      ct_dose_check_field_names, df_unprocessed)
+                df_unprocessed = create_dose_check_and_source_columns(
+                    acquisition_cat_field_names,
+                    acquisition_val_field_names,
+                    ct_dose_check_field_names,
+                    df_unprocessed,
+                )
 
             if modality in ["MG"]:
                 df_unprocessed = create_image_view_modifier_column(df_unprocessed)
                 df_unprocessed = create_mg_pulse_columns(df_unprocessed)
                 df_unprocessed = create_target_column(df_unprocessed)
-                
+
             if modality in ["DX", "MG"]:
-                df_unprocessed = create_filter_columns(acquisition_cat_field_names, df_unprocessed)
+                df_unprocessed = create_filter_columns(
+                    acquisition_cat_field_names, df_unprocessed
+                )
 
                 fields_to_remove = ["Filter thickness min", "Filter thickness max"]
                 for field_name in fields_to_remove:
@@ -1449,10 +1730,17 @@ def write_out_data_as_chunks(acquisition_cat_field_names, acquisition_int_field_
 
             df = transform_to_one_row_per_exam(
                 df_unprocessed,
-                acquisition_cat_field_names, acquisition_int_field_names, acquisition_val_field_names,
-                exam_cat_field_names, exam_date_field_names, exam_int_field_names,
-                exam_obj_field_names, exam_time_field_names, exam_val_field_names,
-                all_field_names)
+                acquisition_cat_field_names,
+                acquisition_int_field_names,
+                acquisition_val_field_names,
+                exam_cat_field_names,
+                exam_date_field_names,
+                exam_int_field_names,
+                exam_obj_field_names,
+                exam_time_field_names,
+                exam_val_field_names,
+                all_field_names,
+            )
 
             # Write the headings to the sheet (over-writing each time, but this ensures we'll include the study
             # with the most events without doing anything complicated to generate the headings)
@@ -1465,7 +1753,7 @@ def write_out_data_as_chunks(acquisition_cat_field_names, acquisition_int_field_
 
             if modality in ["NM"]:
                 transform_nm_datetime_columns(book, wsalldata, df)
-                
+
             transform_datetime_columns(book, wsalldata, df)
 
             # Write out data to the acquisition protocol sheets
@@ -1477,16 +1765,21 @@ def write_out_data_as_chunks(acquisition_cat_field_names, acquisition_int_field_
             df.drop_duplicates(subset="Acquisition pk", inplace=True)
 
             # Sort the data by descending date and time
-            df.sort_values(by=["Study date", "Study time"], ascending=[False, False], inplace=True)
+            df.sort_values(
+                by=["Study date", "Study time"], ascending=[False, False], inplace=True
+            )
 
             write_acquisition_data(book, df, worksheet_log, modality)
 
-            write_standard_acquisition_data(book, df, enable_standard_names, worksheet_log, modality)
+            write_standard_acquisition_data(
+                book, df, enable_standard_names, worksheet_log, modality
+            )
 
     return current_row
 
+
 def create_nm_columns(qs, filter_dict, df_unprocessed):
-    
+
     # person_participant
     person_participant_val_fields = [
         "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__personparticipant__person_name",
@@ -1508,16 +1801,30 @@ def create_nm_columns(qs, filter_dict, df_unprocessed):
         "Person Participant pk",
     ]
 
-    person_participant_values_field_list = person_participant_int_fields + person_participant_val_fields
-    person_participant_field_names_list = person_participant_int_fields_names + person_participant_val_fields_names
+    person_participant_values_field_list = (
+        person_participant_int_fields + person_participant_val_fields
+    )
+    person_participant_field_names_list = (
+        person_participant_int_fields_names + person_participant_val_fields_names
+    )
 
-    df_unprocessed = create_multiindex_columns(qs, filter_dict, df_unprocessed, person_participant_values_field_list, person_participant_field_names_list)
+    df_unprocessed = create_multiindex_columns(
+        qs,
+        filter_dict,
+        df_unprocessed,
+        person_participant_values_field_list,
+        person_participant_field_names_list,
+    )
 
     # organ_dose
     organ_dose_val_fields = [
         Coalesce(
-            F("radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__organdose__reference_authority_code_id__code_meaning"),
-            F("radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__organdose__reference_authority_text"),
+            F(
+                "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__organdose__reference_authority_code_id__code_meaning"
+            ),
+            F(
+                "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__organdose__reference_authority_text"
+            ),
         ),
         "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__organdose__finding_site__code_meaning",
         "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__organdose__laterality__code_meaning",
@@ -1546,9 +1853,17 @@ def create_nm_columns(qs, filter_dict, df_unprocessed):
     ]
 
     organ_dose_values_field_list = organ_dose_int_fields + organ_dose_val_fields
-    organ_dose_field_names_list = organ_dose_int_fields_names + organ_dose_val_fields_names
+    organ_dose_field_names_list = (
+        organ_dose_int_fields_names + organ_dose_val_fields_names
+    )
 
-    df_unprocessed = create_multiindex_columns(qs, filter_dict, df_unprocessed, organ_dose_values_field_list, organ_dose_field_names_list)
+    df_unprocessed = create_multiindex_columns(
+        qs,
+        filter_dict,
+        df_unprocessed,
+        organ_dose_values_field_list,
+        organ_dose_field_names_list,
+    )
 
     # patient_state
     patient_state_val_fields = [
@@ -1569,10 +1884,20 @@ def create_nm_columns(qs, filter_dict, df_unprocessed):
         "Organ Dose pk",
     ]
 
-    patient_state_values_field_list = patient_state_int_fields + patient_state_val_fields
-    patient_state_field_names_list = patient_state_int_fields_names + patient_state_val_fields_names
+    patient_state_values_field_list = (
+        patient_state_int_fields + patient_state_val_fields
+    )
+    patient_state_field_names_list = (
+        patient_state_int_fields_names + patient_state_val_fields_names
+    )
 
-    df_unprocessed = create_multiindex_columns(qs, filter_dict, df_unprocessed, patient_state_values_field_list, patient_state_field_names_list)
+    df_unprocessed = create_multiindex_columns(
+        qs,
+        filter_dict,
+        df_unprocessed,
+        patient_state_values_field_list,
+        patient_state_field_names_list,
+    )
 
     # glomerular
     glomerular_val_fields = [
@@ -1598,9 +1923,17 @@ def create_nm_columns(qs, filter_dict, df_unprocessed):
     ]
 
     glomerular_values_field_list = glomerular_int_fields + glomerular_val_fields
-    glomerular_field_names_list = glomerular_int_fields_names + glomerular_val_fields_names
+    glomerular_field_names_list = (
+        glomerular_int_fields_names + glomerular_val_fields_names
+    )
 
-    df_unprocessed = create_multiindex_columns(qs, filter_dict, df_unprocessed, glomerular_values_field_list, glomerular_field_names_list)
+    df_unprocessed = create_multiindex_columns(
+        qs,
+        filter_dict,
+        df_unprocessed,
+        glomerular_values_field_list,
+        glomerular_field_names_list,
+    )
 
     # pet_series
     pet_series_val_fields = [
@@ -1640,109 +1973,244 @@ def create_nm_columns(qs, filter_dict, df_unprocessed):
     ]
 
     pet_series_values_field_list = pet_series_int_fields + pet_series_val_fields
-    pet_series_field_names_list = pet_series_int_fields_names + pet_series_val_fields_names
+    pet_series_field_names_list = (
+        pet_series_int_fields_names + pet_series_val_fields_names
+    )
 
-    df_unprocessed = create_multiindex_columns(qs, filter_dict, df_unprocessed, pet_series_values_field_list, pet_series_field_names_list)
+    df_unprocessed = create_multiindex_columns(
+        qs,
+        filter_dict,
+        df_unprocessed,
+        pet_series_values_field_list,
+        pet_series_field_names_list,
+    )
 
     return df_unprocessed
 
-def create_multiindex_columns(qs, filter_dict, df_unprocessed, secondary_values_field_list, secondary_field_names_list):
-    organ_dose_data = qs.order_by().filter(**filter_dict).values_list(*(secondary_values_field_list))
+
+def create_multiindex_columns(
+    qs,
+    filter_dict,
+    df_unprocessed,
+    secondary_values_field_list,
+    secondary_field_names_list,
+):
+    organ_dose_data = (
+        qs.order_by().filter(**filter_dict).values_list(*(secondary_values_field_list))
+    )
     df_unprocessed_organ_dose = pd.DataFrame.from_records(
         data=organ_dose_data,
-        columns=(secondary_field_names_list), coerce_float=True,
+        columns=(secondary_field_names_list),
+        coerce_float=True,
     )
 
     df_pivot = df_unprocessed_organ_dose.pivot_table(
-        index='Acquisition pk',
-        fill_value='',
-        columns=df_unprocessed_organ_dose.groupby('Acquisition pk').cumcount() + 1,
+        index="Acquisition pk",
+        fill_value="",
+        columns=df_unprocessed_organ_dose.groupby("Acquisition pk").cumcount() + 1,
         values=secondary_field_names_list,
-        aggfunc='first'
+        aggfunc="first",
     )
 
     df_pivot.columns = [f"{a} {b}" for a, b in df_pivot.columns]
-    sorted_columns = sorted(df_pivot.columns, key=lambda x: int(x.rsplit(' ', 1)[1]))
+    sorted_columns = sorted(df_pivot.columns, key=lambda x: int(x.rsplit(" ", 1)[1]))
     df_pivot = df_pivot[sorted_columns]
-    df_unprocessed = df_unprocessed.merge(df_pivot, on='Acquisition pk', how='left')
+    df_unprocessed = df_unprocessed.merge(df_pivot, on="Acquisition pk", how="left")
 
     return df_unprocessed
+
 
 def transform_datetime_columns(book, sheet, df):
     dateformat = book.add_format({"num_format": settings.XLSX_DATE})
     timeformat = book.add_format({"num_format": settings.XLSX_TIME})
-    conditionaldateformat = {'type': 'no_blanks', 'format': dateformat}
-    conditionaltimeformat = {'type': 'no_blanks', 'format': timeformat}
+    conditionaldateformat = {"type": "no_blanks", "format": dateformat}
+    conditionaltimeformat = {"type": "no_blanks", "format": timeformat}
     maxrows = 1048575
 
     for column in df.columns:
         if " date" in column.lower():
             date_column = df.columns.get_loc(column)
-            sheet.conditional_format(1, date_column, maxrows, date_column, conditionaldateformat)
+            sheet.conditional_format(
+                1, date_column, maxrows, date_column, conditionaldateformat
+            )
         if "study time" in column.lower():
             date_column = df.columns.get_loc(column)
-            sheet.conditional_format(1, date_column, maxrows, date_column, conditionaltimeformat)
+            sheet.conditional_format(
+                1, date_column, maxrows, date_column, conditionaltimeformat
+            )
+
 
 def transform_nm_datetime_columns(book, sheet, df):
     datetimeformat = book.add_format(
         {"num_format": f"{settings.XLSX_DATE} {settings.XLSX_TIME}"}
     )
-    conditionaldatetimeformat = {'type': 'no_blanks', 'format': datetimeformat}
+    conditionaldatetimeformat = {"type": "no_blanks", "format": datetimeformat}
     maxrows = 1048575
-    datetimecolumns = ["Radiopharmaceutical Start Time", "Radiopharmaceutical Stop Time", "PET Series Datetime"]
+    datetimecolumns = [
+        "Radiopharmaceutical Start Time",
+        "Radiopharmaceutical Stop Time",
+        "PET Series Datetime",
+    ]
 
     for column in df.columns:
         for datetimecolumn in datetimecolumns:
             if datetimecolumn in column:
                 date_column = df.columns.get_loc(column)
-                sheet.conditional_format(1, date_column, maxrows, date_column, conditionaldatetimeformat)
+                sheet.conditional_format(
+                    1, date_column, maxrows, date_column, conditionaldatetimeformat
+                )
+
 
 def create_image_view_modifier_column(df_unprocessed):
-    df_unprocessed["View Modifier"] = df_unprocessed[df_unprocessed["View Modifier"].notnull()].drop_duplicates(["Acquisition pk", "View Modifier pk"]).sort_values(by=["Acquisition pk"], ascending=[True], inplace=False).groupby(["Acquisition pk"])["View Modifier"].transform(lambda x: ",".join(x))
+    df_unprocessed["View Modifier"] = (
+        df_unprocessed[df_unprocessed["View Modifier"].notnull()]
+        .drop_duplicates(["Acquisition pk", "View Modifier pk"])
+        .sort_values(by=["Acquisition pk"], ascending=[True], inplace=False)
+        .groupby(["Acquisition pk"])["View Modifier"]
+        .transform(lambda x: ",".join(x))
+    )
 
     return df_unprocessed
+
 
 def create_mg_pulse_columns(df_unprocessed):
-    df_unprocessed["kVp Concatenated"] = df_unprocessed[df_unprocessed["kVp"].notnull()].drop_duplicates(["Acquisition pk", "kVp pk"]).sort_values(by=["kVp pk"], ascending=[True], inplace=False).groupby(["Acquisition pk"])["kVp"].transform(lambda x: " | ".join(map(str, x)))
-    df_unprocessed["uAs Concatenated"] = df_unprocessed[df_unprocessed["uAs"].notnull()].drop_duplicates(["Acquisition pk", "exposure pk"]).sort_values(by=["exposure pk"], ascending=[True], inplace=False).groupby(["Acquisition pk"])["uAs"].transform(lambda x: " | ".join(map(str, x)))
-    df_unprocessed["ms Concatenated"] = df_unprocessed[df_unprocessed["ms"].notnull()].drop_duplicates(["Acquisition pk", "pulsewidth pk"]).sort_values(by=["pulsewidth pk"], ascending=[True], inplace=False).groupby(["Acquisition pk"])["ms"].transform(lambda x: " | ".join(map(str, x)))
-    df_unprocessed["mA Concatenated"] = df_unprocessed[df_unprocessed["mA"].notnull()].drop_duplicates(["Acquisition pk", "xraytubecurrent pk"]).sort_values(by=["xraytubecurrent pk"], ascending=[True], inplace=False).groupby(["Acquisition pk"])["mA"].transform(lambda x: " | ".join(map(str, x)))
-    
-    df_unprocessed["kVp Mean"] = df_unprocessed[df_unprocessed["kVp"].notnull()].drop_duplicates(["Acquisition pk", "kVp pk"]).sort_values(by=["kVp pk"], ascending=[True], inplace=False).groupby(["Acquisition pk"])["kVp"].transform('mean')
-    df_unprocessed["uAs Mean"] = df_unprocessed[df_unprocessed["uAs"].notnull()].drop_duplicates(["Acquisition pk", "exposure pk"]).sort_values(by=["exposure pk"], ascending=[True], inplace=False).groupby(["Acquisition pk"])["uAs"].transform('mean')
-    df_unprocessed["ms Mean"] = df_unprocessed[df_unprocessed["ms"].notnull()].drop_duplicates(["Acquisition pk", "pulsewidth pk"]).sort_values(by=["pulsewidth pk"], ascending=[True], inplace=False).groupby(["Acquisition pk"])["ms"].transform('mean')
-    df_unprocessed["mA Mean"] = df_unprocessed[df_unprocessed["mA"].notnull()].drop_duplicates(["Acquisition pk", "xraytubecurrent pk"]).sort_values(by=["xraytubecurrent pk"], ascending=[True], inplace=False).groupby(["Acquisition pk"])["mA"].transform('mean')
-    
-    df_unprocessed["kVp"] = df_unprocessed[df_unprocessed["kVp"].notnull()].drop_duplicates(["Acquisition pk", "kVp pk"]).sort_values(by=["kVp pk"], ascending=[True], inplace=False).groupby(["Acquisition pk"])["kVp"].transform('first')
-    df_unprocessed["uAs"] = df_unprocessed[df_unprocessed["uAs"].notnull()].drop_duplicates(["Acquisition pk", "exposure pk"]).sort_values(by=["exposure pk"], ascending=[True], inplace=False).groupby(["Acquisition pk"])["uAs"].transform('first')
-    df_unprocessed["ms"] = df_unprocessed[df_unprocessed["ms"].notnull()].drop_duplicates(["Acquisition pk", "pulsewidth pk"]).sort_values(by=["pulsewidth pk"], ascending=[True], inplace=False).groupby(["Acquisition pk"])["ms"].transform('first')
-    df_unprocessed["mA"] = df_unprocessed[df_unprocessed["mA"].notnull()].drop_duplicates(["Acquisition pk", "xraytubecurrent pk"]).sort_values(by=["xraytubecurrent pk"], ascending=[True], inplace=False).groupby(["Acquisition pk"])["mA"].transform('first')
-    
+    df_unprocessed["kVp Concatenated"] = (
+        df_unprocessed[df_unprocessed["kVp"].notnull()]
+        .drop_duplicates(["Acquisition pk", "kVp pk"])
+        .sort_values(by=["kVp pk"], ascending=[True], inplace=False)
+        .groupby(["Acquisition pk"])["kVp"]
+        .transform(lambda x: " | ".join(map(str, x)))
+    )
+    df_unprocessed["uAs Concatenated"] = (
+        df_unprocessed[df_unprocessed["uAs"].notnull()]
+        .drop_duplicates(["Acquisition pk", "exposure pk"])
+        .sort_values(by=["exposure pk"], ascending=[True], inplace=False)
+        .groupby(["Acquisition pk"])["uAs"]
+        .transform(lambda x: " | ".join(map(str, x)))
+    )
+    df_unprocessed["ms Concatenated"] = (
+        df_unprocessed[df_unprocessed["ms"].notnull()]
+        .drop_duplicates(["Acquisition pk", "pulsewidth pk"])
+        .sort_values(by=["pulsewidth pk"], ascending=[True], inplace=False)
+        .groupby(["Acquisition pk"])["ms"]
+        .transform(lambda x: " | ".join(map(str, x)))
+    )
+    df_unprocessed["mA Concatenated"] = (
+        df_unprocessed[df_unprocessed["mA"].notnull()]
+        .drop_duplicates(["Acquisition pk", "xraytubecurrent pk"])
+        .sort_values(by=["xraytubecurrent pk"], ascending=[True], inplace=False)
+        .groupby(["Acquisition pk"])["mA"]
+        .transform(lambda x: " | ".join(map(str, x)))
+    )
+
+    df_unprocessed["kVp Mean"] = (
+        df_unprocessed[df_unprocessed["kVp"].notnull()]
+        .drop_duplicates(["Acquisition pk", "kVp pk"])
+        .sort_values(by=["kVp pk"], ascending=[True], inplace=False)
+        .groupby(["Acquisition pk"])["kVp"]
+        .transform("mean")
+    )
+    df_unprocessed["uAs Mean"] = (
+        df_unprocessed[df_unprocessed["uAs"].notnull()]
+        .drop_duplicates(["Acquisition pk", "exposure pk"])
+        .sort_values(by=["exposure pk"], ascending=[True], inplace=False)
+        .groupby(["Acquisition pk"])["uAs"]
+        .transform("mean")
+    )
+    df_unprocessed["ms Mean"] = (
+        df_unprocessed[df_unprocessed["ms"].notnull()]
+        .drop_duplicates(["Acquisition pk", "pulsewidth pk"])
+        .sort_values(by=["pulsewidth pk"], ascending=[True], inplace=False)
+        .groupby(["Acquisition pk"])["ms"]
+        .transform("mean")
+    )
+    df_unprocessed["mA Mean"] = (
+        df_unprocessed[df_unprocessed["mA"].notnull()]
+        .drop_duplicates(["Acquisition pk", "xraytubecurrent pk"])
+        .sort_values(by=["xraytubecurrent pk"], ascending=[True], inplace=False)
+        .groupby(["Acquisition pk"])["mA"]
+        .transform("mean")
+    )
+
+    df_unprocessed["kVp"] = (
+        df_unprocessed[df_unprocessed["kVp"].notnull()]
+        .drop_duplicates(["Acquisition pk", "kVp pk"])
+        .sort_values(by=["kVp pk"], ascending=[True], inplace=False)
+        .groupby(["Acquisition pk"])["kVp"]
+        .transform("first")
+    )
+    df_unprocessed["uAs"] = (
+        df_unprocessed[df_unprocessed["uAs"].notnull()]
+        .drop_duplicates(["Acquisition pk", "exposure pk"])
+        .sort_values(by=["exposure pk"], ascending=[True], inplace=False)
+        .groupby(["Acquisition pk"])["uAs"]
+        .transform("first")
+    )
+    df_unprocessed["ms"] = (
+        df_unprocessed[df_unprocessed["ms"].notnull()]
+        .drop_duplicates(["Acquisition pk", "pulsewidth pk"])
+        .sort_values(by=["pulsewidth pk"], ascending=[True], inplace=False)
+        .groupby(["Acquisition pk"])["ms"]
+        .transform("first")
+    )
+    df_unprocessed["mA"] = (
+        df_unprocessed[df_unprocessed["mA"].notnull()]
+        .drop_duplicates(["Acquisition pk", "xraytubecurrent pk"])
+        .sort_values(by=["xraytubecurrent pk"], ascending=[True], inplace=False)
+        .groupby(["Acquisition pk"])["mA"]
+        .transform("first")
+    )
+
     return df_unprocessed
 
+
 def create_target_column(df_unprocessed):
-    df_unprocessed["Target"] = df_unprocessed["Target"].apply(replace_long_target_with_short)
+    df_unprocessed["Target"] = df_unprocessed["Target"].apply(
+        replace_long_target_with_short
+    )
     return df_unprocessed
+
 
 def create_filter_columns(acquisition_cat_field_names, df_unprocessed):
     # Replace the long text filter material description with a short one
-    df_unprocessed["Filters"] = df_unprocessed["Filters"].apply(replace_long_filter_with_short)
+    df_unprocessed["Filters"] = df_unprocessed["Filters"].apply(
+        replace_long_filter_with_short
+    )
 
     # Calculate the mean filter thickness and put the result in a new column called "Filter thicknesses (mm)", then
     # drop the min and max columns, and then set any nan values to None in the "Filter thicknesses (mm)" column.
-    df_unprocessed["Filter thicknesses (mm)"] = df_unprocessed[["Filter thickness min", "Filter thickness max"]].mean(axis=1)
-    df_unprocessed.drop(["Filter thickness min", "Filter thickness max"], axis=1, inplace=True)
+    df_unprocessed["Filter thicknesses (mm)"] = df_unprocessed[
+        ["Filter thickness min", "Filter thickness max"]
+    ].mean(axis=1)
+    df_unprocessed.drop(
+        ["Filter thickness min", "Filter thickness max"], axis=1, inplace=True
+    )
 
     # Combine the "Filters" text in any rows that have matching "Acquisition pk" and the "Filters" text is not null
-    df_unprocessed["Filters"] = df_unprocessed[df_unprocessed["Filters"].notnull()].drop_duplicates(["Acquisition pk", "Filter pk"]).sort_values(by=["Filter pk"], ascending=[True], inplace=False).groupby(["Acquisition pk"])["Filters"].transform(lambda x: " | ".join(x))
+    df_unprocessed["Filters"] = (
+        df_unprocessed[df_unprocessed["Filters"].notnull()]
+        .drop_duplicates(["Acquisition pk", "Filter pk"])
+        .sort_values(by=["Filter pk"], ascending=[True], inplace=False)
+        .groupby(["Acquisition pk"])["Filters"]
+        .transform(lambda x: " | ".join(x))
+    )
 
     # Combine the "Filter thicknesses (mm)" values in any rows that have matching "Acquisition pk".
     #   1 Any np.nan values are replaced with None values
     #   2 The float values are converted to strings with 4 decimal places; any None values are set to an empty string
     #   3 The data is grouped by "Acquisition pk" and all "Filter thickness (mm)" strings joined with a " | " between.
     # Steps 1 and 2 are carried out by the first line of code below. Step 3 is carried out by the second line of code.
-    df_unprocessed["Filter thicknesses (mm)"] = df_unprocessed["Filter thicknesses (mm)"].replace(np.nan, None).apply(lambda x: f"{x:.4f}" if (x != None) else "")
-    df_unprocessed["Filter thicknesses (mm)"] = df_unprocessed.drop_duplicates(["Acquisition pk", "Filter pk"]).sort_values(by=["Filter pk"], ascending=[True], inplace=False).groupby(["Acquisition pk"])["Filter thicknesses (mm)"].transform(lambda x: " | ".join(x))
+    df_unprocessed["Filter thicknesses (mm)"] = (
+        df_unprocessed["Filter thicknesses (mm)"]
+        .replace(np.nan, None)
+        .apply(lambda x: f"{x:.4f}" if (x != None) else "")
+    )
+    df_unprocessed["Filter thicknesses (mm)"] = (
+        df_unprocessed.drop_duplicates(["Acquisition pk", "Filter pk"])
+        .sort_values(by=["Filter pk"], ascending=[True], inplace=False)
+        .groupby(["Acquisition pk"])["Filter thicknesses (mm)"]
+        .transform(lambda x: " | ".join(x))
+    )
 
     if "Filter thicknesses (mm)" not in acquisition_cat_field_names:
         acquisition_cat_field_names.append("Filter thicknesses (mm)")
@@ -1750,20 +2218,31 @@ def create_filter_columns(acquisition_cat_field_names, df_unprocessed):
     return df_unprocessed
 
 
-def create_dose_check_and_source_columns(acquisition_cat_field_names, acquisition_val_field_names,
-                                         ct_dose_check_field_names, df_unprocessed):
+def create_dose_check_and_source_columns(
+    acquisition_cat_field_names,
+    acquisition_val_field_names,
+    ct_dose_check_field_names,
+    df_unprocessed,
+):
     # Add the Dose check alert column to the acquisition category field names if it isn't already there
     if "Dose check alerts" not in acquisition_cat_field_names:
         acquisition_cat_field_names.append("Dose check alerts")
     # Create the CT dose check column
-    df_unprocessed = create_ct_dose_check_column(ct_dose_check_field_names, df_unprocessed)
-    df_unprocessed["Dose check alerts"] = df_unprocessed["Dose check alerts"].astype("category")
-    df_unprocessed = create_ct_source_columns(acquisition_cat_field_names, acquisition_val_field_names,
-                                              df_unprocessed)
+    df_unprocessed = create_ct_dose_check_column(
+        ct_dose_check_field_names, df_unprocessed
+    )
+    df_unprocessed["Dose check alerts"] = df_unprocessed["Dose check alerts"].astype(
+        "category"
+    )
+    df_unprocessed = create_ct_source_columns(
+        acquisition_cat_field_names, acquisition_val_field_names, df_unprocessed
+    )
     return df_unprocessed
 
 
-def write_standard_acquisition_data(book, df, enable_standard_names, worksheet_log, modality):
+def write_standard_acquisition_data(
+    book, df, enable_standard_names, worksheet_log, modality
+):
     # Write out all standard acquisition name data to the sheets
     if enable_standard_names:
         all_std_acquisitions_in_df = df["Standard acquisition name"].dropna().unique()
@@ -1773,7 +2252,9 @@ def write_standard_acquisition_data(book, df, enable_standard_names, worksheet_l
 
             acquisition = "[standard] " + acquisition
 
-            write_row_to_acquisition_sheet(acq_df, acquisition, book, worksheet_log, modality)
+            write_row_to_acquisition_sheet(
+                acq_df, acquisition, book, worksheet_log, modality
+            )
 
 
 def write_acquisition_data(book, df, worksheet_log, modality):
@@ -1787,7 +2268,9 @@ def write_acquisition_data(book, df, worksheet_log, modality):
             acquisition = "Unknown"
             acq_df = df[df["Acquisition protocol"].isnull()]
 
-        write_row_to_acquisition_sheet(acq_df, acquisition, book, worksheet_log, modality)
+        write_row_to_acquisition_sheet(
+            acq_df, acquisition, book, worksheet_log, modality
+        )
 
 
 def create_standard_name_columns(df, exam_cat_field_names):
@@ -1797,7 +2280,9 @@ def create_standard_name_columns(df, exam_cat_field_names):
         # Make the exam_cat_field_names a categorical column (saves server memory)
         exam_cat_f_names = exam_cat_field_names[:]
         exam_cat_f_names.remove("Standard study name")
-        exam_cat_f_names.extend(["Standard study name 1", "Standard study name 2", "Standard study name 3"])
+        exam_cat_f_names.extend(
+            ["Standard study name 1", "Standard study name 2", "Standard study name 3"]
+        )
         df[exam_cat_f_names] = df[exam_cat_f_names].astype("category")
     return df
 
@@ -1805,56 +2290,109 @@ def create_standard_name_columns(df, exam_cat_field_names):
 def transform_dap_uas_units(df_unprocessed):
     # Transform DAP and uAs values into the required units
     if "Total DAP (cGy·cm²)" in df_unprocessed.columns:
-        df_unprocessed["Total DAP (cGy·cm²)"] = df_unprocessed["Total DAP (cGy·cm²)"] * 1000000
+        df_unprocessed["Total DAP (cGy·cm²)"] = (
+            df_unprocessed["Total DAP (cGy·cm²)"] * 1000000
+        )
     if "DAP (cGy·cm²)" in df_unprocessed.columns:
         df_unprocessed["DAP (cGy·cm²)"] = df_unprocessed["DAP (cGy·cm²)"] * 1000000
     if "mAs" in df_unprocessed.columns:
         df_unprocessed["mAs"] = df_unprocessed["mAs"] / 1000
 
 
-def create_ct_source_columns(acquisition_cat_field_names, acquisition_val_field_names, df_unprocessed):
+def create_ct_source_columns(
+    acquisition_cat_field_names, acquisition_val_field_names, df_unprocessed
+):
     # ----------------------------------------
     # Create columns for two possible sources
-    df_unprocessed[["S1 Source name", "S1 kVp", "S1 mA", "S1 Maximum mA", "S1 Exposure time per rotation"]] = 5 * [
-        np.nan]
-    df_unprocessed[["S2 Source name", "S2 kVp", "S2 mA", "S2 Maximum mA", "S2 Exposure time per rotation"]] = 5 * [
-        np.nan]
+    df_unprocessed[
+        [
+            "S1 Source name",
+            "S1 kVp",
+            "S1 mA",
+            "S1 Maximum mA",
+            "S1 Exposure time per rotation",
+        ]
+    ] = 5 * [np.nan]
+    df_unprocessed[
+        [
+            "S2 Source name",
+            "S2 kVp",
+            "S2 mA",
+            "S2 Maximum mA",
+            "S2 Exposure time per rotation",
+        ]
+    ] = 5 * [np.nan]
     # Where "Source name" equals "A" copy source data fields to S1
-    df_unprocessed["S1 Source name"], df_unprocessed["S1 kVp"], df_unprocessed["S1 mA"], df_unprocessed[
-        "S1 Maximum mA"], df_unprocessed["S1 Exposure time per rotation"] = (
-        np.where(
-            (df_unprocessed["Number of sources"] == 2) & (df_unprocessed["Source name"] == "A"),
-            [df_unprocessed["Source name"], df_unprocessed["kVp"], df_unprocessed["mA"], df_unprocessed["Maximum mA"],
-             df_unprocessed["Exposure time per rotation"]],
-            None
-        )
+    (
+        df_unprocessed["S1 Source name"],
+        df_unprocessed["S1 kVp"],
+        df_unprocessed["S1 mA"],
+        df_unprocessed["S1 Maximum mA"],
+        df_unprocessed["S1 Exposure time per rotation"],
+    ) = np.where(
+        (df_unprocessed["Number of sources"] == 2)
+        & (df_unprocessed["Source name"] == "A"),
+        [
+            df_unprocessed["Source name"],
+            df_unprocessed["kVp"],
+            df_unprocessed["mA"],
+            df_unprocessed["Maximum mA"],
+            df_unprocessed["Exposure time per rotation"],
+        ],
+        None,
     )
     # Where "Source name" equals "B" copy source data fields to S2
-    df_unprocessed["S2 Source name"], df_unprocessed["S2 kVp"], df_unprocessed["S2 mA"], df_unprocessed[
-        "S2 Maximum mA"], df_unprocessed["S2 Exposure time per rotation"] = (
-        np.where(
-            (df_unprocessed["Number of sources"] == 2) & (df_unprocessed["Source name"] == "B"),
-            [df_unprocessed["Source name"], df_unprocessed["kVp"], df_unprocessed["mA"], df_unprocessed["Maximum mA"],
-             df_unprocessed["Exposure time per rotation"]],
-            None
-        )
+    (
+        df_unprocessed["S2 Source name"],
+        df_unprocessed["S2 kVp"],
+        df_unprocessed["S2 mA"],
+        df_unprocessed["S2 Maximum mA"],
+        df_unprocessed["S2 Exposure time per rotation"],
+    ) = np.where(
+        (df_unprocessed["Number of sources"] == 2)
+        & (df_unprocessed["Source name"] == "B"),
+        [
+            df_unprocessed["Source name"],
+            df_unprocessed["kVp"],
+            df_unprocessed["mA"],
+            df_unprocessed["Maximum mA"],
+            df_unprocessed["Exposure time per rotation"],
+        ],
+        None,
     )
     # Where "Number of sources" is not 2 copy source data fields to S1, but leave any non-matching ones as the existing values, otherwise
     # the writing of S1 data for the dual source entries will be over-written. Some of my CT scanners have NA for the "Number of sources"
     # value, so need to replace these with 0 to ensure the != 2 works.
     df_unprocessed["Number of sources"] = df_unprocessed["Number of sources"].fillna(0)
-    df_unprocessed["S1 Source name"], df_unprocessed["S1 kVp"], df_unprocessed["S1 mA"], df_unprocessed[
-        "S1 Maximum mA"], df_unprocessed["S1 Exposure time per rotation"] = (
-        np.where(
-            df_unprocessed["Number of sources"] != 2,
-            [df_unprocessed["Source name"], df_unprocessed["kVp"], df_unprocessed["mA"], df_unprocessed["Maximum mA"],
-             df_unprocessed["Exposure time per rotation"]],
-            [df_unprocessed["S1 Source name"], df_unprocessed["S1 kVp"], df_unprocessed["S1 mA"],
-             df_unprocessed["S1 Maximum mA"], df_unprocessed["S1 Exposure time per rotation"]]
-        )
+    (
+        df_unprocessed["S1 Source name"],
+        df_unprocessed["S1 kVp"],
+        df_unprocessed["S1 mA"],
+        df_unprocessed["S1 Maximum mA"],
+        df_unprocessed["S1 Exposure time per rotation"],
+    ) = np.where(
+        df_unprocessed["Number of sources"] != 2,
+        [
+            df_unprocessed["Source name"],
+            df_unprocessed["kVp"],
+            df_unprocessed["mA"],
+            df_unprocessed["Maximum mA"],
+            df_unprocessed["Exposure time per rotation"],
+        ],
+        [
+            df_unprocessed["S1 Source name"],
+            df_unprocessed["S1 kVp"],
+            df_unprocessed["S1 mA"],
+            df_unprocessed["S1 Maximum mA"],
+            df_unprocessed["S1 Exposure time per rotation"],
+        ],
     )
     # Drop the original columns
-    df_unprocessed.drop(["Source name", "kVp", "mA", "Maximum mA", "Exposure time per rotation"], axis=1, inplace=True)
+    df_unprocessed.drop(
+        ["Source name", "kVp", "mA", "Maximum mA", "Exposure time per rotation"],
+        axis=1,
+        inplace=True,
+    )
     # For any dual-source data we now have two rows per acquisition: one with source A data, one with source B.
     # We need to merge these into one row per acquisition.
     source_a_df = df_unprocessed.loc[df_unprocessed["S1 Source name"] == "A"]
@@ -1863,16 +2401,23 @@ def create_ct_source_columns(acquisition_cat_field_names, acquisition_val_field_
     source_b_df.reset_index(drop=True, inplace=True)
     source_ab_df = source_a_df.combine_first(source_b_df)
     # Concatenate the dual source data with the single source data
-    df_unprocessed = pd.concat([source_ab_df, df_unprocessed.loc[df_unprocessed["Number of sources"] != 2]])
+    df_unprocessed = pd.concat(
+        [source_ab_df, df_unprocessed.loc[df_unprocessed["Number of sources"] != 2]]
+    )
     # Update the acquisition_cat_field_names entries to reflect the changes
-    acquisition_cat_field_names[acquisition_cat_field_names.index("Source name")] = "S1 Source name"
+    acquisition_cat_field_names[acquisition_cat_field_names.index("Source name")] = (
+        "S1 Source name"
+    )
     acquisition_cat_field_names.append("S2 Source name")
     # Update the acquisition_val_field_names entries to reflect the changes
     acquisition_val_field_names[acquisition_val_field_names.index("kVp")] = "S1 kVp"
     acquisition_val_field_names[acquisition_val_field_names.index("mA")] = "S1 mA"
-    acquisition_val_field_names[acquisition_val_field_names.index("Maximum mA")] = "S1 Maximum mA"
+    acquisition_val_field_names[acquisition_val_field_names.index("Maximum mA")] = (
+        "S1 Maximum mA"
+    )
     acquisition_val_field_names[
-        acquisition_val_field_names.index("Exposure time per rotation")] = "S1 Exposure time per rotation"
+        acquisition_val_field_names.index("Exposure time per rotation")
+    ] = "S1 Exposure time per rotation"
     new_fields = ["S2 kVp", "S2 mA", "S2 Maximum mA", "S2 Exposure time per rotation"]
     acquisition_val_field_names.extend(new_fields)
     # ----------------------------------------
@@ -1885,53 +2430,55 @@ def create_ct_dose_check_column(ct_dose_check_field_names, df):
 
     # Combine the dose alert fields
     # The title if either DLP or CTDIvol alerts are configured
-    indices = df[(df["DLP alert configured"] == True) | (df["CTDIvol alert configured"] == True)].index
+    indices = df[
+        (df["DLP alert configured"] == True) | (df["CTDIvol alert configured"] == True)
+    ].index
     df.loc[indices, "Dose check alerts"] = "Dose check alerts:"
     # The DLP alert value
     indices = df[(df["DLP alert configured"] == True)].index
     df.loc[indices, "Dose check alerts"] = (
-            df.loc[indices, "Dose check alerts"] +
-            "\nDLP alert is configured at " +
-            df.loc[indices, "DLP alert value"].astype("str") +
-            " mGy.cm"
+        df.loc[indices, "Dose check alerts"]
+        + "\nDLP alert is configured at "
+        + df.loc[indices, "DLP alert value"].astype("str")
+        + " mGy.cm"
     )
     # The DLP forward estimate
     indices = df[(df["DLP forward estimate"].notnull())].index
     df.loc[indices, "Dose check alerts"] = (
-            df.loc[indices, "Dose check alerts"] +
-            "\nwith an accumulated forward estimate of " +
-            df.loc[indices, "DLP forward estimate"].astype("str") +
-            " mGy.cm"
+        df.loc[indices, "Dose check alerts"]
+        + "\nwith an accumulated forward estimate of "
+        + df.loc[indices, "DLP forward estimate"].astype("str")
+        + " mGy.cm"
     )
     # The CTDIvol alert value
     indices = df[(df["CTDIvol alert configured"] == True)].index
     df.loc[indices, "Dose check alerts"] = (
-            df.loc[indices, "Dose check alerts"] +
-            "\nCTDIvol alert is configured at " +
-            df.loc[indices, "CTDIvol alert value"].astype("str") +
-            " mGy"
+        df.loc[indices, "Dose check alerts"]
+        + "\nCTDIvol alert is configured at "
+        + df.loc[indices, "CTDIvol alert value"].astype("str")
+        + " mGy"
     )
     # The CTDIvol forward estimate
     indices = df[(df["CTDIvol forward estimate"].notnull())].index
     df.loc[indices, "Dose check alerts"] = (
-            df.loc[indices, "Dose check alerts"] +
-            "\nwith an accumulated forward estimate of " +
-            df.loc[indices, "CTDIvol forward estimate"].astype("str") +
-            " mGy"
+        df.loc[indices, "Dose check alerts"]
+        + "\nwith an accumulated forward estimate of "
+        + df.loc[indices, "CTDIvol forward estimate"].astype("str")
+        + " mGy"
     )
     # The reason for proceeding
     indices = df[(df["Reason for proceeding"].notnull())].index
     df.loc[indices, "Dose check alerts"] = (
-            df.loc[indices, "Dose check alerts"] +
-            "\nReason for proceeding: " +
-            df.loc[indices, "Reason for proceeding"]
+        df.loc[indices, "Dose check alerts"]
+        + "\nReason for proceeding: "
+        + df.loc[indices, "Reason for proceeding"]
     )
     # The person authorizing the exposure
     indices = df[(df["Person name"].notnull())].index
     df.loc[indices, "Dose check alerts"] = (
-            df.loc[indices, "Dose check alerts"] +
-            "\nPerson authorizing irradiation: " +
-            df.loc[indices, "Person name"]
+        df.loc[indices, "Dose check alerts"]
+        + "\nPerson authorizing irradiation: "
+        + df.loc[indices, "Person name"]
     )
     # Remove the individual dose check columns from the dataframe
     df = df.drop(columns=ct_dose_check_field_names)

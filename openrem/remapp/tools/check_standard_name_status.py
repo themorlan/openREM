@@ -31,8 +31,7 @@
 
 
 def are_standard_names_enabled():
-    """Return a Boolean indicating if standard name mapping is enabled.
-    """
+    """Return a Boolean indicating if standard name mapping is enabled."""
     from django.core.exceptions import ObjectDoesNotExist
     from ..models import StandardNameSettings
 

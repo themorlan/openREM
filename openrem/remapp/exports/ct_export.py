@@ -85,10 +85,7 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
         "pk",
         "number_of_events",
     ]
-    exam_int_field_names = [
-        "pk",
-        "Number of events"
-    ]
+    exam_int_field_names = ["pk", "Number of events"]
 
     # Exam-level object field names (string data, little or no repetition)
     exam_obj_fields = ["accession_number"]
@@ -161,10 +158,12 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
         "Acquisition type",
         "CTDI phantom type",
         "mA modulation type",
-        "Source name"
+        "Source name",
     ]
 
-    acquisition_cat_field_std_name = "ctradiationdose__ctirradiationeventdata__standard_protocols__standard_name"
+    acquisition_cat_field_std_name = (
+        "ctradiationdose__ctirradiationeventdata__standard_protocols__standard_name"
+    )
     acquisition_cat_field_name_std_name = "Standard acquisition name"
 
     # Required acquisition-level value field names and friendly names
@@ -219,14 +218,12 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
     # Fields for obtaining the acquisition protocols in the data
     fields_for_acquisition_frequency = [
         "ctradiationdose__ctirradiationeventdata__pk",
-        "ctradiationdose__ctirradiationeventdata__acquisition_protocol"
-
+        "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
     ]
-    field_names_for_acquisition_frequency = [
-        "pk",
-        "Acquisition protocol"
-    ]
-    field_for_acquisition_frequency_std_name = "ctradiationdose__ctirradiationeventdata__standard_protocols__standard_name"
+    field_names_for_acquisition_frequency = ["pk", "Acquisition protocol"]
+    field_for_acquisition_frequency_std_name = (
+        "ctradiationdose__ctirradiationeventdata__standard_protocols__standard_name"
+    )
     field_name_for_acquisition_frequency_std_name = "Standard acquisition name"
 
     enable_standard_names = are_standard_names_enabled()
@@ -264,16 +261,45 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
     tsk.progress = "{0} studies in query.".format(tsk.num_records)
     tsk.save()
 
-    export_using_pandas(acquisition_cat_field_name_std_name, acquisition_cat_field_names,
-                        acquisition_cat_field_std_name, acquisition_cat_fields,acquisition_int_field_names,
-                        acquisition_int_fields, acquisition_val_field_names, acquisition_val_fields, book,
-                        ct_dose_check_field_names, ct_dose_check_fields, datestamp, enable_standard_names,
-                        exam_cat_field_names, exam_cat_fields, exam_date_field_names, exam_date_fields,
-                        exam_int_field_names, exam_int_fields, exam_obj_field_names, exam_obj_fields,
-                        exam_time_field_names, exam_time_fields, exam_val_field_names, exam_val_fields,
-                        field_for_acquisition_frequency_std_name, field_name_for_acquisition_frequency_std_name,
-                        field_names_for_acquisition_frequency, fields_for_acquisition_frequency, modality, n_entries,
-                        name, patid, pid, qs, tmpxlsx, tsk)
+    export_using_pandas(
+        acquisition_cat_field_name_std_name,
+        acquisition_cat_field_names,
+        acquisition_cat_field_std_name,
+        acquisition_cat_fields,
+        acquisition_int_field_names,
+        acquisition_int_fields,
+        acquisition_val_field_names,
+        acquisition_val_fields,
+        book,
+        ct_dose_check_field_names,
+        ct_dose_check_fields,
+        datestamp,
+        enable_standard_names,
+        exam_cat_field_names,
+        exam_cat_fields,
+        exam_date_field_names,
+        exam_date_fields,
+        exam_int_field_names,
+        exam_int_fields,
+        exam_obj_field_names,
+        exam_obj_fields,
+        exam_time_field_names,
+        exam_time_fields,
+        exam_val_field_names,
+        exam_val_fields,
+        field_for_acquisition_frequency_std_name,
+        field_name_for_acquisition_frequency_std_name,
+        field_names_for_acquisition_frequency,
+        fields_for_acquisition_frequency,
+        modality,
+        n_entries,
+        name,
+        patid,
+        pid,
+        qs,
+        tmpxlsx,
+        tsk,
+    )
 
 
 def ct_csv(filterdict, pid=False, name=None, patid=None, user=None):

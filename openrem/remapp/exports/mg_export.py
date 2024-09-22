@@ -61,6 +61,7 @@ from .export_common_pandas import (
     text_and_date_formats,
     sheet_name,
 )
+
 logger = logging.getLogger(__name__)
 
 
@@ -410,6 +411,7 @@ def exportMG2csv(filterdict, pid=False, name=None, patid=None, user=None):
     tsk.processtime = (datetime.datetime.now() - datestamp).total_seconds()
     tsk.save()
 
+
 def mgxlsx(filterdict, pid=False, name=None, patid=None, user=None):
     """Export filtered MG database data to multi-sheet Microsoft XSLX files
 
@@ -427,10 +429,7 @@ def mgxlsx(filterdict, pid=False, name=None, patid=None, user=None):
         "pk",
         "number_of_events",
     ]
-    exam_int_field_names = [
-        "pk",
-        "Number of events"
-    ]
+    exam_int_field_names = ["pk", "Number of events"]
 
     # Exam-level object field names (string data, little or no repetition)
     exam_obj_fields = ["accession_number"]
@@ -567,22 +566,17 @@ def mgxlsx(filterdict, pid=False, name=None, patid=None, user=None):
         "% Fibroglandular tissue",
     ]
 
-    ct_dose_check_fields = [
-    ]
+    ct_dose_check_fields = []
 
-    ct_dose_check_field_names = [
-    ]
+    ct_dose_check_field_names = []
 
     # Fields for obtaining the acquisition protocols in the data
     fields_for_acquisition_frequency = [
         "projectionxrayradiationdose__irradeventxraydata__pk",
-        "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
+        "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
     ]
 
-    field_names_for_acquisition_frequency = [
-        "pk",
-        "Acquisition protocol"
-    ]
+    field_names_for_acquisition_frequency = ["pk", "Acquisition protocol"]
     field_for_acquisition_frequency_std_name = "projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name"
     field_name_for_acquisition_frequency_std_name = "Standard acquisition name"
 
@@ -621,17 +615,47 @@ def mgxlsx(filterdict, pid=False, name=None, patid=None, user=None):
     tsk.progress = "{0} studies in query.".format(tsk.num_records)
     tsk.save()
 
-    export_using_pandas(acquisition_cat_field_name_std_name, acquisition_cat_field_names,
-                        acquisition_cat_field_std_name, acquisition_cat_fields,acquisition_int_field_names,
-                        acquisition_int_fields, acquisition_val_field_names, acquisition_val_fields, book,
-                        ct_dose_check_field_names, ct_dose_check_fields, datestamp, enable_standard_names,
-                        exam_cat_field_names, exam_cat_fields, exam_date_field_names, exam_date_fields,
-                        exam_int_field_names, exam_int_fields, exam_obj_field_names, exam_obj_fields,
-                        exam_time_field_names, exam_time_fields, exam_val_field_names, exam_val_fields,
-                        field_for_acquisition_frequency_std_name, field_name_for_acquisition_frequency_std_name,
-                        field_names_for_acquisition_frequency, fields_for_acquisition_frequency, modality, n_entries,
-                        name, patid, pid, qs, tmpxlsx, tsk)
-    
+    export_using_pandas(
+        acquisition_cat_field_name_std_name,
+        acquisition_cat_field_names,
+        acquisition_cat_field_std_name,
+        acquisition_cat_fields,
+        acquisition_int_field_names,
+        acquisition_int_fields,
+        acquisition_val_field_names,
+        acquisition_val_fields,
+        book,
+        ct_dose_check_field_names,
+        ct_dose_check_fields,
+        datestamp,
+        enable_standard_names,
+        exam_cat_field_names,
+        exam_cat_fields,
+        exam_date_field_names,
+        exam_date_fields,
+        exam_int_field_names,
+        exam_int_fields,
+        exam_obj_field_names,
+        exam_obj_fields,
+        exam_time_field_names,
+        exam_time_fields,
+        exam_val_field_names,
+        exam_val_fields,
+        field_for_acquisition_frequency_std_name,
+        field_name_for_acquisition_frequency_std_name,
+        field_names_for_acquisition_frequency,
+        fields_for_acquisition_frequency,
+        modality,
+        n_entries,
+        name,
+        patid,
+        pid,
+        qs,
+        tmpxlsx,
+        tsk,
+    )
+
+
 def exportMG2excel(filterdict, pid=False, name=None, patid=None, user=None):
     # pylint: disable=too-many-branches
     # pylint: disable=too-many-statements
