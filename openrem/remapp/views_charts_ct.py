@@ -1275,13 +1275,13 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                     )
 
                     if user_profile.plotMean:
-                        return_structure[
-                            "standardAcquisitionMeanCTDIOverTime"
-                        ] = result["mean"]
+                        return_structure["standardAcquisitionMeanCTDIOverTime"] = (
+                            result["mean"]
+                        )
                     if user_profile.plotMedian:
-                        return_structure[
-                            "standardAcquisitionMedianCTDIOverTime"
-                        ] = result["median"]
+                        return_structure["standardAcquisitionMedianCTDIOverTime"] = (
+                            result["median"]
+                        )
 
                 if user_profile.plotCTStandardAcquisitionDLPOverTime:
                     facet_title = "System"
@@ -1320,9 +1320,9 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                             "mean"
                         ]
                     if user_profile.plotMedian:
-                        return_structure[
-                            "standardAcquisitionMedianDLPOverTime"
-                        ] = result["median"]
+                        return_structure["standardAcquisitionMedianDLPOverTime"] = (
+                            result["median"]
+                        )
 
                 if user_profile.plotCTStandardAcquisitionCTDIvsMass:
                     parameter_dict = {
@@ -1343,11 +1343,11 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                         "return_as_dict": return_as_dict,
                         "custom_msg_line": chart_message,
                     }
-                    return_structure[
-                        "standardAcquisitionScatterCTDIvsMass"
-                    ] = plotly_scatter(
-                        df_without_blanks,
-                        parameter_dict,
+                    return_structure["standardAcquisitionScatterCTDIvsMass"] = (
+                        plotly_scatter(
+                            df_without_blanks,
+                            parameter_dict,
+                        )
                     )
 
                 if user_profile.plotCTStandardAcquisitionDLPvsMass:
@@ -1369,11 +1369,11 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                         "return_as_dict": return_as_dict,
                         "custom_msg_line": chart_message,
                     }
-                    return_structure[
-                        "standardAcquisitionScatterDLPvsMass"
-                    ] = plotly_scatter(
-                        df_without_blanks,
-                        parameter_dict,
+                    return_structure["standardAcquisitionScatterDLPvsMass"] = (
+                        plotly_scatter(
+                            df_without_blanks,
+                            parameter_dict,
+                        )
                     )
 
     #######################################################################
@@ -1653,22 +1653,22 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                         df_date_col="study_date",
                     )
 
-                    return_structure[
-                        "standardStudyWorkloadData"
-                    ] = plotly_barchart_weekdays(
-                        df_time_series_per_weekday,
-                        "weekday",
-                        "standard_names__standard_name",
-                        name_axis_title="Weekday",
-                        value_axis_title="Frequency",
-                        colourmap=user_profile.plotColourMapChoice,
-                        filename="OpenREM CT standard study name workload",
-                        facet_col_wrap=user_profile.plotFacetColWrapVal,
-                        sorting_choice=[
-                            user_profile.plotInitialSortingDirection,
-                            user_profile.plotCTInitialSortingChoice,
-                        ],
-                        return_as_dict=return_as_dict,
+                    return_structure["standardStudyWorkloadData"] = (
+                        plotly_barchart_weekdays(
+                            df_time_series_per_weekday,
+                            "weekday",
+                            "standard_names__standard_name",
+                            name_axis_title="Weekday",
+                            value_axis_title="Frequency",
+                            colourmap=user_profile.plotColourMapChoice,
+                            filename="OpenREM CT standard study name workload",
+                            facet_col_wrap=user_profile.plotFacetColWrapVal,
+                            sorting_choice=[
+                                user_profile.plotInitialSortingDirection,
+                                user_profile.plotCTInitialSortingChoice,
+                            ],
+                            return_as_dict=return_as_dict,
+                        )
                     )
 
                 if user_profile.plotCTStandardStudyMeanDLPOverTime:

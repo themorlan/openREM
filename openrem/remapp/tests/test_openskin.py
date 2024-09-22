@@ -148,15 +148,13 @@ class OpenSkinBlackBox(TestCase):
         self.client.login(username="jacob", password="top_secret")
 
         response = self.client.get(
-            reverse("rf_detail_view_skin_map", kwargs={"pk": study.pk}),
-            follow=True
+            reverse("rf_detail_view_skin_map", kwargs={"pk": study.pk}), follow=True
         )
 
         self.assertJSONEqual(
             str(response.content, encoding="utf8"),
-            {"disabled_skin_maps": True, "primary_key": study.pk}
+            {"disabled_skin_maps": True, "primary_key": study.pk},
         )
-
 
     def test_version_match(self):
         """Set software version to match, ensure skin map is created"""
@@ -219,13 +217,12 @@ class OpenSkinBlackBox(TestCase):
         self.client.login(username="jacob", password="top_secret")
 
         response = self.client.get(
-            reverse("rf_detail_view_skin_map", kwargs={"pk": study.pk}),
-            follow=True
+            reverse("rf_detail_view_skin_map", kwargs={"pk": study.pk}), follow=True
         )
 
         self.assertJSONEqual(
             str(response.content, encoding="utf8"),
-            {"disabled_skin_maps": True, "primary_key": study.pk}
+            {"disabled_skin_maps": True, "primary_key": study.pk},
         )
 
     @tag("slow")

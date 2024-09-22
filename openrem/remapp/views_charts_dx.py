@@ -1229,9 +1229,9 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                             "mean"
                         ]
                     if user_profile.plotMedian:
-                        return_structure[
-                            "standardAcquisitionMedianDAPOverTime"
-                        ] = result["median"]
+                        return_structure["standardAcquisitionMedianDAPOverTime"] = (
+                            result["median"]
+                        )
 
                 if user_profile.plotDXStandardAcquisitionMeankVpOverTime:
                     facet_title = "System"
@@ -1269,9 +1269,9 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                             "mean"
                         ]
                     if user_profile.plotMedian:
-                        return_structure[
-                            "standardAcquisitionMediankVpOverTime"
-                        ] = result["median"]
+                        return_structure["standardAcquisitionMediankVpOverTime"] = (
+                            result["median"]
+                        )
 
                 if user_profile.plotDXStandardAcquisitionMeanmAsOverTime:
                     facet_title = "System"
@@ -1309,9 +1309,9 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                             "mean"
                         ]
                     if user_profile.plotMedian:
-                        return_structure[
-                            "standardAcquisitionMedianmAsOverTime"
-                        ] = result["median"]
+                        return_structure["standardAcquisitionMedianmAsOverTime"] = (
+                            result["median"]
+                        )
 
                 if user_profile.plotDXStandardAcquisitionDAPvsMass:
                     parameter_dict = {
@@ -1722,22 +1722,22 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                         df_date_col="study_date",
                     )
 
-                    return_structure[
-                        "standardStudyWorkloadData"
-                    ] = plotly_barchart_weekdays(
-                        df_time_series_per_weekday,
-                        "weekday",
-                        "standard_names__standard_name",
-                        name_axis_title="Weekday",
-                        value_axis_title="Frequency",
-                        colourmap=user_profile.plotColourMapChoice,
-                        filename="OpenREM DX standard study name workload",
-                        facet_col_wrap=user_profile.plotFacetColWrapVal,
-                        sorting_choice=[
-                            user_profile.plotInitialSortingDirection,
-                            user_profile.plotDXInitialSortingChoice,
-                        ],
-                        return_as_dict=return_as_dict,
+                    return_structure["standardStudyWorkloadData"] = (
+                        plotly_barchart_weekdays(
+                            df_time_series_per_weekday,
+                            "weekday",
+                            "standard_names__standard_name",
+                            name_axis_title="Weekday",
+                            value_axis_title="Frequency",
+                            colourmap=user_profile.plotColourMapChoice,
+                            filename="OpenREM DX standard study name workload",
+                            facet_col_wrap=user_profile.plotFacetColWrapVal,
+                            sorting_choice=[
+                                user_profile.plotInitialSortingDirection,
+                                user_profile.plotDXInitialSortingChoice,
+                            ],
+                            return_as_dict=return_as_dict,
+                        )
                     )
 
                 if user_profile.plotDXStandardStudyDAPvsMass:

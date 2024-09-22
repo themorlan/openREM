@@ -559,8 +559,13 @@ def rf_detail_view_skin_map(request, pk=None):
 
     latest_task_failed = False
     if matching_latest_task:
-        if matching_latest_task.error is not None:  # Avoid TypeError in next line if error is None
-            if matching_latest_task.completed_successfully is False and "failed" in matching_latest_task.error:
+        if (
+            matching_latest_task.error is not None
+        ):  # Avoid TypeError in next line if error is None
+            if (
+                matching_latest_task.completed_successfully is False
+                and "failed" in matching_latest_task.error
+            ):
                 latest_task_failed = True
 
     # Check if skin dose maps are enabled for the x-ray system used for the study
@@ -569,22 +574,28 @@ def rf_detail_view_skin_map(request, pk=None):
         # Some code to return something that says they are disabled for this system
         return_structure["disabled_skin_maps"] = True
 
-    elif latest_task_failed and "force_recalculation" not in request.resolver_match.url_name:
-        if matching_latest_task.completed_successfully is False and "failed" in matching_latest_task.error:
+    elif (
+        latest_task_failed
+        and "force_recalculation" not in request.resolver_match.url_name
+    ):
+        if (
+            matching_latest_task.completed_successfully is False
+            and "failed" in matching_latest_task.error
+        ):
             return_structure["skin_map_calculation_failed"] = True
 
             # Find out if there is a task running to re-calculate the skin dose map for this study
             matching_ongoing_task = BackgroundTask.objects.filter(
-                task_type="make_skin_map",
-                info__contains=pk,
-                complete=False
-                )
+                task_type="make_skin_map", info__contains=pk, complete=False
+            )
 
             # Set the skin_map_progress and in_progress entries if there is a match to a running task.
             if matching_ongoing_task.count() != 0:
-                return_structure["skin_map_progress"] = matching_ongoing_task.values_list(
-                    "info", flat=True
-                )[0].split("irradiation ", 1)[1]
+                return_structure["skin_map_progress"] = (
+                    matching_ongoing_task.values_list("info", flat=True)[0].split(
+                        "irradiation ", 1
+                    )[1]
+                )
 
                 return_structure["in_progress"] = True
 
@@ -681,10 +692,8 @@ def rf_detail_view_skin_map(request, pk=None):
 
             # The following line is equivalent to the above SQL:
             matching_ongoing_task = BackgroundTask.objects.filter(
-                task_type="make_skin_map",
-                info__contains=pk,
-                complete=False
-                )
+                task_type="make_skin_map", info__contains=pk, complete=False
+            )
 
             # Only run make_skin_map if matching_ongoing_task is empty.
             if matching_ongoing_task.count() == 0:
@@ -696,9 +705,11 @@ def rf_detail_view_skin_map(request, pk=None):
                     pk,
                 )
             else:
-                return_structure["skin_map_progress"] = matching_ongoing_task.values_list(
-                    "info", flat=True
-                )[0].split("irradiation ", 1)[1]
+                return_structure["skin_map_progress"] = (
+                    matching_ongoing_task.values_list("info", flat=True)[0].split(
+                        "irradiation ", 1
+                    )[1]
+                )
 
             return_structure["in_progress"] = True
 
@@ -734,8 +745,7 @@ def nm_detail_view(request, pk=None):
         return redirect(reverse_lazy("nm_summary_list_filter"))
 
     associated_ct = GeneralStudyModuleAttr.objects.filter(
-        Q(study_instance_uid=study.study_instance_uid)
-        & Q(modality_type="CT")
+        Q(study_instance_uid=study.study_instance_uid) & Q(modality_type="CT")
     ).first()
 
     admin = create_admin_info(request)
@@ -792,8 +802,7 @@ def ct_detail_view(request, pk=None):
     )
 
     associated_nm = GeneralStudyModuleAttr.objects.filter(
-        Q(study_instance_uid=study.study_instance_uid)
-        & Q(modality_type="NM")
+        Q(study_instance_uid=study.study_instance_uid) & Q(modality_type="NM")
     ).first()
 
     admin = create_admin_info(request)
@@ -971,7 +980,10 @@ def openrem_home(request):
     if study_counts["dx_count"]:
         modalities["DX"] = {"name": _("Radiography"), "count": study_counts["dx_count"]}
     if study_counts["nm_count"]:
-        modalities["NM"] = {"name": _("Nuclear Medicine"), "count": study_counts["nm_count"]}
+        modalities["NM"] = {
+            "name": _("Nuclear Medicine"),
+            "count": study_counts["nm_count"],
+        }
 
     homedata = {"total": study_counts["all_count"]}
 
@@ -999,9 +1011,9 @@ def openrem_home(request):
         not_patient_indicator_question = (
             AdminTaskQuestions.get_solo().ask_revert_to_074_question
         )
-        admin_questions[
-            "not_patient_indicator_question"
-        ] = not_patient_indicator_question
+        admin_questions["not_patient_indicator_question"] = (
+            not_patient_indicator_question
+        )
         # if any(value for value in admin_questions.itervalues()):
         #     admin_questions_true = True  # Don't know why this doesn't work
         if not_patient_indicator_question:
@@ -1079,13 +1091,21 @@ def update_latest_studies(request):
             ).all()
 
         today = datetime.now()
-        study_data = studies.values("generalequipmentmoduleattr__unique_equipment_name__display_name").annotate(
-            num_studies=Count("pk"),
-            latest_entry_date_time=Max("test_date_time"),
-            # timedelta=ExpressionWrapper(today - F("latest_entry_date_time"), output_field=DurationField()),
-        ).order_by("-latest_entry_date_time")
+        study_data = (
+            studies.values(
+                "generalequipmentmoduleattr__unique_equipment_name__display_name"
+            )
+            .annotate(
+                num_studies=Count("pk"),
+                latest_entry_date_time=Max("test_date_time"),
+                # timedelta=ExpressionWrapper(today - F("latest_entry_date_time"), output_field=DurationField()),
+            )
+            .order_by("-latest_entry_date_time")
+        )
 
-        display_workload_stats = HomePageAdminSettings.objects.values_list("enable_workload_stats", flat=True)[0]
+        display_workload_stats = HomePageAdminSettings.objects.values_list(
+            "enable_workload_stats", flat=True
+        )[0]
         if request.user.is_authenticated:
             day_delta_a = request.user.userprofile.summaryWorkloadDaysA
             day_delta_b = request.user.userprofile.summaryWorkloadDaysB
@@ -1098,7 +1118,7 @@ def update_latest_studies(request):
         if display_workload_stats:
             study_data = study_data.annotate(
                 studies_since_delta_a=Count("pk", filter=Q(test_date_time__gte=date_a)),
-                studies_since_delta_b=Count("pk", filter=Q(test_date_time__gte=date_b))
+                studies_since_delta_b=Count("pk", filter=Q(test_date_time__gte=date_b)),
             ).order_by("-latest_entry_date_time")
 
         admin = {}

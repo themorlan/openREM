@@ -1024,10 +1024,14 @@ class ContextID(models.Model):
 
 class GeneralStudyModuleAttrManager(models.Manager):
     def get_queryset(self):
-        qs = super(GeneralStudyModuleAttrManager, self).get_queryset().annotate(
-            test_date_time=models.ExpressionWrapper(
-                models.F("study_date") + models.F("study_time"),
-                output_field=models.DateTimeField()
+        qs = (
+            super(GeneralStudyModuleAttrManager, self)
+            .get_queryset()
+            .annotate(
+                test_date_time=models.ExpressionWrapper(
+                    models.F("study_date") + models.F("study_time"),
+                    output_field=models.DateTimeField(),
+                )
             )
         )
         return qs
@@ -2297,7 +2301,6 @@ class GeneralEquipmentModuleAttr(models.Model):  # C.7.5.1
 
 
 class RadiopharmaceuticalRadiationDose(models.Model):  # TID 10021
-
     """
     Radiopharmaceutical Radiation Dose TID 10021
 

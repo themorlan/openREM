@@ -950,15 +950,20 @@ class ImportCarestreamDR7500(TestCase):
         All three images within this study should have the standard study name "AbdoView".
         :return: None
         """
-        study = GeneralStudyModuleAttr.objects.filter(procedure_code_meaning="ABD_1_VIEW")[0]
+        study = GeneralStudyModuleAttr.objects.filter(
+            procedure_code_meaning="ABD_1_VIEW"
+        )[0]
 
-        irradiations = study.projectionxrayradiationdose_set.get().irradeventxraydata_set.all()
+        irradiations = (
+            study.projectionxrayradiationdose_set.get().irradeventxraydata_set.all()
+        )
 
         for irradiation in irradiations:
             std_acq_names = irradiation.standard_protocols.all()
 
             for std_acq_name in std_acq_names:
                 self.assertEqual(std_acq_name.standard_name, "AbdoView")
+
 
 class ImportCarestreamDRXRevolution(TestCase):
     def setUp(self):

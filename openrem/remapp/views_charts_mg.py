@@ -558,20 +558,20 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                 }
                 if user_profile.plotMean:
                     parameter_dict["stat_name"] = "mean"
-                    return_structure[
-                        "meanAGDvsThickness"
-                    ] = plotly_binned_statistic_barchart(
-                        df,
-                        parameter_dict,
+                    return_structure["meanAGDvsThickness"] = (
+                        plotly_binned_statistic_barchart(
+                            df,
+                            parameter_dict,
+                        )
                     )
 
                 if user_profile.plotMedian:
                     parameter_dict["stat_name"] = "median"
-                    return_structure[
-                        "medianAGDvsThickness"
-                    ] = plotly_binned_statistic_barchart(
-                        df,
-                        parameter_dict,
+                    return_structure["medianAGDvsThickness"] = (
+                        plotly_binned_statistic_barchart(
+                            df,
+                            parameter_dict,
+                        )
                     )
 
             if user_profile.plotMGaverageAGD:
@@ -621,11 +621,11 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                 "filename": "OpenREM CT acquisition protocol AGD vs thickness",
                 "return_as_dict": return_as_dict,
             }
-            return_structure[
-                "AGDvsThickness"
-            ] = plotly_scatter(  # pylint: disable=line-too-long
-                df,
-                parameter_dict,
+            return_structure["AGDvsThickness"] = (
+                plotly_scatter(  # pylint: disable=line-too-long
+                    df,
+                    parameter_dict,
+                )
             )
 
         if user_profile.plotMGkVpvsThickness:
@@ -646,11 +646,11 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                 "filename": "OpenREM CT acquisition protocol kVp vs thickness",
                 "return_as_dict": return_as_dict,
             }
-            return_structure[
-                "kVpvsThickness"
-            ] = plotly_scatter(  # pylint: disable=line-too-long
-                df,
-                parameter_dict,
+            return_structure["kVpvsThickness"] = (
+                plotly_scatter(  # pylint: disable=line-too-long
+                    df,
+                    parameter_dict,
+                )
             )
 
         if user_profile.plotMGmAsvsThickness:
@@ -671,11 +671,11 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                 "filename": "OpenREM CT acquisition protocol mAs vs thickness",
                 "return_as_dict": return_as_dict,
             }
-            return_structure[
-                "mAsvsThickness"
-            ] = plotly_scatter(  # pylint: disable=line-too-long
-                df,
-                parameter_dict,
+            return_structure["mAsvsThickness"] = (
+                plotly_scatter(  # pylint: disable=line-too-long
+                    df,
+                    parameter_dict,
+                )
             )
 
         if user_profile.plotMGacquisitionFreq:
@@ -814,20 +814,20 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                     }
                     if user_profile.plotMean:
                         parameter_dict["stat_name"] = "mean"
-                        return_structure[
-                            "standardMeanAGDvsThickness"
-                        ] = plotly_binned_statistic_barchart(
-                            df_without_blanks,
-                            parameter_dict,
+                        return_structure["standardMeanAGDvsThickness"] = (
+                            plotly_binned_statistic_barchart(
+                                df_without_blanks,
+                                parameter_dict,
+                            )
                         )
 
                     if user_profile.plotMedian:
                         parameter_dict["stat_name"] = "median"
-                        return_structure[
-                            "standardMedianAGDvsThickness"
-                        ] = plotly_binned_statistic_barchart(
-                            df_without_blanks,
-                            parameter_dict,
+                        return_structure["standardMedianAGDvsThickness"] = (
+                            plotly_binned_statistic_barchart(
+                                df_without_blanks,
+                                parameter_dict,
+                            )
                         )
 
                 if user_profile.plotMGStandardAverageAGD:
@@ -877,11 +877,11 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                     "filename": "OpenREM CT standard acquisition name AGD vs thickness",
                     "return_as_dict": return_as_dict,
                 }
-                return_structure[
-                    "standardAGDvsThickness"
-                ] = plotly_scatter(  # pylint: disable=line-too-long
-                    df_without_blanks,
-                    parameter_dict,
+                return_structure["standardAGDvsThickness"] = (
+                    plotly_scatter(  # pylint: disable=line-too-long
+                        df_without_blanks,
+                        parameter_dict,
+                    )
                 )
 
             if user_profile.plotMGStandardkVpvsThickness:
@@ -902,11 +902,11 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                     "filename": "OpenREM CT standard acquisition name kVp vs thickness",
                     "return_as_dict": return_as_dict,
                 }
-                return_structure[
-                    "standardkVpvsThickness"
-                ] = plotly_scatter(  # pylint: disable=line-too-long
-                    df_without_blanks,
-                    parameter_dict,
+                return_structure["standardkVpvsThickness"] = (
+                    plotly_scatter(  # pylint: disable=line-too-long
+                        df_without_blanks,
+                        parameter_dict,
+                    )
                 )
 
             if user_profile.plotMGStandardmAsvsThickness:
@@ -927,11 +927,11 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                     "filename": "OpenREM CT standard acquisition name mAs vs thickness",
                     "return_as_dict": return_as_dict,
                 }
-                return_structure[
-                    "standardmAsvsThickness"
-                ] = plotly_scatter(  # pylint: disable=line-too-long
-                    df_without_blanks,
-                    parameter_dict,
+                return_structure["standardmAsvsThickness"] = (
+                    plotly_scatter(  # pylint: disable=line-too-long
+                        df_without_blanks,
+                        parameter_dict,
+                    )
                 )
 
             if user_profile.plotMGStandardAcquisitionFreq:
@@ -1101,22 +1101,22 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                         df_date_col="study_date",
                     )
 
-                    return_structure[
-                        "standardStudyWorkloadData"
-                    ] = plotly_barchart_weekdays(
-                        df_time_series_per_weekday,
-                        "weekday",
-                        "standard_names__standard_name",
-                        name_axis_title="Weekday",
-                        value_axis_title="Frequency",
-                        colourmap=user_profile.plotColourMapChoice,
-                        filename="OpenREM CT standard study name workload",
-                        facet_col_wrap=user_profile.plotFacetColWrapVal,
-                        sorting_choice=[
-                            user_profile.plotInitialSortingDirection,
-                            user_profile.plotMGInitialSortingChoice,
-                        ],
-                        return_as_dict=return_as_dict,
+                    return_structure["standardStudyWorkloadData"] = (
+                        plotly_barchart_weekdays(
+                            df_time_series_per_weekday,
+                            "weekday",
+                            "standard_names__standard_name",
+                            name_axis_title="Weekday",
+                            value_axis_title="Frequency",
+                            colourmap=user_profile.plotColourMapChoice,
+                            filename="OpenREM CT standard study name workload",
+                            facet_col_wrap=user_profile.plotFacetColWrapVal,
+                            sorting_choice=[
+                                user_profile.plotInitialSortingDirection,
+                                user_profile.plotMGInitialSortingChoice,
+                            ],
+                            return_as_dict=return_as_dict,
+                        )
                     )
 
     return return_structure
