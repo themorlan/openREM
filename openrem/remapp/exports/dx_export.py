@@ -30,18 +30,12 @@
 import logging
 import datetime
 
-import django.db
-import numpy as np
-import pandas as pd
-
 from django.core.exceptions import ObjectDoesNotExist
-from django.utils.translation import gettext as _
-from django.conf import settings
 from django.db.models import Max
 
 from openrem.remapp.tools.background import get_or_generate_task_uuid
 
-from remapp.models import GeneralStudyModuleAttr
+from ..models import GeneralStudyModuleAttr
 
 from ..tools.check_standard_name_status import are_standard_names_enabled
 
@@ -53,15 +47,8 @@ from .export_common_pandas import (
     create_xlsx,
     create_csv,
     write_export,
-    create_summary_sheet,
     abort_if_zero_studies,
     create_export_task,
-    transform_to_one_row_per_exam,
-    create_standard_name_df_columns,
-    optimise_df_dtypes,
-    write_row_to_acquisition_sheet,
-    text_and_date_formats,
-    sheet_name,
     export_using_pandas,
     get_pulse_data,
     get_xray_filter_info,
@@ -281,8 +268,6 @@ def exportDX2excel(filterdict, pid=False, name=None, patid=None, user=None):
     :return: Saves csv file into Media directory for user to download
     """
 
-    from ..interface.mod_filters import dx_acq_filter
-
     datestamp = datetime.datetime.now()
     task_id = get_or_generate_task_uuid()
     tsk = create_export_task(
@@ -315,8 +300,6 @@ def exportDX2excel(filterdict, pid=False, name=None, patid=None, user=None):
 
     headers = common_headers(pid=pid, name=name, patid=patid)
     headers += ["DAP total (cGy.cm^2)"]
-
-    from django.db.models import Max
 
     max_events_dict = e.aggregate(
         Max(
@@ -456,7 +439,7 @@ def dxxlsx(filterdict, pid=False, name=None, patid=None, user=None):
 
     acquisition_int_field_names = ["Acquisition pk", "Filter pk"]
 
-    acquisition_cat_fields = [
+    acquisition_cat_fields = [  # pylint: disable=line-too-long
         "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
         "projectionxrayradiationdose__irradeventxraydata__anatomical_structure__code_meaning",
         "projectionxrayradiationdose__irradeventxraydata__image_view__code_meaning",
@@ -472,11 +455,11 @@ def dxxlsx(filterdict, pid=False, name=None, patid=None, user=None):
         "Filters",
     ]
 
-    acquisition_cat_field_std_name = "projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name"
+    acquisition_cat_field_std_name = "projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name"  # pylint: disable=line-too-long
     acquisition_cat_field_name_std_name = "Standard acquisition name"
 
     # Required acquisition-level value field names and friendly names
-    acquisition_val_fields = [
+    acquisition_val_fields = [  # pylint: disable=line-too-long
         "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__kvp__kvp",
         "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure__exposure",
         "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__average_xray_tube_current",
@@ -522,7 +505,7 @@ def dxxlsx(filterdict, pid=False, name=None, patid=None, user=None):
         "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
     ]
     field_names_for_acquisition_frequency = ["pk", "Acquisition protocol"]
-    field_for_acquisition_frequency_std_name = "projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name"
+    field_for_acquisition_frequency_std_name = "projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name"  # pylint: disable=line-too-long
     field_name_for_acquisition_frequency_std_name = "Standard acquisition name"
 
     enable_standard_names = are_standard_names_enabled()
