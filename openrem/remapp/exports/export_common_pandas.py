@@ -35,12 +35,11 @@ import sys
 from tempfile import TemporaryFile
 import uuid
 import datetime
+from numbers import Number
 
 import django.db
 import numpy as np
 import pandas as pd
-
-from numbers import Number
 
 from django.core.files import File
 
@@ -1281,7 +1280,7 @@ def write_row_to_acquisition_sheet(acq_df, acquisition, book, worksheet_log, mod
         sheet_row = 1
         worksheet_log[acquisition] = sheet_row
 
-    for idx, row in acq_df.iterrows():
+    for _, row in acq_df.iterrows():
         sheet.write_row(sheet_row, 0, row.fillna(""))
         sheet_row = sheet_row + 1
 
@@ -1424,7 +1423,6 @@ def export_using_pandas(
 
     # Create a series of DataFrames by chunking the queryset into groups of accession numbers.
     # Chunking saves server memory at the expense of speed.
-    write_headers = True
 
     # Create a work sheet for each acquisition protocol present in the data in alphabetical order
     # and a dictionary to hold the number of rows that have been written to each protocol sheet
@@ -1733,7 +1731,7 @@ def write_out_data_as_chunks(
             wsalldata.write_row(0, 0, df.columns)
 
             # Write the DataFrame to the all data sheet
-            for idx, row in df.iterrows():
+            for _, row in df.iterrows():
                 wsalldata.write_row(current_row, 0, row.fillna(""))
                 current_row = current_row + 1
 
