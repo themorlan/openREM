@@ -432,12 +432,12 @@ def get_common_data(modality, exams, pid=None, name=None, patid=None):
                 event_count = int(ct_accumulated.total_number_of_irradiation_events)
             except TypeError:
                 logger.debug(
-                    f"Export CT; couldn't get number of irradiation events." +
+                    "Export CT; couldn't get number of irradiation events." +
                     f" AccNum {exams.accession_number}, Date {exams.study_date}"
                 )
         except ObjectDoesNotExist:
             logger.debug(
-                f"Export CT; ctradiationdose_set object does not exist." +
+                "Export CT; ctradiationdose_set object does not exist." +
                 f" AccNum {exams.accession_number}, Date {exams.study_date}"
             )
 
@@ -457,7 +457,7 @@ def get_common_data(modality, exams, pid=None, name=None, patid=None):
                 cgycm2 = None
         except ObjectDoesNotExist:
             logger.debug(
-                f"Export DX; projectionxrayradiationdose_set object does not exist." +
+                "Export DX; projectionxrayradiationdose_set object does not exist." +
                 f" AccNum {exams.accession_number}, Date {exams.study_date}"
             )
     elif modality in ["RF", "MG"]:
@@ -736,11 +736,9 @@ def create_xlsx(task):
             },
         )
     except (OSError, IOError) as e:
-        logger.error(
-            "Error saving xlsx temporary file ({0}): {1}".format(e.errno, e.strerror)
-        )
+        logger.error(f"Error saving xlsx temporary file ({e.errno}): {e.strerror}")
     except Exception:
-        logger.error("Unexpected error: {0}".format(sys.exc_info()[0]))
+        logger.error(f"Unexpected error: {sys.exc_info()[0]}")
     else:
         task.progress = "Workbook created"
         task.save()
@@ -761,11 +759,9 @@ def create_csv(task):
         temp_csv = open(task.filename.path, "a", newline="", encoding="utf-8")
         writer = csv.writer(temp_csv, dialect="excel")
     except (OSError, IOError) as e:
-        logger.error(
-            "Error saving csv temporary file ({0}): {1}".format(e.errno, e.strerror)
-        )
+        logger.error(f"Error saving csv temporary file ({e.errno}): {e.strerror}")
     except Exception:
-        logger.error("Unexpected error: {0}".format(sys.exc_info()[0]))
+        logger.error(f"Unexpected error: {sys.exc_info()[0]}")
     else:
         task.progress = "CSV file created"
         task.save()
@@ -785,7 +781,7 @@ def write_export(task, filename, temp_file, datestamp):
     try:
         task.filename.save(filename, File(temp_file))
     except (OSError, IOError) as e:
-        logger.error("Error saving export file ({0}): {1}".format(e.errno, e.strerror))
+        logger.error(f"Error saving export file ({e.errno}): {e.strerror}")
 
     task.status = "COMPLETE"
     task.processtime = (datetime.datetime.now() - datestamp).total_seconds()
@@ -814,9 +810,7 @@ def create_summary_sheet(
     titleformat.set_font_size = 22
     titleformat.set_font_color = "#FF0000"
     titleformat.set_bold()
-    toplinestring = "XLSX Export from OpenREM version {0} on {1}".format(
-        version, str(datetime.datetime.now())
-    )
+    toplinestring = f"XLSX Export from OpenREM version {version} on {str(datetime.datetime.now())}"
     linetwostring = (
         "OpenREM is copyright 2019 The Royal Marsden NHS Foundation Trust, and available under the GPL. "
         "See http://openrem.org"
@@ -1577,9 +1571,7 @@ def export_using_pandas(
     book.close()
     tsk.progress = "XLSX book written."
     tsk.save()
-    xlsxfilename = "{0}export{1}.xlsx".format(
-        modality.lower(), datestamp.strftime("%Y%m%d-%H%M%S%f")
-    )
+    xlsxfilename = f"{modality.lower()}export{datestamp.strftime('%Y%m%d-%H%M%S%f')}.xlsx"
     write_export(tsk, xlsxfilename, tmpxlsx, datestamp)
 
 
@@ -1618,9 +1610,7 @@ def write_out_data_as_chunks(
         if chunk_max_idx > n_entries:
             chunk_max_idx = n_entries
 
-        tsk.progress = "Working on {0} to {1} with {2}accession numbers".format(
-            chunk_min_idx + 1, chunk_max_idx, extra_msg_txt
-        )
+        tsk.progress = f"Working on {chunk_min_idx + 1} to {chunk_max_idx} with {extra_msg_txt} accession numbers"
         tsk.save()
 
         filter_dict = {
