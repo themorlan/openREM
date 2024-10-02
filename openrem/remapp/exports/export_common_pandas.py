@@ -34,27 +34,36 @@ import logging
 import sys
 from tempfile import TemporaryFile
 import uuid
+import datetime
 
 import django.db
 import numpy as np
 import pandas as pd
+
+from numbers import Number
+
+from django.core.files import File
+
 from django.conf import settings
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import (
+    ObjectDoesNotExist,
+    MultipleObjectsReturned,
+)
 from django.core.files.base import ContentFile
-from django.db.models import Q, F
+from django.db.models import Q, F, Avg
 from django.db.models.functions import Coalesce
 from xlsxwriter.workbook import Workbook
 
-from remapp.models import (
+from ..models import (
     CtRadiationDose,
     Exports,
     ProjectionXRayRadiationDose,
     StandardNames,
 )
 
-from ..tools.check_standard_name_status import are_standard_names_enabled
+from ..version import __version__
 
-from remapp.version import __version__
+from ..tools.check_standard_name_status import are_standard_names_enabled
 
 logger = logging.getLogger(__name__)
 
@@ -336,9 +345,8 @@ def get_patient_study_data(exam):
         patient_weight = patient_study_module.patient_weight
     except ObjectDoesNotExist:
         logger.debug(
-            "Export {0}; patientstudymoduleattr_set object does not exist. AccNum {1}, Date {2}".format(
-                exam.modality_type, exam.accession_number, exam.study_date
-            )
+            f"Export {exam.modality_type}; patientstudymoduleattr_set object does not exist." +
+            f" AccNum {exam.accession_number}, Date {exam.study_date}"
         )
     return {
         "patient_age_decimal": patient_age_decimal,
@@ -378,9 +386,8 @@ def get_common_data(modality, exams, pid=None, name=None, patid=None):
                 patient_id = patient_module.patient_id
     except ObjectDoesNotExist:
         logger.debug(
-            "Export {0}; patientmoduleattr_set object does not exist. AccNum {1}, Date {2}".format(
-                modality, exams.accession_number, exams.study_date
-            )
+            f"Export {modality}; patientmoduleattr_set object does not exist." +
+            f" AccNum {exams.accession_number}, Date {exams.study_date}"
         )
 
     institution_name = None
@@ -398,15 +405,14 @@ def get_common_data(modality, exams, pid=None, name=None, patid=None):
             display_name = equipment_module.unique_equipment_name.display_name
         except AttributeError:
             logger.debug(
-                "Export {0}; unique_equipment_name object does not exist. AccNum {1}, Date {2}".format(
-                    modality, exams.accession_number, exams.study_date
-                )
+                f"Export {modality}; unique_equipment_name object does not exist." +
+                f" AccNum {exams.accession_number}, Date {exams.study_date}"
             )
+
     except ObjectDoesNotExist:
         logger.debug(
-            "Export {0}; generalequipmentmoduleattr_set object does not exist. AccNum {1}, Date {2}".format(
-                modality, exams.accession_number, exams.study_date
-            )
+            f"Export {modality}; generalequipmentmoduleattr_set object does not exist." +
+            f" AccNum {exams.accession_number}, Date {exams.study_date}"
         )
 
     patient_study_data = get_patient_study_data(exams)
@@ -426,15 +432,13 @@ def get_common_data(modality, exams, pid=None, name=None, patid=None):
                 event_count = int(ct_accumulated.total_number_of_irradiation_events)
             except TypeError:
                 logger.debug(
-                    "Export CT; couldn't get number of irradiation events. AccNum {0}, Date {1}".format(
-                        exams.accession_number, exams.study_date
-                    )
+                    f"Export CT; couldn't get number of irradiation events." +
+                    f" AccNum {exams.accession_number}, Date {exams.study_date}"
                 )
         except ObjectDoesNotExist:
             logger.debug(
-                "Export CT; ctradiationdose_set object does not exist. AccNum {0}, Date {1}".format(
-                    exams.accession_number, exams.study_date
-                )
+                f"Export CT; ctradiationdose_set object does not exist." +
+                f" AccNum {exams.accession_number}, Date {exams.study_date}"
             )
 
     elif modality in "DX":
@@ -453,8 +457,8 @@ def get_common_data(modality, exams, pid=None, name=None, patid=None):
                 cgycm2 = None
         except ObjectDoesNotExist:
             logger.debug(
-                "Export DX; projectionxrayradiationdose_set object does not exist."
-                " AccNum {0}, Date {1}".format(exams.accession_number, exams.study_date)
+                f"Export DX; projectionxrayradiationdose_set object does not exist." +
+                f" AccNum {exams.accession_number}, Date {exams.study_date}"
             )
     elif modality in ["RF", "MG"]:
         try:
@@ -466,10 +470,8 @@ def get_common_data(modality, exams, pid=None, name=None, patid=None):
             comment = exams.projectionxrayradiationdose_set.get().comment
         except ObjectDoesNotExist:
             logger.debug(
-                "Export {0}; projectionxrayradiationdose_set object does not exist."
-                " AccNum {1}, Date {2}".format(
-                    modality, exams.accession_number, exams.study_date
-                )
+                f"Export {modality}; projectionxrayradiationdose_set object does not exist."
+                f" AccNum {exams.accession_number}, Date {exams.study_date}"
             )
 
     examdata = []
@@ -565,9 +567,6 @@ def get_pulse_data(source_data, modality=None):
     :param modality: RF or DX to limit what we look for
     :return: dict of values
     """
-    from django.core.exceptions import MultipleObjectsReturned
-    from django.db.models import Avg
-    from numbers import Number
 
     try:
         kvp = source_data.kvp_set.get().kvp
@@ -782,8 +781,6 @@ def write_export(task, filename, temp_file, datestamp):
     :param datestamp: dat and time export function started
     :return: Nothing
     """
-    import datetime
-    from django.core.files import File
 
     try:
         task.filename.save(filename, File(temp_file))
@@ -807,7 +804,6 @@ def create_summary_sheet(
     :param sheet_list: list of sheet names
     :return: nothing
     """
-    import datetime
 
     # Populate summary sheet
     task.progress = "Now populating the summary sheet..."

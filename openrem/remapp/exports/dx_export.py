@@ -37,6 +37,8 @@ from openrem.remapp.tools.background import get_or_generate_task_uuid
 
 from ..models import GeneralStudyModuleAttr
 
+from .export_common import get_patient_study_data
+
 from ..tools.check_standard_name_status import are_standard_names_enabled
 
 from ..interface.mod_filters import dx_acq_filter
@@ -593,9 +595,6 @@ def dx_phe_2019(filterdict, user=None, projection=True, bespoke=False):
     :param bespoke: for study export, are there more than six projections
     :return: Saves Excel file into Media directory for user to download
     """
-
-    from .export_common import get_patient_study_data
-    from ..interface.mod_filters import dx_acq_filter
 
     datestamp = datetime.datetime.now()
     task_id = get_or_generate_task_uuid()
