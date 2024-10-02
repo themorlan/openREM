@@ -30,18 +30,14 @@
 import logging
 import datetime
 
-import django.db
-import numpy as np
-import pandas as pd
+from decimal import Decimal
 
 from django.core.exceptions import ObjectDoesNotExist
-from django.utils.translation import gettext as _
-from django.conf import settings
 from django.db.models import Max
 
-from openrem.remapp.tools.background import get_or_generate_task_uuid
+from ..models import GeneralStudyModuleAttr
 
-from remapp.models import GeneralStudyModuleAttr
+from ..tools.background import get_or_generate_task_uuid
 
 from ..tools.check_standard_name_status import are_standard_names_enabled
 
@@ -53,16 +49,9 @@ from .export_common_pandas import (
     create_xlsx,
     create_csv,
     write_export,
-    create_summary_sheet,
     abort_if_zero_studies,
     create_export_task,
-    transform_to_one_row_per_exam,
-    create_standard_name_df_columns,
-    optimise_df_dtypes,
-    write_row_to_acquisition_sheet,
     export_using_pandas,
-    text_and_date_formats,
-    sheet_name,
 )
 
 logger = logging.getLogger(__name__)
@@ -312,10 +301,6 @@ def ct_csv(filterdict, pid=False, name=None, patid=None, user=None):
     :param user: User that has started the export
     :return: Saves csv file into Media directory for user to download
     """
-
-    import datetime
-    from django.db.models import Max
-    from ..interface.mod_filters import ct_acq_filter
 
     datestamp = datetime.datetime.now()
     task_id = get_or_generate_task_uuid()
@@ -648,10 +633,6 @@ def ct_phe_2019(filterdict, user=None):
     :param user:  User that has started the export
     :return: Saves Excel file into Media directory for user to download
     """
-
-    import datetime
-    from decimal import Decimal
-    from ..interface.mod_filters import ct_acq_filter
 
     datestamp = datetime.datetime.now()
     task_id = get_or_generate_task_uuid()
