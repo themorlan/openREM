@@ -36,9 +36,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Max, Count, F
 from django.db.models.functions import Coalesce
 
-from ..tools.check_standard_name_status import are_standard_names_enabled
-
-from remapp.models import GeneralStudyModuleAttr
+from ..models import GeneralStudyModuleAttr
 
 from ..tools.background import (
     get_or_generate_task_uuid,
@@ -664,7 +662,7 @@ def nmxlsx(filterdict, pid=False, name=None, patid=None, user=None):
     if abort_if_zero_studies(tsk.num_records, tsk):
         return
 
-    tsk.progress = "{0} studies in query.".format(tsk.num_records)
+    tsk.progress = f"{tsk.num_records} studies in query."
     tsk.save()
     export_using_pandas(
         acquisition_cat_field_name_std_name,

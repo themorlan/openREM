@@ -41,15 +41,14 @@ from django.core.files.base import ContentFile
 from django.db.models import Q
 from xlsxwriter.workbook import Workbook
 
-from remapp.models import (
+from ..models import (
     Exports,
     StandardNames,
-    StandardNameSettings,
 )
 
 from ..tools.check_standard_name_status import are_standard_names_enabled
 
-from remapp.version import __version__
+from ..version import __version__
 
 logger = logging.getLogger(__name__)
 
@@ -763,7 +762,6 @@ def create_summary_sheet(
     :return: nothing
     """
     import datetime
-    import pkg_resources
     from django.db.models import Count
 
     # Populate summary sheet

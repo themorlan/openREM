@@ -35,10 +35,9 @@ from openrem.remapp.tools.background import get_or_generate_task_uuid
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Avg, Max, Min
 
-from remapp.models import (
+from ..models import (
     GeneralStudyModuleAttr,
     IrradEventXRayData,
-    StandardNameSettings,
 )
 
 from ..exports.export_common import (

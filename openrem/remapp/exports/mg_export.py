@@ -35,11 +35,17 @@ from ..tools.background import get_or_generate_task_uuid
 
 from django.core.exceptions import ObjectDoesNotExist
 
-from remapp.models import GeneralStudyModuleAttr
+from ..models import GeneralStudyModuleAttr
 
 from ..tools.check_standard_name_status import are_standard_names_enabled
 
-from ..interface.mod_filters import mg_acq_filter
+from ..interface.mod_filters import (
+    mg_acq_filter,
+    MGSummaryListFilter,
+    MGFilterPlusPid,
+    MGFilterPlusStdNames,
+    MGFilterPlusPidPlusStdNames,
+)
 
 from .export_common_pandas import (
     generate_sheets,
@@ -53,10 +59,6 @@ from .export_common_pandas import (
     create_summary_sheet,
     abort_if_zero_studies,
     create_export_task,
-    transform_to_one_row_per_exam,
-    create_standard_name_df_columns,
-    optimise_df_dtypes,
-    write_row_to_acquisition_sheet,
     export_using_pandas,
     text_and_date_formats,
     sheet_name,
@@ -245,14 +247,6 @@ def exportMG2csv(filterdict, pid=False, name=None, patid=None, user=None):
     :param user: User that has started the export
     :return: Saves csv file into Media directory for user to download
     """
-
-    from remapp.models import GeneralStudyModuleAttr
-    from ..interface.mod_filters import (
-        MGSummaryListFilter,
-        MGFilterPlusPid,
-        MGFilterPlusStdNames,
-        MGFilterPlusPidPlusStdNames,
-    )
 
     # Obtain the system-level enable_standard_names setting
     enable_standard_names = are_standard_names_enabled()
@@ -612,7 +606,7 @@ def mgxlsx(filterdict, pid=False, name=None, patid=None, user=None):
     if abort_if_zero_studies(tsk.num_records, tsk):
         return
 
-    tsk.progress = "{0} studies in query.".format(tsk.num_records)
+    tsk.progress = f"{tsk.num_records} studies in query."
     tsk.save()
 
     export_using_pandas(
@@ -670,14 +664,6 @@ def exportMG2excel(filterdict, pid=False, name=None, patid=None, user=None):
     :param user: User that has started the export
     :return: Saves csv file into Media directory for user to download
     """
-
-    from remapp.models import GeneralStudyModuleAttr
-    from ..interface.mod_filters import (
-        MGSummaryListFilter,
-        MGFilterPlusPid,
-        MGFilterPlusStdNames,
-        MGFilterPlusPidPlusStdNames,
-    )
 
     # Obtain the system-level enable_standard_names setting
     enable_standard_names = are_standard_names_enabled()
