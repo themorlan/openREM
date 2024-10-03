@@ -34,9 +34,9 @@ import sys
 import mimetypes
 import urllib
 
-os.environ["DJANGO_SETTINGS_MODULE"] = "openremproject.settings"
-
 import logging
+from wsgiref.util import FileWrapper
+
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -47,7 +47,6 @@ from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.encoding import smart_str
 from django.db.models import Max
-from wsgiref.util import FileWrapper
 
 from ..models import Exports, BackgroundTask, GeneralStudyModuleAttr
 from ..interface.mod_filters import dx_acq_filter
@@ -57,9 +56,9 @@ from .dx_export import dx_phe_2019, dxxlsx, exportDX2excel
 from .mg_csv_nhsbsp import mg_csv_nhsbsp
 from .mg_export import mgxlsx, exportMG2csv
 from .nm_export import nmxlsx, exportNM2csv
-from .rf_export import rf_phe_2019, rfopenskin, rfxlsx, exportFL2excel
+from .rf_export import rf_phe_2019, rfopenskin_csv, rfxlsx, exportFL2excel
 
-from openrem.remapp.tools.background import (  # pylint: disable=wrong-import-position
+from ..tools.background import (  # pylint: disable=wrong-import-position
     run_in_background,
     terminate_background,
     get_queued_tasks,
@@ -67,6 +66,8 @@ from openrem.remapp.tools.background import (  # pylint: disable=wrong-import-po
 )
 
 from ..version import __version__, __docs_version__
+
+os.environ["DJANGO_SETTINGS_MODULE"] = "openremproject.settings"
 
 logger = logging.getLogger(__name__)
 
@@ -470,7 +471,7 @@ def rfopenskin(request, pk):
     export = get_object_or_404(GeneralStudyModuleAttr, pk=pk)
 
     if request.user.groups.filter(name="exportgroup"):
-        job = run_in_background(rfopenskin, "export_rf", export.pk)
+        job = run_in_background(rfopenskin_csv, "export_rf", export.pk)
         logger.debug("Export Fluoro to openSkin CSV job is {0}".format(job.id))
 
     return redirect(reverse_lazy("export"))
@@ -682,16 +683,12 @@ def deletefile(request):
             except OSError as e:
                 messages.error(
                     request,
-                    "Export file delete failed - please contact an administrator. Error({0}): {1}".format(
-                        e.errno, e.strerror
-                    ),
+                    f"Export file delete failed - please contact an administrator. Error({e.errno}): {e.strerror}",  # pylint: disable=line-too-long
                 )
             except Exception:
                 messages.error(
                     request,
-                    "Unexpected error - please contact an administrator: {0}".format(
-                        sys.exc_info()[0]
-                    ),
+                    f"Unexpected error - please contact an administrator: {sys.exc_info()[0]}",
                 )
 
     return HttpResponseRedirect(reverse(export))
@@ -711,11 +708,7 @@ def export_abort(request, pk):
     if request.user.groups.filter(name="exportgroup"):
         terminate_background(task)
         export_task.delete()
-        logger.info(
-            "Export task {0} terminated from the Exports interface".format(
-                export_task.task_id
-            )
-        )
+        logger.info(f"Export task {export_task.task_id} terminated from the Exports interface")
 
     return HttpResponseRedirect(reverse_lazy("export"))
 
@@ -731,7 +724,7 @@ def export_remove(request, task_id=None):
     """
     if task_id and request.user.groups.filter(name="exportgroup"):
         remove_task_from_queue(task_id)
-        logger.info("Export task {0} removed from queue".format(task_id))
+        logger.info(f"Export task {task_id} removed from queue")
 
     return HttpResponseRedirect(reverse_lazy("export"))
 

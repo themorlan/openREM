@@ -848,7 +848,7 @@ def exportFL2excel(filterdict, pid=False, name=None, patid=None, user=None):
     tsk.save()
 
 
-def rfopenskin(studyid):
+def rfopenskin_csv(studyid):
     """Export single RF study data to OpenSkin RF csv sheet.
 
     :param studyid: RF study database ID.
