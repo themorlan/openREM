@@ -767,8 +767,10 @@ def create_csv(task):
         writer = csv.writer(temp_csv, dialect="excel")
     except (OSError, IOError) as e:
         logger.error(f"Error saving csv temporary file ({e.errno}): {e.strerror}")
+        return None, None
     except Exception:
         logger.error(f"Unexpected error: {sys.exc_info()[0]}")
+        return None, None
     else:
         task.progress = "CSV file created"
         task.save()
@@ -1117,6 +1119,7 @@ def transform_to_one_row_per_exam(
     exam_val_field_names,
     all_field_names,
 ):
+    # pylint: disable=too-many-locals
     """Transform a DataFrame with one acquisition per row into a DataFrame with
     one exam per row, including all acquisitions for that exam.
     """
@@ -1376,6 +1379,8 @@ def export_using_pandas(
     tmpxlsx,
     tsk,
 ):
+    # pylint: disable=too-many-locals
+    # pylint: disable=too-many-statements
 
     # Add summary sheet and all data sheet
     summarysheet = book.add_worksheet("Summary")
@@ -1613,6 +1618,7 @@ def write_out_data_as_chunks(
 ):
     # pylint: disable=too-many-locals
     # pylint: disable=too-many-statements
+    # pylint: disable=too-many-branches
     for chunk_min_idx in range(0, n_entries, qs_chunk_size):
 
         chunk_max_idx = chunk_min_idx + qs_chunk_size
@@ -1774,6 +1780,7 @@ def write_out_data_as_chunks(
 
 
 def create_nm_columns(qs, filter_dict, df_unprocessed):
+    # pylint: disable=too-many-locals
 
     # person_participant
     person_participant_val_fields = [  # pylint: disable=line-too-long

@@ -237,6 +237,9 @@ def _mg_get_series_data(event):
 
 
 def exportMG2csv(filterdict, pid=False, name=None, patid=None, user=None):
+    # pylint: disable=too-many-locals
+    # pylint: disable=too-many-branches
+    # pylint: disable=too-many-statements
     """
     Export filtered mammography database data to a single-sheet CSV file.
 
@@ -407,6 +410,7 @@ def exportMG2csv(filterdict, pid=False, name=None, patid=None, user=None):
 
 
 def mgxlsx(filterdict, pid=False, name=None, patid=None, user=None):
+    # pylint: disable=too-many-locals
     """Export filtered MG database data to multi-sheet Microsoft XSLX files
 
     :param filterdict: Queryset of studies to export
