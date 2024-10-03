@@ -651,9 +651,10 @@ def download(request, task_id):
         return redirect(reverse_lazy("export"))
 
     file_path = os.path.join(settings.MEDIA_ROOT, exp.filename.name)
-    file_wrapper = FileWrapper(open(file_path, mode="rb"))
-    file_mimetype = mimetypes.guess_type(file_path)
-    response = HttpResponse(file_wrapper, content_type=file_mimetype)
+    with open(file_path, mode="rb") as f:
+        file_wrapper = FileWrapper(f)
+        file_mimetype = mimetypes.guess_type(file_path)
+        response = HttpResponse(file_wrapper, content_type=file_mimetype)
     response["X-Sendfile"] = file_path
     response["Content-Length"] = os.stat(file_path).st_size
     response["Content-Disposition"] = "attachment; filename=%s" % smart_str(
@@ -755,13 +756,14 @@ def update_active(request):
     :param request: Request object
     :return: HTML table of active exports
     """
+    template = "remapp/exports-active.html"
     if request.is_ajax():
         current_export_tasks = Exports.objects.filter(
             status__contains="CURRENT"
         ).order_by("-export_date")
-        template = "remapp/exports-active.html"
-
         return render(request, template, {"current": current_export_tasks})
+
+    return render(request, template)
 
 
 @csrf_exempt
@@ -773,13 +775,14 @@ def update_error(request):
     :param request: Request object
     :return: HTML table of exports in error state
     """
+    template = "remapp/exports-error.html"
     if request.is_ajax():
         error_export_tasks = Exports.objects.filter(status__contains="ERROR").order_by(
             "-export_date"
         )
-        template = "remapp/exports-error.html"
-
         return render(request, template, {"errors": error_export_tasks})
+
+    return render(request, template)
 
 
 @csrf_exempt
@@ -791,6 +794,7 @@ def update_complete(request):
     :param request: Request object, including pk of latest complete export at initial page load
     :return: HTML table of completed exports
     """
+    template = "remapp/exports-complete.html"
     if request.is_ajax():
         data = request.POST
         latest_complete_pk = data.get("latest_complete_pk")
@@ -798,10 +802,11 @@ def update_complete(request):
         complete_export_tasks = Exports.objects.filter(
             status__contains="COMPLETE"
         ).filter(pk__gt=latest_complete_pk)
-        template = "remapp/exports-complete.html"
 
         return render(
             request,
             template,
             {"complete": complete_export_tasks, "in_pid_group": in_pid_group},
         )
+
+    return render(request, template)
