@@ -446,7 +446,7 @@ def dxxlsx(filterdict, pid=False, name=None, patid=None, user=None):
         "projectionxrayradiationdose__irradeventxraydata__anatomical_structure__code_meaning",
         "projectionxrayradiationdose__irradeventxraydata__image_view__code_meaning",
         "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure_control_mode",
-        "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__xrayfilters__xray_filter_material__code_meaning",
+        "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__xrayfilters__xray_filter_material__code_meaning",  # pylint: disable=line-too-long
     ]
 
     acquisition_cat_field_names = [
@@ -466,18 +466,18 @@ def dxxlsx(filterdict, pid=False, name=None, patid=None, user=None):
         "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure__exposure",
         "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__average_xray_tube_current",
         "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure_time",
-        "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__xrayfilters__xray_filter_thickness_minimum",
-        "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__xrayfilters__xray_filter_thickness_maximum",
+        "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__xrayfilters__xray_filter_thickness_minimum",  # pylint: disable=line-too-long
+        "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__xrayfilters__xray_filter_thickness_maximum",  # pylint: disable=line-too-long
         "projectionxrayradiationdose__irradeventxraydata__irradeventxraydetectordata__exposure_index",
         "projectionxrayradiationdose__irradeventxraydata__irradeventxraydetectordata__target_exposure_index",
         "projectionxrayradiationdose__irradeventxraydata__irradeventxraydetectordata__deviation_index",
         "projectionxrayradiationdose__irradeventxraydata__irradeventxraydetectordata__relative_xray_exposure",
         "projectionxrayradiationdose__irradeventxraydata__dose_area_product",
         "projectionxrayradiationdose__irradeventxraydata__entrance_exposure_at_rp",
-        "projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__doserelateddistancemeasurements__distance_source_to_detector",
-        "projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__doserelateddistancemeasurements__distance_source_to_entrance_surface",
-        "projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__doserelateddistancemeasurements__distance_source_to_isocenter",
-        "projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__doserelateddistancemeasurements__table_height_position",
+        "projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__doserelateddistancemeasurements__distance_source_to_detector",  # pylint: disable=line-too-long
+        "projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__doserelateddistancemeasurements__distance_source_to_entrance_surface",  # pylint: disable=line-too-long
+        "projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__doserelateddistancemeasurements__distance_source_to_isocenter",  # pylint: disable=line-too-long
+        "projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__doserelateddistancemeasurements__table_height_position",  # pylint: disable=line-too-long
     ]
     acquisition_val_field_names = [
         "kVp",
