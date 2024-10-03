@@ -744,8 +744,10 @@ def create_xlsx(task):
         )
     except (OSError, IOError) as e:
         logger.error(f"Error saving xlsx temporary file ({e.errno}): {e.strerror}")
+        return None, None
     except Exception:
         logger.error(f"Unexpected error: {sys.exc_info()[0]}")
+        return None, None
     else:
         task.progress = "Workbook created"
         task.save()
@@ -1317,6 +1319,7 @@ def replace_long_target_with_short(x):
 
 
 def replace_long_filter_with_short(x):
+    # pylint: disable=too-many-return-statements
     x = str(x)
     if "aluminum" in x.lower():
         return "Al"
@@ -2205,7 +2208,7 @@ def create_filter_columns(acquisition_cat_field_names, df_unprocessed):
     df_unprocessed["Filter thicknesses (mm)"] = (
         df_unprocessed["Filter thicknesses (mm)"]
         .replace(np.nan, None)
-        .apply(lambda x: f"{x:.4f}" if (x != None) else "")
+        .apply(lambda x: f"{x:.4f}" if (x is not None) else "")
     )
     df_unprocessed["Filter thicknesses (mm)"] = (
         df_unprocessed.drop_duplicates(["Acquisition pk", "Filter pk"])

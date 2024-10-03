@@ -32,9 +32,7 @@
 from decimal import Decimal, InvalidOperation
 import logging
 
-import django.db
 from django import forms
-from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
 import django_filters
 
