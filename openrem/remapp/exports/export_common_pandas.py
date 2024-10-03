@@ -1180,7 +1180,7 @@ def transform_to_one_row_per_exam(
     )
     exam_field_names.append(g)
     df = df.set_index(exam_field_names).unstack().sort_index(axis=1, level=1)
-    df.columns = ["E{} {}".format(b, a) for a, b in df.columns]
+    df.columns = ["E{} {}".format(b, a) for a, b in df.columns]  # pylint: disable=consider-using-f-string
     df = df.reset_index()
 
     # Set datatypes of the exam-level integer and value fields again because the reformat undoes the earlier changes
@@ -2067,7 +2067,7 @@ def transform_nm_datetime_columns(book, sheet, df):
 
 
 def create_image_view_modifier_column(df_unprocessed):
-    df_unprocessed["View Modifier"] = (
+    df_unprocessed["View Modifier"] = (  # pylint disable=unnecessary-lambda
         df_unprocessed[df_unprocessed["View Modifier"].notnull()]
         .drop_duplicates(["Acquisition pk", "View Modifier pk"])
         .sort_values(by=["Acquisition pk"], ascending=[True], inplace=False)
@@ -2079,28 +2079,28 @@ def create_image_view_modifier_column(df_unprocessed):
 
 
 def create_mg_pulse_columns(df_unprocessed):
-    df_unprocessed["kVp Concatenated"] = (
+    df_unprocessed["kVp Concatenated"] = (  # pylint disable=unnecessary-lambda
         df_unprocessed[df_unprocessed["kVp"].notnull()]
         .drop_duplicates(["Acquisition pk", "kVp pk"])
         .sort_values(by=["kVp pk"], ascending=[True], inplace=False)
         .groupby(["Acquisition pk"])["kVp"]
         .transform(lambda x: " | ".join(map(str, x)))  # pylint disable=unnecessary-lambda
     )
-    df_unprocessed["uAs Concatenated"] = (
+    df_unprocessed["uAs Concatenated"] = (  # pylint disable=unnecessary-lambda
         df_unprocessed[df_unprocessed["uAs"].notnull()]
         .drop_duplicates(["Acquisition pk", "exposure pk"])
         .sort_values(by=["exposure pk"], ascending=[True], inplace=False)
         .groupby(["Acquisition pk"])["uAs"]
         .transform(lambda x: " | ".join(map(str, x)))  # pylint disable=unnecessary-lambda
     )
-    df_unprocessed["ms Concatenated"] = (
+    df_unprocessed["ms Concatenated"] = (  # pylint disable=unnecessary-lambda
         df_unprocessed[df_unprocessed["ms"].notnull()]
         .drop_duplicates(["Acquisition pk", "pulsewidth pk"])
         .sort_values(by=["pulsewidth pk"], ascending=[True], inplace=False)
         .groupby(["Acquisition pk"])["ms"]
         .transform(lambda x: " | ".join(map(str, x)))  # pylint disable=unnecessary-lambda
     )
-    df_unprocessed["mA Concatenated"] = (
+    df_unprocessed["mA Concatenated"] = (  # pylint disable=unnecessary-lambda
         df_unprocessed[df_unprocessed["mA"].notnull()]
         .drop_duplicates(["Acquisition pk", "xraytubecurrent pk"])
         .sort_values(by=["xraytubecurrent pk"], ascending=[True], inplace=False)
@@ -2192,7 +2192,7 @@ def create_filter_columns(acquisition_cat_field_names, df_unprocessed):
     )
 
     # Combine the "Filters" text in any rows that have matching "Acquisition pk" and the "Filters" text is not null
-    df_unprocessed["Filters"] = (
+    df_unprocessed["Filters"] = (  # pylint disable=unnecessary-lambda
         df_unprocessed[df_unprocessed["Filters"].notnull()]
         .drop_duplicates(["Acquisition pk", "Filter pk"])
         .sort_values(by=["Filter pk"], ascending=[True], inplace=False)
@@ -2210,7 +2210,7 @@ def create_filter_columns(acquisition_cat_field_names, df_unprocessed):
         .replace(np.nan, None)
         .apply(lambda x: f"{x:.4f}" if (x is not None) else "")
     )
-    df_unprocessed["Filter thicknesses (mm)"] = (
+    df_unprocessed["Filter thicknesses (mm)"] = (  # pylint disable=unnecessary-lambda
         df_unprocessed.drop_duplicates(["Acquisition pk", "Filter pk"])
         .sort_values(by=["Filter pk"], ascending=[True], inplace=False)
         .groupby(["Acquisition pk"])["Filter thicknesses (mm)"]
