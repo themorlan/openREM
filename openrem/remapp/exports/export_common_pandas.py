@@ -226,6 +226,7 @@ def sheet_name(protocol_name):
 def generate_sheets(
     studies, book, protocol_headers, modality=None, pid=False, name=None, patid=None
 ):
+    # pylint: disable=too-many-locals
     """
     Function to generate the sheets in the xlsx book based on the protocol names
     :param studies: filtered queryset of exams
@@ -291,7 +292,8 @@ def generate_sheets(
     protocols_list = list(acq_protocols)
 
     if enable_standard_names:
-        # Obtain a list of the unique standard acquisition names. Drop any na or None values. Prepend "[standard] " to each entry
+        # Obtain a list of the unique standard acquisition names.
+        # Drop any na or None values. Prepend "[standard] " to each entry
         std_acq_protocols = (
             acq_name_df.sort_values(by=["Standard acquisition name"])[
                 "Standard acquisition name"
@@ -356,6 +358,9 @@ def get_patient_study_data(exam):
 
 
 def get_common_data(modality, exams, pid=None, name=None, patid=None):
+    # pylint: disable=too-many-locals
+    # pylint: disable=too-many-branches
+    # pylint: disable=too-many-statements
     """Get the data common to several exports
 
     :param modality: Modality for the number of irradiation events database location
@@ -561,6 +566,7 @@ def get_common_data(modality, exams, pid=None, name=None, patid=None):
 
 
 def get_pulse_data(source_data, modality=None):
+    # pylint: disable=too-many-branches
     """Get the pulse level data, which could be a single value or average, or could be per pulse data. Return average.
 
     :param source_data: IrradEventXRaySourceData table
@@ -640,6 +646,7 @@ def get_pulse_data(source_data, modality=None):
 
 
 def get_xray_filter_info(source):
+    # pylint: disable=too-many-branches
     """Compile a string containing details of the filters, and a corresponding string of filter thicknesses
 
     :param source: exposure in question
@@ -791,6 +798,8 @@ def write_export(task, filename, temp_file, datestamp):
 def create_summary_sheet(
     task, studies, book, summary_sheet, has_series_protocol=True, modality=None
 ):
+    # pylint: disable=too-many-locals
+    # pylint: disable=too-many-statements
     """Create summary sheet for xlsx exports
 
     :param task: Export task object
@@ -1602,7 +1611,8 @@ def write_out_data_as_chunks(
     worksheet_log,
     wsalldata,
 ):
-
+    # pylint: disable=too-many-locals
+    # pylint: disable=too-many-statements
     for chunk_min_idx in range(0, n_entries, qs_chunk_size):
 
         chunk_max_idx = chunk_min_idx + qs_chunk_size
@@ -1766,9 +1776,9 @@ def write_out_data_as_chunks(
 def create_nm_columns(qs, filter_dict, df_unprocessed):
 
     # person_participant
-    person_participant_val_fields = [
+    person_participant_val_fields = [  # pylint: disable=line-too-long
         "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__personparticipant__person_name",
-        "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__personparticipant__person_role_in_procedure_cid__code_meaning",
+        "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__personparticipant__person_role_in_procedure_cid__code_meaning",  # pylint: disable=line-too-long
     ]
 
     person_participant_val_fields_names = [
@@ -1802,17 +1812,17 @@ def create_nm_columns(qs, filter_dict, df_unprocessed):
     )
 
     # organ_dose
-    organ_dose_val_fields = [
+    organ_dose_val_fields = [  # pylint: disable=line-too-long
         Coalesce(
             F(
-                "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__organdose__reference_authority_code_id__code_meaning"
+                "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__organdose__reference_authority_code_id__code_meaning"  # pylint: disable=line-too-long
             ),
             F(
-                "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__organdose__reference_authority_text"
+                "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__organdose__reference_authority_text"  # pylint: disable=line-too-long
             ),
         ),
-        "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__organdose__finding_site__code_meaning",
-        "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__organdose__laterality__code_meaning",
+        "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__organdose__finding_site__code_meaning",  # pylint: disable=line-too-long
+        "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__organdose__laterality__code_meaning",  # pylint: disable=line-too-long
     ]
 
     organ_dose_val_fields_names = [
@@ -1851,8 +1861,8 @@ def create_nm_columns(qs, filter_dict, df_unprocessed):
     )
 
     # patient_state
-    patient_state_val_fields = [
-        "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationpatientcharacteristics__patientstate__patient_state__code_meaning",
+    patient_state_val_fields = [  # pylint: disable=line-too-long
+        "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationpatientcharacteristics__patientstate__patient_state__code_meaning",  # pylint: disable=line-too-long
     ]
 
     patient_state_val_fields_names = [
@@ -1885,9 +1895,9 @@ def create_nm_columns(qs, filter_dict, df_unprocessed):
     )
 
     # glomerular
-    glomerular_val_fields = [
-        "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationpatientcharacteristics__glomerularfiltrationrate__measurement_method__code_meaning",
-        "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationpatientcharacteristics__glomerularfiltrationrate__equivalent_meaning_of_concept_name__code_meaning",
+    glomerular_val_fields = [  # pylint: disable=line-too-long
+        "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationpatientcharacteristics__glomerularfiltrationrate__measurement_method__code_meaning",  # pylint: disable=line-too-long
+        "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationpatientcharacteristics__glomerularfiltrationrate__equivalent_meaning_of_concept_name__code_meaning",  # pylint: disable=line-too-long
     ]
 
     glomerular_val_fields_names = [
@@ -1895,10 +1905,10 @@ def create_nm_columns(qs, filter_dict, df_unprocessed):
         "Equivalent meaning of concept name",
     ]
 
-    glomerular_int_fields = [
+    glomerular_int_fields = [  # pylint: disable=line-too-long
         "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__pk",
-        "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationpatientcharacteristics__glomerularfiltrationrate__pk",
-        "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationpatientcharacteristics__glomerularfiltrationrate__glomerular_filtration_rate",
+        "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationpatientcharacteristics__glomerularfiltrationrate__pk",  # pylint: disable=line-too-long
+        "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationpatientcharacteristics__glomerularfiltrationrate__glomerular_filtration_rate",  # pylint: disable=line-too-long
     ]
 
     glomerular_int_fields_names = [
@@ -2345,9 +2355,10 @@ def create_ct_source_columns(
         ],
         None,
     )
-    # Where "Number of sources" is not 2 copy source data fields to S1, but leave any non-matching ones as the existing values, otherwise
-    # the writing of S1 data for the dual source entries will be over-written. Some of my CT scanners have NA for the "Number of sources"
-    # value, so need to replace these with 0 to ensure the != 2 works.
+    # Where "Number of sources" is not 2 copy source data fields to S1, but leave any non-matching ones as the
+    # existing values, otherwise the writing of S1 data for the dual source entries will be over-written. Some
+    # of my CT scanners have NA for the "Number of sources" value, so need to replace these with 0 to ensure
+    # the != 2 works.
     df_unprocessed["Number of sources"] = df_unprocessed["Number of sources"].fillna(0)
     (
         df_unprocessed["S1 Source name"],

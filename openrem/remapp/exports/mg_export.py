@@ -500,13 +500,13 @@ def mgxlsx(filterdict, pid=False, name=None, patid=None, user=None):
         "Number of pulses",
     ]
 
-    acquisition_cat_fields = [
+    acquisition_cat_fields = [  # pylint: disable=line-too-long
         "projectionxrayradiationdose__irradeventxraydata__image_view__code_meaning",
         "projectionxrayradiationdose__irradeventxraydata__imageviewmodifier__image_view_modifier__code_meaning",
         "projectionxrayradiationdose__irradeventxraydata__laterality__code_meaning",
         "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
-        "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__anode_target_material__code_meaning",
-        "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__xrayfilters__xray_filter_material__code_meaning",
+        "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__anode_target_material__code_meaning",  # pylint: disable=line-too-long
+        "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__xrayfilters__xray_filter_material__code_meaning",  # pylint: disable=line-too-long
         "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure_control_mode",
         "projectionxrayradiationdose__irradeventxraydata__comment",
     ]
@@ -521,18 +521,18 @@ def mgxlsx(filterdict, pid=False, name=None, patid=None, user=None):
         "Exposure mode description",
     ]
 
-    acquisition_cat_field_std_name = "projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name"
+    acquisition_cat_field_std_name = "projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name"  # pylint: disable=line-too-long
     acquisition_cat_field_name_std_name = "Standard acquisition name"
 
     # Required acquisition-level value field names and friendly names
-    acquisition_val_fields = [
+    acquisition_val_fields = [  # pylint: disable=line-too-long
         "projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness",
-        "projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__doserelateddistancemeasurements__radiological_thickness",
+        "projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__doserelateddistancemeasurements__radiological_thickness",  # pylint: disable=line-too-long
         "projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_force",
         "projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__magnification_factor",
         "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__collimated_field_area",
-        "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__xrayfilters__xray_filter_thickness_minimum",
-        "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__xrayfilters__xray_filter_thickness_maximum",
+        "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__xrayfilters__xray_filter_thickness_minimum",  # pylint: disable=line-too-long
+        "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__xrayfilters__xray_filter_thickness_maximum",  # pylint: disable=line-too-long
         "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__focal_spot_size",
         "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__kvp__kvp",
         "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__xraytubecurrent__xray_tube_current",
@@ -571,7 +571,7 @@ def mgxlsx(filterdict, pid=False, name=None, patid=None, user=None):
     ]
 
     field_names_for_acquisition_frequency = ["pk", "Acquisition protocol"]
-    field_for_acquisition_frequency_std_name = "projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name"
+    field_for_acquisition_frequency_std_name = "projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name"  # pylint: disable=line-too-long
     field_name_for_acquisition_frequency_std_name = "Standard acquisition name"
 
     enable_standard_names = are_standard_names_enabled()

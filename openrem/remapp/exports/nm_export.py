@@ -489,6 +489,7 @@ def _write_nm_excel_sheet(
 
 
 def nmxlsx(filterdict, pid=False, name=None, patid=None, user=None):
+    # pylint: disable=too-many-locals
     """Export filtered NM database data to multi-sheet Microsoft XSLX files
 
     :param filterdict: Queryset of studies to export
@@ -565,23 +566,23 @@ def nmxlsx(filterdict, pid=False, name=None, patid=None, user=None):
         "Acquisition pk",
     ]
 
-    acquisition_cat_fields = [
+    acquisition_cat_fields = [  # pylint: disable=line-too-long
         "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__radionuclide_half_life",
         "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__administered_activity",
         "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__effective_dose",
         Coalesce(
             F(
-                "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__radiopharmaceutical_agent__code_meaning"
+                "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__radiopharmaceutical_agent__code_meaning"  # pylint: disable=line-too-long
             ),
             F(
-                "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__radiopharmaceutical_agent_string"
+                "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__radiopharmaceutical_agent_string"  # pylint: disable=line-too-long
             ),
         ),
         "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__radionuclide__code_meaning",
-        "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__radiopharmaceutical_start_datetime",
-        "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__radiopharmaceutical_stop_datetime",
+        "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__radiopharmaceutical_start_datetime",  # pylint: disable=line-too-long
+        "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__radiopharmaceutical_stop_datetime",  # pylint: disable=line-too-long
         "radiopharmaceuticalradiationdose__associated_procedure__code_meaning",
-        "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__route_of_administration__code_meaning",
+        "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__route_of_administration__code_meaning",  # pylint: disable=line-too-long
         "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__laterality__code_meaning",
         "radiopharmaceuticalradiationdose__comment",
         "study_description",
@@ -646,7 +647,7 @@ def nmxlsx(filterdict, pid=False, name=None, patid=None, user=None):
 
     tmpxlsx, book = create_xlsx(tsk)
     if not tmpxlsx:
-        exit()
+        sys.exit()
 
     # Get the data
     study_pks = None
