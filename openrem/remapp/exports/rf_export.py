@@ -849,6 +849,9 @@ def exportFL2excel(filterdict, pid=False, name=None, patid=None, user=None):
 
 
 def rfopenskin_csv(studyid):
+    # pylint: disable=too-many-locals
+    # pylint: disable=too-many-branches
+    # pylint: disable=too-many-statements
     """Export single RF study data to OpenSkin RF csv sheet.
 
     :param studyid: RF study database ID.

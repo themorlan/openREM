@@ -91,9 +91,9 @@ def text_and_date_formats(
     textformat = book.add_format({"num_format": "@"})
     dateformat = book.add_format({"num_format": settings.XLSX_DATE})
     timeformat = book.add_format({"num_format": settings.XLSX_TIME})
-    datetimeformat = book.add_format(
-        {"num_format": f"{settings.XLSX_DATE} {settings.XLSX_TIME}"}
-    )
+    #datetimeformat = book.add_format(
+    #    {"num_format": f"{settings.XLSX_DATE} {settings.XLSX_TIME}"}
+    #)
 
     date_column = 10
 
@@ -800,7 +800,7 @@ def write_export(task, filename, temp_file, datestamp):
 
 
 def create_summary_sheet(
-    task, studies, book, summary_sheet, has_series_protocol=True, modality=None
+    task, studies, book, summary_sheet, modality=None
 ):
     # pylint: disable=too-many-locals
     # pylint: disable=too-many-statements
@@ -810,7 +810,7 @@ def create_summary_sheet(
     :param studies: study level object that has been exported
     :param book: xlsxwriter book to work on
     :param summary_sheet: worksheet object
-    :param sheet_list: list of sheet names
+    :param modality: the DICOM modality of the export
     :return: nothing
     """
 
