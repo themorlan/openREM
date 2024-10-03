@@ -1214,7 +1214,7 @@ def create_standard_name_df_columns(df):
         )
         num_std_name_cols = len(std_name_df.columns)
         std_name_df.columns = [
-            "Standard study name {}".format(a + 1) for a in std_name_df.columns
+            "Standard study name {}".format(a + 1) for a in std_name_df.columns  # pylint: disable=consider-using-f-string
         ]
         std_name_df = std_name_df.reset_index()
 
@@ -2072,7 +2072,7 @@ def create_image_view_modifier_column(df_unprocessed):
         .drop_duplicates(["Acquisition pk", "View Modifier pk"])
         .sort_values(by=["Acquisition pk"], ascending=[True], inplace=False)
         .groupby(["Acquisition pk"])["View Modifier"]
-        .transform(lambda x: ",".join(x))
+        .transform(lambda x: ",".join(x))  # pylint disable=unnecessary-lambda
     )
 
     return df_unprocessed
@@ -2084,28 +2084,28 @@ def create_mg_pulse_columns(df_unprocessed):
         .drop_duplicates(["Acquisition pk", "kVp pk"])
         .sort_values(by=["kVp pk"], ascending=[True], inplace=False)
         .groupby(["Acquisition pk"])["kVp"]
-        .transform(lambda x: " | ".join(map(str, x)))
+        .transform(lambda x: " | ".join(map(str, x)))  # pylint disable=unnecessary-lambda
     )
     df_unprocessed["uAs Concatenated"] = (
         df_unprocessed[df_unprocessed["uAs"].notnull()]
         .drop_duplicates(["Acquisition pk", "exposure pk"])
         .sort_values(by=["exposure pk"], ascending=[True], inplace=False)
         .groupby(["Acquisition pk"])["uAs"]
-        .transform(lambda x: " | ".join(map(str, x)))
+        .transform(lambda x: " | ".join(map(str, x)))  # pylint disable=unnecessary-lambda
     )
     df_unprocessed["ms Concatenated"] = (
         df_unprocessed[df_unprocessed["ms"].notnull()]
         .drop_duplicates(["Acquisition pk", "pulsewidth pk"])
         .sort_values(by=["pulsewidth pk"], ascending=[True], inplace=False)
         .groupby(["Acquisition pk"])["ms"]
-        .transform(lambda x: " | ".join(map(str, x)))
+        .transform(lambda x: " | ".join(map(str, x)))  # pylint disable=unnecessary-lambda
     )
     df_unprocessed["mA Concatenated"] = (
         df_unprocessed[df_unprocessed["mA"].notnull()]
         .drop_duplicates(["Acquisition pk", "xraytubecurrent pk"])
         .sort_values(by=["xraytubecurrent pk"], ascending=[True], inplace=False)
         .groupby(["Acquisition pk"])["mA"]
-        .transform(lambda x: " | ".join(map(str, x)))
+        .transform(lambda x: " | ".join(map(str, x)))  # pylint disable=unnecessary-lambda
     )
 
     df_unprocessed["kVp Mean"] = (
@@ -2197,7 +2197,7 @@ def create_filter_columns(acquisition_cat_field_names, df_unprocessed):
         .drop_duplicates(["Acquisition pk", "Filter pk"])
         .sort_values(by=["Filter pk"], ascending=[True], inplace=False)
         .groupby(["Acquisition pk"])["Filters"]
-        .transform(lambda x: " | ".join(x))
+        .transform(lambda x: " | ".join(x))  # pylint disable=unnecessary-lambda
     )
 
     # Combine the "Filter thicknesses (mm)" values in any rows that have matching "Acquisition pk".
@@ -2214,7 +2214,7 @@ def create_filter_columns(acquisition_cat_field_names, df_unprocessed):
         df_unprocessed.drop_duplicates(["Acquisition pk", "Filter pk"])
         .sort_values(by=["Filter pk"], ascending=[True], inplace=False)
         .groupby(["Acquisition pk"])["Filter thicknesses (mm)"]
-        .transform(lambda x: " | ".join(x))
+        .transform(lambda x: " | ".join(x))  # pylint disable=unnecessary-lambda
     )
 
     if "Filter thicknesses (mm)" not in acquisition_cat_field_names:
