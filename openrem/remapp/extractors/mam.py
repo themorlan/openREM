@@ -40,6 +40,12 @@ from openrem.remapp.tools.background import (
     record_task_info,
 )
 
+from openremproject import settings
+if settings.USE_HL7:
+    try:
+        from hl7.hl7updater import find_message_and_apply
+    except ImportError:
+        settings.USE_HL7 = False
 logger = logging.getLogger("remapp.extractors.mam")
 
 # setup django/OpenREM
@@ -675,6 +681,9 @@ def mam(mg_file):
         return 1
 
     _mammo2db(dataset)
+    if settings.USE_HL7:
+        find_message_and_apply(patient_id=dataset.PatientID, accession_number=dataset.AccessionNumber,
+                               study_instance_uid=dataset.StudyInstanceUID)
 
     if del_mg_im:
         logger.debug("Mammo %s processing complete, deleting file", mg_file)

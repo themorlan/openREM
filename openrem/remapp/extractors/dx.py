@@ -100,6 +100,13 @@ from remapp.models import (  # pylint: disable=wrong-import-order, wrong-import-
     XrayGrid,
 )
 
+from openremproject import settings
+if settings.USE_HL7:
+    try:
+        from hl7.hl7updater import find_message_and_apply
+    except ImportError:
+        settings.USE_HL7 = False
+
 logger = logging.getLogger(
     "remapp.extractors.dx"
 )  # Explicitly named so that it is still handled when using __main__
@@ -964,6 +971,9 @@ def dx(dig_file):
 
     logger.debug("About to launch _dx2db")
     _dx2db(dataset)
+    if settings.USE_HL7:
+        find_message_and_apply(patient_id=dataset.PatientID, accession_number=dataset.AccessionNumber,
+                               study_instance_uid=dataset.StudyInstanceUID)
 
     if del_dx_im:
         os.remove(dig_file)

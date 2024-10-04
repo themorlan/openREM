@@ -259,6 +259,9 @@ EMAIL_OPENREM_URL = os.environ.get(
     "EMAIL_OPENREM_URL", default="http://your.openrem.server"
 )
 
+# Use HL7 integration
+USE_HL7 = False
+
 # Save charts as HTML files in a charts sub-folder of the MEDIA_ROOT folder on the OpenREM server.
 SAVE_CHARTS_AS_HTML = False
 

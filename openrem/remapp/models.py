@@ -855,6 +855,16 @@ def create_user_profile(sender, instance, created, **kwargs):
 post_save.connect(create_user_profile, sender=User)
 
 
+class Hl7Message(models.Model):
+    receive_datetime = models.DateTimeField(blank=True, null=True)
+    patient_id = models.TextField(blank=True, null=True)
+    accession_number = models.TextField(blank=True, null=True)
+    study_instance_uid = models.TextField(blank=True, null=True)
+    message_type = models.TextField(blank=True, null=True)
+    study_date = models.TextField(blank=True, null=True)
+    message = models.TextField(blank=True, null=True)
+
+
 class UniqueEquipmentNames(models.Model):
     """
     Table to unique equipment name information

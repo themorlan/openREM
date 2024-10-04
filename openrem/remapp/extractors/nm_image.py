@@ -85,6 +85,13 @@ from openrem.remapp.tools.background import (
     record_task_related_query,
 )
 
+from openremproject import settings
+if settings.USE_HL7:
+    try:
+        from hl7.hl7updater import find_message_and_apply
+    except ImportError:
+        settings.USE_HL7 = False
+
 logger = logging.getLogger(
     "remapp.extractors.nm_image"
 )  # Explicitly named so that it is still handled when using __main__
@@ -430,6 +437,10 @@ def nm_image(filename: str):
         "1.2.840.10008.5.1.4.1.1.20",
     ]:
         _nm2db(dataset)
+        if settings.USE_HL7:
+            find_message_and_apply(patient_id=dataset.PatientID, accession_number=dataset.AccessionNumber,
+                                   study_instance_uid=dataset.StudyInstanceUID)
+
     else:
         logger.error(f"{filename} is not an NM or PET Image. Will not import.")
 
