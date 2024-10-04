@@ -52,23 +52,21 @@ Installation
 
 Prerequisites
 
-* HL7Apy should be installed: git-hub fork and adaptations created by LuukOost
+* HL7Apy should be installed
+* After installation of HL7Apy replace the mllp.py file with the file in the openrem\hl7 folder
 
---> Are we gonna include this in OpenREM or what would be the best way of
-distribution
-
-Installation:
-
-* Include it in OpenREM or make it an add-on package?
+  * This makes it possible to keep the connection to the HL7 sender open. Most production systems expect this
+  * This makes it possible to set the character encoding in advance.
 
 ************************
 Starting the MLLP-server
 ************************
 
 The MLLP-server receives the HL7-messages and starts the handling of the
-messages. If python is in your path, it can be started by:
+messages. Take care the correct virtual environment is active, go the openrempath and start the
+MLLP-server by entering:
 
-python <openrempath>\\hl7\\mllpserver.py
+python -m .\\hl7\\mllpserver.py
 
 *************
 Configuration
@@ -96,7 +94,8 @@ HL7_RESPONSE_UNSUPPORTED_MESSAGE
   AE: Application error (raise an error)
 
 HL7_RESPONSE_ALWAYS_ACCEPT:
-  Always respons 'AA' if this parameter is set to True
+  Always respons 'AA' if this parameter is set to True.
+  This is what you might want to have, as otherwise you might get messages that aren't understood repeatingly.
 
 HL7_DEFAULT_VERSION
   Default HL7-version to use (if not found in MSH-segment)
@@ -111,7 +110,7 @@ HL7_KEEP_CONNECTION_ALIVE
 
 HL7_STUDY_DATE_OFFSET
   Number of days to keep hl7 order messages after
-  studydate for applying on receive of RDSR
+  studydate for applying on receive of DICOM dose information
 
 HL7_KEEP_FROM_ORDER_STATUS
   Keep hl7 order messages only if orc-5 order status is the given status
@@ -148,7 +147,7 @@ HL7_MODALITY_2_OPENREM_MODALITY
   'MG')
 
 HL7_ORDER_STATUSSES 
-  List of order statusses that are available.
+  List of order statuses that are available.
 
 HL7_SAVE_HTML_REPORT 
   If True, prints result of hl7-reading as html-report. For debugging / testing 
@@ -167,6 +166,8 @@ HL7_MESSAGE_LOCATION
 *****
 Hints
 *****
+
+* Contact the responsible persons for sending the HL7 messages and discuss with them how the HL7 message is filled
 
 * First start with applying the HL7 messages to false, set the following 
   parameters to false:

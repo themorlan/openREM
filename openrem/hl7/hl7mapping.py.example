@@ -1,6 +1,11 @@
+# This is just an example implementation of HL7Mapping
+# Written by Luuk Oostveen for implementation in Radboud university medical center Nijmegen
+
 import logging
+import sys
 from hl7apy.exceptions import ChildNotFound
-from basehl7mapping import BaseHL7Mapping
+from .basehl7mapping import BaseHL7Mapping
+from .hl7settings import HL7_MESSAGE_ENCODING
 
 logger = logging.getLogger(__name__)
 
@@ -26,7 +31,7 @@ class HL7Mapping(BaseHL7Mapping):
         """
         Return patient name
 
-        Specific mapping of patient name for Radboud UMC (Nijmegen)
+        Specific mapping of patient name for Radboud university medical center (Nijmegen)
 
         :return: patient name
         """
@@ -47,7 +52,7 @@ class HL7Mapping(BaseHL7Mapping):
         """
         Return Operator
 
-        Specific mapping of Operator for Radboud UMC (Nijmegen)
+        Specific mapping of Operator for Radboud university medical center (Nijmegen)
 
         :return: Operator
         """
@@ -67,19 +72,37 @@ class HL7Mapping(BaseHL7Mapping):
         """
         Return performing physician
 
-        Specific mapping of Operator for Radboud UMC (Nijmegen)
+        Specific mapping of Operator for Radboud university medical center (Nijmegen)
 
         :return: Performing physician
         """
-        if ('ORM' in self._msg.name) or ('OMI' in self._msg.name) or ('OMG' in self._msg.name):
+        if (('ORM' in self._msg.name) or ('OMI' in self._msg.name) or ('OMG' in self._msg.name)) and \
+            (self._get_element_value('OBR.OBR_19.ST').strip() != ''):
             # Family name complex^given name complex^middle name^name prefix^name suffix
             # Very likely that this HL7 field is used for radiographer / technician
-            return (self._get_element_value('OBR.OBR_32.NDL_2') + '^'
-                    + self._get_element_value('OBR.OBR_32.NDL_3') + '^'
-                    + self._get_element_value('OBR.OBR_32.NDL_4') + '^'
-                    + (self._get_element_value('OBR.OBR_32.NDL_5') + ' '
-                       + self._get_element_value('OBR.OBR_32.NDL_7')).strip() + '^'
-                    + self._get_element_value('OBR.OBR_32.NDL_6')).strip('^')
+
+            return (self._get_element_value('OBR.OBR_19.ST[1]') + '^'
+                    + self._get_element_value('OBR.OBR_19.ST[2]') + '^'
+                    + self._get_element_value('OBR.OBR_19.ST[3]') + '^'
+                    + (self._get_element_value('OBR.OBR_19.ST[4]') + ' '
+                       + self._get_element_value('OBR.OBR_19.ST[6]')).strip() + '^'
+                    + self._get_element_value('OBR.OBR_19.ST[5]')).strip('^')
+        elif 'SIU' in self._msg.name:
+            # 1.1 = main surgeon (sometimes multiple are available, in the case of multiple SPSs during one OR procedure)
+            result = [aip_segment for aip_segment in self._msg.AIP.list
+                      if aip_segment.AIP_4.CE_1.to_er7() == '1.1']
+            result_str = ''
+            for r in result:
+                # only unique "surgeons"
+                hoofdoperateur = (r.AIP_3.XCN_2.to_er7() + '^'
+                                  + r.AIP_3.XCN_3.to_er7() + '^'
+                                  + r.AIP_3.XCN_4.to_er7() + '^'
+                                  + r.AIP_3.XCN_5.to_er7() + ' '
+                                  + r.AIP_3.XCN_7.to_er7() + '^'
+                                  + r.AIP_3.XCN_8.to_er7() + '^').strip('^').strip(' ').strip('^')
+                if not(hoofdoperateur in result_str):
+                    result_str = result_str + hoofdoperateur + ' & '
+            return result_str[:-3]
         else:
             return ''
 
@@ -88,13 +111,13 @@ class HL7Mapping(BaseHL7Mapping):
         """
         Return patient weight
 
-        Specific mapping of Operator for Radboud UMC (Nijmegen)
+        Specific mapping of Operator for Radboud university medical center (Nijmegen)
 
         :return: patient weight
         """
         try:
             result = [obx_segment for obx_segment in self._msg.OBX.list
-                      if obx_segment.OBX_3.CE_1.to_er7() == 'GEWICHT']
+                      if obx_segment.OBX_3.CE_1.to_er7() == u'WEIGHT']
             if result:
                 result = result[0].OBX_5
         except ChildNotFound:
@@ -110,13 +133,13 @@ class HL7Mapping(BaseHL7Mapping):
         """
         Return patient length
 
-        Specific mapping of Operator for Radboud UMC (Nijmegen)
+        Specific mapping of Operator for Radboud university medical center (Nijmegen)
 
         :return: patient length
         """
         try:
             result = [obx_segment for obx_segment in self._msg.OBX.list
-                      if obx_segment.OBX_3.CE_1.to_er7() == 'LENGTE']
+                      if obx_segment.OBX_3.CE_1.to_er7() == u'HEIGHT']
             if result:
                 result = result[0].OBX_5
         except ChildNotFound:
@@ -128,10 +151,121 @@ class HL7Mapping(BaseHL7Mapping):
             return ''
 
     @property
+    def study_id(self):
+        """
+        Return study ID
+
+        Specific mapping of Operator for Radboud university medical center (Nijmegen)
+
+        :return: Study ID
+        """
+        if 'SIU' in self._msg.name:
+            try:
+                if len(self._msg.children.get('SCH').children.get('SCH_27')) <= 1:
+                    result = self._get_element_value('SCH.SCH_27.EI_1')
+                else:
+                    # return first non empty item in list
+                    result = (next(result for result in self._msg.children.get('SCH').children.get('SCH_27')
+                                   if result.to_er7())).to_er7()
+            except (ChildNotFound, StopIteration):
+                result = ''
+            return result
+        else:
+            return self._get_element_value('OBR.OBR_3.EI_1')
+
+    @property
     def study_accession_number(self):
         """
         Return accession number
 
+        Specific mapping of Operator for Radboud university medical center (Nijmegen)
+
         :return: Accession number
         """
-        return self._get_element_value('OBR.OBR_3.CE_1')
+        if 'SIU' in self._msg.name:
+            try:
+                if len(self._msg.children.get('SCH').children.get('SCH_27')) <= 1:
+                    result = self._get_element_value('SCH.SCH_27.EI_1')
+                else:
+                    # return first non empty item in list
+                    result = (next(result for result in self._msg.children.get('SCH').children.get('SCH_27')
+                                   if result.to_er7())).to_er7()
+            except (ChildNotFound, StopIteration):
+                result = ''
+            return result
+        else:
+            return self._get_element_value('OBR.OBR_3.EI_1')
+
+    @property
+    def study_description(self):
+        """
+        Return study description
+
+        Mapping Hl7 to DICOM for study description is not defined in IHE RAD TF-2 Transactions, but the value of
+        (Requested) Procedure Description seems to fulfill the need. Is also suggested that the same values for
+        (Performed) Procedure step description and study description are used.
+
+        :return: Study description
+        """
+        return self.study_requested_procedure_code_meaning
+
+
+    @property
+    def study_procedure_code_value(self):
+        if 'SIU' in self._msg.name:
+            if len(self._msg.AIS) > 1:
+                result = []
+                for ais_segment in self._msg.AIS.list:
+                    result.append(ais_segment.children.get('AIS_3').children.get('CE_1').to_er7())
+                result.sort()
+                str_result = " & ".join(value for value in result)
+            else:
+                str_result = self._get_element_value('AIS.AIS_3.CE_1')
+            return str_result
+        else:
+            return super(HL7Mapping, self).study_procedure_code_value
+
+    @property
+    def study_procedure_code_meaning(self):
+        if 'SIU' in self._msg.name:
+            if len(self._msg.AIS) > 1:
+                result = []
+                for ais_segment in self._msg.AIS.list:
+                    result.append(ais_segment.children.get('AIS_3').children.get('CE_2').to_er7())
+                result.sort()
+                str_result = " & ".join(meaning for meaning in result)
+            else:
+                str_result = self._get_element_value('AIS.AIS_3.CE_2')
+            return str_result
+        else:
+            return super(HL7Mapping, self).study_procedure_code_meaning
+
+    @property
+    def study_requested_procedure_code_value(self):
+        if 'SIU' in self._msg.name:
+            if len(self._msg.AIS) > 1:
+                result = []
+                for ais_segment in self._msg.AIS.list:
+                    result.append(ais_segment.children.get('AIS_3').children.get('CE_1').to_er7())
+                result.sort()
+                str_result = " & ".join(value for value in result)
+            else:
+                str_result = self._get_element_value('AIS.AIS_3.CE_1')
+            return str_result
+        else:
+            return super(HL7Mapping, self).study_requested_procedure_code_value
+
+    @property
+    def study_requested_procedure_code_meaning(self):
+        if 'SIU' in self._msg.name:
+            if len(self._msg.AIS) > 1:
+                result = []
+                for ais_segment in self._msg.AIS.list:
+                    result.append(ais_segment.children.get('AIS_3').children.get('CE_2').to_er7())
+                result.sort()
+                str_result = " & ".join(value for value in result)
+            else:
+                str_result = self._get_element_value('AIS.AIS_3.CE_2')
+            return str_result
+        else:
+            return super(HL7Mapping, self).study_requested_procedure_code_meaning

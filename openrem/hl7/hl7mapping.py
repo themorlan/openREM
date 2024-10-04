@@ -1,5 +1,3 @@
-# Note: This file should not be overridden with updates
-
 import logging
 from hl7apy.exceptions import ChildNotFound
 from basehl7mapping import BaseHL7Mapping
@@ -13,12 +11,4 @@ class HL7Mapping(BaseHL7Mapping):
     Overrides mappings defined in BaseHL7Mapping
     Only differences from BaseHL7Mapping should be implemented here
     """
-
-    def __init__(self, msg):
-        """
-        This function is actually not necessary, but something should be overridden.
-        So this function is always overriden
-
-        :param msg: The HL7- message that should be mapped
-        """
-        BaseHL7Mapping.__init__(self, msg)
+    pass

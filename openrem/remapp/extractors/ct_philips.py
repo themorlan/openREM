@@ -82,6 +82,13 @@ from remapp.models import (  # pylint: disable=wrong-import-order, wrong-import-
     UniqueEquipmentNames,
 )
 
+from openremproject import settings
+if settings.USE_HL7:
+    try:
+        from hl7.hl7updater import find_message_and_apply
+    except ImportError:
+        settings.USE_HL7 = False
+
 logger = logging.getLogger(__name__)
 
 
@@ -417,6 +424,9 @@ def ct_philips(philips_file):
         return 1
 
     _philips_ct2db(dataset)
+    if settings.USE_HL7:
+        find_message_and_apply(patient_id=dataset.PatientID, accession_number=dataset.AccessionNumber,
+                               study_instance_uid=dataset.StudyInstanceUID)
 
     if del_ct_phil:
         os.remove(philips_file)

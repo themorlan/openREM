@@ -262,6 +262,9 @@ EMAIL_OPENREM_URL = os.environ.get(
 # Save charts as HTML files in a charts sub-folder of the MEDIA_ROOT folder on the OpenREM server.
 SAVE_CHARTS_AS_HTML = False
 
+# use HL7 integration
+USE_HL7 = False
+
 # Ignore the Device Observer UID of these equipment models when creating display name entries during import of DICOM
 # RDSR data using the rdsr.py extractor.
 # See https://docs.openrem.org/en/latest/env_variables.html#device-observer-uid-settings.

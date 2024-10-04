@@ -1,12 +1,16 @@
+# Note: This file should not be overridden with updates
+#       Changes should be applied in hl7mapping.py
+
 import logging
 from hl7apy.exceptions import ChildNotFound
+from .hl7settings import HL7_MESSAGE_ENCODING  # .
 
 logger = logging.getLogger(__name__)
 
 
-class BaseHL7Mapping:
+class BaseHL7Mapping(object):
     """
-    Default Hl7 to DICOM mapping based on IHE Radiology Technical Framework Volume 2 IHE RAD TF-2 Transactions
+    Default HL7 to DICOM mapping based on IHE Radiology Technical Framework Volume 2 IHE RAD TF-2 Transactions
     Some values are explicitly not taken at ADT level (i.e. patient weight / height) as these could change
     study information with current values that were not applicable at the time of the study.
     """
@@ -15,7 +19,7 @@ class BaseHL7Mapping:
         """
         initialization of BaseHL7Mapping
 
-        :param msg: The HL7- message that should be mapped
+        :param msg: The HL7-message that should be mapped
         """
         self._msg = msg
 
@@ -171,7 +175,7 @@ class BaseHL7Mapping:
         """
         try:
             result = [obx_segment for obx_segment in self._msg.OBX.list
-                      if obx_segment.OBX_3.CE_2.to_er7() == 'BODY WEIGHT']
+                      if obx_segment.OBX_3.CE_2.to_er7() == u'BODY WEIGHT']
             if result:
                 result = result[0].OBX_5
         except ChildNotFound:
@@ -192,7 +196,7 @@ class BaseHL7Mapping:
         """
         try:
             result = [obx_segment for obx_segment in self._msg.OBX.list
-                      if obx_segment.OBX_3.CE_1.to_er7() == 'BODY HEIGHT']
+                      if obx_segment.OBX_3.CE_1.to_er7() == u'BODY HEIGHT']
             if result:
                 result = result[0].OBX_5
         except ChildNotFound:
@@ -313,7 +317,7 @@ class BaseHL7Mapping:
 
         :return: Study description
         """
-        return self.study_requested_procedure_code_meaning
+        return self.study_requested_procedure_code_meaning()
 
     @property
     def study_physician_of_record(self):

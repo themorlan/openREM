@@ -84,6 +84,13 @@ from remapp.models import (  # pylint: disable=wrong-import-order, wrong-import-
     SkinDoseMapCalcSettings,
 )
 
+from openremproject import settings
+if settings.USE_HL7:
+    try:
+        from hl7.hl7updater import find_message_and_apply
+    except ImportError:
+        settings.USE_HL7 = False
+
 logger = logging.getLogger(
     "remapp.extractors.rdsr"
 )  # Explicitly named so that it is still handled when using __main__
@@ -636,6 +643,9 @@ def rdsr(rdsr_file):
     ):
         logger.debug("rdsr.py extracting from {0}".format(rdsr_file))
         _rdsr2db(dataset)
+        if settings.USE_HL7:
+            find_message_and_apply(patient_id=dataset.PatientID, accession_number=dataset.AccessionNumber,
+                                   study_instance_uid=dataset.StudyInstanceUID)
     elif (
         dataset.SOPClassUID == ("1.2.840.10008.5.1.4.1.1.88.22")  # Enhanced SR
         and dataset.ConceptNameCodeSequence[0].CodingSchemeDesignator
@@ -644,6 +654,10 @@ def rdsr(rdsr_file):
     ):
         logger.debug("rdsr.py extracting from {0}".format(rdsr_file))
         _rdsr2db(dataset)
+        if settings.USE_HL7:
+            find_message_and_apply(patient_id=dataset.PatientID, accession_number=dataset.AccessionNumber,
+                                   study_instance_uid=dataset.StudyInstanceUID)
+
     elif (
         dataset.SOPClassUID
         == "1.2.840.10008.5.1.4.1.1.88.68"  # Radiopharmaceutical Radiation Dose SR
@@ -652,6 +666,9 @@ def rdsr(rdsr_file):
     ):
         logger.debug(f"rdsr.py extracting from {rdsr_file}")
         _rdsr2db(dataset)
+        if settings.USE_HL7:
+            find_message_and_apply(patient_id=dataset.PatientID, accession_number=dataset.AccessionNumber,
+                                   study_instance_uid=dataset.StudyInstanceUID)
     else:
         logger.warning(
             f"rdsr.py not attempting to extract from {rdsr_file}, not a radiation dose structured report"

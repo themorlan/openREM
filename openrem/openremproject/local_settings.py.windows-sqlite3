@@ -120,6 +120,9 @@ EMAIL_USE_SSL = 0         # Use 0 for False, 1 for True
 EMAIL_DOSE_ALERT_SENDER = 'your.alert@email.address'
 EMAIL_OPENREM_URL = 'http://your.openrem.server'
 
+# use HL7 integration
+USE_HL7 = False
+
 # Ignore the Device Observer UID of these equipment models when creating display name entries during import of DICOM
 # RDSR data using the rdsr.py extractor.
 # See https://docs.openrem.org/en/latest/i_displaynames.html#ignore-device-obs-uid.
