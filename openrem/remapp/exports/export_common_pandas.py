@@ -80,7 +80,6 @@ def text_and_date_formats(
     :param name: has patient name been selected for export
     :param patid: has patient ID been selected for export
     :param modality: modality
-    :param headers: The headers used for the sheet
     :return: book
 
     Parameters
