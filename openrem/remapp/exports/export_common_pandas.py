@@ -69,7 +69,7 @@ logger = logging.getLogger(__name__)
 
 
 def text_and_date_formats(
-    book, sheet, pid=False, name=None, patid=None, modality=None, headers=None
+    book, sheet, pid=False, name=None, patid=None, modality=None
 ):
     """
     Function to write out the headings common to each sheet and modality and format the date, time, patient ID and
@@ -1396,7 +1396,6 @@ def export_using_pandas(
         acquisition_cat_field_names,
         acquisition_int_field_names,
         acquisition_val_field_names,
-        all_field_names,
         book,
         ct_dose_check_field_names,
         current_row,
@@ -1445,7 +1444,6 @@ def export_using_pandas(
         acquisition_cat_field_names,
         acquisition_int_field_names,
         acquisition_val_field_names,
-        all_field_names,
         book,
         ct_dose_check_field_names,
         current_row,
@@ -1486,7 +1484,6 @@ def write_out_data_as_chunks(
     acquisition_cat_field_names,
     acquisition_int_field_names,
     acquisition_val_field_names,
-    all_field_names,
     book,
     ct_dose_check_field_names,
     current_row,
