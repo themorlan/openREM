@@ -223,114 +223,6 @@ def sheet_name(protocol_name):
     return tab_text
 
 
-def generate_sheets(
-    studies, book, protocol_headers, modality=None, pid=False, name=None, patid=None
-):
-    # pylint: disable=too-many-locals
-    """
-    Function to generate the sheets in the xlsx book based on the protocol names
-    :param studies: filtered queryset of exams
-    :param book: xlsxwriter book to work on
-    :param protocol_headers: list of headers to insert on each sheet
-    :param modality: study modality to determine database location of acquisition_protocol
-    :param pid: does the user have patient identifiable data permission
-    :param name: has patient name been selected for export
-    :param patid: has patient ID been selected for export
-    :return: book
-    """
-    # Obtain the system-level enable_standard_names setting
-    enable_standard_names = are_standard_names_enabled()
-
-    sheet_list = {}
-
-    required_fields = []
-    column_names = []
-    acq_name_df = None
-    if modality in ["DX", "RF", "MG"]:
-        required_fields.append("irradeventxraydata__acquisition_protocol")
-        column_names.append("Acquisition protocol")
-
-        if enable_standard_names:
-            required_fields.append(
-                "irradeventxraydata__standard_protocols__standard_name"
-            )
-            column_names.append("Standard acquisition name")
-
-        # Obtain a dataframe of all the acquisition protocols and standard acquisition names in the supplied studies
-        acq_name_df = pd.DataFrame.from_records(
-            data=ProjectionXRayRadiationDose.objects.filter(
-                general_study_module_attributes__in=studies.values("pk")
-            ).values_list(*required_fields),
-            columns=column_names,
-        )
-
-    elif modality in "CT":
-        required_fields.append("ctirradiationeventdata__acquisition_protocol")
-        column_names.append("Acquisition protocol")
-
-        if enable_standard_names:
-            required_fields.append(
-                "ctirradiationeventdata__standard_protocols__standard_name"
-            )
-            column_names.append("Standard acquisition name")
-
-        # Obtain a dataframe of all the acquisition protocols and standard acquisition names in the supplied studies
-        acq_name_df = pd.DataFrame.from_records(
-            data=CtRadiationDose.objects.filter(
-                general_study_module_attributes__in=studies.values("pk")
-            ).values_list(*required_fields),
-            columns=column_names,
-        )
-
-    # Obtain a list of the unique acquisition protocols. Replace any na or None values with "Unknown"
-    acq_protocols = (
-        acq_name_df.sort_values(by=["Acquisition protocol"])["Acquisition protocol"]
-        .fillna("Unknown")
-        .unique()
-    )
-
-    protocols_list = list(acq_protocols)
-
-    if enable_standard_names:
-        # Obtain a list of the unique standard acquisition names.
-        # Drop any na or None values. Prepend "[standard] " to each entry
-        std_acq_protocols = (
-            acq_name_df.sort_values(by=["Standard acquisition name"])[
-                "Standard acquisition name"
-            ]
-            .dropna()
-            .unique()
-        )
-        std_acq_protocols = "[standard] " + std_acq_protocols
-        protocols_list.extend(list(std_acq_protocols))
-
-    protocols_list.sort()
-
-    for protocol in protocols_list:
-        tab_text = sheet_name(protocol)
-        if tab_text not in sheet_list:
-            sheet_list[tab_text] = {
-                "sheet": book.add_worksheet(tab_text),
-                "count": 0,
-                "protocolname": [protocol],
-            }
-            sheet_list[tab_text]["sheet"].write_row(0, 0, protocol_headers)
-            book = text_and_date_formats(
-                book,
-                sheet_list[tab_text]["sheet"],
-                pid=pid,
-                name=name,
-                patid=patid,
-                modality=modality,
-                headers=protocol_headers,
-            )
-        else:
-            if protocol not in sheet_list[tab_text]["protocolname"]:
-                sheet_list[tab_text]["protocolname"].append(protocol)
-
-    return book, sheet_list
-
-
 def get_patient_study_data(exam):
     """Get patient study module data
 
@@ -1119,7 +1011,6 @@ def transform_to_one_row_per_exam(
     exam_obj_field_names,
     exam_time_field_names,
     exam_val_field_names,
-    all_field_names,
 ):
     # pylint: disable=too-many-locals
     """Transform a DataFrame with one acquisition per row into a DataFrame with
@@ -1743,7 +1634,6 @@ def write_out_data_as_chunks(
                 exam_obj_field_names,
                 exam_time_field_names,
                 exam_val_field_names,
-                all_field_names,
             )
 
             # Write the headings to the sheet (over-writing each time, but this ensures we'll include the study

@@ -753,7 +753,7 @@ def exportNM2excel(filterdict, pid=False, name=None, patid=None, user=None):
         sheet_count = len(study_descriptions) + 1
 
         all_data = book.add_worksheet("All data")
-        book = text_and_date_formats(book, all_data, pid, name, patid, "NM", headings)
+        book = text_and_date_formats(book, all_data, pid, name, patid, "NM")
         _write_nm_excel_sheet(
             task,
             all_data,
@@ -772,7 +772,7 @@ def exportNM2excel(filterdict, pid=False, name=None, patid=None, user=None):
             study_description, current_data = study_description
             current_sheet = book.add_worksheet(sheet_name(study_description))
             book = text_and_date_formats(
-                book, current_sheet, pid, name, patid, "NM", headings
+                book, current_sheet, pid, name, patid, "NM"
             )
             _write_nm_excel_sheet(
                 task,
