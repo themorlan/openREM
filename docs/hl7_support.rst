@@ -53,7 +53,7 @@ Installation
 Prerequisites
 
 * HL7Apy should be installed
-* After installation of HL7Apy replace the mllp.py file with the file in the openrem\hl7 folder
+* After installation of HL7Apy replace the mllp.py file with the file in the openrem\\hl7\\hl7apy folder
 
   * This makes it possible to keep the connection to the HL7 sender open. Most production systems expect this
   * This makes it possible to set the character encoding in advance.
@@ -63,7 +63,7 @@ Starting the MLLP-server
 ************************
 
 The MLLP-server receives the HL7-messages and starts the handling of the
-messages. Take care the correct virtual environment is active, go the openrempath and start the
+messages. Take care the correct virtual environment is active, go the openrem-path and start the
 MLLP-server by entering:
 
 python -m .\\hl7\\mllpserver.py
@@ -73,11 +73,11 @@ Configuration
 *************
 
 The main problem with HL7 messages is that there is a wide variety of what
-information is in what fields. The file openrem\hl7\basehl7mapping.py contains
+information is in what fields. The file openrem\\hl7\\basehl7mapping.py contains
 the base mapping of hl7 fields to database fields based on
 `IHE Radiology Technical Framework Volume 2 IHE RAD TF-2 Transactions`_.
-To change the mapping copy the file hl7mapping.py.example to hl7mapping.py and
-edit it to your needs.
+To change the mapping make changes to the file hl7mapping.py. In the file hl7mapping.py.example you can find an example
+of changes needed.
 
 In the file hl7settings.py a lot of configuration settings are available:
 
@@ -85,7 +85,7 @@ HL7_SERVER_HOSTNAME
   The hostname or IP-address of the system that runs OpenREM
 
 HL7_SERVER_PORT
-  The portnumber to receive HL7-messages
+  The port number to receive HL7-messages
 
 HL7_RESPONSE_UNSUPPORTED_MESSAGE
   The answer to the sender on HL7-messages that are not supported.
@@ -94,7 +94,7 @@ HL7_RESPONSE_UNSUPPORTED_MESSAGE
   AE: Application error (raise an error)
 
 HL7_RESPONSE_ALWAYS_ACCEPT:
-  Always respons 'AA' if this parameter is set to True.
+  Always respond 'AA' if this parameter is set to True.
   This is what you might want to have, as otherwise you might get messages that aren't understood repeatingly.
 
 HL7_DEFAULT_VERSION
@@ -110,7 +110,7 @@ HL7_KEEP_CONNECTION_ALIVE
 
 HL7_STUDY_DATE_OFFSET
   Number of days to keep hl7 order messages after
-  studydate for applying on receive of DICOM dose information
+  study-date for applying on receive of DICOM dose information
 
 HL7_KEEP_FROM_ORDER_STATUS
   Keep hl7 order messages only if orc-5 order status is the given status
@@ -146,7 +146,7 @@ HL7_MODALITY_2_OPENREM_MODALITY
   in OpenREM (the only modalities used in OpenREM are 'CT', 'DX', 'RF' and
   'MG')
 
-HL7_ORDER_STATUSSES
+HL7_ORDER_STATUSES
   List of order statuses that are available.
 
 HL7_SAVE_HTML_REPORT
@@ -192,5 +192,9 @@ Hints
   correctly
 
 * A test environment is the best way to go.
+
+* Make a backup of the database before you start.
+
+* Start by sending HL7 messages manually using one of the free HL7 sender applications on the internet.
 
 .. _`IHE Radiology Technical Framework Volume 2 IHE RAD TF-2 Transactions`: http://www.ihe.net/uploadedFiles/Documents/Radiology/IHE_RAD_TF_Vol2.pdf

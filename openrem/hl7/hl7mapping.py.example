@@ -81,12 +81,16 @@ class HL7Mapping(BaseHL7Mapping):
             # Family name complex^given name complex^middle name^name prefix^name suffix
             # Very likely that this HL7 field is used for radiographer / technician
             
-            return (self._get_element_value('OBR.OBR_19.ST[1]') + '^'
-                    + self._get_element_value('OBR.OBR_19.ST[2]') + '^' 
-                    + self._get_element_value('OBR.OBR_19.ST[3]') + '^'
-                    + (self._get_element_value('OBR.OBR_19.ST[4]') + ' '
-                       + self._get_element_value('OBR.OBR_19.ST[6]')).strip() + '^'
-                    + self._get_element_value('OBR.OBR_19.ST[5]')).strip('^')
+            try:
+                result_str = (self._get_element_value('OBR.OBR_19.ST[1]') + '^'
+                             + self._get_element_value('OBR.OBR_19.ST[2]') + '^'
+                             + self._get_element_value('OBR.OBR_19.ST[3]') + '^'
+                             + (self._get_element_value('OBR.OBR_19.ST[4]') + ' '
+                             + self._get_element_value('OBR.OBR_19.ST[6]')).strip() + '^'
+                             + self._get_element_value('OBR.OBR_19.ST[5]')).strip('^')
+            except IndexError:
+                result_str = ''
+            return result_str
         elif 'SIU' in self._msg.name:
             # 1.1 = main surgeon (sometimes multiple are available, in the case of multiple SPSs during one OR procedure)
             result = [aip_segment for aip_segment in self._msg.AIP.list

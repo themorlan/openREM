@@ -301,9 +301,9 @@ def update_study(mapping):
 
             if ((mapping.study_date >=
                  (datetime.today() - timedelta(days=HL7_STUDY_DATE_OFFSET)).strftime('%Y%m%d')) and
-                (HL7_ORDER_STATUSSES.index(mapping.order_status) >=
-                 HL7_ORDER_STATUSSES.index(HL7_KEEP_FROM_ORDER_STATUS) if
-                mapping.order_status in HL7_ORDER_STATUSSES else False)) or \
+                (HL7_ORDER_STATUSES.index(mapping.order_status) >=
+                 HL7_ORDER_STATUSES.index(HL7_KEEP_FROM_ORDER_STATUS) if
+                mapping.order_status in HL7_ORDER_STATUSES else False)) or \
                     (('SIU' in mapping.message.name) and mapping.study_accession_number):
                 try:
                     message = Hl7Message(receive_datetime=datetime.now(),

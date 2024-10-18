@@ -29,8 +29,8 @@ HL7_MODALITY_2_OPENREM_MODALITY = {
     'NM': 'CT',
 }  # If we get rdsr information from a PET-CT or SPECT-CT, it must be from the CT part
 
-# HL7 order statusses (ORC-5): please adapt to your local settings. Order is important
-HL7_ORDER_STATUSSES = [
+# HL7 order statuses (ORC-5): please adapt to your local settings. Order is important
+HL7_ORDER_STATUSES = [
     'CA',  # Order Canceled
     'SC',  # Scheduled
     'RP',  # Order has been replaced

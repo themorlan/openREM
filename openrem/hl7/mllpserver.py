@@ -9,6 +9,7 @@ import os
 
 logger = logging.getLogger('hl7.mllpserver')  # Explicitly named so that it is still handled when using __main__
 
+
 def init_response(received_msg):
     """
     Return pre-filled response message based on received message
