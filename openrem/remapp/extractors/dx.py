@@ -919,6 +919,64 @@ def _fix_kodak_filters(dataset):
             dict.__setitem__(dataset, 0x187054, thick2)
 
 
+def _remove_spaces_decimal(value):
+    """Remove padding and convert to decimal"""
+    while value and value.endswith((" ", "\x00")):
+        value = value[:-1]
+    return Decimal(value)
+
+
+def _fix_exposure_values(dataset):
+    """
+    Replace decimal values in ExposureTime, XRayTubeCurrent and Exposure with integer values; move original values to
+    appropriate fields
+    :param dataset: DICOM dataset
+    :return: Repaired DICOM dataset
+    """
+    try:
+        dataset.ExposureTime
+    except TypeError:
+        exposure_time = dataset.get_item("ExposureTime").value.decode()
+        exposure_time = _remove_spaces_decimal(exposure_time)
+        del dataset.ExposureTime
+        dataset.ExposureTime = round(exposure_time, 0)
+        if "ExposureTimeInuS" not in dataset:
+            dataset.ExposureTimeInuS = round(exposure_time * 1000, 0)
+        logger.warning(
+            f"ExposureTime (VR=IS) contained illegal value {exposure_time}. Now set "
+            f"to {dataset.ExposureTime}. ExposureTimeInuS now set to "
+            f"{dataset.ExposureTimeInuS}."
+        )
+    try:
+        dataset.XRayTubeCurrent
+    except TypeError:
+        xray_tube_current = dataset.get_item("XRayTubeCurrent").value.decode()
+        xray_tube_current = _remove_spaces_decimal(xray_tube_current)
+        del dataset.XRayTubeCurrent
+        dataset.XRayTubeCurrent = round(xray_tube_current, 0)
+        if "XRayTubeCurrentInuA" not in dataset:
+            dataset.XRayTubeCurrentInuA = round(xray_tube_current * 1000, 0)
+        logger.warning(
+            f"ExposureTime (VR=IS) contained illegal value {xray_tube_current}. Now set "
+            f"to {dataset.XRayTubeCurrent}. ExposureTimeInuS now set to "
+            f"{dataset.XRayTubeCurrentInuA}."
+        )
+    try:
+        dataset.Exposure
+    except TypeError:
+        exposure = dataset.get_item("Exposure").value.decode()
+        exposure = _remove_spaces_decimal(exposure)
+        del dataset.Exposure
+        dataset.Exposure = round(exposure, 0)
+        if "ExposureInuAs" not in dataset:
+            dataset.ExposureInuAs = round(exposure * 1000, 0)
+        logger.warning(
+            f"Exposure (VR=IS) contained illegal value {exposure}. Now set "
+            f"to {dataset.Exposure}. ExposureTimeInuS now set to "
+            f"{dataset.ExposureInuAs}."
+        )
+
+
 def dx(dig_file):
     """Extract radiation dose structured report related data from DX radiographic images
 
@@ -954,6 +1012,10 @@ def dx(dig_file):
     except ValueError as err:
         if "could not convert string to float" in str(err):
             _fix_kodak_filters(dataset)
+            dataset.decode()
+    except TypeError as err:
+        if "Could not convert value to integer without loss" in str(err):
+            _fix_exposure_values(dataset)
             dataset.decode()
     isdx = _test_if_dx(dataset)
     if not isdx:
