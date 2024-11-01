@@ -1646,9 +1646,9 @@ class DicomStoreForm(forms.ModelForm):
         }
         if settings.DOCKER_INSTALL:
             labels["peer"] = "Docker container name: initial default is orthanc_1"
-            labels[
-                "port"
-            ] = "Port: set to the same as the DICOM_PORT setting in docker-compose.yml"
+            labels["port"] = (
+                "Port: set to the same as the DICOM_PORT setting in docker-compose.yml"
+            )
 
 
 class StandardNameFormBase(forms.ModelForm):
@@ -2250,7 +2250,6 @@ class NotPatientIDForm(forms.ModelForm):
 
 
 class SkinSafeListForm(forms.ModelForm):
-
     """Form for adding/updating/removing system from openSkin safe list"""
 
     class Meta(object):

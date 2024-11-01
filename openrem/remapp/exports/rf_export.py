@@ -35,10 +35,9 @@ from openrem.remapp.tools.background import get_or_generate_task_uuid
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Avg, Max, Min
 
-from remapp.models import (
+from ..models import (
     GeneralStudyModuleAttr,
     IrradEventXRayData,
-    StandardNameSettings,
 )
 
 from ..exports.export_common import (
@@ -65,6 +64,9 @@ from ..interface.mod_filters import (
 )
 from ..tools.get_values import return_for_export
 
+from ..tools.check_standard_name_status import are_standard_names_enabled
+
+
 logger = logging.getLogger(__name__)
 
 
@@ -80,37 +82,37 @@ def _get_accumulated_data(accumXrayDose):
         accumulated_integrated_projection_dose = (
             accumXrayDose.accumintegratedprojradiogdose_set.get()
         )
-        accum[
-            "dose_area_product_total"
-        ] = accumulated_integrated_projection_dose.dose_area_product_total
+        accum["dose_area_product_total"] = (
+            accumulated_integrated_projection_dose.dose_area_product_total
+        )
         accum["dose_rp_total"] = accumulated_integrated_projection_dose.dose_rp_total
-        accum[
-            "reference_point_definition"
-        ] = accumulated_integrated_projection_dose.reference_point_definition_code
+        accum["reference_point_definition"] = (
+            accumulated_integrated_projection_dose.reference_point_definition_code
+        )
         if not accum["reference_point_definition"]:
-            accum[
-                "reference_point_definition"
-            ] = accumulated_integrated_projection_dose.reference_point_definition
+            accum["reference_point_definition"] = (
+                accumulated_integrated_projection_dose.reference_point_definition
+            )
     except ObjectDoesNotExist:
         accum["dose_area_product_total"] = None
         accum["dose_rp_total"] = None
         accum["reference_point_definition_code"] = None
     try:
         accumulated_projection_dose = accumXrayDose.accumprojxraydose_set.get()
-        accum[
-            "fluoro_dose_area_product_total"
-        ] = accumulated_projection_dose.fluoro_dose_area_product_total
+        accum["fluoro_dose_area_product_total"] = (
+            accumulated_projection_dose.fluoro_dose_area_product_total
+        )
         accum["fluoro_dose_rp_total"] = accumulated_projection_dose.fluoro_dose_rp_total
         accum["total_fluoro_time"] = accumulated_projection_dose.total_fluoro_time
-        accum[
-            "acquisition_dose_area_product_total"
-        ] = accumulated_projection_dose.acquisition_dose_area_product_total
-        accum[
-            "acquisition_dose_rp_total"
-        ] = accumulated_projection_dose.acquisition_dose_rp_total
-        accum[
-            "total_acquisition_time"
-        ] = accumulated_projection_dose.total_acquisition_time
+        accum["acquisition_dose_area_product_total"] = (
+            accumulated_projection_dose.acquisition_dose_area_product_total
+        )
+        accum["acquisition_dose_rp_total"] = (
+            accumulated_projection_dose.acquisition_dose_rp_total
+        )
+        accum["total_acquisition_time"] = (
+            accumulated_projection_dose.total_acquisition_time
+        )
     except ObjectDoesNotExist:
         accum["fluoro_dose_area_product_total"] = None
         accum["fluoro_dose_rp_total"] = None
@@ -169,13 +171,7 @@ def _get_series_data(event, filter_data):
     """
 
     # Obtain the system-level enable_standard_names setting
-    try:
-        StandardNameSettings.objects.get()
-    except ObjectDoesNotExist:
-        StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values_list(
-        "enable_standard_names", flat=True
-    )[0]
+    enable_standard_names = are_standard_names_enabled()
 
     try:
         source_data = event.irradeventxraysourcedata_set.get()
@@ -290,13 +286,7 @@ def rfxlsx(filterdict, pid=False, name=None, patid=None, user=None):
     """
 
     # Obtain the system-level enable_standard_names setting
-    try:
-        StandardNameSettings.objects.get()
-    except ObjectDoesNotExist:
-        StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values_list(
-        "enable_standard_names", flat=True
-    )[0]
+    enable_standard_names = are_standard_names_enabled()
 
     datestamp = datetime.datetime.now()
     task_id = get_or_generate_task_uuid()
@@ -747,13 +737,7 @@ def exportFL2excel(filterdict, pid=False, name=None, patid=None, user=None):
     """
 
     # Obtain the system-level enable_standard_names setting
-    try:
-        StandardNameSettings.objects.get()
-    except ObjectDoesNotExist:
-        StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values_list(
-        "enable_standard_names", flat=True
-    )[0]
+    enable_standard_names = are_standard_names_enabled()
 
     datestamp = datetime.datetime.now()
     task_id = get_or_generate_task_uuid()
@@ -864,7 +848,10 @@ def exportFL2excel(filterdict, pid=False, name=None, patid=None, user=None):
     tsk.save()
 
 
-def rfopenskin(studyid):
+def rfopenskin_csv(studyid):
+    # pylint: disable=too-many-locals
+    # pylint: disable=too-many-branches
+    # pylint: disable=too-many-statements
     """Export single RF study data to OpenSkin RF csv sheet.
 
     :param studyid: RF study database ID.

@@ -30,23 +30,44 @@
 
 # Following two lines added so that sphinx autodocumentation works.
 import os
-
-os.environ["DJANGO_SETTINGS_MODULE"] = "openremproject.settings"
+import sys
+import mimetypes
+import urllib
 
 import logging
+from wsgiref.util import FileWrapper
+
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse
-from django.shortcuts import render
-from django.urls import reverse_lazy
-import remapp
-from openrem.remapp.tools.background import (  # pylint: disable=wrong-import-position
+from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import render, get_object_or_404, redirect
+from django.urls import reverse_lazy, reverse
+from django.conf import settings
+from django.core.exceptions import ObjectDoesNotExist
+from django.utils.encoding import smart_str
+from django.db.models import Max
+
+from ..models import Exports, BackgroundTask, GeneralStudyModuleAttr
+from ..interface.mod_filters import dx_acq_filter
+
+from .ct_export import ct_phe_2019, ctxlsx, ct_csv
+from .dx_export import dx_phe_2019, dxxlsx, exportDX2excel
+from .mg_csv_nhsbsp import mg_csv_nhsbsp
+from .mg_export import mgxlsx, exportMG2csv
+from .nm_export import nmxlsx, exportNM2csv
+from .rf_export import rf_phe_2019, rfopenskin_csv, rfxlsx, exportFL2excel
+
+from ..tools.background import (  # pylint: disable=wrong-import-position
     run_in_background,
     terminate_background,
     get_queued_tasks,
     remove_task_from_queue,
 )
+
+from ..version import __version__, __docs_version__
+
+os.environ["DJANGO_SETTINGS_MODULE"] = "openremproject.settings"
 
 logger = logging.getLogger(__name__)
 
@@ -59,7 +80,6 @@ def include_pid(request, name, pat_id):
     :param pat_id: string, 0 or 1 from URL indicating if patient ID should be exported
     :return: dict, with pidgroup, include_names and include_pat_id as bools
     """
-
     pid = bool(request.user.groups.filter(name="pidgroup"))
 
     include_names = False
@@ -94,9 +114,6 @@ def ctcsv1(request, name=None, pat_id=None):
     :param pat_id: string, 0 or 1 from URL indicating if patient ID should be exported
     :type request: GET
     """
-    from django.shortcuts import redirect
-    from remapp.exports.ct_export import ct_csv
-
     pid = include_pid(request, name, pat_id)
 
     if request.user.groups.filter(name="exportgroup"):
@@ -132,9 +149,6 @@ def ctxlsx1(request, name=None, pat_id=None):
     :param pat_id: string, 0 or 1 from URL indicating if patient ID should be exported
     :type request: GET
     """
-    from django.shortcuts import redirect
-    from remapp.exports.ct_export import ctxlsx
-
     pid = include_pid(request, name, pat_id)
 
     if request.user.groups.filter(name="exportgroup"):
@@ -168,9 +182,6 @@ def ct_xlsx_phe2019(request):
 
     :param request: Contains the database filtering parameters and user details.
     """
-    from django.shortcuts import redirect
-    from remapp.exports.ct_export import ct_phe_2019
-
     if request.user.groups.filter(name="exportgroup"):
         job = run_in_background(ct_phe_2019, "export_ct", request.GET, request.user.id)
         logger.debug("Export CT to XLSX job is {0}".format(job.id))
@@ -188,9 +199,6 @@ def nmcsv1(request, name=None, pat_id=None):
     :param pat_id: string, 0 or 1 from URL indicating if patient ID should be exported
     :type request: GET
     """
-    from django.shortcuts import redirect
-    from remapp.exports.nm_export import exportNM2csv
-
     pid = include_pid(request, name, pat_id)
 
     if request.user.groups.filter(name="exportgroup"):
@@ -219,16 +227,19 @@ def nmxlsx1(request, name=None, pat_id=None):
     :param pat_id: string, 0 or 1 from URL indicating if patient ID should be exported
     :type request: GET
     """
-    from django.shortcuts import redirect
-    from remapp.exports.nm_export import exportNM2excel
-
     pid = include_pid(request, name, pat_id)
 
     if request.user.groups.filter(name="exportgroup"):
+        filter_dict = request.GET.dict()
+        if "nm_acquisition_type" in filter_dict:
+            filter_dict["nm_acquisition_type"] = request.GET.getlist(
+                "nm_acquisition_type"
+            )
+
         job = run_in_background(
-            exportNM2excel,
+            nmxlsx,
             "export_nm",
-            request.GET,
+            filter_dict,
             pid["pidgroup"],
             pid["include_names"],
             pid["include_pat_id"],
@@ -250,9 +261,6 @@ def dxcsv1(request, name=None, pat_id=None):
     :param pat_id: string, 0 or 1 from URL indicating if patient ID should be exported
     :type request: GET
     """
-    from django.shortcuts import redirect
-    from remapp.exports.dx_export import exportDX2excel
-
     pid = include_pid(request, name, pat_id)
 
     if request.user.groups.filter(name="exportgroup"):
@@ -281,9 +289,6 @@ def dxxlsx1(request, name=None, pat_id=None):
     :param pat_id: string, 0 or 1 from URL indicating if patient ID should be exported
     :type request: GET
     """
-    from django.shortcuts import redirect
-    from remapp.exports.dx_export import dxxlsx
-
     pid = include_pid(request, name, pat_id)
 
     if request.user.groups.filter(name="exportgroup"):
@@ -310,12 +315,6 @@ def dx_xlsx_phe2019(request, export_type=None):
     :param request: Contains the database filtering parameters and user details.
     :param export_type: string, 'projection' or 'exam'
     """
-    import urllib
-    from django.db.models import Max
-    from django.shortcuts import redirect
-    from remapp.exports.dx_export import dx_phe_2019
-    from remapp.interface.mod_filters import dx_acq_filter
-
     if request.user.groups.filter(name="exportgroup"):
         if export_type in ("exam", "projection"):
             bespoke = False
@@ -416,9 +415,6 @@ def flcsv1(request, name=None, pat_id=None):
     :param pat_id: string, 0 or 1 from URL indicating if patient ID should be exported
     :type request: GET
     """
-    from django.shortcuts import redirect
-    from remapp.exports.rf_export import exportFL2excel
-
     pid = include_pid(request, name, pat_id)
 
     if request.user.groups.filter(name="exportgroup"):
@@ -447,9 +443,6 @@ def rfxlsx1(request, name=None, pat_id=None):
     :param pat_id: string, 0 or 1 from URL indicating if patient ID should be exported
     :type request: GET
     """
-    from django.shortcuts import redirect
-    from remapp.exports.rf_export import rfxlsx
-
     pid = include_pid(request, name, pat_id)
 
     if request.user.groups.filter(name="exportgroup"):
@@ -475,14 +468,10 @@ def rfopenskin(request, pk):
     :param request: request object
     :param pk: primary key of study in GeneralStudyModuleAttr table
     """
-    from django.shortcuts import redirect, get_object_or_404
-    from remapp.exports.rf_export import rfopenskin
-    from remapp.models import GeneralStudyModuleAttr
-
     export = get_object_or_404(GeneralStudyModuleAttr, pk=pk)
 
     if request.user.groups.filter(name="exportgroup"):
-        job = run_in_background(rfopenskin, "export_rf", export.pk)
+        job = run_in_background(rfopenskin_csv, "export_rf", export.pk)
         logger.debug("Export Fluoro to openSkin CSV job is {0}".format(job.id))
 
     return redirect(reverse_lazy("export"))
@@ -496,10 +485,6 @@ def rf_xlsx_phe2019(request):
 
     :param request: Contains the database filtering parameters and user details.
     """
-    import urllib
-    from django.shortcuts import redirect
-    from remapp.exports.rf_export import rf_phe_2019
-
     if request.user.groups.filter(name="exportgroup"):
         job = run_in_background(rf_phe_2019, "export_rf", request.GET, request.user.id)
         logger.debug(
@@ -525,14 +510,11 @@ def mgcsv1(request, name=None, pat_id=None):
     :param pat_id: string, 0 or 1 from URL indicating if patient ID should be exported
     :return:
     """
-    from django.shortcuts import redirect
-    from remapp.exports.mg_export import exportMG2excel
-
     pid = include_pid(request, name, pat_id)
 
     if request.user.groups.filter(name="exportgroup"):
         job = run_in_background(
-            exportMG2excel,
+            exportMG2csv,
             "export_mg",
             request.GET,
             pid["pidgroup"],
@@ -555,21 +537,24 @@ def mgxlsx1(request, name=None, pat_id=None):
     :param pat_id: string, 0 or 1 from URL indicating if patient ID should be exported
     :return:
     """
-    from django.shortcuts import redirect
-    from remapp.exports.mg_export import exportMG2excel
-
     pid = include_pid(request, name, pat_id)
 
     if request.user.groups.filter(name="exportgroup"):
+
+        filter_dict = request.GET.dict()
+        if "mg_acquisition_type" in filter_dict:
+            filter_dict["mg_acquisition_type"] = request.GET.getlist(
+                "mg_acquisition_type"
+            )
+
         job = run_in_background(
-            exportMG2excel,
+            mgxlsx,
             "export_mg",
-            request.GET,
-            pid=pid["pidgroup"],
-            name=pid["include_names"],
-            patid=pid["include_pat_id"],
-            user=request.user.id,
-            xlsx=True,
+            filter_dict,
+            pid["pidgroup"],
+            pid["include_names"],
+            pid["include_pat_id"],
+            request.user.id,
         )
         logger.debug("Export MG to xlsx job is {0}".format(job.id))
 
@@ -585,9 +570,6 @@ def mgnhsbsp(request):
     :param request: Contains the database filtering parameters. Also used to get user group.
     :type request: GET
     """
-    from django.shortcuts import redirect
-    from remapp.exports.mg_csv_nhsbsp import mg_csv_nhsbsp
-
     if request.user.groups.filter(name="exportgroup"):
         job = run_in_background(
             mg_csv_nhsbsp, "export_mg", request.GET, request.user.id
@@ -605,8 +587,6 @@ def export(request):
 
     :param request: Used to get user group.
     """
-    from remapp.models import Exports
-
     try:
         complete = Exports.objects.filter(status__contains="COMPLETE").order_by(
             "-export_date"
@@ -617,8 +597,8 @@ def export(request):
         latest_complete_pk = 0
 
     admin = {
-        "openremversion": remapp.__version__,
-        "docsversion": remapp.__docs_version__,
+        "openremversion": __version__,
+        "docsversion": __docs_version__,
     }
     for group in request.user.groups.all():
         admin[group.name] = True
@@ -647,14 +627,6 @@ def download(request, task_id):
     :param task_id: ID of the export or logfile
 
     """
-    import mimetypes
-    from django.core.exceptions import ObjectDoesNotExist
-    from wsgiref.util import FileWrapper
-    from django.utils.encoding import smart_str
-    from django.shortcuts import redirect
-    from django.conf import settings
-    from remapp.models import Exports
-
     exportperm = False
     pidperm = False
     if request.user.groups.filter(name="exportgroup"):
@@ -679,12 +651,13 @@ def download(request, task_id):
         return redirect(reverse_lazy("export"))
 
     file_path = os.path.join(settings.MEDIA_ROOT, exp.filename.name)
-    file_wrapper = FileWrapper(open(file_path, mode="rb"))
-    file_mimetype = mimetypes.guess_type(file_path)
-    response = HttpResponse(file_wrapper, content_type=file_mimetype)
+    with open(file_path, mode="rb") as f:
+        file_wrapper = FileWrapper(f)
+        file_mimetype = mimetypes.guess_type(file_path)
+        response = HttpResponse(file_wrapper, content_type=file_mimetype)
     response["X-Sendfile"] = file_path
     response["Content-Length"] = os.stat(file_path).st_size
-    response["Content-Disposition"] = "attachment; filename=%s" % smart_str(
+    response["Content-Disposition"] = "attachment; filename=%s" % smart_str(  # pylint: disable=consider-using-f-string
         exp.filename
     )
     return response
@@ -699,11 +672,6 @@ def deletefile(request):
     :param request: Contains the task ID
     :type request: POST
     """
-    import sys
-    from django.http import HttpResponseRedirect
-    from django.urls import reverse
-    from remapp.models import Exports
-
     for task in request.POST:
         exports = Exports.objects.filter(task_id__exact=request.POST[task])
         for export_object in exports:
@@ -716,16 +684,12 @@ def deletefile(request):
             except OSError as e:
                 messages.error(
                     request,
-                    "Export file delete failed - please contact an administrator. Error({0}): {1}".format(
-                        e.errno, e.strerror
-                    ),
+                    f"Export file delete failed - please contact an administrator. Error({e.errno}): {e.strerror}",  # pylint: disable=line-too-long
                 )
             except Exception:
                 messages.error(
                     request,
-                    "Unexpected error - please contact an administrator: {0}".format(
-                        sys.exc_info()[0]
-                    ),
+                    f"Unexpected error - please contact an administrator: {sys.exc_info()[0]}",
                 )
 
     return HttpResponseRedirect(reverse(export))
@@ -739,21 +703,13 @@ def export_abort(request, pk):
     :param request: Contains the task primary key
     :type request: POST
     """
-    from django.http import HttpResponseRedirect
-    from django.shortcuts import get_object_or_404
-    from remapp.models import Exports, BackgroundTask
-
     export_task = get_object_or_404(Exports, pk=pk)
     task = get_object_or_404(BackgroundTask, uuid=export_task.task_id)
 
     if request.user.groups.filter(name="exportgroup"):
         terminate_background(task)
         export_task.delete()
-        logger.info(
-            "Export task {0} terminated from the Exports interface".format(
-                export_task.task_id
-            )
-        )
+        logger.info(f"Export task {export_task.task_id} terminated from the Exports interface")
 
     return HttpResponseRedirect(reverse_lazy("export"))
 
@@ -767,11 +723,9 @@ def export_remove(request, task_id=None):
     :param task_id: UUID of task in question
     :type request: POST
     """
-    from django.http import HttpResponseRedirect
-
     if task_id and request.user.groups.filter(name="exportgroup"):
         remove_task_from_queue(task_id)
-        logger.info("Export task {0} removed from queue".format(task_id))
+        logger.info(f"Export task {task_id} removed from queue")
 
     return HttpResponseRedirect(reverse_lazy("export"))
 
@@ -802,15 +756,14 @@ def update_active(request):
     :param request: Request object
     :return: HTML table of active exports
     """
-    from remapp.models import Exports
-
+    template = "remapp/exports-active.html"
     if request.is_ajax():
         current_export_tasks = Exports.objects.filter(
             status__contains="CURRENT"
         ).order_by("-export_date")
-        template = "remapp/exports-active.html"
-
         return render(request, template, {"current": current_export_tasks})
+
+    return render(request, template)
 
 
 @csrf_exempt
@@ -822,15 +775,14 @@ def update_error(request):
     :param request: Request object
     :return: HTML table of exports in error state
     """
-    from remapp.models import Exports
-
+    template = "remapp/exports-error.html"
     if request.is_ajax():
         error_export_tasks = Exports.objects.filter(status__contains="ERROR").order_by(
             "-export_date"
         )
-        template = "remapp/exports-error.html"
-
         return render(request, template, {"errors": error_export_tasks})
+
+    return render(request, template)
 
 
 @csrf_exempt
@@ -842,8 +794,7 @@ def update_complete(request):
     :param request: Request object, including pk of latest complete export at initial page load
     :return: HTML table of completed exports
     """
-    from remapp.models import Exports
-
+    template = "remapp/exports-complete.html"
     if request.is_ajax():
         data = request.POST
         latest_complete_pk = data.get("latest_complete_pk")
@@ -851,10 +802,11 @@ def update_complete(request):
         complete_export_tasks = Exports.objects.filter(
             status__contains="COMPLETE"
         ).filter(pk__gt=latest_complete_pk)
-        template = "remapp/exports-complete.html"
 
         return render(
             request,
             template,
             {"complete": complete_export_tasks, "in_pid_group": in_pid_group},
         )
+
+    return render(request, template)

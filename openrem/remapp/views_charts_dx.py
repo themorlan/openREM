@@ -35,6 +35,7 @@ from .interface.chart_functions import (
     construct_over_time_charts,
     generate_average_chart_group,
 )
+from .tools.check_standard_name_status import are_standard_names_enabled
 
 logger = logging.getLogger(__name__)
 
@@ -46,13 +47,7 @@ def generate_required_dx_charts_list(profile):
     variable name for each required chart"""
 
     # Obtain the system-level enable_standard_names setting
-    try:
-        StandardNameSettings.objects.get()
-    except ObjectDoesNotExist:
-        StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values_list(
-        "enable_standard_names", flat=True
-    )[0]
+    enable_standard_names = are_standard_names_enabled()
 
     required_charts = []
 
@@ -598,13 +593,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
         return {}
 
     # Obtain the system-level enable_standard_names setting
-    try:
-        StandardNameSettings.objects.get()
-    except ObjectDoesNotExist:
-        StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values_list(
-        "enable_standard_names", flat=True
-    )[0]
+    enable_standard_names = are_standard_names_enabled()
 
     # Set the Plotly chart theme
     plotly_set_default_theme(user_profile.plotThemeChoice)
@@ -1240,9 +1229,9 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                             "mean"
                         ]
                     if user_profile.plotMedian:
-                        return_structure[
-                            "standardAcquisitionMedianDAPOverTime"
-                        ] = result["median"]
+                        return_structure["standardAcquisitionMedianDAPOverTime"] = (
+                            result["median"]
+                        )
 
                 if user_profile.plotDXStandardAcquisitionMeankVpOverTime:
                     facet_title = "System"
@@ -1280,9 +1269,9 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                             "mean"
                         ]
                     if user_profile.plotMedian:
-                        return_structure[
-                            "standardAcquisitionMediankVpOverTime"
-                        ] = result["median"]
+                        return_structure["standardAcquisitionMediankVpOverTime"] = (
+                            result["median"]
+                        )
 
                 if user_profile.plotDXStandardAcquisitionMeanmAsOverTime:
                     facet_title = "System"
@@ -1320,9 +1309,9 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                             "mean"
                         ]
                     if user_profile.plotMedian:
-                        return_structure[
-                            "standardAcquisitionMedianmAsOverTime"
-                        ] = result["median"]
+                        return_structure["standardAcquisitionMedianmAsOverTime"] = (
+                            result["median"]
+                        )
 
                 if user_profile.plotDXStandardAcquisitionDAPvsMass:
                     parameter_dict = {
@@ -1733,22 +1722,22 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                         df_date_col="study_date",
                     )
 
-                    return_structure[
-                        "standardStudyWorkloadData"
-                    ] = plotly_barchart_weekdays(
-                        df_time_series_per_weekday,
-                        "weekday",
-                        "standard_names__standard_name",
-                        name_axis_title="Weekday",
-                        value_axis_title="Frequency",
-                        colourmap=user_profile.plotColourMapChoice,
-                        filename="OpenREM DX standard study name workload",
-                        facet_col_wrap=user_profile.plotFacetColWrapVal,
-                        sorting_choice=[
-                            user_profile.plotInitialSortingDirection,
-                            user_profile.plotDXInitialSortingChoice,
-                        ],
-                        return_as_dict=return_as_dict,
+                    return_structure["standardStudyWorkloadData"] = (
+                        plotly_barchart_weekdays(
+                            df_time_series_per_weekday,
+                            "weekday",
+                            "standard_names__standard_name",
+                            name_axis_title="Weekday",
+                            value_axis_title="Frequency",
+                            colourmap=user_profile.plotColourMapChoice,
+                            filename="OpenREM DX standard study name workload",
+                            facet_col_wrap=user_profile.plotFacetColWrapVal,
+                            sorting_choice=[
+                                user_profile.plotInitialSortingDirection,
+                                user_profile.plotDXInitialSortingChoice,
+                            ],
+                            return_as_dict=return_as_dict,
+                        )
                     )
 
                 if user_profile.plotDXStandardStudyDAPvsMass:
@@ -1781,13 +1770,7 @@ def dx_chart_form_processing(request, user_profile):
     # pylint: disable=too-many-statements
 
     # Obtain the system-level enable_standard_names setting
-    try:
-        StandardNameSettings.objects.get()
-    except ObjectDoesNotExist:
-        StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values_list(
-        "enable_standard_names", flat=True
-    )[0]
+    enable_standard_names = are_standard_names_enabled()
 
     # Obtain the chart options from the request
     chart_options_form = None

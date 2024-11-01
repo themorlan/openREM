@@ -11,7 +11,6 @@ from remapp.models import GeneralStudyModuleAttr, PatientIDSettings
 
 class ImportDXRDSR(TestCase):
     def test_import_dx_rdsr_canon(self):
-
         """
         Imports a known RDSR file derived from a canon, and tests all the values
         imported against those expected.
@@ -227,7 +226,6 @@ class ImportDXRDSR(TestCase):
         self.assertEqual(study.number_of_planes, 1)
 
     def test_import_dx_rdsr_carestream(self):
-
         """
         Imports a known RDSR file derived from a carestream, and tests all the values
         imported against those expected.
@@ -1237,7 +1235,6 @@ class ImportDXRDSR(TestCase):
         self.assertEqual(study.number_of_planes, 1)
 
     def test_import_dx_rdsr_no_value_sequence(self):
-
         """
         Imports a known RDSR file derived from a Canon that has a missing measured value sequence
         https://bitbucket.org/openrem/openrem/issues/955/list-index-out-of-range-error-possibly

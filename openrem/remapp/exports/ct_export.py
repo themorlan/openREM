@@ -28,22 +28,30 @@
 
 """
 import logging
+import datetime
+
+from decimal import Decimal
 
 from django.core.exceptions import ObjectDoesNotExist
-from django.utils.translation import gettext as _
-from openrem.remapp.tools.background import get_or_generate_task_uuid
+from django.db.models import Max
 
-from remapp.models import StandardNameSettings
+from ..models import GeneralStudyModuleAttr
 
-from .export_common import (
+from ..tools.background import get_or_generate_task_uuid
+
+from ..tools.check_standard_name_status import are_standard_names_enabled
+
+from ..interface.mod_filters import ct_acq_filter
+
+from .export_common_pandas import (
     get_common_data,
     common_headers,
     create_xlsx,
     create_csv,
     write_export,
-    create_summary_sheet,
     abort_if_zero_studies,
     create_export_task,
+    export_using_pandas,
 )
 
 logger = logging.getLogger(__name__)
@@ -59,26 +67,161 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
     :param user: User that has started the export
     :return: Saves xlsx file into Media directory for user to download
     """
+    modality = "CT"
 
-    import datetime
-    from django.db.models import Max
-    from .export_common import text_and_date_formats, generate_sheets, sheet_name
-    from ..interface.mod_filters import ct_acq_filter
+    # Exam-level integer field names and friendly names
+    exam_int_fields = [
+        "pk",
+        "number_of_events",
+    ]
+    exam_int_field_names = ["pk", "Number of events"]
 
-    # Obtain the system-level enable_standard_names setting
-    try:
-        StandardNameSettings.objects.get()
-    except ObjectDoesNotExist:
-        StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values_list(
-        "enable_standard_names", flat=True
-    )[0]
+    # Exam-level object field names (string data, little or no repetition)
+    exam_obj_fields = ["accession_number"]
+    exam_obj_field_names = ["Accession number"]
+
+    # Exam-level category field names and friendly names
+    exam_cat_fields = [
+        "generalequipmentmoduleattr__institution_name",
+        "generalequipmentmoduleattr__manufacturer",
+        "generalequipmentmoduleattr__manufacturer_model_name",
+        "generalequipmentmoduleattr__station_name",
+        "generalequipmentmoduleattr__unique_equipment_name__display_name",
+        "operator_name",
+        "patientmoduleattr__patient_sex",
+        "study_description",
+        "requested_procedure_code_meaning",
+    ]
+    exam_cat_field_names = [
+        "Institution",
+        "Manufacturer",
+        "Model",
+        "Station name",
+        "Display name",
+        "Operator",
+        "Patient sex",
+        "Study description",
+        "Requested procedure",
+    ]
+
+    # Exam-level date field names and friendly name
+    exam_date_fields = ["study_date"]
+    exam_date_field_names = ["Study date"]
+
+    # Exam-level time field names and friendly name
+    exam_time_fields = ["study_time"]
+    exam_time_field_names = ["Study time"]
+
+    # Exam-level category value names and friendly names
+    exam_val_fields = [
+        "patientstudymoduleattr__patient_age_decimal",
+        "patientstudymoduleattr__patient_size",
+        "patientstudymoduleattr__patient_weight",
+        "total_dlp",
+    ]
+    exam_val_field_names = [
+        "Patient age",
+        "Patient height (m)",
+        "Patient weight (kg)",
+        "Total DLP (mGy.cm)",
+    ]
+
+    acquisition_int_fields = [
+        "ctradiationdose__ctirradiationeventdata__pk",
+        "ctradiationdose__ctirradiationeventdata__number_of_xray_sources",
+    ]
+    acquisition_int_field_names = [
+        "Acquisition pk",
+        "Number of sources",
+    ]
+
+    acquisition_cat_fields = [
+        "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
+        "ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning",
+        "ctradiationdose__ctirradiationeventdata__ctdiw_phantom_type__code_meaning",
+        "ctradiationdose__ctirradiationeventdata__xray_modulation_type",
+        "ctradiationdose__ctirradiationeventdata__ctxraysourceparameters__identification_of_the_xray_source",
+    ]
+    acquisition_cat_field_names = [
+        "Acquisition protocol",
+        "Acquisition type",
+        "CTDI phantom type",
+        "mA modulation type",
+        "Source name",
+    ]
+
+    acquisition_cat_field_std_name = (
+        "ctradiationdose__ctirradiationeventdata__standard_protocols__standard_name"
+    )
+    acquisition_cat_field_name_std_name = "Standard acquisition name"
+
+    # Required acquisition-level value field names and friendly names
+    acquisition_val_fields = [
+        "ctradiationdose__ctirradiationeventdata__dlp",
+        "ctradiationdose__ctirradiationeventdata__exposure_time",
+        "ctradiationdose__ctirradiationeventdata__scanninglength__scanning_length",
+        "ctradiationdose__ctirradiationeventdata__nominal_single_collimation_width",
+        "ctradiationdose__ctirradiationeventdata__nominal_total_collimation_width",
+        "ctradiationdose__ctirradiationeventdata__pitch_factor",
+        "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
+        "ctradiationdose__ctirradiationeventdata__ctxraysourceparameters__kvp",
+        "ctradiationdose__ctirradiationeventdata__ctxraysourceparameters__maximum_xray_tube_current",
+        "ctradiationdose__ctirradiationeventdata__ctxraysourceparameters__xray_tube_current",
+        "ctradiationdose__ctirradiationeventdata__ctxraysourceparameters__exposure_time_per_rotation",
+    ]
+    acquisition_val_field_names = [
+        "DLP (mGy.cm)",
+        "Exposure time (s)",
+        "Scanning length (mm)",
+        "Slice thickness (mm)",
+        "Total collimation (mm)",
+        "Pitch",
+        "CTDIvol (mGy)",
+        "kVp",
+        "Maximum mA",
+        "mA",
+        "Exposure time per rotation",
+    ]
+
+    ct_dose_check_fields = [
+        "ctradiationdose__ctirradiationeventdata__ctdosecheckdetails__dlp_alert_value_configured",
+        "ctradiationdose__ctirradiationeventdata__ctdosecheckdetails__dlp_alert_value",
+        "ctradiationdose__ctirradiationeventdata__ctdosecheckdetails__accumulated_dlp_forward_estimate",
+        "ctradiationdose__ctirradiationeventdata__ctdosecheckdetails__ctdivol_alert_value_configured",
+        "ctradiationdose__ctirradiationeventdata__ctdosecheckdetails__ctdivol_alert_value",
+        "ctradiationdose__ctirradiationeventdata__ctdosecheckdetails__accumulated_ctdivol_forward_estimate",
+        "ctradiationdose__ctirradiationeventdata__ctdosecheckdetails__alert_reason_for_proceeding",
+        "ctradiationdose__ctirradiationeventdata__ctdosecheckdetails__tid1020_alert__person_name",
+    ]
+    ct_dose_check_field_names = [
+        "DLP alert configured",
+        "DLP alert value",
+        "DLP forward estimate",
+        "CTDIvol alert configured",
+        "CTDIvol alert value",
+        "CTDIvol forward estimate",
+        "Reason for proceeding",
+        "Person name",
+    ]
+
+    # Fields for obtaining the acquisition protocols in the data
+    fields_for_acquisition_frequency = [
+        "ctradiationdose__ctirradiationeventdata__pk",
+        "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
+    ]
+    field_names_for_acquisition_frequency = ["pk", "Acquisition protocol"]
+    field_for_acquisition_frequency_std_name = (
+        "ctradiationdose__ctirradiationeventdata__standard_protocols__standard_name"
+    )
+    field_name_for_acquisition_frequency_std_name = "Standard acquisition name"
+
+    enable_standard_names = are_standard_names_enabled()
 
     datestamp = datetime.datetime.now()
     task_id = get_or_generate_task_uuid()
     tsk = create_export_task(
         task_id=task_id,
-        modality="CT",
+        modality=modality,
         export_type="XLSX_export",
         date_stamp=datestamp,
         pid=bool(pid and (name or patid)),
@@ -90,158 +233,62 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
     if not tmpxlsx:
         exit()
 
-    # Get the data!
-    e = ct_acq_filter(filterdict, pid=pid).qs
+    # Get the data
+    study_pks = None
+    study_pks = ct_acq_filter(filterdict, pid=pid).qs.values("pk")
 
-    tsk.num_records = e.count()
+    # The initial_qs may have filters to remove some acquisition types. For the export we want all acquisitions
+    # that are part of a study to be included. To achieve this, use the pk list from initial_qs to get a
+    # corresponding set of unfiltered studies:
+    qs = GeneralStudyModuleAttr.objects.filter(pk__in=study_pks)
+
+    n_entries = qs.count()
+    tsk.num_records = n_entries
     if abort_if_zero_studies(tsk.num_records, tsk):
         return
 
-    # Add summary sheet and all data sheet
-    summarysheet = book.add_worksheet("Summary")
-    wsalldata = book.add_worksheet("All data")
-
-    book = text_and_date_formats(
-        book, wsalldata, pid=pid, name=name, patid=patid, modality="CT"
-    )
-
-    # Some prep
-    commonheaders = common_headers(pid=pid, name=name, patid=patid)
-    commonheaders += ["DLP total (mGy.cm)"]
-    protocolheaders = commonheaders + ["Protocol"]
-
-    if enable_standard_names:
-        protocolheaders += ["Standard acquisition name"]
-
-    protocolheaders = protocolheaders + [
-        "Type",
-        "Exposure time",
-        "Scanning length",
-        "Slice thickness",
-        "Total collimation",
-        "Pitch",
-        "No. sources",
-        "CTDIvol",
-        "Phantom",
-        "DLP",
-        "S1 name",
-        "S1 kVp",
-        "S1 max mA",
-        "S1 mA",
-        "S1 Exposure time/rotation",
-        "S2 name",
-        "S2 kVp",
-        "S2 max mA",
-        "S2 mA",
-        "S2 Exposure time/rotation",
-        "mA Modulation type",
-        "Dose check details",
-        "Comments",
-    ]
-
-    # Generate list of protocols in queryset and create worksheets for each
-    tsk.progress = "Generating list of protocols in the dataset..."
+    tsk.progress = "{0} studies in query.".format(tsk.num_records)
     tsk.save()
 
-    book, sheet_list = generate_sheets(
-        e, book, protocolheaders, modality="CT", pid=pid, name=name, patid=patid
+    export_using_pandas(
+        acquisition_cat_field_name_std_name,
+        acquisition_cat_field_names,
+        acquisition_cat_field_std_name,
+        acquisition_cat_fields,
+        acquisition_int_field_names,
+        acquisition_int_fields,
+        acquisition_val_field_names,
+        acquisition_val_fields,
+        book,
+        ct_dose_check_field_names,
+        ct_dose_check_fields,
+        datestamp,
+        enable_standard_names,
+        exam_cat_field_names,
+        exam_cat_fields,
+        exam_date_field_names,
+        exam_date_fields,
+        exam_int_field_names,
+        exam_int_fields,
+        exam_obj_field_names,
+        exam_obj_fields,
+        exam_time_field_names,
+        exam_time_fields,
+        exam_val_field_names,
+        exam_val_fields,
+        field_for_acquisition_frequency_std_name,
+        field_name_for_acquisition_frequency_std_name,
+        field_names_for_acquisition_frequency,
+        fields_for_acquisition_frequency,
+        modality,
+        n_entries,
+        name,
+        patid,
+        pid,
+        qs,
+        tmpxlsx,
+        tsk,
     )
-
-    max_events_dict = e.aggregate(
-        Max(
-            "ctradiationdose__ctaccumulateddosedata__total_number_of_irradiation_events"
-        )
-    )
-    max_events = max_events_dict[
-        "ctradiationdose__ctaccumulateddosedata__total_number_of_irradiation_events__max"
-    ]
-
-    alldataheaders = list(commonheaders)
-
-    tsk.progress = "Generating headers for the all data sheet..."
-    tsk.save()
-
-    if not max_events:
-        max_events = 1
-    alldataheaders += _generate_all_data_headers_ct(max_events)
-
-    wsalldata.write_row("A1", alldataheaders)
-    numcolumns = len(alldataheaders) - 1
-    numrows = e.count()
-    wsalldata.autofilter(0, 0, numrows, numcolumns)
-
-    for row, exams in enumerate(e):
-        # Translators: CT xlsx export progress
-        tsk.progress = _(
-            "Writing study {row} of {numrows} to All data sheet and individual protocol sheets".format(
-                row=row + 1, numrows=numrows
-            )
-        )
-        # tsk.progress = f"Writing study {row + 1} of {numrows} to All data sheet and individual protocol sheets"
-        tsk.save()
-
-        try:
-            common_exam_data = get_common_data("CT", exams, pid, name, patid)
-            all_exam_data = list(common_exam_data)
-
-            for (
-                s
-            ) in exams.ctradiationdose_set.get().ctirradiationeventdata_set.order_by(
-                "id"
-            ):
-                # Get series data
-                series_data = _ct_get_series_data(s)
-
-                # Add series to all data
-                all_exam_data += series_data
-
-                # Add series data to series tab
-                protocol = s.acquisition_protocol
-                if not protocol:
-                    protocol = "Unknown"
-                tabtext = sheet_name(protocol)
-                sheet_list[tabtext]["count"] += 1
-                sheet_list[tabtext]["sheet"].write_row(
-                    sheet_list[tabtext]["count"], 0, common_exam_data + series_data
-                )
-
-                # Add series data to standard acquisition tab
-                if enable_standard_names:
-                    try:
-                        protocol = s.standard_protocols.first().standard_name
-                        if protocol:
-                            tabtext = sheet_name("[standard] " + protocol)
-                            sheet_list[tabtext]["count"] += 1
-                            sheet_list[tabtext]["sheet"].write_row(
-                                sheet_list[tabtext]["count"],
-                                0,
-                                common_exam_data + series_data,
-                            )
-                    except AttributeError:
-                        pass
-
-            wsalldata.write_row(row + 1, 0, all_exam_data)
-
-        except ObjectDoesNotExist:
-            error_message = (
-                "DoesNotExist error whilst exporting study {0} of {1},  study UID {2}, accession number"
-                " {3} - maybe database entry was deleted as part of importing later version of same"
-                " study?".format(
-                    row + 1, numrows, exams.study_instance_uid, exams.accession_number
-                )
-            )
-            logger.error(error_message)
-            wsalldata.write(row + 1, 0, error_message)
-
-    create_summary_sheet(tsk, e, book, summarysheet, sheet_list)
-
-    book.close()
-    tsk.progress = "XLSX book written."
-    tsk.save()
-
-    xlsxfilename = "ctexport{0}.xlsx".format(datestamp.strftime("%Y%m%d-%H%M%S%f"))
-
-    write_export(tsk, xlsxfilename, tmpxlsx, datestamp)
 
 
 def ct_csv(filterdict, pid=False, name=None, patid=None, user=None):
@@ -254,10 +301,6 @@ def ct_csv(filterdict, pid=False, name=None, patid=None, user=None):
     :param user: User that has started the export
     :return: Saves csv file into Media directory for user to download
     """
-
-    import datetime
-    from django.db.models import Max
-    from ..interface.mod_filters import ct_acq_filter
 
     datestamp = datetime.datetime.now()
     task_id = get_or_generate_task_uuid()
@@ -354,13 +397,7 @@ def _generate_all_data_headers_ct(max_events):
     """
 
     # Obtain the system-level enable_standard_names setting
-    try:
-        StandardNameSettings.objects.get()
-    except ObjectDoesNotExist:
-        StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values_list(
-        "enable_standard_names", flat=True
-    )[0]
+    enable_standard_names = are_standard_names_enabled()
 
     repeating_series_headers = []
     for h in range(int(max_events)):
@@ -404,13 +441,7 @@ def _ct_get_series_data(s):
     from collections import OrderedDict
 
     # Obtain the system-level enable_standard_names setting
-    try:
-        StandardNameSettings.objects.get()
-    except ObjectDoesNotExist:
-        StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values_list(
-        "enable_standard_names", flat=True
-    )[0]
+    enable_standard_names = are_standard_names_enabled()
 
     try:
         if s.ctdiw_phantom_type.code_value == "113691":
@@ -602,10 +633,6 @@ def ct_phe_2019(filterdict, user=None):
     :param user:  User that has started the export
     :return: Saves Excel file into Media directory for user to download
     """
-
-    import datetime
-    from decimal import Decimal
-    from ..interface.mod_filters import ct_acq_filter
 
     datestamp = datetime.datetime.now()
     task_id = get_or_generate_task_uuid()

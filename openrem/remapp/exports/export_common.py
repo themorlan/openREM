@@ -41,11 +41,14 @@ from django.core.files.base import ContentFile
 from django.db.models import Q
 from xlsxwriter.workbook import Workbook
 
-from remapp.models import (
+from ..models import (
     Exports,
     StandardNames,
-    StandardNameSettings,
 )
+
+from ..tools.check_standard_name_status import are_standard_names_enabled
+
+from ..version import __version__
 
 logger = logging.getLogger(__name__)
 
@@ -130,13 +133,7 @@ def common_headers(modality=None, pid=False, name=None, patid=None):
     """
 
     # Obtain the system-level enable_standard_names setting
-    try:
-        StandardNameSettings.objects.get()
-    except ObjectDoesNotExist:
-        StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values_list(
-        "enable_standard_names", flat=True
-    )[0]
+    enable_standard_names = are_standard_names_enabled()
 
     pid_headings = []
     if pid and name:
@@ -220,13 +217,7 @@ def generate_sheets(
     :return: book
     """
     # Obtain the system-level enable_standard_names setting
-    try:
-        StandardNameSettings.objects.get()
-    except ObjectDoesNotExist:
-        StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values_list(
-        "enable_standard_names", flat=True
-    )[0]
+    enable_standard_names = are_standard_names_enabled()
 
     sheet_list = {}
     protocols_list = []
@@ -336,13 +327,7 @@ def get_common_data(modality, exams, pid=None, name=None, patid=None):
     """
 
     # Obtain the system-level enable_standard_names setting
-    try:
-        StandardNameSettings.objects.get()
-    except ObjectDoesNotExist:
-        StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values_list(
-        "enable_standard_names", flat=True
-    )[0]
+    enable_standard_names = are_standard_names_enabled()
 
     patient_birth_date = None
     patient_name = None
@@ -777,15 +762,13 @@ def create_summary_sheet(
     :return: nothing
     """
     import datetime
-    import pkg_resources
     from django.db.models import Count
 
     # Populate summary sheet
     task.progress = "Now populating the summary sheet..."
     task.save()
 
-    vers = pkg_resources.require("openrem")[0].version
-    version = vers
+    version = __version__
     titleformat = book.add_format()
     titleformat.set_font_size = 22
     titleformat.set_font_color = "#FF0000"
@@ -850,13 +833,7 @@ def create_summary_sheet(
         summary_sheet.set_column("G:G", 15)
 
     # Obtain the system-level enable_standard_names setting
-    try:
-        StandardNameSettings.objects.get()
-    except ObjectDoesNotExist:
-        StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values_list(
-        "enable_standard_names", flat=True
-    )[0]
+    enable_standard_names = are_standard_names_enabled()
 
     if enable_standard_names:
         # Generate list of standard study names
