@@ -81,6 +81,7 @@ from .tools.make_skin_map import (
     skin_dose_maps_enabled_for_xray_system,
 )
 from .tools.background import run_in_background_with_limits
+from .tools.check_standard_name_status import are_standard_names_enabled
 from .views_charts_ct import (
     generate_required_ct_charts_list,
     ct_chart_form_processing,
@@ -182,17 +183,6 @@ def create_admin_info(request):
     return admin
 
 
-def standard_name_settings():
-    """Obtain the system-level enable_standard_names setting."""
-    try:
-        StandardNameSettings.objects.get()
-    except ObjectDoesNotExist:
-        StandardNameSettings.objects.create()
-    return StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[
-        0
-    ]
-
-
 def create_paginated_study_list(request, f, user_profile):
     paginator = Paginator(f.qs, user_profile.itemsPerPage)
     page = request.GET.get("page")
@@ -210,7 +200,7 @@ def generate_return_structure(request, f):
     items_per_page_form = update_items_per_page_form(request, user_profile)
     admin = create_admin_info(request)
     study_list = create_paginated_study_list(request, f, user_profile)
-    enable_standard_names = standard_name_settings()
+    enable_standard_names = are_standard_names_enabled()
     return_structure = {
         "filter": f,
         "study_list": study_list,
@@ -250,7 +240,7 @@ def dx_detail_view(request, pk=None):
         return redirect(reverse_lazy("dx_summary_list_filter"))
 
     admin = create_admin_info(request)
-    enable_standard_names = standard_name_settings()
+    enable_standard_names = are_standard_names_enabled()
 
     projection_set = study.projectionxrayradiationdose_set.get()
     events_all = projection_set.irradeventxraydata_set.select_related(
@@ -283,7 +273,7 @@ def dx_detail_view(request, pk=None):
 def rf_summary_list_filter(request):
     """Obtain data for radiographic summary view."""
 
-    enable_standard_names = standard_name_settings()
+    enable_standard_names = are_standard_names_enabled()
     queryset = (
         GeneralStudyModuleAttr.objects.filter(modality_type="RF")
         .order_by("-study_date", "-study_time")
@@ -343,7 +333,7 @@ def rf_summary_list_filter(request):
 def rf_detail_view(request, pk=None):
     """Detail view for an RF study."""
 
-    enable_standard_names = standard_name_settings()
+    enable_standard_names = are_standard_names_enabled()
 
     try:
         study = GeneralStudyModuleAttr.objects.get(pk=pk)
@@ -759,7 +749,7 @@ def nm_detail_view(request, pk=None):
     ).first()
 
     admin = create_admin_info(request)
-    enable_standard_names = standard_name_settings()
+    enable_standard_names = are_standard_names_enabled()
 
     return render(
         request,
@@ -795,7 +785,7 @@ def ct_summary_list_filter(request):
 def ct_detail_view(request, pk=None):
     """Detail view for a CT study."""
 
-    enable_standard_names = standard_name_settings()
+    enable_standard_names = are_standard_names_enabled()
 
     try:
         study = GeneralStudyModuleAttr.objects.get(pk=pk)
@@ -834,7 +824,7 @@ def ct_detail_view(request, pk=None):
 def mg_summary_list_filter(request):
     """Mammography data for summary view."""
 
-    enable_standard_names = standard_name_settings()
+    enable_standard_names = are_standard_names_enabled()
     filter_data = request.GET.copy()
     if "page" in filter_data:
         del filter_data["page"]
@@ -884,7 +874,7 @@ def mg_summary_list_filter(request):
 def mg_detail_view(request, pk=None):
     """Detail view for a CT study."""
 
-    enable_standard_names = standard_name_settings()
+    enable_standard_names = are_standard_names_enabled()
 
     try:
         study = GeneralStudyModuleAttr.objects.get(pk=pk)

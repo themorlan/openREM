@@ -33,17 +33,13 @@ from decimal import Decimal, InvalidOperation
 import logging
 
 from django import forms
-from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
 import django_filters
 
-from remapp.models import (
-    GeneralStudyModuleAttr,
-    CtIrradiationEventData,
-    StandardNames,
-    StandardNameSettings,
-)
+from remapp.models import GeneralStudyModuleAttr
+
 from ..tools.hash_id import hash_id
+from ..tools.check_standard_name_status import are_standard_names_enabled
 
 logger = logging.getLogger(__name__)
 
@@ -121,7 +117,7 @@ def _dap_filter(queryset, name, value):
 
 
 class DateTimeOrderingFilter(django_filters.OrderingFilter):
-    """Custom filter to order by date and time as they are two seperate fields"""
+    """Custom filter to order by date and time as they are two separate fields"""
 
     def __init__(self, *args, **kwargs):
         super(DateTimeOrderingFilter, self).__init__(*args, **kwargs)
@@ -618,13 +614,7 @@ class CTFilterPlusPidPlusStdNames(CTFilterPlusPid):
 def ct_acq_filter(filters, pid=False):
 
     # Obtain the system-level enable_standard_names setting
-    try:
-        StandardNameSettings.objects.get()
-    except ObjectDoesNotExist:
-        StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values_list(
-        "enable_standard_names", flat=True
-    )[0]
+    enable_standard_names = are_standard_names_enabled()
 
     studies = GeneralStudyModuleAttr.objects.filter(modality_type="CT")
 
@@ -833,6 +823,32 @@ class MGFilterPlusPidPlusStdNames(MGFilterPlusPid):
     )
 
 
+def mg_acq_filter(filters, pid=False):
+
+    # Obtain the system-level enable_standard_names setting
+    enable_standard_names = are_standard_names_enabled()
+
+    studies = GeneralStudyModuleAttr.objects.filter(modality_type="MG")
+
+    if pid:
+        if enable_standard_names:
+            return MGFilterPlusPidPlusStdNames(
+                filters, studies.order_by("-study_date", "-study_time").distinct()
+            )
+        else:
+            return MGFilterPlusPid(
+                filters, studies.order_by("-study_date", "-study_time").distinct()
+            )
+    if enable_standard_names:
+        return MGFilterPlusStdNames(
+            filters, studies.order_by("-study_date", "-study_time").distinct()
+        )
+    else:
+        return MGSummaryListFilter(
+            filters, studies.order_by("-study_date", "-study_time").distinct()
+        )
+
+
 class DXSummaryListFilter(django_filters.FilterSet):
     """Filter for DX studies to display in web interface."""
 
@@ -1030,13 +1046,7 @@ class DXFilterPlusPidPlusStdNames(DXFilterPlusPid):
 def dx_acq_filter(filters, pid=False):
 
     # Obtain the system-level enable_standard_names setting
-    try:
-        StandardNameSettings.objects.get()
-    except ObjectDoesNotExist:
-        StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values_list(
-        "enable_standard_names", flat=True
-    )[0]
+    enable_standard_names = are_standard_names_enabled()
 
     studies = GeneralStudyModuleAttr.objects.filter(
         Q(modality_type__in=["DX", "CR", "PX"])
