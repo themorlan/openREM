@@ -42,6 +42,3 @@ def default_import(
                 **{"priority": 10},
             )
             tasks.append(b)
-
-    for t in tasks:
-        wait_task(t)
