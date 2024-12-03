@@ -1994,34 +1994,33 @@ def create_mg_pulse_columns(df_unprocessed):
         .transform(lambda x: " | ".join(map(str, x)))  # pylint disable=unnecessary-lambda
     )
 
-    df_unprocessed["kVp Mean"] = (
-        df_unprocessed[df_unprocessed["kVp"].notnull()]
-        .drop_duplicates(["Acquisition pk", "kVp pk"])
-        .sort_values(by=["kVp pk"], ascending=[True], inplace=False)
-        .groupby(["Acquisition pk"])["kVp"]
-        .transform("mean")
-    )
-    df_unprocessed["uAs Mean"] = (
-        df_unprocessed[df_unprocessed["uAs"].notnull()]
-        .drop_duplicates(["Acquisition pk", "exposure pk"])
+    #######################################################
+    # Calculate the mean of the kVp, uAs, ms and mA for each pulse of an exposure, excluding the first
+    # pulse because we're going to assume that is the AEC pre-pulse, rather than part of the main exposure.
+
+    # The locations of the required entries, excluding the first entry for each exposure
+    locations = (
+        df_unprocessed.drop_duplicates(["Acquisition pk", "exposure pk"])
         .sort_values(by=["exposure pk"], ascending=[True], inplace=False)
-        .groupby(["Acquisition pk"])["uAs"]
-        .transform("mean")
+        .groupby(["Acquisition pk"])
+        .cumcount()
+        .ne(0)
     )
-    df_unprocessed["ms Mean"] = (
-        df_unprocessed[df_unprocessed["ms"].notnull()]
-        .drop_duplicates(["Acquisition pk", "pulsewidth pk"])
-        .sort_values(by=["pulsewidth pk"], ascending=[True], inplace=False)
-        .groupby(["Acquisition pk"])["ms"]
-        .transform("mean")
-    )
-    df_unprocessed["mA Mean"] = (
-        df_unprocessed[df_unprocessed["mA"].notnull()]
-        .drop_duplicates(["Acquisition pk", "xraytubecurrent pk"])
-        .sort_values(by=["xraytubecurrent pk"], ascending=[True], inplace=False)
-        .groupby(["Acquisition pk"])["mA"]
-        .transform("mean")
-    )
+
+    required_mean_fields = ["kVp", "uAs", "ms", "mA"]
+    for mean_field in required_mean_fields:
+        mean_data = (
+            df_unprocessed[df_unprocessed[mean_field].notnull()]
+            .drop_duplicates(["Acquisition pk", "exposure pk"])
+            .sort_values(by=["exposure pk"], ascending=[True], inplace=False)
+            .loc[locations]
+            .groupby(["Acquisition pk"])[mean_field].mean()
+        )
+        df_unprocessed = df_unprocessed.set_index(["Acquisition pk"])
+        df_unprocessed[f"{mean_field} Mean"] = mean_data
+        df_unprocessed = df_unprocessed.reset_index()
+    #######################################################
+
 
     df_unprocessed["kVp"] = (
         df_unprocessed[df_unprocessed["kVp"].notnull()]
