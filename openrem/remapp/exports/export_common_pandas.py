@@ -1997,30 +1997,45 @@ def create_mg_pulse_columns(df_unprocessed):
     #######################################################
     # Calculate the mean of the kVp, uAs, ms and mA for each pulse of an exposure, excluding the first
     # pulse because we're going to assume that is the AEC pre-pulse, rather than part of the main exposure.
+    # This stackoverflowo post was useful for this section:
+    # https://stackoverflow.com/questions/46938572/pandas-groupby-mean-into-a-dataframe
+    required_mean_field_dict = {
+        "kVp": "kVp pk",
+        "uAs": "exposure pk",
+        "ms": "pulsewidth pk",
+        "mA": "xraytubecurrent pk"
+    }
 
-    # The locations of the required entries, excluding the first entry for each exposure
-    locations = (
-        df_unprocessed.drop_duplicates(["Acquisition pk", "exposure pk"])
-        .sort_values(by=["exposure pk"], ascending=[True], inplace=False)
-        .groupby(["Acquisition pk"])
-        .cumcount()
-        .ne(0)
-    )
+    for mean_field, pk_name in required_mean_field_dict.items():
 
-    required_mean_fields = ["kVp", "uAs", "ms", "mA"]
-    for mean_field in required_mean_fields:
+        # The locations of the required entries, excluding the first entry for each exposure
+        locations = (
+            df_unprocessed.drop_duplicates(["Acquisition pk", pk_name])
+            .sort_values(by=[pk_name], ascending=[True], inplace=False)
+            .groupby(["Acquisition pk"])
+            .cumcount()
+            .ne(0)
+        )
+
+        # Calculate the mean of all pulses, excluding the first value
         mean_data = (
             df_unprocessed[df_unprocessed[mean_field].notnull()]
-            .drop_duplicates(["Acquisition pk", "exposure pk"])
-            .sort_values(by=["exposure pk"], ascending=[True], inplace=False)
+            .drop_duplicates(["Acquisition pk", pk_name])
+            .sort_values(by=[pk_name], ascending=[True], inplace=False)
             .loc[locations]
             .groupby(["Acquisition pk"])[mean_field].mean()
         )
+
+        # Set the index of df_unprocessed so that when we insert the mean_data (which has fewer rows than
+        # df_unprocesed) it works correctly.
         df_unprocessed = df_unprocessed.set_index(["Acquisition pk"])
+
+        # Add the mena_data to df_unprocessed.
         df_unprocessed[f"{mean_field} Mean"] = mean_data
+
+        # Reset the index of df_unprocessed.
         df_unprocessed = df_unprocessed.reset_index()
     #######################################################
-
 
     df_unprocessed["kVp"] = (
         df_unprocessed[df_unprocessed["kVp"].notnull()]
