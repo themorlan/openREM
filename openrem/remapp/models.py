@@ -926,6 +926,13 @@ class StandardNames(models.Model):
     requested_procedure_code_meaning = models.TextField(blank=True, null=True)
     procedure_code_meaning = models.TextField(blank=True, null=True)
     acquisition_protocol = models.TextField(blank=True, null=True)
+    ctdi_limit = models.DecimalField(
+        max_digits=16, 
+        decimal_places=8, 
+        blank=True, 
+        null=True,
+        verbose_name="CTDIvol Limit (mGy)"
+    )
 
     class Meta(object):
         """
@@ -2309,8 +2316,8 @@ class RadiopharmaceuticalRadiationDose(models.Model):  # TID 10021
        single Radiopharmaceutical Administration Dose event entry. There is a defined recording observer (the
        system and/or person responsible for recording the assay of the radiopharmaceutical, and the person
        administered the radiopharmaceutical). Multiple Radiopharmaceutical Radiation Dose objects may be created
-       for one study. Radiopharmaceutical Start DateTime in TID 10022 “Radiopharmaceutical Administration Event
-       Data” will convey the order of administrations.
+       for one study. Radiopharmaceutical Start DateTime in TID 10022 "Radiopharmaceutical Administration Event
+       Data" will convey the order of administrations.
     """
 
     general_study_module_attributes = models.ForeignKey(

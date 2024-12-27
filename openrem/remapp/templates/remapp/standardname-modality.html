@@ -8,6 +8,7 @@
     <th scope="col">Requested procedure name</th>
     <th scope="col">Procedure name</th>
     <th scope="col">Acquisition protocol name</th>
+    <th scope="col">CTDIvol Limit (mGy)</th>
     {% if admin.admingroup %}
         <th style="text-align: center; vertical-align: middle;" scope="col">Modify?</th>
         <th style="text-align: center; vertical-align: middle;" scope="col">Delete?</th>
@@ -52,6 +53,16 @@
           <td><a style="text-decoration: none">
             <table>
               {% for item in standard_name.list|sort_class_items:"acquisition_protocol" %}
+                  {% if item %}
+                    <tr><td>{{ item }}</td></tr>
+                  {% endif %}
+              {% endfor %}
+            </table>
+          </a></td>
+
+          <td><a style="text-decoration: none">
+            <table>
+              {% for item in standard_name.list|sort_class_items:"ctdi_limit" %}
                   {% if item %}
                     <tr><td>{{ item }}</td></tr>
                   {% endif %}

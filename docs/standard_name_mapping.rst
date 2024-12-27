@@ -18,7 +18,7 @@ The same type of examination can appear in OpenREM under a range of different ``
 ``study descriptions`` or ``procedure names``. Individual acquistions of the same type may appear under a range of
 different ``acquisition protocol names``. The standard name mapping feature allows a number of differently named exams
 or acquisitions to be grouped into a single standard name, allowing easier analysis of data for audits and diagnostic
-reference level (DRL) creation (see DRL definition on the IAEA_ website).
+reference level (DRL) creation (see DRL definition on the IAEA_ website). For CT studies, administrators can set CTDIvol limits for each standard name to help monitor dose compliance with local diagnostic reference levels.
 
 If the logged in user is an OpenREM adminstrator the ``standard name settings`` option will be available on the
 ``Config`` drop down menu (figure 1). Clicking on this will take the administrator to the standard name mapping settings
