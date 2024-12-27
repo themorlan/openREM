@@ -109,7 +109,18 @@
             <td rowspan="2">
                 <table>
                 {% for std_name in event.standard_protocols.all %}
-                    <tr><td class="nowrap">{{ std_name.standard_name|default_if_none:"-" }}</td></tr>
+                    <tr>
+                        <td class="nowrap">
+                            {{ std_name.standard_name|default_if_none:"-" }}
+                            {% if std_name.ctdi_limit %}
+                                {% if event.mean_ctdivol > std_name.ctdi_limit %}
+                                    <span class="text-danger">(Limit: {{ std_name.ctdi_limit|floatformat:2 }})</span>
+                                {% else %}
+                                    <span class="text-success">(Limit: {{ std_name.ctdi_limit|floatformat:2 }})</span>
+                                {% endif %}
+                            {% endif %}
+                        </td>
+                    </tr>
                 {% endfor %}
                 </table>
             </td>

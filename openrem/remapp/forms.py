@@ -1697,9 +1697,21 @@ class StandardNameFormBase(forms.ModelForm):
 class StandardNameFormCT(StandardNameFormBase):
     """Form for configuring standard names for study description, requested procedure, procedure and acquisition name"""
 
+    ctdi_limit = forms.DecimalField(
+        required=False,
+        max_digits=16,
+        decimal_places=8,
+        help_text="CTDIvol limit in mGy for this standard name",
+        widget=forms.NumberInput(attrs={'class': 'form-control'})
+    )
+
     def __init__(self, *args, **kwargs):
         super(StandardNameFormCT, self).__init__(*args, **kwargs)
-        self.fields["modality"].initial = "CT"
+        self.fields['modality'].initial = "CT"
+
+        # Get initial CTDI limit value if editing existing standard name
+        if 'instance' in kwargs and kwargs['instance']:
+            self.fields['ctdi_limit'].initial = kwargs['instance'].ctdi_limit
 
         all_studies = GeneralStudyModuleAttr.objects.filter(modality_type__iexact="CT")
 

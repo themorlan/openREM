@@ -2958,6 +2958,7 @@ class StandardNameAddCore(CreateView):
                     standard_name=form.cleaned_data["standard_name"],
                     modality=form.cleaned_data["modality"],
                     requested_procedure_code_meaning=item,
+                    ctdi_limit=form.cleaned_data.get("ctdi_limit")  # Add this line
                 )
                 try:
                     new_entry.save()
@@ -3416,6 +3417,7 @@ class StandardNameUpdateCore(UpdateView):
                         standard_name=form.cleaned_data["standard_name"],
                         modality=form.cleaned_data["modality"],
                         requested_procedure_code_meaning=item,
+                        ctdi_limit=form.cleaned_data.get("ctdi_limit")  # Add this line
                     )
                     new_entry.save()
                     new_ids_request.append(new_entry.pk)
@@ -3462,6 +3464,12 @@ class StandardNameUpdateCore(UpdateView):
             if "standard_name" in form.changed_data:
                 std_names.filter(standard_name=form.initial["standard_name"]).update(
                     standard_name=form.cleaned_data["standard_name"]
+                )
+
+            # Add after line 3461, before the success message:
+            if "ctdi_limit" in form.changed_data:
+                std_names.filter(standard_name=form.initial["standard_name"]).update(
+                    ctdi_limit=form.cleaned_data["ctdi_limit"]
                 )
 
             messages.success(self.request, "Entry updated")
