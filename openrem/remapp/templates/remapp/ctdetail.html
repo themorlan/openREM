@@ -113,6 +113,13 @@
                 {% endfor %}
                 </table>
             </td>
+            <td rowspan="2">
+                <table>
+                {% for std_name in event.standard_protocols.all %}
+                    <tr><td class="nowrap">{{ std_name.ctdi_limit|default_if_none:"-"|floatformat:2 }}</td></tr>
+                {% endfor %}
+                </table>
+            </td>
         {% endif %}
         <td rowspan="2">{{ event.ct_acquisition_type.code_meaning }}</td>
         <td rowspan="2">
