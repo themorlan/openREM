@@ -5,7 +5,7 @@
     :alt: OpenREM logo
 
 #######
-OpenREM
+OpenREM Test-Commit
 #######
 
 **This is a beta release for developers only at this stage**
