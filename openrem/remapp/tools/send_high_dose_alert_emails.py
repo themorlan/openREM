@@ -195,7 +195,9 @@ def send_rf_high_dose_alert_email(study_pk=None, test_message=None, test_user=No
         or accum_peak_skin_dose >= alert_levels["alert_skindose"]
     )
 
-    if alert_for_dap_or_rp_dose or alert_for_skin_dose:
+    alert_for_ctdi = peak_skin_dose >= alert_levels["alert_skindose"] or this_study_ctdi >= alert_levels["alert_ctdi"]
+
+    if alert_for_dap_or_rp_dose or alert_for_skin_dose or alert_for_ctdi:
 
         projection_xray_dose_set = study.projectionxrayradiationdose_set.get()
         accumxraydose_set_all_planes = (

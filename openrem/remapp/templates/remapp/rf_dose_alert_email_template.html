@@ -179,6 +179,10 @@
                     </td>
                     {% endwith %}
                 </tr>
+                <tr>
+                    <td>CTDIvol:</td>
+                    <td>{% if this_study_ctdi >= alert_levels.alert_ctdi %}<strong style="color: red;">{{ this_study_ctdi|floatformat:2 }}</strong> (Über dem Grenzwert von {{ alert_levels.alert_ctdi|floatformat:2 }}){% else %}{{ this_study_ctdi|floatformat:2 }}{% endif %}</td>
+                </tr>
             </table>
 
             {% if alert_levels.show_accum_dose_over_delta_weeks %}

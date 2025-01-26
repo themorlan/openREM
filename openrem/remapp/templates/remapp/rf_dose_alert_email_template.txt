@@ -34,3 +34,5 @@ All studies for this patient ID from the past {{ alert_levels.accum_dose_delta_w
 	{{ each_study.study_date|date:"d/m/y" }}	{{ each_study.study_time|date:"H:i" }}	{{ each_study.accession_number }}			{{ psd_data.peak_skin_dose|floatformat:1 }}	{{ server_url }}/openrem/rf/{{ each_study.pk }}/{% if each_study.pk == study.pk %} (This study){% endif %}{% endwith %}{% endfor %}
 {% endif %}
 {% endwith %}{% endwith %}
+
+CTDIvol:		{% if this_study_ctdi >= alert_levels.alert_ctdi %}{{ this_study_ctdi|floatformat:2 }} (Über dem Grenzwert von {{ alert_levels.alert_ctdi|floatformat:2 }}){% else %}{{ this_study_ctdi|floatformat:2 }}{% endif %}
