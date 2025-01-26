@@ -171,6 +171,9 @@ class HighDoseMetricAlertSettings(SingletonModel):
         default=False,
         verbose_name="Send notification e-mails when alert levels for peak skin dose are exceeded?",
     )
+    ctdivol_alert_value = models.DecimalField(
+        max_digits=8, decimal_places=4, blank=True, null=True
+    )
 
     def get_absolute_url(self):
         return reverse("rf_alert_settings_update", kwargs={"pk": 1})
