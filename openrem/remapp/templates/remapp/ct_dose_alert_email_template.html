@@ -4,28 +4,16 @@
 <head>
     <title>OpenREM CT high dose alert e-mail</title>
     <style>
-        /* Copy styles from rf_dose_alert_email_template.html */
+        /* Styles hier */
     </style>
 </head>
 <body>
     <h1>OpenREM high dose CT alert</h1>
-    <p>A CT study has triggered a high dose alert. See below for details. This message has been
-    automatically sent by OpenREM: please do not reply as this mailbox is not monitored.</p>
+    <p>A CT study has triggered a high dose alert. See below for details.</p>
     
     <h2>Study Details</h2>
-    <table class="table table-condensed table-bordered">
-        <tr>
-            <td>Study date:</td>
-            <td>{{ study.study_date|date:"d/m/y" }}</td>
-        </tr>
-        <tr>
-            <td>Study time:</td>
-            <td>{{ study.study_time|date:"H:i" }}</td>
-        </tr>
-        <tr>
-            <td>Study description:</td>
-            <td>{{ study.study_description }}</td>
-        </tr>
+    <table>
+        <!-- Studiendetails hier -->
         <tr>
             <td>CTDIvol (mGy):</td>
             <td>{% if ct_accumulated.ct_dose_length_product_total >= alert_levels.alert_ctdi %}
@@ -34,10 +22,6 @@
             {% else %}
                 {{ ct_accumulated.ct_dose_length_product_total|floatformat:2 }}
             {% endif %}</td>
-        </tr>
-        <tr>
-            <td>OpenREM link:</td>
-            <td><a href="{{ server_url }}/openrem/ct/{{ study.pk }}">This study</a></td>
         </tr>
     </table>
 </body>
