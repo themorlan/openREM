@@ -33,6 +33,7 @@ import os
 import sys
 import django
 from django.db.models import Sum
+import logging
 
 # setup django/OpenREM
 basepath = os.path.dirname(__file__)
@@ -236,3 +237,67 @@ def send_rf_high_dose_alert_email(study_pk=None, test_message=None, test_user=No
         )
         msg.attach_alternative(html_msg_content, "text/html")
         msg.send()
+
+
+def send_ct_high_dose_alert_email(study_pk=None, test_message=None, test_user=None):
+    """
+    Function to send users a CT high dose alert e-mail
+    """
+    logger = logging.getLogger(__name__)
+
+    if not study_pk:
+        logger.debug("No study_pk provided")
+        return
+
+    study = GeneralStudyModuleAttr.objects.get(pk=study_pk)
+    logger.debug(f"Processing CT study {study_pk}")
+    
+    # Get all events for this study that have exceeded their CTDIvol limits
+    exceeded_events = []
+    try:
+        for event in study.ctradiationdose_set.get().ctirradiationeventdata_set.all():
+            logger.debug(f"Checking event {event.pk} with CTDIvol {event.mean_ctdivol}")
+            for std_name in event.standard_protocols.all():
+                logger.debug(f"Checking against standard name {std_name.standard_name} with limit {std_name.ctdi_limit}")
+                if std_name.ctdi_limit and event.mean_ctdivol > std_name.ctdi_limit:
+                    exceeded_events.append({
+                        'event': event,
+                        'standard_name': std_name,
+                        'limit': std_name.ctdi_limit,
+                        'actual': event.mean_ctdivol
+                    })
+                    logger.debug(f"Limit exceeded: {event.mean_ctdivol} > {std_name.ctdi_limit}")
+    except Exception as e:
+        logger.error(f"Error checking CT dose limits: {str(e)}")
+
+    if exceeded_events:
+        logger.info(f"Found {len(exceeded_events)} events exceeding limits, sending email")
+        content_dict = {
+            'study': study,
+            'exceeded_events': exceeded_events,
+            'server_url': settings.EMAIL_OPENREM_URL,
+        }
+
+        text_msg_content = render_to_string(
+            "remapp/ct_dose_alert_email_template.txt", content_dict
+        )
+        html_msg_content = render_to_string(
+            "remapp/ct_dose_alert_email_template.html", content_dict
+        )
+        
+        recipients = User.objects.filter(
+            highdosemetricalertrecipients__receive_high_dose_metric_alerts__exact=True
+        ).values_list("email", flat=True)
+        
+        if not recipients:
+            logger.warning("No recipients configured for high dose alerts")
+            return
+        
+        msg_subject = f"OpenREM CT dose alert {study.accession_number}"
+        msg = EmailMultiAlternatives(
+            msg_subject, text_msg_content, settings.EMAIL_DOSE_ALERT_SENDER, recipients
+        )
+        msg.attach_alternative(html_msg_content, "text/html")
+        msg.send()
+    else:
+        logger.debug("No events exceeded limits")

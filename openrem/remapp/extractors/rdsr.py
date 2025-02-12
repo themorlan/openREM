@@ -61,7 +61,7 @@ from ..tools.make_skin_map import (
     make_skin_map,
     skin_dose_maps_enabled_for_xray_system,
 )
-from ..tools.send_high_dose_alert_emails import send_rf_high_dose_alert_email
+from ..tools.send_high_dose_alert_emails import send_rf_high_dose_alert_email, send_ct_high_dose_alert_email
 from .extract_common import (  # pylint: disable=wrong-import-order, wrong-import-position
     ct_event_type_count,
     patient_module_attributes,
@@ -551,6 +551,33 @@ def _rdsr2db(dataset):
         )[0]
         if send_alert_emails_ref and not send_alert_emails_skin:
             send_rf_high_dose_alert_email(g.pk)
+
+    if g.modality_type == "CT":
+        import logging
+        logger = logging.getLogger(__name__)
+        
+        # Add standard names first so we can check against limits
+        logger.debug("Processing CT study for dose alerts")
+        add_standard_names(g)
+        
+        # Check if we should send CT alerts
+        send_alert_emails_ct = HighDoseMetricAlertSettings.objects.values_list(
+            "send_high_dose_metric_alert_emails_ct", flat=True
+        )[0]
+        
+        logger.debug(f"CT email alerts enabled: {send_alert_emails_ct}")
+        
+        if send_alert_emails_ct:
+            # Verify CTDIvol values are present
+            try:
+                for event in g.ctradiationdose_set.get().ctirradiationeventdata_set.all():
+                    logger.debug(f"Event CTDIvol: {event.mean_ctdivol}")
+                    for protocol in event.standard_protocols.all():
+                        logger.debug(f"Protocol {protocol.standard_name} limit: {protocol.ctdi_limit}")
+            except Exception as e:
+                logger.error(f"Error accessing CT dose data: {str(e)}")
+                
+            send_ct_high_dose_alert_email(g.pk)
 
     # Add standard names
     add_standard_names(g)

@@ -1,0 +1,19 @@
+OpenREM high dose CT alert
+
+A CT study has exceeded configured CTDIvol limits. See below for details. This message has been
+automatically sent by OpenREM: please do not reply as this mailbox is not monitored.
+
+Study Details:
+Study date: {{ study.study_date|date:"d/m/y" }}
+Study time: {{ study.study_time|date:"H:i" }}
+Study description: {{ study.study_description }}
+Accession number: {{ study.accession_number }}
+OpenREM link: {{ server_url }}/openrem/ct/{{ study.pk }}
+
+Exceeded CTDIvol Limits:
+{% for item in exceeded_events %}
+Protocol: {{ item.event.acquisition_protocol }}
+Standard Name: {{ item.standard_name.standard_name }}
+CTDIvol Limit: {{ item.limit|floatformat:2 }} mGy
+Actual CTDIvol: {{ item.actual|floatformat:2 }} mGy
+{% endfor %} 

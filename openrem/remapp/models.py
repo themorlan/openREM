@@ -126,7 +126,7 @@ class OpenSkinSafeList(models.Model):
 
 class HighDoseMetricAlertSettings(SingletonModel):
     """
-    Table to store high dose fluoroscopy alert settings
+    Table to store high dose fluoroscopy and CT alert settings
     """
 
     alert_total_dap_rf = models.IntegerField(
@@ -170,6 +170,10 @@ class HighDoseMetricAlertSettings(SingletonModel):
     send_high_dose_metric_alert_emails_skin = models.BooleanField(
         default=False,
         verbose_name="Send notification e-mails when alert levels for peak skin dose are exceeded?",
+    )
+    send_high_dose_metric_alert_emails_ct = models.BooleanField(
+        default=False,
+        verbose_name="Send notification e-mails when CTDIvol limits are exceeded?",
     )
 
     def get_absolute_url(self):
@@ -917,41 +921,10 @@ class UniqueEquipmentNames(models.Model):
 
 class StandardNames(models.Model):
     """
-    Table to store standard study description, requested procedure, procedure or acquisition names
+    Table to store standard names
     """
-
-    standard_name = models.TextField(blank=True, null=True)
-    modality = models.CharField(max_length=16, blank=True, null=True)
-    study_description = models.TextField(blank=True, null=True)
-    requested_procedure_code_meaning = models.TextField(blank=True, null=True)
-    procedure_code_meaning = models.TextField(blank=True, null=True)
-    acquisition_protocol = models.TextField(blank=True, null=True)
-    ctdi_limit = models.DecimalField(
-        max_digits=16, 
-        decimal_places=8, 
-        blank=True, 
-        null=True,
-        verbose_name="CTDIvol Limit (mGy)"
-    )
-
-    class Meta(object):
-        """
-        Define unique_together Meta class to ensure that each study description, requested procedure,
-        procedure and acquisition protocol can only appear in one standard name per modality
-        """
-
-        unique_together = (
-            ("modality", "study_description"),
-            ("modality", "requested_procedure_code_meaning"),
-            ("modality", "procedure_code_meaning"),
-            ("modality", "acquisition_protocol"),
-        )
-
-    def __unicode__(self):
-        return self.standard_name
-
-    def get_absolute_url(self):
-        return reverse("standard_names_view")
+    def __str__(self):
+        return self.standard_name + " (" + str(self.ctdi_limit if self.ctdi_limit else "No limit") + " mGy)"
 
 
 class StandardNameSettings(SingletonModel):

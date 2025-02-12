@@ -1,0 +1,58 @@
+{% spaceless %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>OpenREM CT high dose alert e-mail</title>
+    <style>
+        /* Copy existing styles from rf_dose_alert_email_template.html */
+    </style>
+</head>
+<body>
+    <h1>OpenREM high dose CT alert</h1>
+    <p>A CT study has exceeded configured CTDIvol limits. See below for details. This message has been
+    automatically sent by OpenREM: please do not reply as this mailbox is not monitored.</p>
+
+    <h2>Study Details</h2>
+    <table class="table table-condensed table-bordered">
+        <tr>
+            <td>Study date:</td>
+            <td>{{ study.study_date|date:"d/m/y" }}</td>
+        </tr>
+        <tr>
+            <td>Study time:</td>
+            <td>{{ study.study_time|date:"H:i" }}</td>
+        </tr>
+        <tr>
+            <td>Study description:</td>
+            <td>{{ study.study_description }}</td>
+        </tr>
+        <tr>
+            <td>Accession number:</td>
+            <td>{{ study.accession_number }}</td>
+        </tr>
+        <tr>
+            <td>OpenREM link:</td>
+            <td><a href="{{ server_url }}/openrem/ct/{{ study.pk }}">This study</a></td>
+        </tr>
+    </table>
+
+    <h2>Exceeded CTDIvol Limits</h2>
+    <table class="table table-condensed table-bordered">
+        <tr>
+            <th>Protocol</th>
+            <th>Standard Name</th>
+            <th>CTDIvol Limit</th>
+            <th>Actual CTDIvol</th>
+        </tr>
+        {% for item in exceeded_events %}
+        <tr>
+            <td>{{ item.event.acquisition_protocol }}</td>
+            <td>{{ item.standard_name.standard_name }}</td>
+            <td>{{ item.limit|floatformat:2 }} mGy</td>
+            <td><strong style="color: red;">{{ item.actual|floatformat:2 }} mGy</strong></td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
+{% endspaceless %} 
