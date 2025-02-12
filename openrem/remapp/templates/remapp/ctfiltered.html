@@ -253,14 +253,7 @@
                 </td>
                 <td>
                     <a href="{% url 'ct_detail_view' pk=exam.id %}">
-                        {% for event in exam.ctradiationdose_set.get.ctirradiationeventdata_set.all %}
-                            {% if event.acquisition_protocol == 'Stationary Acquisition' or event.acquisition_protocol == 'Spiral Acquisition' %}
-                                {% if event.mean_ctdivol > max_ctdi %}
-                                    {% assign max_ctdi = event.mean_ctdivol %}
-                                {% endif %}
-                            {% endif %}
-                        {% endfor %}
-                        {{ max_ctdi|default_if_none:"-"|floatformat:2 }}
+                        {{ exam.max_ctdi|default_if_none:"-"|floatformat:2 }}
                     </a>
                 </td>
                 {% if admin.admingroup %}
