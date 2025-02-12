@@ -770,6 +770,16 @@ def ct_summary_list_filter(request):
     f = ct_acq_filter(request.GET, pid=pid)
 
     user_profile, return_structure = generate_return_structure(request, f)
+    
+    # Berechne max_ctdi für jede Studie in der gefilterten Liste
+    for study in f.qs:
+        max_ctdi = study.ctradiationdose_set.get().ctirradiationeventdata_set.filter(
+            acquisition_protocol__in=['Stationary Acquisition', 'Spiral Acquisition']
+        ).aggregate(
+            max_ctdivol=Max('mean_ctdivol')
+        )['max_ctdivol']
+        study.max_ctdi = max_ctdi
+
     chart_options_form = ct_chart_form_processing(request, user_profile)
     return_structure["chartOptionsForm"] = chart_options_form
 
