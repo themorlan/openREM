@@ -46,6 +46,8 @@ from django.db.models import (
     Q,
     Max,
     Count,
+    Subquery,
+    OuterRef,
 )
 from django.contrib import messages
 from django.contrib.auth import logout
@@ -111,6 +113,7 @@ from .models import (
     UpgradeStatus,
     StandardNameSettings,
     BackgroundTask,
+    CTIrradiationEventData,
 )
 from .version import __version__, __docs_version__, __skin_map_version__
 
@@ -199,6 +202,20 @@ def generate_return_structure(request, f):
     user_profile = get_or_create_user(request)
     items_per_page_form = update_items_per_page_form(request, user_profile)
     admin = create_admin_info(request)
+    
+    # Berechne max_ctdi für alle Studien in der QuerySet, aber nur für CT-Studien
+    if hasattr(f.qs.first(), 'ctradiationdose_set'):
+        for study in f.qs:
+            try:
+                max_ctdi = study.ctradiationdose_set.get().ctirradiationeventdata_set.filter(
+                    acquisition_protocol__in=['Stationary Acquisition', 'Spiral Acquisition']
+                ).aggregate(
+                    max_ctdivol=Max('mean_ctdivol')
+                )['max_ctdivol']
+                study.max_ctdi = max_ctdi
+            except (ObjectDoesNotExist, AttributeError):
+                study.max_ctdi = None
+    
     study_list = create_paginated_study_list(request, f, user_profile)
     enable_standard_names = are_standard_names_enabled()
     return_structure = {
@@ -595,7 +612,6 @@ def rf_detail_view_skin_map(request, pk=None):
                     matching_ongoing_task.values_list("info", flat=True)[0].split(
                         "irradiation ", 1
                     )[1]
-                )
 
                 return_structure["in_progress"] = True
 
@@ -709,7 +725,6 @@ def rf_detail_view_skin_map(request, pk=None):
                     matching_ongoing_task.values_list("info", flat=True)[0].split(
                         "irradiation ", 1
                     )[1]
-                )
 
             return_structure["in_progress"] = True
 
@@ -770,16 +785,6 @@ def ct_summary_list_filter(request):
     f = ct_acq_filter(request.GET, pid=pid)
 
     user_profile, return_structure = generate_return_structure(request, f)
-    
-    # Berechne max_ctdi für jede Studie in der gefilterten Liste
-    for study in f.qs:
-        max_ctdi = study.ctradiationdose_set.get().ctirradiationeventdata_set.filter(
-            acquisition_protocol__in=['Stationary Acquisition', 'Spiral Acquisition']
-        ).aggregate(
-            max_ctdivol=Max('mean_ctdivol')
-        )['max_ctdivol']
-        study.max_ctdi = max_ctdi
-
     chart_options_form = ct_chart_form_processing(request, user_profile)
     return_structure["chartOptionsForm"] = chart_options_form
 
@@ -1155,3 +1160,23 @@ def update_latest_studies(request):
                 "admin": admin,
             },
         )
+
+
+def ct_acq_filter(request_get, pid=False):
+    """Filter for CT acquisition data according to query."""
+    queryset = GeneralStudyModuleAttr.objects.filter(
+        modality_type="CT"
+    ).order_by("-study_date", "-study_time").annotate(
+        max_ctdi=Subquery(
+            CTIrradiationEventData.objects.filter(
+                ct_radiation_dose__ct_study=OuterRef('pk'),
+                acquisition_protocol__in=['Stationary Acquisition', 'Spiral Acquisition']
+            ).values('ct_radiation_dose__ct_study').annotate(
+                max_ctdivol=Max('mean_ctdivol')
+            ).values('max_ctdivol')[:1]
+        )
+    )
+    
+    if pid:
+        return CTFilterPlusPid(request_get, queryset=queryset)
+    return CTSummaryListFilter(request_get, queryset=queryset)
