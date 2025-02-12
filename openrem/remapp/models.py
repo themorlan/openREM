@@ -126,7 +126,7 @@ class OpenSkinSafeList(models.Model):
 
 class HighDoseMetricAlertSettings(SingletonModel):
     """
-    Table to store high dose fluoroscopy alert settings
+    Table to store high dose fluoroscopy and CT alert settings
     """
 
     alert_total_dap_rf = models.IntegerField(
@@ -170,6 +170,16 @@ class HighDoseMetricAlertSettings(SingletonModel):
     send_high_dose_metric_alert_emails_skin = models.BooleanField(
         default=False,
         verbose_name="Send notification e-mails when alert levels for peak skin dose are exceeded?",
+    )
+    alert_ctdi = models.FloatField(
+        blank=True,
+        null=True, 
+        default=50.0,
+        verbose_name="Alert level for CTDIvol from CT examination (mGy)"
+    )
+    send_high_dose_metric_alert_emails_ct = models.BooleanField(
+        default=False,
+        verbose_name="Send notification e-mails when alert levels for CTDIvol are exceeded?"
     )
 
     def get_absolute_url(self):
@@ -2309,8 +2319,8 @@ class RadiopharmaceuticalRadiationDose(models.Model):  # TID 10021
        single Radiopharmaceutical Administration Dose event entry. There is a defined recording observer (the
        system and/or person responsible for recording the assay of the radiopharmaceutical, and the person
        administered the radiopharmaceutical). Multiple Radiopharmaceutical Radiation Dose objects may be created
-       for one study. Radiopharmaceutical Start DateTime in TID 10022 “Radiopharmaceutical Administration Event
-       Data” will convey the order of administrations.
+       for one study. Radiopharmaceutical Start DateTime in TID 10022 "Radiopharmaceutical Administration Event
+       Data" will convey the order of administrations.
     """
 
     general_study_module_attributes = models.ForeignKey(

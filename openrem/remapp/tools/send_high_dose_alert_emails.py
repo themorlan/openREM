@@ -236,3 +236,83 @@ def send_rf_high_dose_alert_email(study_pk=None, test_message=None, test_user=No
         )
         msg.attach_alternative(html_msg_content, "text/html")
         msg.send()
+
+
+def send_ct_high_dose_alert_email(study_pk=None, test_message=None, test_user=None):
+    """
+    Function to send users a CT high dose alert e-mail
+    """
+    from remapp.models import (
+        GeneralStudyModuleAttr,
+        HighDoseMetricAlertSettings,
+    )
+    from django.contrib.auth.models import User
+    from django.core.mail import EmailMultiAlternatives
+    from django.template.loader import render_to_string
+    from django.core.exceptions import ObjectDoesNotExist
+    from openremproject import settings
+    from socket import error as socket_error
+    from socket import gaierror as gai_error
+    from smtplib import SMTPException
+    from ssl import SSLError
+
+    # Test message handling similar to RF function...
+    if test_message:
+        if test_user:
+            try:
+                text_msg_content = render_to_string("remapp/email_test_template.txt")
+                html_msg_content = render_to_string("remapp/email_test_template.html")
+                recipients = [test_user]
+                msg_subject = "OpenREM e-mail test message"
+                msg = EmailMultiAlternatives(
+                    msg_subject,
+                    text_msg_content,
+                    settings.EMAIL_DOSE_ALERT_SENDER,
+                    recipients,
+                )
+                msg.attach_alternative(html_msg_content, "text/html")
+                msg.send()
+            except (SSLError, SMTPException, ValueError, gai_error, socket_error) as the_error:
+                return the_error
+        return
+
+    if study_pk:
+        study = GeneralStudyModuleAttr.objects.get(pk=study_pk)
+    else:
+        return
+
+    try:
+        ct_accumulated = study.ctradiationdose_set.get().ctaccumulateddosedata_set.get()
+        max_ctdi = ct_accumulated.ct_dose_length_product_total
+    except ObjectDoesNotExist:
+        return
+
+    alert_levels = HighDoseMetricAlertSettings.objects.values(
+        "alert_ctdi",
+        "send_high_dose_metric_alert_emails_ct",
+    )[0]
+
+    if alert_levels["send_high_dose_metric_alert_emails_ct"] and max_ctdi >= alert_levels["alert_ctdi"]:
+        content_dict = {
+            "study": study,
+            "ct_accumulated": ct_accumulated,
+            "alert_levels": alert_levels,
+            "server_url": settings.EMAIL_OPENREM_URL,
+        }
+
+        text_msg_content = render_to_string(
+            "remapp/ct_dose_alert_email_template.txt", content_dict
+        )
+        html_msg_content = render_to_string(
+            "remapp/ct_dose_alert_email_template.html", content_dict
+        )
+        recipients = User.objects.filter(
+            highdosemetricalertrecipients__receive_high_dose_metric_alerts__exact=True
+        ).values_list("email", flat=True)
+
+        msg_subject = f"OpenREM CT high dose alert {study.accession_number}"
+        msg = EmailMultiAlternatives(
+            msg_subject, text_msg_content, settings.EMAIL_DOSE_ALERT_SENDER, recipients
+        )
+        msg.attach_alternative(html_msg_content, "text/html")
+        msg.send()

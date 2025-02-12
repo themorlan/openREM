@@ -61,7 +61,7 @@ from ..tools.make_skin_map import (
     make_skin_map,
     skin_dose_maps_enabled_for_xray_system,
 )
-from ..tools.send_high_dose_alert_emails import send_rf_high_dose_alert_email
+from ..tools.send_high_dose_alert_emails import send_rf_high_dose_alert_email, send_ct_high_dose_alert_email
 from .extract_common import (  # pylint: disable=wrong-import-order, wrong-import-position
     ct_event_type_count,
     patient_module_attributes,
@@ -551,6 +551,13 @@ def _rdsr2db(dataset):
         )[0]
         if send_alert_emails_ref and not send_alert_emails_skin:
             send_rf_high_dose_alert_email(g.pk)
+
+    # Send email alert if CTDIvol exceeds threshold
+    send_alert_emails_ct = HighDoseMetricAlertSettings.objects.values_list(
+        "send_high_dose_metric_alert_emails_ct", flat=True
+    )[0]
+    if send_alert_emails_ct:
+        send_ct_high_dose_alert_email(g.pk)
 
     # Add standard names
     add_standard_names(g)
