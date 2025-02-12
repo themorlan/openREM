@@ -204,7 +204,7 @@ def generate_return_structure(request, f):
     admin = create_admin_info(request)
     
     # Berechne max_ctdi für alle Studien in der QuerySet, aber nur für CT-Studien
-    if hasattr(f.qs.first(), 'ctradiationdose_set'):
+    if f.qs and hasattr(f.qs.first(), 'ctradiationdose_set'):  # Prüfe ob QuerySet nicht leer ist
         for study in f.qs:
             try:
                 max_ctdi = study.ctradiationdose_set.get().ctirradiationeventdata_set.filter(
@@ -613,7 +613,7 @@ def rf_detail_view_skin_map(request, pk=None):
                         "irradiation ", 1
                     )[1]
 
-                return_structure["in_progress"] = True
+            return_structure["in_progress"] = True
 
     else:
         # Check to see if there is already a skin map pickle with the same study ID.
