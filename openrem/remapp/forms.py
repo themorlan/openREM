@@ -1699,8 +1699,8 @@ class StandardNameFormCT(StandardNameFormBase):
 
     ctdi_limit = forms.DecimalField(
         required=False,
-        max_digits=16,
-        decimal_places=8,
+        max_digits=5,
+        decimal_places=2,
         help_text="CTDIvol limit in mGy for this standard name",
         widget=forms.NumberInput(attrs={'class': 'form-control'})
     )
