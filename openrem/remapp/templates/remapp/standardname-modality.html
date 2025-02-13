@@ -62,11 +62,11 @@
 
           <td><a style="text-decoration: none">
             <table>
-              {% for item in standard_name.list|sort_class_items:"ctdi_limit" %}
-                  {% if item %}
-                    <tr><td>{{ item|floatformat:2 }}</td></tr>
-                  {% endif %}
-              {% endfor %}
+              {% with ctdi_value=standard_name.list.0.ctdi_limit %}
+                {% if ctdi_value %}
+                  <tr><td>{{ ctdi_value|floatformat:2 }}</td></tr>
+                {% endif %}
+              {% endwith %}
             </table>
           </a></td>
 
