@@ -64,7 +64,7 @@
             <table>
               {% for item in standard_name.list|sort_class_items:"ctdi_limit" %}
                   {% if item %}
-                    <tr><td>{{ item }}</td></tr>
+                    <tr><td>{{ item|floatformat:2 }}</td></tr>
                   {% endif %}
               {% endfor %}
             </table>
