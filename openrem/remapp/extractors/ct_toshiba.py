@@ -1437,8 +1437,8 @@ def _update_dicom_rdsr(
                                             logger.debug(traceback.format_exc())
                                         except Exception as e:
                                             logger.debug(traceback.format_exc())
-                                            # The end of updating the RDSR
-                                            ##############################################
+                                        # The end of updating the RDSR
+                                        ##############################################
                                 except KeyError:
                                     # Either CTDIvol or DLP data is not present
                                     pass
