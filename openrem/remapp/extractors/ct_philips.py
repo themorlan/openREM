@@ -340,6 +340,7 @@ def _generalstudymoduleattributes(dataset, g):
             "Study UID {0} of modality {1}. Unable to get event count!".format(
                 g.study_instance_uid, get_value_kw("ManufacturerModelName", dataset)
             )
+        )
     ct_event_type_count(g)
     try:
         g.total_dlp = (
