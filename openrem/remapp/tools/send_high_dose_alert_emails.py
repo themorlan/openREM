@@ -251,21 +251,29 @@ def _check_ct_study_dose(study, alert_settings):
     """
     acquisition_types = ['Spiral Acquisition', 'Sequenced Acquisition']
     
-    # Hole alle Events vom Typ Spiral oder Sequenced
-    ct_events = study.ctradiationdose_set.get().ctirradiationeventdata_set.filter(
-        acquisition_protocol__in=acquisition_types
-    )
-    
-    # Finde den höchsten CTDI-Wert
-    max_ctdi = 0
-    for event in ct_events:
-        if event.mean_ctdivol and event.mean_ctdivol > max_ctdi:
-            max_ctdi = event.mean_ctdivol
-    
-    # Vergleiche nur den höchsten Wert mit dem Grenzwert
-    if max_ctdi and alert_settings.ctdi_alert_level:
-        if max_ctdi > alert_settings.ctdi_alert_level:
-            return True
+    try:
+        # Hole alle Events vom Typ Spiral oder Sequenced
+        ct_events = study.ctradiationdose_set.get().ctirradiationeventdata_set.filter(
+            acquisition_protocol__in=acquisition_types
+        )
+        
+        # Finde den höchsten CTDI-Wert
+        max_ctdi = 0
+        for event in ct_events:
+            if event.mean_ctdivol and event.mean_ctdivol > max_ctdi:
+                max_ctdi = event.mean_ctdivol
+        
+        # Vergleiche nur den höchsten Wert mit dem Grenzwert
+        if max_ctdi and alert_settings.ctdi_alert_level:
+            if max_ctdi > alert_settings.ctdi_alert_level:
+                return True
+                
+    except ObjectDoesNotExist:
+        logger.warning(
+            "Study UID {0}: Unable to get CT dose information".format(
+                study.study_instance_uid
+            )
+        )
     
     return False
 
@@ -277,6 +285,7 @@ def send_ct_high_dose_alert_email(study_pk=None, test_message=None, test_user=No
     from django.contrib.auth.models import User
     from django.core.mail import EmailMultiAlternatives
     from django.template.loader import render_to_string
+    from django.core.exceptions import ObjectDoesNotExist
     from openremproject import settings
 
     if study_pk:
@@ -284,8 +293,11 @@ def send_ct_high_dose_alert_email(study_pk=None, test_message=None, test_user=No
     else:
         return
 
-    alert_settings = HighDoseMetricAlertSettings.objects.first()
-    
+    try:
+        alert_settings = HighDoseMetricAlertSettings.objects.get()
+    except ObjectDoesNotExist:
+        alert_settings = HighDoseMetricAlertSettings.objects.create()
+
     # Prüfe ob die CTDI-Grenzwerte überschritten wurden
     if _check_ct_study_dose(study, alert_settings):
         # Bereite E-Mail-Inhalt vor
