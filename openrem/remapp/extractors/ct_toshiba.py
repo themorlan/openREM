@@ -45,6 +45,8 @@ from openrem.openremproject.settings import (
     PIXELMED_JAR_OPTIONS,
 )
 from remapp.tools.send_high_dose_alert_emails import send_ct_high_dose_alert_email
+from django.core.exceptions import ObjectDoesNotExist
+from django.utils.log import logger
 
 # setup django/OpenREM
 base_path = os.path.dirname(__file__)
@@ -692,7 +694,6 @@ def _update_dicom_rdsr(
                                                         "{0} -> {1}".format(
                                                             key, str(val)
                                                         )
-                                                    )
                                                     ##############################################
                                                     # Code here to add / update the data...
                                                     coding = Dataset()
