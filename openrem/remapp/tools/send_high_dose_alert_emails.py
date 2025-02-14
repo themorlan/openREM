@@ -236,3 +236,79 @@ def send_rf_high_dose_alert_email(study_pk=None, test_message=None, test_user=No
         )
         msg.attach_alternative(html_msg_content, "text/html")
         msg.send()
+
+def _check_ct_study_dose(study, alert_settings):
+    """
+    Vergleicht die CT-Studiendosis (CTDI) mit den konfigurierten Grenzwerten
+    Prüft nur den höchsten CTDI-Wert von Spiral- oder Sequenz-Akquisitionen
+    
+    Args:
+        study: Das CT-Studienobjekt mit den Dosisinformationen
+        alert_settings: Die konfigurierten Warnungseinstellungen
+    
+    Returns:
+        bool: True wenn der höchste CTDI den Grenzwert überschreitet, sonst False
+    """
+    acquisition_types = ['Spiral Acquisition', 'Sequenced Acquisition']
+    
+    # Hole alle Events vom Typ Spiral oder Sequenced
+    ct_events = study.ctradiationdose_set.get().ctirradiationeventdata_set.filter(
+        acquisition_protocol__in=acquisition_types
+    )
+    
+    # Finde den höchsten CTDI-Wert
+    max_ctdi = 0
+    for event in ct_events:
+        if event.mean_ctdivol and event.mean_ctdivol > max_ctdi:
+            max_ctdi = event.mean_ctdivol
+    
+    # Vergleiche nur den höchsten Wert mit dem Grenzwert
+    if max_ctdi and alert_settings.ctdi_alert_level:
+        if max_ctdi > alert_settings.ctdi_alert_level:
+            return True
+    
+    return False
+
+def send_ct_high_dose_alert_email(study_pk=None, test_message=None, test_user=None):
+    """
+    Funktion zum Versenden von CT-Hochdosis-Warnungen per E-Mail
+    """
+    from remapp.models import GeneralStudyModuleAttr, HighDoseMetricAlertSettings
+    from django.contrib.auth.models import User
+    from django.core.mail import EmailMultiAlternatives
+    from django.template.loader import render_to_string
+    from openremproject import settings
+
+    if study_pk:
+        study = GeneralStudyModuleAttr.objects.get(pk=study_pk)
+    else:
+        return
+
+    alert_settings = HighDoseMetricAlertSettings.objects.first()
+    
+    # Prüfe ob die CTDI-Grenzwerte überschritten wurden
+    if _check_ct_study_dose(study, alert_settings):
+        # Bereite E-Mail-Inhalt vor
+        content_dict = {
+            'study': study,
+            'alert_levels': alert_settings,
+            'server_url': settings.EMAIL_OPENREM_URL,
+        }
+
+        text_msg_content = render_to_string('remapp/ct_dose_alert_email_template.txt', content_dict)
+        html_msg_content = render_to_string('remapp/ct_dose_alert_email_template.html', content_dict)
+        
+        # Hole alle Empfänger
+        recipients = User.objects.filter(
+            highdosemetricalertrecipients__receive_high_dose_metric_alerts__exact=True
+        ).values_list('email', flat=True)
+
+        msg_subject = f"OpenREM CT high dose alert {study.accession_number}"
+        msg = EmailMultiAlternatives(
+            msg_subject,
+            text_msg_content,
+            settings.EMAIL_DOSE_ALERT_SENDER,
+            recipients
+        )
+        msg.attach_alternative(html_msg_content, "text/html")
+        msg.send()

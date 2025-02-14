@@ -1,0 +1,11 @@
+CT Hochdosis-Warnung
+
+Eine CT-Untersuchung hat den konfigurierten CTDI-Grenzwert überschritten:
+
+Patient ID: {{ study.patientmoduleattr_set.get.patient_id }}
+Accession Number: {{ study.accession_number }}
+Studien Datum: {{ study.study_date }}
+Gerät: {{ study.generalequipmentmoduleattr_set.get.institution_name }}
+Höchster CTDI Wert: {{ study.ctradiationdose_set.get.ctirradiationeventdata_set.first.mean_ctdivol }} mGy
+
+Details zur Studie finden Sie unter: {{ server_url }}{% url 'ct_detail_view' study.pk %} 

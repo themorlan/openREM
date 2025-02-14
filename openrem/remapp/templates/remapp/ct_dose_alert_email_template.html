@@ -1,0 +1,17 @@
+{% extends "remapp/email_base.html" %}
+
+{% block content %}
+<h2>CT Hochdosis-Warnung</h2>
+
+<p>Eine CT-Untersuchung hat den konfigurierten CTDI-Grenzwert überschritten:</p>
+
+<ul>
+    <li>Patient ID: {{ study.patientmoduleattr_set.get.patient_id }}</li>
+    <li>Accession Number: {{ study.accession_number }}</li>
+    <li>Studien Datum: {{ study.study_date }}</li>
+    <li>Gerät: {{ study.generalequipmentmoduleattr_set.get.institution_name }}</li>
+    <li>Höchster CTDI Wert: {{ study.ctradiationdose_set.get.ctirradiationeventdata_set.first.mean_ctdivol }} mGy</li>
+</ul>
+
+<p>Details zur Studie finden Sie unter: {{ server_url }}{% url 'ct_detail_view' study.pk %}</p>
+{% endblock %} 

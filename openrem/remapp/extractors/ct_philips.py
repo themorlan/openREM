@@ -54,6 +54,7 @@ from ..tools.get_values import (
     list_to_string,
 )
 from ..tools.hash_id import hash_id
+from remapp.tools.send_high_dose_alert_emails import send_ct_high_dose_alert_email
 
 # setup django/OpenREM
 basepath = os.path.dirname(__file__)
@@ -339,7 +340,6 @@ def _generalstudymoduleattributes(dataset, g):
             "Study UID {0} of modality {1}. Unable to get event count!".format(
                 g.study_instance_uid, get_value_kw("ManufacturerModelName", dataset)
             )
-        )
     ct_event_type_count(g)
     try:
         g.total_dlp = (
@@ -375,6 +375,9 @@ def _philips_ct2db(dataset):
 
     # Add standard names
     add_standard_names(g)
+
+    # Am Ende der Funktion nach erfolgreicher Speicherung
+    send_ct_high_dose_alert_email(study_pk=g.pk)
 
 
 def ct_philips(philips_file):

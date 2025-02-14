@@ -61,7 +61,7 @@ from ..tools.make_skin_map import (
     make_skin_map,
     skin_dose_maps_enabled_for_xray_system,
 )
-from ..tools.send_high_dose_alert_emails import send_rf_high_dose_alert_email
+from ..tools.send_high_dose_alert_emails import send_rf_high_dose_alert_email, send_ct_high_dose_alert_email
 from .extract_common import (  # pylint: disable=wrong-import-order, wrong-import-position
     ct_event_type_count,
     patient_module_attributes,
@@ -554,6 +554,11 @@ def _rdsr2db(dataset):
 
     # Add standard names
     add_standard_names(g)
+
+    # Füge den E-Mail-Alert am Ende des CT-Imports hinzu
+    if study_uid:
+        study = GeneralStudyModuleAttr.objects.get(study_instance_uid=study_uid)
+        send_ct_high_dose_alert_email(study_pk=study.pk)
 
 
 def _fix_toshiba_vhp(dataset):
