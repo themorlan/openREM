@@ -1783,34 +1783,15 @@ def projectionxrayradiationdose(dataset, g, reporttype):
             ctacc.maximum_ctdivol = max_ctdi
             ctacc.save()
 
-            logger.info(f"Berechneter max_ctdi: {max_ctdi}")
+            # Zuerst Standard Names zuweisen
+            from remapp.extractors.extract_common import add_standard_names
+            add_standard_names(g)
 
+            # Dann CTDI-Limit prüfen
             try:
-                # Debug Informationen
-                logger.info(f"Study Modalität: {proj.general_study_module_attributes.modality_type}")
-                logger.info(f"Alle Standard Names: {list(proj.general_study_module_attributes.standard_names.all())}")
-                
-                # Hole den Standard Namen für dieses Protokoll
                 std_names = proj.general_study_module_attributes.standard_names.filter(
                     modality='CT'
                 ).first()
-                
-                logger.info(f"Gefundener Standard Name: {std_names}")
-                if std_names:
-                    logger.info(f"CTDI Limit des Standard Names: {std_names.ctdi_limit}")
-                
-                # Prüfe jede Bedingung einzeln
-                has_max_ctdi = bool(max_ctdi)
-                has_std_names = bool(std_names)
-                has_ctdi_limit = bool(std_names and std_names.ctdi_limit)
-                is_over_limit = bool(max_ctdi and std_names and std_names.ctdi_limit and max_ctdi > std_names.ctdi_limit)
-                
-                logger.info(f"""Bedingungen für Email:
-                    Hat max_ctdi: {has_max_ctdi}
-                    Hat Standard Namen: {has_std_names}
-                    Hat CTDI Limit: {has_ctdi_limit}
-                    Ist über Limit: {is_over_limit}
-                """)
                 
                 if max_ctdi and std_names and std_names.ctdi_limit and max_ctdi > std_names.ctdi_limit:
                     logger.info(f"Sende Email wegen Überschreitung: {max_ctdi} > {std_names.ctdi_limit}")
