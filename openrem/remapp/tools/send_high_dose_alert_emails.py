@@ -44,6 +44,7 @@ from socket import error as socket_error
 from socket import gaierror as gai_error
 from smtplib import SMTPException
 from ssl import SSLError
+import logging
 
 # setup django/OpenREM
 basepath = os.path.dirname(__file__)
@@ -279,25 +280,27 @@ def send_import_success_email(study_pk, study_uid):
         logger.error(f"Fehler beim Senden der Import-Erfolgs-Email: {e}")
 
 def send_ct_high_dose_alert_email(study_pk, max_ctdi, limit_ctdi):
-    """Sendet eine Alarm-Email wenn der CTDIvol über dem Limit liegt
+    """Sendet eine Alarm-Email wenn der CTDIvol über dem Limit liegt"""
+    logger = logging.getLogger(__name__)
     
-    :param study_pk: Primary key der Studie
-    :param max_ctdi: Maximaler CTDIvol Wert
-    :param limit_ctdi: CTDI Limit für dieses Gerät
-    """
-    from django.core.mail import send_mail
-    from django.conf import settings
-    from remapp.models import GeneralStudyModuleAttr, HighDoseMetricAlertSettings
-
     try:
         study = GeneralStudyModuleAttr.objects.get(pk=study_pk)
         alert_settings = HighDoseMetricAlertSettings.objects.get()
         
+        logger.info(f"Prüfe CT Email-Alarm für Studie {study_pk}")
+        logger.info(f"Email-Alarm aktiv: {alert_settings.send_high_dose_metric_alert_emails_ct}")
+        
         if alert_settings.send_high_dose_metric_alert_emails_ct:
             equipment = study.generalequipmentmoduleattr_set.get()
+            recipients = [u.email for u in alert_settings.high_dose_alert_recipients.all()]
+            
+            if not recipients:
+                logger.warning("Keine Email-Empfänger konfiguriert")
+                return
+                
+            logger.info(f"Sende CT Dosis-Alarm an {len(recipients)} Empfänger")
             
             subject = f'CT Hohe Dosis Warnung - {equipment.station_name}'
-            
             message = f"""CT Untersuchung mit erhöhtem CTDIvol:
 
 Studien UID: {study.study_instance_uid}
@@ -314,9 +317,10 @@ Details unter: {settings.EMAIL_OPENREM_URL}/openrem/ct/{study_pk}/"""
                 subject,
                 message,
                 settings.EMAIL_DOSE_ALERT_SENDER,
-                [u.email for u in alert_settings.high_dose_alert_recipients.all()],
-                fail_silently=True
+                recipients,
+                fail_silently=False  # Fehler anzeigen für Debugging
             )
+            logger.info(f"CT Dosis-Alarm Email erfolgreich gesendet")
             
     except Exception as e:
-        logger.error(f"Fehler beim Versenden der CT Dosis-Alarm Email: {str(e)}")
+        logger.error(f"Fehler beim Versenden der CT Dosis-Alarm Email: {str(e)}", exc_info=True)

@@ -171,6 +171,10 @@ class HighDoseMetricAlertSettings(SingletonModel):
         default=False,
         verbose_name="Send notification e-mails when alert levels for peak skin dose are exceeded?",
     )
+    send_high_dose_metric_alert_emails_ct = models.BooleanField(
+        default=True,
+        verbose_name="Send e-mail alerts for CT high dose"
+    )
 
     def get_absolute_url(self):
         return reverse("rf_alert_settings_update", kwargs={"pk": 1})
