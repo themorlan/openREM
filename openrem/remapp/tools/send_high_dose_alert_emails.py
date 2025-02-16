@@ -303,17 +303,23 @@ def send_ct_high_dose_alert_email(study_pk, max_ctdi, limit_ctdi):
             
             subject = f'CT Hohe Dosis Warnung - {equipment.station_name}'
             
+            # Basis-Nachricht
             message = f"""CT Untersuchung mit erhöhtem CTDIvol:
 
 Studien UID: {study.study_instance_uid}
-Patient ID: {study.patientmoduleattr_set.get().patient_id}
 Untersuchungsdatum: {study.study_date}
 Station: {equipment.station_name}
 
 Max CTDIvol: {max_ctdi:.1f} mGy
-CTDI Limit: {limit_ctdi:.1f} mGy
+CTDI Limit: {limit_ctdi:.1f} mGy"""
 
-Details unter: {settings.EMAIL_OPENREM_URL}/openrem/ct/{study_pk}/"""
+            # Füge Patient ID hinzu falls vorhanden
+            if study.patientmoduleattr_set.exists():
+                patient = study.patientmoduleattr_set.get()
+                message += f"\nPatient ID: {patient.patient_id}"
+
+            # Link zu den Details
+            message += f"\n\nDetails unter: {settings.EMAIL_OPENREM_URL}/openrem/ct/{study_pk}/"
 
             send_mail(
                 subject,
