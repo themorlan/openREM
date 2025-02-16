@@ -1785,6 +1785,10 @@ def projectionxrayradiationdose(dataset, g, reporttype):
             logger.info(f"Berechneter max_ctdi: {max_ctdi}")
 
             try:
+                # Debug Informationen
+                logger.info(f"Study Modalität: {proj.general_study_module_attributes.modality_type}")
+                logger.info(f"Alle Standard Names: {list(proj.general_study_module_attributes.standard_names.all())}")
+                
                 # Hole den Standard Namen für dieses Protokoll
                 std_names = proj.general_study_module_attributes.standard_names.filter(
                     modality='CT'
