@@ -1769,7 +1769,7 @@ def projectionxrayradiationdose(dataset, g, reporttype):
                 if cont.ConceptNameCodeSequence[0].CodeMeaning == "CT Acquisition":
                     _ctirradiationeventdata(cont, proj)
 
-    # Nach dem Erstellen aller Events den maximalen CTDI berechnen 
+      # Nach dem Erstellen aller Events den maximalen CTDI berechnen 
     if reporttype == "ct":
         try:
             ctacc = proj.ctaccumulateddosedata_set.get()
@@ -1784,13 +1784,17 @@ def projectionxrayradiationdose(dataset, g, reporttype):
 
             # Prüfe ob CTDI-Limit überschritten wurde und sende ggf. Email
             try:
-                std_name = proj.general_study_module_attributes.generalequipmentmoduleattr_set.get().unique_equipment_name
-                if max_ctdi and std_name.ctdi_limit and max_ctdi > std_name.ctdi_limit:
+                # Hole den Standard Namen für dieses Protokoll
+                std_names = proj.general_study_module_attributes.standard_names.filter(
+                    modality='CT'
+                ).first()
+                
+                if max_ctdi and std_names and std_names.ctdi_limit and max_ctdi > std_names.ctdi_limit:
                     from remapp.tools.send_high_dose_alert_emails import send_ct_high_dose_alert_email
                     send_ct_high_dose_alert_email(
                         study_pk=proj.general_study_module_attributes.pk,
                         max_ctdi=max_ctdi,
-                        limit_ctdi=std_name.ctdi_limit
+                        limit_ctdi=std_names.ctdi_limit
                     )
             except (ObjectDoesNotExist, AttributeError) as e:
                 logger.warning(f"Konnte CTDI-Limit nicht prüfen: {str(e)}")
