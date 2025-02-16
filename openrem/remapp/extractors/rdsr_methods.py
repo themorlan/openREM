@@ -1553,17 +1553,9 @@ def _ctaccumulateddosedata(dataset, ct):  # TID 10012
             ctacc.ct_effective_dose_total = test_numeric_value(
                 cont.MeasuredValueSequence[0].NumericValue
             )
-        #
-        # Reference authority code or name belongs here, followed by the effective dose details
-        #
         if cont.ConceptNameCodeSequence[0].CodeMeaning == "Comment":
             ctacc.comment = cont.TextValue
     _deviceparticipant(dataset, "ct_accumulated", ctacc)
-
-    # Berechne den maximalen CTDI-Wert aus allen Events
-    max_ctdi = ct.ctirradiationeventdata_set.all().aggregate(
-        Max('mean_ctdivol'))['mean_ctdivol__max']
-    ctacc.maximum_ctdivol = max_ctdi
     
     ctacc.save()
 
@@ -1777,7 +1769,7 @@ def projectionxrayradiationdose(dataset, g, reporttype):
                 if cont.ConceptNameCodeSequence[0].CodeMeaning == "CT Acquisition":
                     _ctirradiationeventdata(cont, proj)
 
-    # Nach dem Erstellen aller Events den maximalen CTDI berechnen
+    # Nach dem Erstellen aller Events den maximalen CTDI berechnen 
     if reporttype == "ct":
         try:
             ctacc = proj.ctaccumulateddosedata_set.get()
