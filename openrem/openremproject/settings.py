@@ -155,9 +155,15 @@ if not on_rtd:
     LOG_ROOT = os.environ.get("LOG_ROOT", default=MEDIA_ROOT)
 else:
     LOG_ROOT = BASE_DIR
+
+# Ensure log directory exists
+if not os.path.exists(LOG_ROOT):
+    os.makedirs(LOG_ROOT, exist_ok=True)
+
 LOG_FILENAME = os.path.join(LOG_ROOT, "openrem.log")
 QR_FILENAME = os.path.join(LOG_ROOT, "openrem_qr.log")
 EXTRACTOR_FILENAME = os.path.join(LOG_ROOT, "openrem_extractor.log")
+
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
