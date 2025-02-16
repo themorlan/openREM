@@ -277,3 +277,46 @@ def send_import_success_email(study_pk, study_uid):
             
     except Exception as e:
         logger.error(f"Fehler beim Senden der Import-Erfolgs-Email: {e}")
+
+def send_ct_high_dose_alert_email(study_pk, max_ctdi, limit_ctdi):
+    """Sendet eine Alarm-Email wenn der CTDIvol über dem Limit liegt
+    
+    :param study_pk: Primary key der Studie
+    :param max_ctdi: Maximaler CTDIvol Wert
+    :param limit_ctdi: CTDI Limit für dieses Gerät
+    """
+    from django.core.mail import send_mail
+    from django.conf import settings
+    from remapp.models import GeneralStudyModuleAttr, HighDoseMetricAlertSettings
+
+    try:
+        study = GeneralStudyModuleAttr.objects.get(pk=study_pk)
+        alert_settings = HighDoseMetricAlertSettings.objects.get()
+        
+        if alert_settings.send_high_dose_metric_alert_emails_ct:
+            equipment = study.generalequipmentmoduleattr_set.get()
+            
+            subject = f'CT Hohe Dosis Warnung - {equipment.station_name}'
+            
+            message = f"""CT Untersuchung mit erhöhtem CTDIvol:
+
+Studien UID: {study.study_instance_uid}
+Patient ID: {study.patientmoduleattr_set.get().patient_id}
+Untersuchungsdatum: {study.study_date}
+Station: {equipment.station_name}
+
+Max CTDIvol: {max_ctdi:.1f} mGy
+CTDI Limit: {limit_ctdi:.1f} mGy
+
+Details unter: {settings.EMAIL_OPENREM_URL}/openrem/ct/{study_pk}/"""
+
+            send_mail(
+                subject,
+                message,
+                settings.EMAIL_DOSE_ALERT_SENDER,
+                [u.email for u in alert_settings.high_dose_alert_recipients.all()],
+                fail_silently=True
+            )
+            
+    except Exception as e:
+        logger.error(f"Fehler beim Versenden der CT Dosis-Alarm Email: {str(e)}")

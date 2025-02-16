@@ -1781,5 +1781,19 @@ def projectionxrayradiationdose(dataset, g, reporttype):
             ).aggregate(Max('mean_ctdivol'))['mean_ctdivol__max']
             ctacc.maximum_ctdivol = max_ctdi
             ctacc.save()
+
+            # Prüfe ob CTDI-Limit überschritten wurde und sende ggf. Email
+            try:
+                std_name = proj.general_study_module_attributes.generalequipmentmoduleattr_set.get().unique_equipment_name
+                if max_ctdi and std_name.ctdi_limit and max_ctdi > std_name.ctdi_limit:
+                    from remapp.tools.send_high_dose_alert_emails import send_ct_high_dose_alert_email
+                    send_ct_high_dose_alert_email(
+                        study_pk=proj.general_study_module_attributes.pk,
+                        max_ctdi=max_ctdi,
+                        limit_ctdi=std_name.ctdi_limit
+                    )
+            except (ObjectDoesNotExist, AttributeError) as e:
+                logger.warning(f"Konnte CTDI-Limit nicht prüfen: {str(e)}")
+
         except ObjectDoesNotExist:
             pass
