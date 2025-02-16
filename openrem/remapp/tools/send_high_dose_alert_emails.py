@@ -287,12 +287,13 @@ def send_ct_high_dose_alert_email(study_pk, max_ctdi, limit_ctdi):
         study = GeneralStudyModuleAttr.objects.get(pk=study_pk)
         alert_settings = HighDoseMetricAlertSettings.objects.get()
         
-        logger.info(f"Prüfe CT Email-Alarm für Studie {study_pk}")
-        logger.info(f"Email-Alarm aktiv: {alert_settings.send_high_dose_metric_alert_emails_ct}")
-        
         if alert_settings.send_high_dose_metric_alert_emails_ct:
             equipment = study.generalequipmentmoduleattr_set.get()
-            recipients = [u.email for u in alert_settings.high_dose_alert_recipients.all()]
+            
+            # Hole die Email-Empfänger
+            recipients = User.objects.filter(
+                highdosemetricalertrecipients__receive_high_dose_metric_alerts__exact=True
+            ).values_list("email", flat=True)
             
             if not recipients:
                 logger.warning("Keine Email-Empfänger konfiguriert")
@@ -301,6 +302,7 @@ def send_ct_high_dose_alert_email(study_pk, max_ctdi, limit_ctdi):
             logger.info(f"Sende CT Dosis-Alarm an {len(recipients)} Empfänger")
             
             subject = f'CT Hohe Dosis Warnung - {equipment.station_name}'
+            
             message = f"""CT Untersuchung mit erhöhtem CTDIvol:
 
 Studien UID: {study.study_instance_uid}
@@ -318,7 +320,7 @@ Details unter: {settings.EMAIL_OPENREM_URL}/openrem/ct/{study_pk}/"""
                 message,
                 settings.EMAIL_DOSE_ALERT_SENDER,
                 recipients,
-                fail_silently=False  # Fehler anzeigen für Debugging
+                fail_silently=False
             )
             logger.info(f"CT Dosis-Alarm Email erfolgreich gesendet")
             
