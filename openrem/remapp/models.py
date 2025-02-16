@@ -2798,6 +2798,9 @@ class CtAccumulatedDoseData(models.Model):  # TID 10012
     effective_dose_phantom_type = models.TextField(blank=True, null=True)
     dosimeter_type = models.TextField(blank=True, null=True)
     comment = models.TextField(blank=True, null=True)
+    maximum_ctdivol = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
 
     class Meta:
         indexes = [

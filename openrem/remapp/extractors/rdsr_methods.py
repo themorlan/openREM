@@ -34,7 +34,7 @@ from decimal import Decimal
 import logging
 
 from defusedxml.ElementTree import fromstring, ParseError
-from django.db.models import Avg, ObjectDoesNotExist
+from django.db.models import Avg, ObjectDoesNotExist, Max
 from django.core.exceptions import ValidationError
 
 from ..tools.dcmdatetime import make_date_time
@@ -824,7 +824,8 @@ def _irradiationeventxraydata(dataset, proj, fulldataset):  # TID 10003
             except AttributeError:
                 pass
         elif (
-            cont.ConceptNameCodeSequence[0].CodeMeaning == "Patient Table Relationship"
+            cont.ConceptNameCodeSequence[0].CodeMeaning
+            == "Patient Table Relationship"
         ):
             event.patient_table_relationship_cid = get_or_create_cid(
                 cont.ConceptCodeSequence[0].CodeValue,
@@ -877,7 +878,8 @@ def _irradiationeventxraydata(dataset, proj, fulldataset):  # TID 10003
                 cont.MeasuredValueSequence[0].NumericValue
             )
         elif (
-            cont.ConceptNameCodeSequence[0].CodeMeaning == "Reference Point Definition"
+            cont.ConceptNameCodeSequence[0].CodeMeaning
+            == "Reference Point Definition"
         ):
             try:
                 event.reference_point_definition = get_or_create_cid(
@@ -1558,6 +1560,11 @@ def _ctaccumulateddosedata(dataset, ct):  # TID 10012
             ctacc.comment = cont.TextValue
     _deviceparticipant(dataset, "ct_accumulated", ctacc)
 
+    # Berechne den maximalen CTDI-Wert aus allen Events
+    max_ctdi = ct.ctirradiationeventdata_set.all().aggregate(
+        Max('mean_ctdivol'))['mean_ctdivol__max']
+    ctacc.maximum_ctdivol = max_ctdi
+    
     ctacc.save()
 
 
