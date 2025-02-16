@@ -1781,8 +1781,12 @@ def projectionxrayradiationdose(dataset, g, reporttype):
     if reporttype == "ct":
         try:
             ctacc = proj.ctaccumulateddosedata_set.get()
-            max_ctdi = proj.ctirradiationeventdata_set.all().aggregate(
-                Max('mean_ctdivol'))['mean_ctdivol__max']
+            max_ctdi = proj.ctirradiationeventdata_set.filter(
+                ct_acquisition_type__code_meaning__in=[
+                    'Spiral Acquisition',
+                    'Sequenced Acquisition'
+                ]
+            ).aggregate(Max('mean_ctdivol'))['mean_ctdivol__max']
             ctacc.maximum_ctdivol = max_ctdi
             ctacc.save()
         except ObjectDoesNotExist:
