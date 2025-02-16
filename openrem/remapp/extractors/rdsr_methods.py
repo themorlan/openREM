@@ -72,6 +72,7 @@ from remapp.models import (  # pylint: disable=wrong-import-order, wrong-import-
     XrayFilters,
     XrayGrid,
     XrayTubeCurrent,
+    StandardNames,
 )
 
 logger = logging.getLogger("remapp.extractors.rdsr")
@@ -1824,3 +1825,19 @@ def projectionxrayradiationdose(dataset, g, reporttype):
 
         except ObjectDoesNotExist:
             pass
+
+    logger.info(f"""Study Details:
+        Study Description: {g.study_description}
+        Requested Procedure: {g.requested_procedure_code_meaning}
+        Procedure: {g.procedure_code_meaning}
+    """)
+    
+    logger.info("Verfügbare Standard Names für CT:")
+    for std in StandardNames.objects.filter(modality='CT'):
+        logger.info(f"""
+            Name: {std}
+            Study Description: {std.study_description}
+            Requested Procedure: {std.requested_procedure_code_meaning}
+            Procedure: {std.procedure_code_meaning}
+            CTDI Limit: {std.ctdi_limit}
+        """)
