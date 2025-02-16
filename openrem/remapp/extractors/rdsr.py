@@ -87,9 +87,7 @@ from remapp.models import (  # pylint: disable=wrong-import-order, wrong-import-
     SkinDoseMapCalcSettings,
 )
 
-logger = logging.getLogger(
-    "remapp.extractors.rdsr"
-)  # Explicitly named so that it is still handled when using __main__
+logger = logging.getLogger(__name__)
 
 
 def _rdsr_rrdsr_contents(dataset, g):
@@ -602,12 +600,10 @@ def _fix_toshiba_vhp(dataset):
 
 
 def rdsr(rdsr_file):
-    """Extract radiation dose related data from DICOM Radiation SR objects.
-
-    :param rdsr_file: relative or absolute path to Radiation Dose Structured Report.
-    :type rdsr_file: str.
     """
-
+    Prozessiert RDSR (Radiation Dose Structured Report) Dateien
+    """
+    logger.info(f"Starting RDSR import for file: {rdsr_file}")
     try:
         del_settings = DicomDeleteSettings.objects.get()
         del_rdsr = del_settings.del_rdsr
@@ -671,4 +667,5 @@ def rdsr(rdsr_file):
     if del_rdsr:
         os.remove(rdsr_file)
 
+    logger.info("RDSR import completed successfully")
     return 0

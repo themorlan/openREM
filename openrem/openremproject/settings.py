@@ -163,10 +163,9 @@ LOGGING = {
     "disable_existing_loggers": False,
     "formatters": {
         "verbose": {
-            "format": "[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s",
-            "datefmt": "%d/%b/%Y %H:%M:%S",
+            "format": "{levelname} {asctime} {module} {message}",
+            "style": "{",
         },
-        "simple": {"format": "%(levelname)s %(message)s"},
     },
     "filters": {"require_debug_false": {"()": "django.utils.log.RequireDebugFalse"}},
     "handlers": {
@@ -178,7 +177,7 @@ LOGGING = {
         "file": {
             "level": "DEBUG",
             "class": "logging.FileHandler",
-            "filename": "openrem.log",
+            "filename": "openrem_rdsr.log",
             "formatter": "verbose",
         },
         "qr_file": {
@@ -210,6 +209,11 @@ LOGGING = {
             "handlers": ["extractor_file"],
             "level": "INFO",
             "propagate": False,
+        },
+        "remapp.extractors.rdsr": {
+            "handlers": ["file"],
+            "level": "DEBUG",
+            "propagate": True,
         },
     },
 }
