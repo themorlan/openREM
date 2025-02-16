@@ -58,6 +58,10 @@
         <th scope="col">Total DLP </th>
         <td>{{ accum_dose.ct_dose_length_product_total|floatformat:2 }} mGy&middot;cm</td>
       </tr>
+      <tr>
+        <th scope="col">Maximum CTDI<sub>vol</sub></th>
+        <td>{{ accum_dose.maximum_ctdivol|floatformat:2 }} mGy</td>
+      </tr>
       {% if associated_nm is not None %} 
       <tr>
         <th scope="col">Associated NM study</th>
