@@ -33,6 +33,17 @@ import os
 import sys
 import django
 from django.db.models import Sum
+from django.core.mail import EmailMultiAlternatives, send_mail
+from django.conf import settings
+from remapp.models import GeneralStudyModuleAttr, HighDoseMetricAlertSettings, SkinDoseMapResults
+from datetime import timedelta
+from django.contrib.auth.models import User
+from django.core.exceptions import ObjectDoesNotExist
+from openremproject import settings
+from socket import error as socket_error
+from socket import gaierror as gai_error
+from smtplib import SMTPException
+from ssl import SSLError
 
 # setup django/OpenREM
 basepath = os.path.dirname(__file__)
@@ -47,22 +58,6 @@ def send_rf_high_dose_alert_email(study_pk=None, test_message=None, test_user=No
     """
     Function to send users a fluoroscopy high dose alert e-mail
     """
-    from remapp.models import (
-        GeneralStudyModuleAttr,
-        HighDoseMetricAlertSettings,
-        SkinDoseMapResults,
-    )
-    from datetime import timedelta
-    from django.contrib.auth.models import User
-    from django.core.mail import EmailMultiAlternatives
-    from django.template.loader import render_to_string
-    from django.core.exceptions import ObjectDoesNotExist
-    from openremproject import settings
-    from socket import error as socket_error
-    from socket import gaierror as gai_error
-    from smtplib import SMTPException
-    from ssl import SSLError
-
     # Send a test message to the e-mail address contained in test_user
     if test_message:
         if test_user:
@@ -236,3 +231,49 @@ def send_rf_high_dose_alert_email(study_pk=None, test_message=None, test_user=No
         )
         msg.attach_alternative(html_msg_content, "text/html")
         msg.send()
+
+def send_import_success_email(study_pk, study_uid):
+    """
+    Sendet eine E-Mail-Benachrichtigung nach erfolgreichem Import von Dosisdaten.
+    
+    :param study_pk: Primary Key des importierten Studies
+    :param study_uid: Study Instance UID des importierten Studies
+    """
+    try:
+        study = GeneralStudyModuleAttr.objects.get(pk=study_pk)
+        alert_settings = HighDoseMetricAlertSettings.objects.get()
+        
+        if not alert_settings.send_import_success_emails:
+            return
+            
+        subject = f'OpenREM: Dosisdaten erfolgreich importiert'
+        
+        message = f"""
+        Neue Dosisdaten wurden erfolgreich in OpenREM importiert:
+        
+        Study Instance UID: {study_uid}
+        Modalität: {study.modality_type}
+        Studien Datum: {study.study_date}
+        """
+        
+        if study.patientmoduleattr_set.exists():
+            patient = study.patientmoduleattr_set.get()
+            message += f"""
+            Patient ID: {patient.patient_id}
+            Name: {patient.patient_name}
+            """
+            
+        from_email = settings.EMAIL_FROM
+        recipient_list = alert_settings.alert_recipient_emails()
+        
+        if recipient_list:
+            send_mail(
+                subject,
+                message, 
+                from_email,
+                recipient_list,
+                fail_silently=True
+            )
+            
+    except Exception as e:
+        logger.error(f"Fehler beim Senden der Import-Erfolgs-Email: {e}")
