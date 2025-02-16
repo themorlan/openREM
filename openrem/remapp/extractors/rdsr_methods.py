@@ -1776,3 +1776,14 @@ def projectionxrayradiationdose(dataset, g, reporttype):
                     _ctaccumulateddosedata(cont, proj)
                 if cont.ConceptNameCodeSequence[0].CodeMeaning == "CT Acquisition":
                     _ctirradiationeventdata(cont, proj)
+
+    # Nach dem Erstellen aller Events den maximalen CTDI berechnen
+    if reporttype == "ct":
+        try:
+            ctacc = proj.ctaccumulateddosedata_set.get()
+            max_ctdi = proj.ctirradiationeventdata_set.all().aggregate(
+                Max('mean_ctdivol'))['mean_ctdivol__max']
+            ctacc.maximum_ctdivol = max_ctdi
+            ctacc.save()
+        except ObjectDoesNotExist:
+            pass
