@@ -190,7 +190,7 @@
             <th>Standard study names</th>
         {% endif %}
             <th scope="col">Number of events</th>
-            <th scope="col">Max CTDI (mGy)</th>
+            <th scope="col">Max CTDI (mGy) nDRL</th>
             <th scope="col">Total DLP (mGy.cm)</th>
             {% if admin.admingroup %}
                 <th>Delete?</th>
@@ -250,10 +250,21 @@
                     <a href="{% url 'ct_detail_view' pk=exam.id %}">
                         {% with ctacc=exam.ctradiationdose_set.first.ctaccumulateddosedata_set.first %}
                             {% if ctacc.maximum_ctdivol %}
-                                {{ ctacc.maximum_ctdivol|floatformat:2 }}
                                 {% with std_name=exam.standard_names.first %}
                                     {% if std_name.ctdi_limit %}
-                                        ({{ std_name.ctdi_limit|floatformat:2 }})
+                                        {% with percentage=ctacc.maximum_ctdivol|div:std_name.ctdi_limit|mul:100 %}
+                                            <span style="display: block; padding: 5px;
+                                                {% if percentage >= 300 %}
+                                                    background-color: #ffcccc;
+                                                {% elif percentage >= 200 %}
+                                                    background-color: #ffffcc;
+                                                {% endif %}">
+                                                {{ ctacc.maximum_ctdivol|floatformat:2 }}
+                                                ({{ std_name.ctdi_limit|floatformat:2 }})
+                                            </span>
+                                        {% endwith %}
+                                    {% else %}
+                                        {{ ctacc.maximum_ctdivol|floatformat:2 }}
                                     {% endif %}
                                 {% endwith %}
                             {% endif %}
