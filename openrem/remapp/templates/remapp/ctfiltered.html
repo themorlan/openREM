@@ -252,25 +252,23 @@
                             {% if ctacc.maximum_ctdivol %}
                                 {% with std_name=exam.standard_names.first %}
                                     {% if std_name.ctdi_limit %}
-                                        {% with percentage=ctacc.maximum_ctdivol|div:std_name.ctdi_limit|mul:100 %}
-                                            <span style="display: block; padding: 5px;
-                                                {% if percentage >= 300 %}
-                                                    background-color: #ffcccc;
-                                                {% elif percentage >= 200 %}
-                                                    background-color: #ffffcc;
-                                                {% endif %}">
+                                        <span style="display: block; padding: 5px;
+                                            {% if ctacc.maximum_ctdivol >= std_name.ctdi_limit|multiply:3 %}
+                                                background-color: #ffcccc;
+                                            {% elif ctacc.maximum_ctdivol >= std_name.ctdi_limit|multiply:2 %}
+                                                background-color: #ffffcc;
+                                            {% endif %}">
                                                 {{ ctacc.maximum_ctdivol|floatformat:2 }}
                                                 ({{ std_name.ctdi_limit|floatformat:2 }})
                                             </span>
-                                        {% endwith %}
-                                    {% else %}
-                                        {{ ctacc.maximum_ctdivol|floatformat:2 }}
-                                    {% endif %}
-                                {% endwith %}
-                            {% endif %}
-                        {% endwith %}
-                    </a>
-                </td>
+                                        {% else %}
+                                            {{ ctacc.maximum_ctdivol|floatformat:2 }}
+                                        {% endif %}
+                                    {% endwith %}
+                                {% endif %}
+                            {% endwith %}
+                        </a>
+                    </td>
                 <td>
                     <a href="{% url 'ct_detail_view' pk=exam.id %}">
                         {{ exam.total_dlp|floatformat:2 }}
