@@ -190,6 +190,7 @@
             <th>Standard study names</th>
         {% endif %}
             <th scope="col">Number of events</th>
+            <th scope="col">Max CTDI (mGy)</th>
             <th scope="col">Total DLP (mGy.cm)</th>
             {% if admin.admingroup %}
                 <th>Delete?</th>
@@ -243,6 +244,20 @@
                 <td>
                     <a href="{% url 'ct_detail_view' pk=exam.id %}">
                         {{ exam.number_of_events }}
+                    </a>
+                </td>
+                <td>
+                    <a href="{% url 'ct_detail_view' pk=exam.id %}">
+                        {% with ctacc=exam.ctradiationdose_set.first.ctaccumulateddosedata_set.first %}
+                            {% if ctacc.maximum_ctdivol %}
+                                {{ ctacc.maximum_ctdivol|floatformat:2 }}
+                                {% with std_name=exam.standard_names.first %}
+                                    {% if std_name.ctdi_limit %}
+                                        ({{ std_name.ctdi_limit|floatformat:2 }})
+                                    {% endif %}
+                                {% endwith %}
+                            {% endif %}
+                        {% endwith %}
                     </a>
                 </td>
                 <td>
