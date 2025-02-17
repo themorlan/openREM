@@ -1,0 +1,8 @@
+So what we need is as follows:
+- checking the CTDIvol values of each series against the national german DRL
+- generating alerts for the following conditions:
+a) CTDIvol of a single series exceeds 80 mGy for body series (Abdomen, Pelvis, Cardio, CAP, Chest, and so on).
+b) CTIDvol of a single series exceeds 120 mGy for a head series (CCT, CCTA, facial bone and so on)
+For a) and b) ere we could use the DICOM tag body part
+c) if CTDIvol of one series is greater than 300% of the reference DRL, then calculate the average of the last 20 exams with the same series/study description on the same scanner. 
+ If this is greater than 200% of the reference DRL, then generate an alert and send an email.
