@@ -255,23 +255,24 @@
                             {% if ctacc.maximum_ctdivol %}
                                 {% with std_name=exam.standard_names.first %}
                                     {% if std_name.ctdi_limit %}
-                                        <span style="display: block; padding: 5px;
+                                        <div style="display: block; padding: 5px; text-align: center;
                                             {% if ctacc.maximum_ctdivol >= std_name.ctdi_limit|multiply:3 %}
                                                 background-color: #ffcccc;
                                             {% elif ctacc.maximum_ctdivol >= std_name.ctdi_limit|multiply:2 %}
                                                 background-color: #ffffcc;
                                             {% endif %}">
-                                                {{ ctacc.maximum_ctdivol|floatformat:2 }}<br>
-                                                {{ std_name.ctdi_limit|floatformat:2 }}
-                                            </span>
-                                        {% else %}
-                                            {{ ctacc.maximum_ctdivol|floatformat:2 }}
-                                        {% endif %}
-                                    {% endwith %}
-                                {% endif %}
-                            {% endwith %}
-                        </a>
-                    </td>
+                                            <strong>{{ ctacc.maximum_ctdivol|floatformat:2 }}</strong>
+                                            <hr style="margin: 3px;">
+                                            <small>{{ std_name.ctdi_limit|floatformat:2 }}</small>
+                                        </div>
+                                    {% else %}
+                                        {{ ctacc.maximum_ctdivol|floatformat:2 }}
+                                    {% endif %}
+                                {% endwith %}
+                            {% endif %}
+                        {% endwith %}
+                    </a>
+                </td>
                 <td>
                     <a href="{% url 'ct_detail_view' pk=exam.id %}">
                         {{ exam.total_dlp|floatformat:2 }}
