@@ -261,8 +261,8 @@
                                             {% elif ctacc.maximum_ctdivol >= std_name.ctdi_limit|multiply:2 %}
                                                 background-color: #ffffcc;
                                             {% endif %}">
-                                                {{ ctacc.maximum_ctdivol|floatformat:2 }}
-                                                ({{ std_name.ctdi_limit|floatformat:2 }})
+                                                {{ ctacc.maximum_ctdivol|floatformat:2 }}<br>
+                                                {{ std_name.ctdi_limit|floatformat:2 }}
                                             </span>
                                         {% else %}
                                             {{ ctacc.maximum_ctdivol|floatformat:2 }}
