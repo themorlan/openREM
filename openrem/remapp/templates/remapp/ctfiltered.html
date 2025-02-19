@@ -190,9 +190,14 @@
             <th>Standard study names</th>
         {% endif %}
             <th scope="col">Number of events</th>
-            <th scope="col">Max CTDI<sub>vol</sub> (mGy)<br>nDRL
-                <div style="background-color: #ffffcc; padding: 2px;">200%</div>
-                <div style="background-color: #ffcccc; padding: 2px;">300%</div>
+            <th scope="col">
+                <div style="text-align: center; padding: 2px;">
+                    <strong>Max CTDI<sub>vol</sub> (mGy)</strong>
+                    <hr style="margin: 3px;">
+                    <small>Ref CTDI<sub>vol</sub></small>
+                    <div style="background-color: #ffffcc; margin-top: 3px; padding: 2px;">200%</div>
+                    <div style="background-color: #ffcccc; padding: 2px;">300%</div>
+                </div>
             </th>
             <th scope="col">Total DLP (mGy.cm)</th>
             {% if admin.admingroup %}
