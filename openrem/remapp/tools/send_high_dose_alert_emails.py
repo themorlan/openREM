@@ -45,6 +45,7 @@ from socket import gaierror as gai_error
 from smtplib import SMTPException
 from ssl import SSLError
 import logging
+from django.template.loader import render_to_string
 
 # setup django/OpenREM
 basepath = os.path.dirname(__file__)
@@ -59,6 +60,8 @@ def send_rf_high_dose_alert_email(study_pk=None, test_message=None, test_user=No
     """
     Function to send users a fluoroscopy high dose alert e-mail
     """
+    logger = logging.getLogger(__name__)
+    
     # Send a test message to the e-mail address contained in test_user
     if test_message:
         if test_user:
@@ -67,26 +70,19 @@ def send_rf_high_dose_alert_email(study_pk=None, test_message=None, test_user=No
                 html_msg_content = render_to_string("remapp/email_test_template.html")
                 recipients = [test_user]
                 msg_subject = "OpenREM e-mail test message"
+                
                 msg = EmailMultiAlternatives(
                     msg_subject,
-                    text_msg_content,
+                    text_msg_content, 
                     settings.EMAIL_DOSE_ALERT_SENDER,
-                    recipients,
+                    recipients
                 )
                 msg.attach_alternative(html_msg_content, "text/html")
                 msg.send()
-            except (
-                SSLError,
-                SMTPException,
-                ValueError,
-                gai_error,
-                socket_error,
-            ) as the_error:
-                # SSLError raised if SSL unsupported by mail server but configured in local_settings.py
-                # SMTPException raised if TLS unsupported by mail server but configured in local_settings.py
-                # ValueError raised if the user has set both TLS and SSL security options
-                # gai_error raised if the user has misconfigured the mail server hostname
-                # socket_error catches various things including connection errors
+                logger.info(f"Test-Email erfolgreich gesendet an {test_user}")
+                
+            except (SSLError, SMTPException, ValueError, gai_error, socket_error) as the_error:
+                logger.error(f"Fehler beim Senden der Test-Email: {str(the_error)}")
                 return the_error
         return
 
