@@ -189,6 +189,7 @@
             <th>Standard study names</th>
         {% endif %}
             <th scope="col">Number of events</th>
+            <th scope="col">Total DLP (mGy.cm)</th>
             <th scope="col">
                 <div style="text-align: center; padding: 2px;">
                     <strong>Max CTDI<sub>vol</sub> (mGy)</strong>
@@ -198,7 +199,6 @@
                     <div style="background-color: #ffcccc; padding: 2px;">300%</div>
                 </div>
             </th>
-            <th scope="col">Total DLP (mGy.cm)</th>
             {% if admin.admingroup %}
                 <th>Delete?</th>
             {% endif %}
@@ -250,6 +250,11 @@
                 </td>
                 <td>
                     <a href="{% url 'ct_detail_view' pk=exam.id %}">
+                        {{ exam.total_dlp|floatformat:2 }}
+                    </a>
+                </td>
+                <td>
+                    <a href="{% url 'ct_detail_view' pk=exam.id %}">
                         {% with ctacc=exam.ctradiationdose_set.first.ctaccumulateddosedata_set.first %}
                             {% if ctacc.maximum_ctdivol %}
                                 {% with std_name=exam.standard_names.first %}
@@ -270,11 +275,6 @@
                                 {% endwith %}
                             {% endif %}
                         {% endwith %}
-                    </a>
-                </td>
-                <td>
-                    <a href="{% url 'ct_detail_view' pk=exam.id %}">
-                        {{ exam.total_dlp|floatformat:2 }}
                     </a>
                 </td>
                 {% if admin.admingroup %}
