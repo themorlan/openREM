@@ -452,5 +452,6 @@ urlpatterns = [
     path("tasks/", include(tasks_patterns)),
     path("import/", include(import_patterns)),
     path("names/", include(standard_name_patterns)),
+    path('save-ct-comment/', views.save_ct_comment, name='save_ct_comment'),
     url(r"^jsi18n/$", django_views.i18n.JavaScriptCatalog.as_view(), name="jsi18n"),
 ]

@@ -199,6 +199,7 @@
                     <div style="background-color: #ffcccc; padding: 2px;">300%</div>
                 </div>
             </th>
+            <th scope="col">Kommentar</th>
             {% if admin.admingroup %}
                 <th>Delete?</th>
             {% endif %}
@@ -277,6 +278,17 @@
                         {% endwith %}
                     </a>
                 </td>
+                <td>
+                    <a href="#" onclick="openCommentDialog({{ exam.id }})" class="comment-link">
+                        <span id="comment-{{ exam.id }}">
+                            {% if exam.comment %}
+                                {{ exam.comment|truncatechars:20 }}
+                            {% else %}
+                                <i class="fa fa-plus"></i> Kommentar
+                            {% endif %}
+                        </span>
+                    </a>
+                </td>
                 {% if admin.admingroup %}
                     <td>
                         <a href="{% url 'study_delete' exam.id %}">Delete</a>
@@ -291,6 +303,63 @@
 {% endblock %}
 
 {% block jsblock %}
+    <div id="commentDialog" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Kommentar bearbeiten</h4>
+                </div>
+                <div class="modal-body">
+                    <textarea id="commentText" class="form-control" rows="4"></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Abbrechen</button>
+                    <button type="button" class="btn btn-primary" onclick="saveComment()">Speichern</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var currentExamId;
+
+        function openCommentDialog(examId) {
+            currentExamId = examId;
+            var currentComment = $('#comment-' + examId).text().trim();
+            if (currentComment === 'Kommentar') {
+                currentComment = '';
+            }
+            $('#commentText').val(currentComment);
+            $('#commentDialog').modal('show');
+            return false;
+        }
+
+        function saveComment() {
+            var comment = $('#commentText').val();
+            $.ajax({
+                url: '{% url "save_ct_comment" %}',
+                type: 'POST',
+                data: {
+                    exam_id: currentExamId,
+                    comment: comment,
+                    csrfmiddlewaretoken: '{{ csrf_token }}'
+                },
+                success: function(response) {
+                    if (response.success) {
+                        var displayText = comment ? comment : '<i class="fa fa-plus"></i> Kommentar';
+                        $('#comment-' + currentExamId).html(displayText);
+                        $('#commentDialog').modal('hide');
+                    } else {
+                        alert('Fehler beim Speichern des Kommentars');
+                    }
+                },
+                error: function() {
+                    alert('Fehler beim Speichern des Kommentars');
+                }
+            });
+        }
+    </script>
 {% endblock %}
 
 {% block plotdata %}

@@ -1166,6 +1166,8 @@ class GeneralStudyModuleAttr(models.Model):  # C.7.2.1
 
     objects = GeneralStudyModuleAttrManager()
 
+    comment = models.TextField(null=True, blank=True)
+
 
 class SkinDoseMapResults(models.Model):
     """Table to hold the results from OpenSkin"""

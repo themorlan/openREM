@@ -61,6 +61,7 @@ from django.utils.translation import gettext as _
 from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
 import numpy as np
+from django.views.decorators.http import require_POST
 
 from .forms import itemsPerPageForm
 from .interface.mod_filters import (
@@ -1145,3 +1146,16 @@ def update_latest_studies(request):
                 "admin": admin,
             },
         )
+
+
+@require_POST
+def save_ct_comment(request):
+    try:
+        exam_id = request.POST.get('exam_id')
+        comment = request.POST.get('comment')
+        exam = GeneralStudyModuleAttr.objects.get(id=exam_id)
+        exam.comment = comment
+        exam.save()
+        return JsonResponse({'success': True})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})
