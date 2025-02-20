@@ -371,6 +371,11 @@
             }
             $('#commentText').val(currentComment);
             $('#commentDialog').modal('show');
+            
+            $('#commentDialog').on('shown.bs.modal', function() {
+                $('#commentText').focus();
+            });
+            
             return false;
         }
 
