@@ -284,7 +284,7 @@
                             {% if exam.comment %}
                                 {{ exam.comment|truncatechars:20 }}
                             {% else %}
-                                <i class="fa fa-plus"></i> Kommentar
+                                -
                             {% endif %}
                         </span>
                     </a>
@@ -347,7 +347,7 @@
                 },
                 success: function(response) {
                     if (response.success) {
-                        var displayText = comment ? comment : '<i class="fa fa-plus"></i> Kommentar';
+                        var displayText = comment ? comment : '-';
                         $('#comment-' + currentExamId).html(displayText);
                         $('#commentDialog').modal('hide');
                     } else {
