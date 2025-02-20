@@ -169,12 +169,11 @@
 
     <table class="table table-bordered table-hover row-clickable small" aria-describedby="Study summary table">
         <tr>
-            <th>Institution</th>
             <th>
-                <table aria-describedby="Make, model and display name">
+                <table aria-describedby="Institution, make and model">
+                    <tr><th scope="col">Institution</th></tr>
                     <tr><th scope="col">Make</th></tr>
                     <tr><th scope="col">Model</th></tr>
-                    <tr><th scope="col" class="nowrap">Display name</th></tr>
                 </table>
             </th>
             <th>Date</th>
@@ -209,15 +208,10 @@
             <tr>
                 <td>
                     <a href="{% url 'ct_detail_view' pk=exam.id %}">
-                        {{ equipment.institution_name }}
-                    </a>
-                </td>
-                <td>
-                    <a href="{% url 'ct_detail_view' pk=exam.id %}">
-                        <table onclick="window.location='{% url 'ct_detail_view' pk=exam.id %}';" aria-describedby="Manufacturer, model and display name">
+                        <table onclick="window.location='{% url 'ct_detail_view' pk=exam.id %}';" aria-describedby="Institution, manufacturer and model">
+                            <tr><td class="nowrap">{{ equipment.institution_name }}</td></tr>
                             <tr><td class="nowrap">{{ equipment.manufacturer }}</td></tr>
                             <tr><td class="nowrap">{{ equipment.manufacturer_model_name }}</td></tr>
-                            <tr><td class="nowrap">{{ equipment.unique_equipment_name.display_name }}</td></tr>
                         </table>
                     </a>
                 </td>
