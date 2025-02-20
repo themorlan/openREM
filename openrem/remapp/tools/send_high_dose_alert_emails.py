@@ -66,8 +66,24 @@ def send_rf_high_dose_alert_email(study_pk=None, test_message=None, test_user=No
     if test_message:
         if test_user:
             try:
-                text_msg_content = render_to_string("remapp/email_test_template.txt")
-                html_msg_content = render_to_string("remapp/email_test_template.html")
+                # Versuche Templates zu laden mit expliziter Fehlerbehandlung
+                try:
+                    text_msg_content = render_to_string("remapp/email_test_template.txt")
+                except Exception as e:
+                    logger.error(f"Fehler beim Laden des Text-Templates: {str(e)}")
+                    return f"Fehler beim Laden des Text-Templates: {str(e)}"
+
+                try:
+                    html_msg_content = render_to_string("remapp/email_test_template.html")
+                except Exception as e:
+                    logger.error(f"Fehler beim Laden des HTML-Templates: {str(e)}")
+                    return f"Fehler beim Laden des HTML-Templates: {str(e)}"
+
+                if not settings.EMAIL_DOSE_ALERT_SENDER:
+                    msg = "EMAIL_DOSE_ALERT_SENDER nicht konfiguriert"
+                    logger.error(msg)
+                    return msg
+
                 recipients = [test_user]
                 msg_subject = "OpenREM e-mail test message"
                 
@@ -82,8 +98,13 @@ def send_rf_high_dose_alert_email(study_pk=None, test_message=None, test_user=No
                 logger.info(f"Test-Email erfolgreich gesendet an {test_user}")
                 
             except (SSLError, SMTPException, ValueError, gai_error, socket_error) as the_error:
-                logger.error(f"Fehler beim Senden der Test-Email: {str(the_error)}")
-                return the_error
+                error_msg = f"Email-Versand fehlgeschlagen: {str(the_error)}"
+                logger.error(error_msg)
+                return error_msg
+            except Exception as e:
+                error_msg = f"Unerwarteter Fehler: {str(e)}"
+                logger.error(error_msg)
+                return error_msg
         return
 
     if study_pk:
