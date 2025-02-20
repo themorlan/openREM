@@ -279,12 +279,36 @@
                     </a>
                 </td>
                 <td>
-                    <a href="#" onclick="openCommentDialog({{ exam.id }})" class="comment-link">
+                    {% with ctacc=exam.ctradiationdose_set.first.ctaccumulateddosedata_set.first %}
+                        {% if ctacc.maximum_ctdivol %}
+                            {% with std_name=exam.standard_names.first %}
+                                {% if std_name.ctdi_limit and ctacc.maximum_ctdivol >= std_name.ctdi_limit|multiply:2 %}
+                                    <a href="#" onclick="openCommentDialog({{ exam.id }}, true)" class="comment-link">
+                                {% else %}
+                                    <a href="#" onclick="openCommentDialog({{ exam.id }}, false)" class="comment-link">
+                                {% endif %}
+                            {% endwith %}
+                        {% else %}
+                            <a href="#" onclick="openCommentDialog({{ exam.id }}, false)" class="comment-link">
+                        {% endif %}
+                    {% endwith %}
                         <span id="comment-{{ exam.id }}">
                             {% if exam.comment %}
                                 {{ exam.comment|truncatechars:20 }}
                             {% else %}
-                                -
+                                {% with ctacc=exam.ctradiationdose_set.first.ctaccumulateddosedata_set.first %}
+                                    {% if ctacc.maximum_ctdivol %}
+                                        {% with std_name=exam.standard_names.first %}
+                                            {% if std_name.ctdi_limit and ctacc.maximum_ctdivol >= std_name.ctdi_limit|multiply:2 %}
+                                                Kommentar einfügen!
+                                            {% else %}
+                                                -
+                                            {% endif %}
+                                        {% endwith %}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                {% endwith %}
                             {% endif %}
                         </span>
                     </a>
@@ -323,11 +347,13 @@
 
     <script>
         var currentExamId;
+        var isOverLimit;
 
-        function openCommentDialog(examId) {
+        function openCommentDialog(examId, overLimit) {
             currentExamId = examId;
+            isOverLimit = overLimit;
             var currentComment = $('#comment-' + examId).text().trim();
-            if (currentComment === 'Kommentar') {
+            if (currentComment === 'Kommentar einfügen!' || currentComment === '-') {
                 currentComment = '';
             }
             $('#commentText').val(currentComment);
@@ -347,7 +373,7 @@
                 },
                 success: function(response) {
                     if (response.success) {
-                        var displayText = comment ? comment : '-';
+                        var displayText = comment ? comment : (isOverLimit ? 'Kommentar einfügen!' : '-');
                         $('#comment-' + currentExamId).html(displayText);
                         $('#commentDialog').modal('hide');
                     } else {
