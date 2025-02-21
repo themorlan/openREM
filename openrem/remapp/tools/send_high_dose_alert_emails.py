@@ -333,7 +333,7 @@ def send_ct_high_dose_alert_email(study_pk, max_ctdi, limit_ctdi):
                         message = f"""CT Untersuchung mit erhöhter Dosis:
 
 Studien UID: {study.study_instance_uid}
-Untersuchungsdatum: {study.study_date}
+Untersuchungsdatum: {study.study_date} {study.study_time}
 Station: {equipment.station_name}
 
 Standard Name: {study.standard_names.filter(modality='CT').first().standard_name if study.standard_names.filter(modality='CT').exists() else 'Nicht zugeordnet'}
@@ -401,7 +401,7 @@ def send_high_dose_alert_emails(study):
                     message = f"""CT Untersuchung mit erhöhter Dosis:
 
 Studien UID: {study.study_instance_uid}
-Untersuchungsdatum: {study.study_date}
+Untersuchungsdatum: {study.study_date} {study.study_time}
 
 DLP: {total_dlp:.1f} mGy·cm (Schwellenwert: {adjusted_dlp_threshold:.1f} mGy·cm)
 CTDIvol max: {max_ctdi:.1f} mGy (Schwellenwert: {adjusted_ctdi_threshold:.1f} mGy)
