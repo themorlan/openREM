@@ -308,7 +308,7 @@ def send_ct_high_dose_alert_email(study_pk, max_ctdi, limit_ctdi):
             equipment = study.generalequipmentmoduleattr_set.get()
             
             # Hole die Basis-Schwellenwerte
-            base_dlp_threshold = settings.ALERT_DLP_THRESHOLD
+           # base_dlp_threshold = settings.ALERT_DLP_THRESHOLD
             base_ctdi_threshold = settings.ALERT_CTDI_THRESHOLD
             
             # Hole die Studien-Details
