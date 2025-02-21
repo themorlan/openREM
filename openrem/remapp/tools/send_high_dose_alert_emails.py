@@ -307,23 +307,18 @@ def send_ct_high_dose_alert_email(study_pk, max_ctdi, limit_ctdi):
         if alert_settings.send_high_dose_metric_alert_emails_ct:
             equipment = study.generalequipmentmoduleattr_set.get()
             
-            # Hole die Basis-Schwellenwerte
-           # base_dlp_threshold = settings.ALERT_DLP_THRESHOLD
+            # Hole den Basis-Schwellenwert
             base_ctdi_threshold = settings.ALERT_CTDI_THRESHOLD
-            
-            # Hole die Studien-Details
-            total_dlp = study.total_dlp
             
             # Hole alle User Profile mit aktivierten Warnungen
             for user_profile in UserProfile.objects.filter(receive_high_dose_alert_emails=True):
                 try:
-                    # Individuelle Schwellenwerte berechnen
+                    # Individuellen Schwellenwert berechnen
                     multiplier = user_profile.ct_dose_alert_multiplier
-                    adjusted_dlp_threshold = base_dlp_threshold * multiplier 
                     adjusted_ctdi_threshold = base_ctdi_threshold * multiplier
 
-                    # Prüfe ob Schwellenwerte überschritten wurden
-                    if total_dlp > adjusted_dlp_threshold or max_ctdi > adjusted_ctdi_threshold:
+                    # Prüfe ob Schwellenwert überschritten wurde
+                    if max_ctdi > adjusted_ctdi_threshold:
                         subject = f'CT Hohe Dosis Warnung - {equipment.station_name}'
                         
                         message = f"""CT Untersuchung mit erhöhter Dosis:
@@ -332,7 +327,6 @@ Studien UID: {study.study_instance_uid}
 Untersuchungsdatum: {study.study_date}
 Station: {equipment.station_name}
 
-DLP: {total_dlp:.1f} mGy·cm (Schwellenwert: {adjusted_dlp_threshold:.1f} mGy·cm)
 CTDIvol max: {max_ctdi:.1f} mGy (Schwellenwert: {adjusted_ctdi_threshold:.1f} mGy)
 
 Dies ist eine automatische Benachrichtigung basierend auf Ihren persönlichen Schwellenwerten 
