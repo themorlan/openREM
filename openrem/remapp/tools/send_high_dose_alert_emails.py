@@ -304,18 +304,27 @@ def send_ct_high_dose_alert_email(study_pk, max_ctdi, limit_ctdi):
         study = GeneralStudyModuleAttr.objects.get(pk=study_pk)
         alert_settings = HighDoseMetricAlertSettings.objects.get()
         
+        logger.info(f"Prüfe CT Dosis-Alarm: max_ctdi={max_ctdi}, limit_ctdi={limit_ctdi}")
+        
         if alert_settings.send_high_dose_metric_alert_emails_ct:
             equipment = study.generalequipmentmoduleattr_set.get()
             
             # Hole alle User Profile mit aktivierten Warnungen
-            for user_profile in UserProfile.objects.filter(receive_high_dose_alert_emails=True):
+            user_profiles = UserProfile.objects.filter(receive_high_dose_alert_emails=True)
+            logger.info(f"Gefundene User Profile mit aktivierten Warnungen: {user_profiles.count()}")
+            
+            for user_profile in user_profiles:
                 try:
                     # Individuellen Schwellenwert berechnen
                     multiplier = user_profile.ct_dose_alert_multiplier
                     adjusted_ctdi_threshold = limit_ctdi * multiplier
 
+                    logger.info(f"User {user_profile.user.email}: multiplier={multiplier}, "
+                              f"adjusted_threshold={adjusted_ctdi_threshold}, max_ctdi={max_ctdi}")
+
                     # Prüfe ob Schwellenwert überschritten wurde
                     if max_ctdi > adjusted_ctdi_threshold:
+                        logger.info(f"Schwellenwert überschritten für {user_profile.user.email}")
                         subject = f'CT Hohe Dosis Warnung - {equipment.station_name}'
                         
                         message = f"""CT Untersuchung mit erhöhter Dosis:
@@ -337,20 +346,24 @@ Dies ist eine automatische Benachrichtigung basierend auf Ihren persönlichen Sc
                         # Link zu den Details
                         message += f"\n\nDetails unter: {settings.EMAIL_OPENREM_URL}/openrem/ct/{study_pk}/"
 
-                        # Email senden
-                        send_mail(
-                            subject,
-                            message,
-                            settings.EMAIL_DOSE_ALERT_SENDER,
-                            [user_profile.user.email],
-                            fail_silently=False
-                        )
-                        
-                        logger.info(f"CT Dosis-Alarm Email gesendet an {user_profile.user.email}")
-                        
+                        try:
+                            # Email senden
+                            send_mail(
+                                subject,
+                                message,
+                                settings.EMAIL_DOSE_ALERT_SENDER,
+                                [user_profile.user.email],
+                                fail_silently=False
+                            )
+                            logger.info(f"CT Dosis-Alarm Email erfolgreich gesendet an {user_profile.user.email}")
+                        except Exception as mail_error:
+                            logger.error(f"Fehler beim Email-Versand an {user_profile.user.email}: {str(mail_error)}")
+                            
                 except Exception as e:
                     logger.error(f"Fehler beim Verarbeiten des User Profiles {user_profile.user.email}: {str(e)}")
                     continue
+        else:
+            logger.info("CT Dosis-Alarm Emails sind deaktiviert in den Einstellungen")
                     
     except Exception as e:
         logger.error(f"Fehler beim Versenden der CT Dosis-Alarm Email: {str(e)}", exc_info=True)
