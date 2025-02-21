@@ -2463,27 +2463,40 @@ def rf_alert_notifications_view(request):
                     request, "Test e-mail failed: {0}".format(email_response)
                 )
 
+        # Verarbeite die Formulardaten für jeden Benutzer
         all_users = User.objects.all()
         for user in all_users:
-            if str(user.pk) in list(request.POST.values()):
-                if not hasattr(user, "highdosemetricalertrecipients"):
-                    new_objects = HighDoseMetricAlertRecipients.objects.create(
-                        user=user
-                    )
-                    new_objects.save()
-                user.highdosemetricalertrecipients.receive_high_dose_metric_alerts = (
-                    True
-                )
-            else:
-                if not hasattr(user, "highdosemetricalertrecipients"):
-                    new_objects = HighDoseMetricAlertRecipients.objects.create(
-                        user=user
-                    )
-                    new_objects.save()
-                user.highdosemetricalertrecipients.receive_high_dose_metric_alerts = (
-                    False
-                )
-            user.save()
+            try:
+                # Hole oder erstelle UserProfile
+                profile, created = UserProfile.objects.get_or_create(user=user)
+                
+                # Update Alert-Einstellung
+                alert_key = f"{user.pk}_alert"
+                if alert_key in request.POST:
+                    if not hasattr(user, "highdosemetricalertrecipients"):
+                        new_objects = HighDoseMetricAlertRecipients.objects.create(user=user)
+                        new_objects.save()
+                    user.highdosemetricalertrecipients.receive_high_dose_metric_alerts = True
+                else:
+                    if not hasattr(user, "highdosemetricalertrecipients"):
+                        new_objects = HighDoseMetricAlertRecipients.objects.create(user=user)
+                        new_objects.save()
+                    user.highdosemetricalertrecipients.receive_high_dose_metric_alerts = False
+                user.highdosemetricalertrecipients.save()
+
+                # Update Multiplikator
+                multiplier_key = f"{user.pk}_multiplier"
+                if multiplier_key in request.POST:
+                    try:
+                        multiplier = float(request.POST[multiplier_key])
+                        if multiplier >= 0.1:
+                            profile.ct_dose_alert_multiplier = multiplier
+                            profile.save()
+                    except ValueError:
+                        messages.error(request, f"Ungültiger Multiplikator-Wert für {user.username}")
+
+            except Exception as e:
+                messages.error(request, f"Fehler beim Aktualisieren der Einstellungen für {user.username}: {str(e)}")
 
     f = User.objects.order_by("username")
 
