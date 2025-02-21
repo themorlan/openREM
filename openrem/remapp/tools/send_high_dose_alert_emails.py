@@ -336,7 +336,7 @@ Studien UID: {study.study_instance_uid}
 Untersuchungsdatum: {study.study_date}
 Station: {equipment.station_name}
 
-Standard Name: {study.general_study_module_attributes.standard_names.filter(modality='CT').first().standard_name if study.general_study_module_attributes.standard_names.filter(modality='CT').exists() else 'Nicht zugeordnet'}
+Standard Name: {study.standard_names.filter(modality='CT').first().standard_name if study.standard_names.filter(modality='CT').exists() else 'Nicht zugeordnet'}
 CTDIvol max: {max_ctdi:.1f} mGy
 Schwellenwert: {limit_ctdi:.1f} mGy * {multiplier:.1f} = {adjusted_ctdi_threshold:.1f} mGy (Ref CTDI*Multiplikator)
 
