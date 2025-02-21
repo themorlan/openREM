@@ -2458,10 +2458,10 @@ def rf_alert_notifications_view(request):
                 study_pk=None, test_message=True, test_user=recipient
             )
             if email_response is None:
-                messages.success(request, "Test e-mail sent to {0}".format(recipient))
+                messages.success(request, "Test-Email wurde an {0} gesendet".format(recipient))
             else:
                 messages.error(
-                    request, "Test e-mail failed: {0}".format(email_response)
+                    request, "Test-Email konnte nicht gesendet werden: {0}".format(email_response)
                 )
             return redirect('rf_alert_notifications_view')
 
@@ -2476,7 +2476,7 @@ def rf_alert_notifications_view(request):
                 
                 # Update Alert-Einstellung
                 alert_key = f"{user.pk}_alert"
-                alert_value = request.POST.get(alert_key) == str(user.pk)
+                alert_value = request.POST.get(alert_key) is not None
                 
                 if not hasattr(user, "highdosemetricalertrecipients"):
                     new_objects = HighDoseMetricAlertRecipients.objects.create(user=user)
@@ -2489,20 +2489,30 @@ def rf_alert_notifications_view(request):
 
                 # Update Multiplikator
                 multiplier_key = f"{user.pk}_multiplier"
-                if multiplier_key in request.POST:
+                multiplier_value = request.POST.get(multiplier_key, '')
+                
+                # Debug-Ausgaben
+                logger.debug(f"POST data for user {user.username}:")
+                logger.debug(f"Multiplier key: {multiplier_key}")
+                logger.debug(f"Multiplier value from POST: {multiplier_value}")
+                logger.debug(f"Current multiplier value: {profile.ct_dose_alert_multiplier}")
+                
+                if multiplier_value.strip():  # Prüft ob der Wert nicht leer ist
                     try:
-                        multiplier = float(request.POST[multiplier_key])
+                        multiplier = float(multiplier_value)
                         if multiplier >= 0.1:
-                            if profile.ct_dose_alert_multiplier != multiplier:
+                            if abs(profile.ct_dose_alert_multiplier - multiplier) > 0.001:  # Vergleich mit Toleranz
                                 profile.ct_dose_alert_multiplier = multiplier
                                 profile.save()
                                 changes_made = True
+                                logger.debug(f"Saved new multiplier value: {multiplier}")
                         else:
                             messages.warning(request, f"Multiplikator für {user.username} muss mindestens 0.1 sein")
                     except ValueError:
                         messages.error(request, f"Ungültiger Multiplikator-Wert für {user.username}")
 
             except Exception as e:
+                logger.error(f"Error updating settings for {user.username}: {str(e)}", exc_info=True)
                 messages.error(request, f"Fehler beim Aktualisieren der Einstellungen für {user.username}: {str(e)}")
         
         if changes_made:
