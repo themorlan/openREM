@@ -65,6 +65,7 @@ from .models import (
     CtIrradiationEventData,
     IrradEventXRayData,
     BackgroundTaskMaximumRows,
+    UserProfile,
 )
 
 logger = logging.getLogger()
@@ -2284,3 +2285,12 @@ class BackgroundTaskMaximumRowsForm(forms.ModelForm):
     class Meta(object):
         model = BackgroundTaskMaximumRows
         fields = ["max_background_task_rows"]
+
+
+class UserProfileForm(forms.ModelForm):
+    class Meta:
+        model = UserProfile
+        fields = ['receive_high_dose_alert_emails', 'ct_dose_alert_multiplier']
+        widgets = {
+            'ct_dose_alert_multiplier': forms.NumberInput(attrs={'step': '0.1', 'min': '0.1'})
+        }

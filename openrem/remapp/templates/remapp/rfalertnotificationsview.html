@@ -54,6 +54,17 @@
                 {% endfor %}
             </table>
 
+            <div class="form-group">
+                <label for="id_receive_high_dose_alert_emails">Receive high dose alert e-mails?</label>
+                {{ form.receive_high_dose_alert_emails }}
+            </div>
+            <div class="form-group">
+                <label for="id_ct_dose_alert_multiplier">CT Dosis-Schwellenwert Multiplikator:</label>
+                {{ form.ct_dose_alert_multiplier }}
+                <small class="form-text text-muted">Ein Wert von 1.0 verwendet die Standard-Schwellenwerte. 
+                Ein Wert von 1.5 erhöht die Schwellenwerte um 50%.</small>
+            </div>
+
             <input class="btn btn-primary" type="submit" value="Update">
         </form>
     {% endif %}

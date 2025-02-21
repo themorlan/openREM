@@ -850,6 +850,9 @@ class UserProfile(models.Model, CommonVariables):
         verbose_name="Number of days over which to sum studies B",
     )
 
+    receive_high_dose_alert_emails = models.BooleanField(default=False)
+    ct_dose_alert_multiplier = models.FloatField(default=1.0, help_text="Multiplikator für CT-Dosisschwellenwerte")
+
 
 def create_user_profile(sender, instance, created, **kwargs):
     if created:

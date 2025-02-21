@@ -35,7 +35,7 @@ import django
 from django.db.models import Sum
 from django.core.mail import EmailMultiAlternatives, send_mail
 from django.conf import settings
-from remapp.models import GeneralStudyModuleAttr, HighDoseMetricAlertSettings, SkinDoseMapResults
+from remapp.models import GeneralStudyModuleAttr, HighDoseMetricAlertSettings, SkinDoseMapResults, UserProfile
 from datetime import timedelta
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
@@ -349,3 +349,16 @@ CTDI Limit: {limit_ctdi:.1f} mGy"""
             
     except Exception as e:
         logger.error(f"Fehler beim Versenden der CT Dosis-Alarm Email: {str(e)}", exc_info=True)
+
+def send_high_dose_alert_emails(study):
+    # ... existing code ...
+    for user_profile in UserProfile.objects.filter(receive_high_dose_alert_emails=True):
+        multiplier = user_profile.ct_dose_alert_multiplier
+        
+        # Schwellenwerte mit dem individuellen Multiplikator anpassen
+        adjusted_dlp_threshold = settings.ALERT_DLP_THRESHOLD * multiplier
+        adjusted_ctdi_threshold = settings.ALERT_CTDI_THRESHOLD * multiplier
+        
+        if study.total_dlp > adjusted_dlp_threshold or study.ctdi_vol > adjusted_ctdi_threshold:
+            # E-Mail senden
+            # ... existing code ...
