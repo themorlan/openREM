@@ -307,58 +307,123 @@ def send_ct_high_dose_alert_email(study_pk, max_ctdi, limit_ctdi):
         if alert_settings.send_high_dose_metric_alert_emails_ct:
             equipment = study.generalequipmentmoduleattr_set.get()
             
-            # Hole die Email-Empfänger
-            recipients = User.objects.filter(
-                highdosemetricalertrecipients__receive_high_dose_metric_alerts__exact=True
-            ).values_list("email", flat=True)
+            # Hole die Basis-Schwellenwerte
+            base_dlp_threshold = settings.ALERT_DLP_THRESHOLD
+            base_ctdi_threshold = settings.ALERT_CTDI_THRESHOLD
             
-            if not recipients:
-                logger.warning("Keine Email-Empfänger konfiguriert")
-                return
-                
-            logger.info(f"Sende CT Dosis-Alarm an {len(recipients)} Empfänger")
+            # Hole die Studien-Details
+            total_dlp = study.total_dlp
             
-            subject = f'CT Hohe Dosis Warnung - {equipment.station_name}'
-            
-            # Basis-Nachricht
-            message = f"""CT Untersuchung mit erhöhtem CTDIvol:
+            # Hole alle User Profile mit aktivierten Warnungen
+            for user_profile in UserProfile.objects.filter(receive_high_dose_alert_emails=True):
+                try:
+                    # Individuelle Schwellenwerte berechnen
+                    multiplier = user_profile.ct_dose_alert_multiplier
+                    adjusted_dlp_threshold = base_dlp_threshold * multiplier 
+                    adjusted_ctdi_threshold = base_ctdi_threshold * multiplier
+
+                    # Prüfe ob Schwellenwerte überschritten wurden
+                    if total_dlp > adjusted_dlp_threshold or max_ctdi > adjusted_ctdi_threshold:
+                        subject = f'CT Hohe Dosis Warnung - {equipment.station_name}'
+                        
+                        message = f"""CT Untersuchung mit erhöhter Dosis:
 
 Studien UID: {study.study_instance_uid}
 Untersuchungsdatum: {study.study_date}
 Station: {equipment.station_name}
 
-Max CTDIvol: {max_ctdi:.1f} mGy
-CTDI Limit: {limit_ctdi:.1f} mGy"""
+DLP: {total_dlp:.1f} mGy·cm (Schwellenwert: {adjusted_dlp_threshold:.1f} mGy·cm)
+CTDIvol max: {max_ctdi:.1f} mGy (Schwellenwert: {adjusted_ctdi_threshold:.1f} mGy)
 
-            # Füge Patient ID hinzu falls vorhanden
-            if study.patientmoduleattr_set.exists():
-                patient = study.patientmoduleattr_set.get()
-                message += f"\nPatient ID: {patient.patient_id}"
+Dies ist eine automatische Benachrichtigung basierend auf Ihren persönlichen Schwellenwerten 
+(Multiplikator: {multiplier:.1f})."""
 
-            # Link zu den Details
-            message += f"\n\nDetails unter: {settings.EMAIL_OPENREM_URL}/openrem/ct/{study_pk}/"
+                        # Füge Patient ID hinzu falls vorhanden
+                        if study.patientmoduleattr_set.exists():
+                            patient = study.patientmoduleattr_set.get()
+                            message += f"\nPatient ID: {patient.patient_id}"
 
-            send_mail(
-                subject,
-                message,
-                settings.EMAIL_DOSE_ALERT_SENDER,
-                recipients,
-                fail_silently=False
-            )
-            logger.info(f"CT Dosis-Alarm Email erfolgreich gesendet")
-            
+                        # Link zu den Details
+                        message += f"\n\nDetails unter: {settings.EMAIL_OPENREM_URL}/openrem/ct/{study_pk}/"
+
+                        # Email senden
+                        send_mail(
+                            subject,
+                            message,
+                            settings.EMAIL_DOSE_ALERT_SENDER,
+                            [user_profile.user.email],
+                            fail_silently=False
+                        )
+                        
+                        logger.info(f"CT Dosis-Alarm Email gesendet an {user_profile.user.email}")
+                        
+                except Exception as e:
+                    logger.error(f"Fehler beim Verarbeiten des User Profiles {user_profile.user.email}: {str(e)}")
+                    continue
+                    
     except Exception as e:
         logger.error(f"Fehler beim Versenden der CT Dosis-Alarm Email: {str(e)}", exc_info=True)
 
 def send_high_dose_alert_emails(study):
-    # ... existing code ...
-    for user_profile in UserProfile.objects.filter(receive_high_dose_alert_emails=True):
-        multiplier = user_profile.ct_dose_alert_multiplier
+    """Sendet CT Dosis-Alarm Emails an berechtigte Empfänger mit individuellen Schwellenwerten"""
+    logger = logging.getLogger(__name__)
+    
+    try:
+        # Hole die Basis-Schwellenwerte aus den Einstellungen
+        base_dlp_threshold = settings.ALERT_DLP_THRESHOLD
+        base_ctdi_threshold = settings.ALERT_CTDI_THRESHOLD
         
-        # Schwellenwerte mit dem individuellen Multiplikator anpassen
-        adjusted_dlp_threshold = settings.ALERT_DLP_THRESHOLD * multiplier
-        adjusted_ctdi_threshold = settings.ALERT_CTDI_THRESHOLD * multiplier
+        # Hole die Studien-Details
+        total_dlp = study.total_dlp
+        max_ctdi = study.ctdi_vol
         
-        if study.total_dlp > adjusted_dlp_threshold or study.ctdi_vol > adjusted_ctdi_threshold:
-            # E-Mail senden
-            # ... existing code ...
+        # Hole alle User Profile mit aktivierten Warnungen
+        for user_profile in UserProfile.objects.filter(receive_high_dose_alert_emails=True):
+            try:
+                # Individuelle Schwellenwerte berechnen
+                multiplier = user_profile.ct_dose_alert_multiplier
+                adjusted_dlp_threshold = base_dlp_threshold * multiplier
+                adjusted_ctdi_threshold = base_ctdi_threshold * multiplier
+                
+                # Prüfe ob Schwellenwerte überschritten wurden
+                if total_dlp > adjusted_dlp_threshold or max_ctdi > adjusted_ctdi_threshold:
+                    # Email-Nachricht vorbereiten
+                    subject = 'CT Hohe Dosis Warnung'
+                    
+                    message = f"""CT Untersuchung mit erhöhter Dosis:
+
+Studien UID: {study.study_instance_uid}
+Untersuchungsdatum: {study.study_date}
+
+DLP: {total_dlp:.1f} mGy·cm (Schwellenwert: {adjusted_dlp_threshold:.1f} mGy·cm)
+CTDIvol max: {max_ctdi:.1f} mGy (Schwellenwert: {adjusted_ctdi_threshold:.1f} mGy)
+
+Dies ist eine automatische Benachrichtigung basierend auf Ihren persönlichen Schwellenwerten 
+(Multiplikator: {multiplier:.1f}).
+"""
+                    
+                    # Füge Patienten-Info hinzu falls vorhanden
+                    if study.patientmoduleattr_set.exists():
+                        patient = study.patientmoduleattr_set.get()
+                        message += f"\nPatient ID: {patient.patient_id}"
+                    
+                    # Link zu den Details
+                    message += f"\n\nDetails unter: {settings.EMAIL_OPENREM_URL}/openrem/ct/{study.pk}/"
+                    
+                    # Email senden
+                    send_mail(
+                        subject,
+                        message,
+                        settings.EMAIL_DOSE_ALERT_SENDER,
+                        [user_profile.user.email],
+                        fail_silently=False
+                    )
+                    
+                    logger.info(f"CT Dosis-Alarm Email gesendet an {user_profile.user.email}")
+                    
+            except Exception as e:
+                logger.error(f"Fehler beim Verarbeiten des User Profiles {user_profile.user.email}: {str(e)}")
+                continue
+                
+    except Exception as e:
+        logger.error(f"Fehler beim Versenden der CT Dosis-Alarm Emails: {str(e)}", exc_info=True)
