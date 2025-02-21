@@ -307,15 +307,12 @@ def send_ct_high_dose_alert_email(study_pk, max_ctdi, limit_ctdi):
         if alert_settings.send_high_dose_metric_alert_emails_ct:
             equipment = study.generalequipmentmoduleattr_set.get()
             
-            # Hole den Basis-Schwellenwert
-            base_ctdi_threshold = settings.ALERT_CTDI_THRESHOLD
-            
             # Hole alle User Profile mit aktivierten Warnungen
             for user_profile in UserProfile.objects.filter(receive_high_dose_alert_emails=True):
                 try:
                     # Individuellen Schwellenwert berechnen
                     multiplier = user_profile.ct_dose_alert_multiplier
-                    adjusted_ctdi_threshold = base_ctdi_threshold * multiplier
+                    adjusted_ctdi_threshold = limit_ctdi * multiplier
 
                     # Prüfe ob Schwellenwert überschritten wurde
                     if max_ctdi > adjusted_ctdi_threshold:
