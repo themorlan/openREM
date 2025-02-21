@@ -336,17 +336,17 @@ Studien UID: {study.study_instance_uid}
 Untersuchungsdatum: {study.study_date}
 Station: {equipment.station_name}
 
-CTDIvol max: {max_ctdi:.1f} mGy (Schwellenwert: {adjusted_ctdi_threshold:.1f} mGy)
+CTDIvol max: {max_ctdi:.1f} mGy
+Schwellenwert: {limit_ctdi:.1f} mGy * {multiplier:.1f} = {adjusted_ctdi_threshold:.1f} mGy (Ref CTDI*Multiplikator)
 
-Dies ist eine automatische Benachrichtigung basierend auf Ihren persönlichen Schwellenwerten 
-(Multiplikator: {multiplier:.1f})."""
+Dies ist eine automatische Benachrichtigung basierend auf Ihren persönlichen Schwellenwerten."""
 
                         # Füge Patient ID hinzu falls vorhanden
                         if study.patientmoduleattr_set.exists():
                             patient = study.patientmoduleattr_set.get()
                             message += f"\nPatient ID: {patient.patient_id}"
 
-                        # Link zu den Details
+                        # Link zu den Details 
                         message += f"\n\nDetails unter: {settings.EMAIL_OPENREM_URL}/openrem/ct/{study_pk}/"
 
                         try:
