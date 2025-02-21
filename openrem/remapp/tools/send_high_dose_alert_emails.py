@@ -309,8 +309,10 @@ def send_ct_high_dose_alert_email(study_pk, max_ctdi, limit_ctdi):
         if alert_settings.send_high_dose_metric_alert_emails_ct:
             equipment = study.generalequipmentmoduleattr_set.get()
             
-            # Hole alle User Profile mit aktivierten Warnungen
-            user_profiles = UserProfile.objects.filter(receive_high_dose_alert_emails=True)
+            # Hole alle User Profile mit aktivierten Warnungen - KORRIGIERTE ABFRAGE
+            user_profiles = UserProfile.objects.filter(
+                user__highdosemetricalertrecipients__receive_high_dose_metric_alerts=True
+            )
             logger.info(f"Gefundene User Profile mit aktivierten Warnungen: {user_profiles.count()}")
             
             for user_profile in user_profiles:
