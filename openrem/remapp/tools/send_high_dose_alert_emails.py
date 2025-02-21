@@ -46,6 +46,7 @@ from smtplib import SMTPException
 from ssl import SSLError
 import logging
 from django.template.loader import render_to_string
+from decimal import Decimal
 
 # setup django/OpenREM
 basepath = os.path.dirname(__file__)
@@ -318,7 +319,7 @@ def send_ct_high_dose_alert_email(study_pk, max_ctdi, limit_ctdi):
             for user_profile in user_profiles:
                 try:
                     # Individuellen Schwellenwert berechnen
-                    multiplier = user_profile.ct_dose_alert_multiplier
+                    multiplier = Decimal(str(user_profile.ct_dose_alert_multiplier))  # Konvertiere zu Decimal
                     adjusted_ctdi_threshold = limit_ctdi * multiplier
 
                     logger.info(f"User {user_profile.user.email}: multiplier={multiplier}, "
