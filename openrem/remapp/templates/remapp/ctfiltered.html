@@ -298,14 +298,14 @@
                     {% with ctacc=exam.ctradiationdose_set.first.ctaccumulateddosedata_set.first %}
                         {% if ctacc.maximum_ctdivol %}
                             {% with std_name=exam.standard_names.first %}
-                                {% if std_name.ctdi_limit and ctacc.maximum_ctdivol >= std_name.ctdi_limit|multiply:2 %}
-                                    <a href="#" onclick="openCommentDialog({{ exam.id }}, true)" class="comment-link">
+                                {% if std_name.ctdi_limit and ctacc.maximum_ctdivol >= std_name.ctdi_limit %}
+                                    <a href="#" onclick="openCommentDialog({{ exam.id }}, true);" class="comment-link">
                                 {% else %}
-                                    <a href="#" onclick="openCommentDialog({{ exam.id }}, false)" class="comment-link">
+                                    <a href="#" onclick="openCommentDialog({{ exam.id }}, false);" class="comment-link">
                                 {% endif %}
                             {% endwith %}
                         {% else %}
-                            <a href="#" onclick="openCommentDialog({{ exam.id }}, false)" class="comment-link">
+                            <a href="#" onclick="openCommentDialog({{ exam.id }}, false);" class="comment-link">
                         {% endif %}
                     {% endwith %}
                         <span id="comment-{{ exam.id }}">
@@ -315,7 +315,7 @@
                                 {% with ctacc=exam.ctradiationdose_set.first.ctaccumulateddosedata_set.first %}
                                     {% if ctacc.maximum_ctdivol %}
                                         {% with std_name=exam.standard_names.first %}
-                                            {% if std_name.ctdi_limit and ctacc.maximum_ctdivol >= std_name.ctdi_limit|multiply:2 %}
+                                            {% if std_name.ctdi_limit and ctacc.maximum_ctdivol >= std_name.ctdi_limit %}
                                                 <span class="comment-required">Kommentar einfügen!</span>
                                             {% else %}
                                                 -
