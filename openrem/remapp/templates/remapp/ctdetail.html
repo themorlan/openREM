@@ -84,10 +84,10 @@
     <th scope="col">Acquisition protocol</th>
 {% if showStandardNames %}
     <th scope="col">Standard acquisition name</th>
-    <th scope="col">CTDI<sub>vol</sub> Limit (mGy)</th>
 {% endif %}
     <th scope="col">Type</th>
     <th scope="col">CTDI<sub>vol</sub> (mGy)</th>
+    <th scope="col">Ref CTDI<sub>vol</sub> (mGy)</th>
     <th scope="col">DLP (mGy&middot;cm)</th>
     <th scope="col">Scanning length (mm)</th>
     <th scope="col">kVp</th>
@@ -121,13 +121,6 @@
                 {% endfor %}
                 </table>
             </td>
-            <td rowspan="2">
-                <table>
-                {% for std_name in event.standard_protocols.all %}
-                    <tr><td class="nowrap">{{ std_name.ctdi_limit|default_if_none:"-"|floatformat:2 }}</td></tr>
-                {% endfor %}
-                </table>
-            </td>
         {% endif %}
         <td rowspan="2">{{ event.ct_acquisition_type.code_meaning }}</td>
         <td rowspan="2">
@@ -137,6 +130,13 @@
           {% elif event.ctdiw_phantom_type.code_value == "113690" %}
             (16&nbsp;cm)
           {% endif %}
+        </td>
+        <td rowspan="2">
+            <table>
+            {% for std_name in event.standard_protocols.all %}
+                <tr><td class="nowrap">{{ std_name.ctdi_limit|default_if_none:"-"|floatformat:2 }}</td></tr>
+            {% endfor %}
+            </table>
         </td>
         <td rowspan="2">{{ event.dlp|floatformat:2 }}</td>
         <td rowspan="2">{{ event.scanninglength_set.get.scanning_length|floatformat:0 }}</td>
