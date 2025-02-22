@@ -332,15 +332,17 @@ def send_ct_high_dose_alert_email(study_pk, max_ctdi, limit_ctdi):
                         
                         message = f"""CT Untersuchung mit erhöhter Dosis:
 
+Untersuchungszeitpunkt: {study.study_date} {study.study_time}
 Studien UID: {study.study_instance_uid}
-Untersuchungsdatum: {study.study_date} {study.study_time}
-Station: {equipment.station_name}
+Station: {f"{equipment.institution_name} - " if equipment.institution_name else ""}{equipment.station_name}
 
 Standard Name: {study.standard_names.filter(modality='CT').first().standard_name if study.standard_names.filter(modality='CT').exists() else 'Nicht zugeordnet'}
 CTDIvol max: {max_ctdi:.1f} mGy
-Schwellenwert: {limit_ctdi:.1f} mGy * {multiplier:.1f} = {adjusted_ctdi_threshold:.1f} mGy (Ref CTDI*Multiplikator)
+Schwellenwert: {adjusted_ctdi_threshold:.1f} mGy 
+              = {limit_ctdi:.1f} mGy × {multiplier:.1f}
+                (Referenz-CTDI × Multiplikator)
 
-Dies ist eine automatische Benachrichtigung basierend auf Ihren persönlichen Schwellenwerten."""
+Dies ist eine automatische Benachrichtigung basierend auf den Schwellenwerten mit persönlichem Multiplikator."""
 
                         # Füge Patient ID hinzu falls vorhanden
                         if study.patientmoduleattr_set.exists():
