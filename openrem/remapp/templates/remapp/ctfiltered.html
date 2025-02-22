@@ -208,8 +208,9 @@
                     <strong>Max CTDI<sub>vol</sub> (mGy)</strong>
                     <hr style="margin: 3px;">
                     <small>Ref CTDI<sub>vol</sub></small>
-                    <div style="background-color: #ffffcc; margin-top: 3px; padding: 2px;">200%</div>
-                    <div style="background-color: #ffcccc; padding: 2px;">300%</div>
+                    <div style="background-color: #ffeb99; margin-top: 3px; padding: 2px;">&gt;100%</div>
+                    <div style="background-color: #ffc966; padding: 2px;">&gt;200%</div>
+                    <div style="background-color: #ff9999; padding: 2px;">&gt;300%</div>
                 </div>
             </th>
             <th scope="col">Kommentar</th>
@@ -275,9 +276,11 @@
                                     {% if std_name.ctdi_limit %}
                                         <div style="display: block; padding: 5px; text-align: center;
                                             {% if ctacc.maximum_ctdivol >= std_name.ctdi_limit|multiply:3 %}
-                                                background-color: #ffcccc;
+                                                background-color: #ff9999;
                                             {% elif ctacc.maximum_ctdivol >= std_name.ctdi_limit|multiply:2 %}
-                                                background-color: #ffffcc;
+                                                background-color: #ffc966;
+                                            {% elif ctacc.maximum_ctdivol >= std_name.ctdi_limit %}
+                                                background-color: #ffeb99;
                                             {% endif %}">
                                             <strong>{{ ctacc.maximum_ctdivol|floatformat:2 }}</strong>
                                             <hr style="margin: 3px;">
