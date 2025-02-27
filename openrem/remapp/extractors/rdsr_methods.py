@@ -1793,6 +1793,11 @@ def projectionxrayradiationdose(dataset, g, reporttype):
                     modality='CT'
                 ).first()
                 
+                # Detailliertes Logging hinzufügen
+                logger.info(f"CT CTDI-Prüfung: max_ctdi={max_ctdi}, std_names existiert: {std_names is not None}")
+                if std_names:
+                    logger.info(f"Standard Name: {std_names.standard_name}, CTDI-Limit: {std_names.ctdi_limit}")
+                
                 if max_ctdi and std_names and std_names.ctdi_limit and max_ctdi > std_names.ctdi_limit:
                     logger.info(f"Sende Email wegen Überschreitung: {max_ctdi} > {std_names.ctdi_limit}")
                     from remapp.tools.send_high_dose_alert_emails import send_ct_high_dose_alert_email
@@ -1801,6 +1806,10 @@ def projectionxrayradiationdose(dataset, g, reporttype):
                         max_ctdi=max_ctdi,
                         limit_ctdi=std_names.ctdi_limit
                     )
+                elif max_ctdi:
+                    logger.info(f"Keine Email-Benachrichtigung: max_ctdi={max_ctdi}, " 
+                               f"std_names existiert: {std_names is not None}, "
+                               f"ctdi_limit: {std_names.ctdi_limit if std_names else 'N/A'}")
             except (ObjectDoesNotExist, AttributeError) as e:
                 logger.warning(f"Konnte CTDI-Limit nicht prüfen: {str(e)}")
 

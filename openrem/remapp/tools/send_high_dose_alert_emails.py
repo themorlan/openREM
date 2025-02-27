@@ -306,6 +306,7 @@ def send_ct_high_dose_alert_email(study_pk, max_ctdi, limit_ctdi):
         alert_settings = HighDoseMetricAlertSettings.objects.get()
         
         logger.info(f"Prüfe CT Dosis-Alarm: max_ctdi={max_ctdi}, limit_ctdi={limit_ctdi}")
+        logger.info(f"Email-Versand aktiviert: {alert_settings.send_high_dose_metric_alert_emails_ct}")
         
         if alert_settings.send_high_dose_metric_alert_emails_ct:
             equipment = study.generalequipmentmoduleattr_set.get()
