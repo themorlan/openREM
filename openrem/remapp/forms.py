@@ -1700,10 +1700,10 @@ class StandardNameFormCT(StandardNameFormBase):
 
     ctdi_limit = forms.DecimalField(
         required=False,
-        max_digits=5,
-        decimal_places=2,
+        max_digits=16,
+        decimal_places=2,  # Behalte 2 Dezimalstellen für die Anzeige
         help_text="CTDIvol limit in mGy for this standard name",
-        widget=forms.NumberInput(attrs={'class': 'form-control'})
+        widget=forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'})
     )
 
     def __init__(self, *args, **kwargs):
@@ -1712,7 +1712,11 @@ class StandardNameFormCT(StandardNameFormBase):
 
         # Get initial CTDI limit value if editing existing standard name
         if 'instance' in kwargs and kwargs['instance']:
-            self.fields['ctdi_limit'].initial = kwargs['instance'].ctdi_limit
+            # Runde den Wert auf 2 Dezimalstellen für die Anzeige
+            if kwargs['instance'].ctdi_limit is not None:
+                self.fields['ctdi_limit'].initial = round(kwargs['instance'].ctdi_limit, 2)
+            else:
+                self.fields['ctdi_limit'].initial = kwargs['instance'].ctdi_limit
 
         all_studies = GeneralStudyModuleAttr.objects.filter(modality_type__iexact="CT")
 
