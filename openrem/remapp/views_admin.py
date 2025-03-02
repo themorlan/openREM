@@ -2979,6 +2979,7 @@ class StandardNameAddCore(CreateView):
                     standard_name=form.cleaned_data["standard_name"],
                     modality=form.cleaned_data["modality"],
                     study_description=item,
+                    ctdi_limit=form.cleaned_data.get("ctdi_limit")  # Diese Zeile hinzufügen
                 )
                 try:
                     new_entry.save()
@@ -3012,6 +3013,7 @@ class StandardNameAddCore(CreateView):
                     standard_name=form.cleaned_data["standard_name"],
                     modality=form.cleaned_data["modality"],
                     procedure_code_meaning=item,
+                    ctdi_limit=form.cleaned_data.get("ctdi_limit")  # Diese Zeile hinzufügen
                 )
                 try:
                     new_entry.save()
@@ -3028,6 +3030,7 @@ class StandardNameAddCore(CreateView):
                     standard_name=form.cleaned_data["standard_name"],
                     modality=form.cleaned_data["modality"],
                     acquisition_protocol=item,
+                    ctdi_limit=form.cleaned_data.get("ctdi_limit")  # Diese Zeile hinzufügen
                 )
                 try:
                     new_entry.save()
@@ -3439,6 +3442,7 @@ class StandardNameUpdateCore(UpdateView):
                         standard_name=form.cleaned_data["standard_name"],
                         modality=form.cleaned_data["modality"],
                         study_description=item,
+                        ctdi_limit=form.cleaned_data.get("ctdi_limit")  # Add this line
                     )
                     new_entry.save()
                     new_ids_study.append(new_entry.pk)
@@ -3470,6 +3474,7 @@ class StandardNameUpdateCore(UpdateView):
                         standard_name=form.cleaned_data["standard_name"],
                         modality=form.cleaned_data["modality"],
                         procedure_code_meaning=item,
+                        ctdi_limit=form.cleaned_data.get("ctdi_limit")  # Add this line
                     )
                     new_entry.save()
                     new_ids_procedure.append(new_entry.pk)
@@ -3485,6 +3490,7 @@ class StandardNameUpdateCore(UpdateView):
                         standard_name=form.cleaned_data["standard_name"],
                         modality=form.cleaned_data["modality"],
                         acquisition_protocol=item,
+                        ctdi_limit=form.cleaned_data.get("ctdi_limit")  # Add this line
                     )
                     new_entry.save()
                     new_ids_acquisition.append(new_entry.pk)
