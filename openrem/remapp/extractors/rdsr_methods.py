@@ -1401,6 +1401,18 @@ def _ctirradiationeventdata(dataset, ct):  # TID 10013
         elif cont.ConceptNameCodeSequence[0].CodeMeaning == "Irradiation Event UID":
             event.irradiation_event_uid = cont.UID
             event.save()
+        # Neue Extraktion für Irradiation Event Label
+        elif cont.ConceptNameCodeSequence[0].CodeMeaning == "Irradiation Event Label":
+            event.irradiation_event_label = cont.TextValue
+            try:
+                for cont2 in cont.ContentSequence:
+                    if cont2.ConceptNameCodeSequence[0].CodeMeaning == "Label Type":
+                        event.label_type = get_or_create_cid(
+                            cont2.ConceptCodeSequence[0].CodeValue,
+                            cont2.ConceptCodeSequence[0].CodeMeaning,
+                        )
+            except AttributeError:
+                pass
         if cont.ValueType == "CONTAINER":
             if (
                 cont.ConceptNameCodeSequence[0].CodeMeaning

@@ -82,6 +82,7 @@
 
 <table class="table table-striped table-bordered small" aria-describedby="Exposure details for each acquisition contained in the study">
     <th scope="col">Acquisition protocol</th>
+    <th scope="col">Irradiation Event Label</th>
 {% if showStandardNames %}
     <th scope="col">Standard acquisition name</th>
 {% endif %}
@@ -109,6 +110,7 @@
 
       <tr>
         <td rowspan="2">{{ event.acquisition_protocol }}</td>
+        <td rowspan="2">{{ event.irradiation_event_label|default_if_none:"-" }}</td>
         {% if showStandardNames %}
             <td rowspan="2">
                 <table>
