@@ -3096,6 +3096,17 @@ class StandardNameAddCore(CreateView):
                     )
                     return redirect(self.success_url)
 
+            # Füge Irradiation Event Label Mapping hinzu (nur für CT)
+            if form.cleaned_data["modality"] == "CT" and new_ids_irradiation:
+                for standard_name in StandardNames.objects.filter(
+                    pk__in=new_ids_irradiation
+                ):
+                    standard_name.ctirradiationeventdata_set.add(
+                        *acquisitions.filter(
+                            irradiation_event_label=standard_name.irradiation_event_label
+                        ).values_list("pk", flat=True)
+                    )
+
             return redirect(self.success_url)
         else:
             messages.info(self.request, "No changes made")
@@ -3135,7 +3146,7 @@ class StandardNameAddCore(CreateView):
         for standard_name in StandardNames.objects.filter(
             pk__in=std_name_acquisition_ids
         ):
-            if type(self).__name__ == "StandardNameAddCT":
+            if type(self).__name__ == "StandardNameUpdateCT":
                 standard_name.ctirradiationeventdata_set.add(
                     *acquisitions.filter(
                         acquisition_protocol=standard_name.acquisition_protocol
@@ -3147,6 +3158,18 @@ class StandardNameAddCore(CreateView):
                         acquisition_protocol=standard_name.acquisition_protocol
                     ).values_list("pk", flat=True)
                 )
+        
+        # Füge Mapping für Irradiation Event Label hinzu (nur für CT)
+        if type(self).__name__ in ["StandardNameUpdateCT", "StandardNameAddCT"]:
+            for standard_name in StandardNames.objects.filter(
+                pk__in=std_name_acquisition_ids
+            ):
+                if standard_name.irradiation_event_label:
+                    standard_name.ctirradiationeventdata_set.add(
+                        *acquisitions.filter(
+                            irradiation_event_label=standard_name.irradiation_event_label
+                        ).values_list("pk", flat=True)
+                    )
 
 
 class StandardNameAddCT(StandardNameAddCore):  # pylint: disable=unused-variable
