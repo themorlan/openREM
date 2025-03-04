@@ -1664,6 +1664,7 @@ class StandardNameFormBase(forms.ModelForm):
             "requested_procedure_code_meaning",
             "procedure_code_meaning",
             "acquisition_protocol",
+            "irradiation_event_label",  # Neues Feld hinzufügen
         ]
         widgets = {
             "standard_name": forms.TextInput,
@@ -1693,6 +1694,12 @@ class StandardNameFormBase(forms.ModelForm):
             return None
         else:
             return self.cleaned_data["acquisition_protocol"]
+
+    def clean_irradiation_event_label(self):
+        if self.cleaned_data["irradiation_event_label"] == "":
+            return None
+        else:
+            return self.cleaned_data["irradiation_event_label"]
 
 
 class StandardNameFormCT(StandardNameFormBase):
@@ -1805,6 +1812,46 @@ class StandardNameFormCT(StandardNameFormBase):
             choices=query_choices,
             required=False,
             widget=FilteredSelectMultiple(label_name.lower() + "s", is_stacked=False),
+        )
+
+        # Füge Irradiation Event Label hinzu
+        field_name, label_name = ("irradiation_event_label", "Irradiation event label")
+        items_to_exclude = (
+            StandardNames.objects.all().values(field_name).exclude(**{field_name: None})
+        )
+        if "standard_name" in self.initial:
+            items_to_exclude = items_to_exclude.exclude(
+                standard_name=self.initial["standard_name"]
+            )
+        query = (
+            CtIrradiationEventData.objects.values_list(field_name, flat=True)
+            .exclude(**{field_name + "__in": items_to_exclude})
+            .distinct()
+            .order_by(field_name)
+        )
+        query_choices = [("", "None")] + [(item, item) for item in query]
+
+        initial_choices = (
+            StandardNames.objects.all()
+            .filter(modality="CT")
+            .exclude(**{field_name: None})
+            .order_by(field_name)
+        )
+        if "standard_name" in self.initial:
+            initial_choices = initial_choices.filter(
+                standard_name=self.initial["standard_name"]
+            )
+
+        self.initial[field_name] = list(
+            initial_choices.values_list(field_name, flat=True)
+        )
+
+        self.fields[field_name] = forms.MultipleChoiceField(
+            choices=query_choices,
+            required=False,
+            widget=FilteredSelectMultiple(
+                label_name.lower() + "s", is_stacked=False
+            ),
         )
 
         class Media:

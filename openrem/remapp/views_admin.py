@@ -3078,6 +3078,24 @@ class StandardNameAddCore(CreateView):
             # Add the standard names to the acquisitions
             self.add_multiple_standard_acquisitions(acquisitions, new_ids_acquisition)
 
+            # Füge Irradiation Event Label hinzu
+            new_ids_irradiation = []
+            for item in form.cleaned_data["irradiation_event_label"]:
+                new_entry = StandardNames(
+                    standard_name=form.cleaned_data["standard_name"],
+                    modality=form.cleaned_data["modality"],
+                    irradiation_event_label=item,
+                    ctdi_limit=form.cleaned_data.get("ctdi_limit")
+                )
+                try:
+                    new_entry.save()
+                    new_ids_irradiation.append(new_entry.pk)
+                except IntegrityError as e:
+                    messages.warning(
+                        self.request, mark_safe("Error adding name: {0}".format(e.args))
+                    )
+                    return redirect(self.success_url)
+
             return redirect(self.success_url)
         else:
             messages.info(self.request, "No changes made")

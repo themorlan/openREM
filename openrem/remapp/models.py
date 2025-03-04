@@ -924,34 +924,24 @@ class UniqueEquipmentNames(models.Model):
 
 class StandardNames(models.Model):
     """
-    Table to store standard study description, requested procedure, procedure or acquisition names
+    Table to store standard name mappings
     """
-
-    standard_name = models.TextField(blank=True, null=True)
+    standard_name = models.CharField(max_length=64)
     modality = models.CharField(max_length=16, blank=True, null=True)
-    study_description = models.TextField(blank=True, null=True)
-    requested_procedure_code_meaning = models.TextField(blank=True, null=True)
-    procedure_code_meaning = models.TextField(blank=True, null=True)
-    acquisition_protocol = models.TextField(blank=True, null=True)
-    ctdi_limit = models.DecimalField(
-        max_digits=16, 
-        decimal_places=8, 
-        blank=True, 
-        null=True,
-        verbose_name="CTDIvol Limit (mGy)"
-    )
+    study_description = models.CharField(max_length=64, blank=True, null=True)
+    requested_procedure_code_meaning = models.CharField(max_length=64, blank=True, null=True)
+    procedure_code_meaning = models.CharField(max_length=64, blank=True, null=True)
+    acquisition_protocol = models.CharField(max_length=64, blank=True, null=True)
+    irradiation_event_label = models.CharField(max_length=64, blank=True, null=True)  # Neues Feld
+    ctdi_limit = models.DecimalField(max_digits=16, decimal_places=10, blank=True, null=True)
 
-    class Meta(object):
-        """
-        Define unique_together Meta class to ensure that each study description, requested procedure,
-        procedure and acquisition protocol can only appear in one standard name per modality
-        """
-
+    class Meta:
         unique_together = (
-            ("modality", "study_description"),
-            ("modality", "requested_procedure_code_meaning"),
-            ("modality", "procedure_code_meaning"),
-            ("modality", "acquisition_protocol"),
+            ('modality', 'study_description'),
+            ('modality', 'requested_procedure_code_meaning'),
+            ('modality', 'procedure_code_meaning'),
+            ('modality', 'acquisition_protocol'),
+            ('modality', 'irradiation_event_label'),  # Neue Einschränkung
         )
 
     def __unicode__(self):

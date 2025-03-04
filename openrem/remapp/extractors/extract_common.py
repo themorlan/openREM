@@ -429,11 +429,12 @@ def patient_module_attributes(dataset, g):  # C.7.1.1
 
 
 def add_standard_names(g):
-    """Add references to any matching standard name entries
-
-    :param g: GeneralStudyModuleAttr database table
-    :return: None - database is updated
     """
+    Add standard names to a study
+    :param g: GeneralStudyModuleAttr object
+    :return: None
+    """
+    from remapp.models import StandardNames
 
     # If the modality_type is CR or PX then override it to DX, because all CR, DX and PX studies are stored in the
     # standard_names table as DX
@@ -481,6 +482,16 @@ def add_standard_names(g):
                         ).values_list("pk", flat=True)
                     )
                     event.standard_protocols.add(*pk_value)
+            # Füge Mapping für Irradiation Event Label hinzu
+            for event in g.ctradiationdose_set.get().ctirradiationeventdata_set.all():
+                if event.irradiation_event_label:
+                    std_names = StandardNames.objects.filter(
+                        modality=g.modality_type,
+                        irradiation_event_label=event.irradiation_event_label
+                    )
+                    if std_names:
+                        for std_name in std_names:
+                            event.standard_protocols.add(std_name)
         else:
             for (
                 event
