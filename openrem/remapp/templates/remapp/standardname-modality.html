@@ -2,18 +2,23 @@
 
 <p>There are {{ name_set.count }} entries in this table. Back to the <a href="#top">top</a>.</p>
 <table class="table table-bordered table-hover row-clickable sortable" id="standard_name_table_{{ modality }}" aria-describedby="{{ modality }} systems">
-  <tr>
-    <th scope="col">Standard name</th>
-    <th scope="col">Study description</th>
-    <th scope="col">Requested procedure name</th>
-    <th scope="col">Procedure name</th>
-    <th scope="col">Acquisition protocol name</th>
-    <th scope="col">CTDIvol Limit (mGy)</th>
-    {% if admin.admingroup %}
-        <th style="text-align: center; vertical-align: middle;" scope="col">Modify?</th>
-        <th style="text-align: center; vertical-align: middle;" scope="col">Delete?</th>
-    {% endif %}
-  </tr>
+  <thead>
+    <tr>
+      <th scope="col">Standard name</th>
+      <th scope="col">Study description</th>
+      <th scope="col">Requested procedure name</th>
+      <th scope="col">Procedure name</th>
+      <th scope="col">Acquisition protocol name</th>
+      {% if modality == "CT" %}
+      <th scope="col">Irradiation Event Label</th>
+      {% endif %}
+      <th scope="col">CTDIvol Limit (mGy)</th>
+      {% if admin.admingroup %}
+          <th style="text-align: center; vertical-align: middle;" scope="col">Modify?</th>
+          <th style="text-align: center; vertical-align: middle;" scope="col">Delete?</th>
+      {% endif %}
+    </tr>
+  </thead>
 
   {% regroup name_set by standard_name as grouped_name_list %}
   {% for standard_name in grouped_name_list %}
@@ -59,6 +64,18 @@
               {% endfor %}
             </table>
           </a></td>
+
+          {% if modality == "CT" %}
+          <td><a style="text-decoration: none">
+            <table>
+              {% for item in standard_name.list|sort_class_items:"irradiation_event_label" %}
+                  {% if item %}
+                    <tr><td>{{ item }}</td></tr>
+                  {% endif %}
+              {% endfor %}
+            </table>
+          </a></td>
+          {% endif %}
 
           <td><a style="text-decoration: none">
             <table>
