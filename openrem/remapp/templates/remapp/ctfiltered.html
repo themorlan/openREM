@@ -281,7 +281,13 @@
                                 {% with dose=exam.ctradiationdose_set.first %}
                                     {% if dose.ctirradiationeventdata_set.exists %}
                                         {% for event in dose.ctirradiationeventdata_set.all %}
-                                            <tr><td class="nowrap">{{ event.mean_ctdivol|floatformat:2|default_if_none:"-" }}</td></tr>
+                                            {% if event.standard_protocols.exists %}
+                                                {% for std_name in event.standard_protocols.all %}
+                                                    {% if std_name.irradiation_event_label %}
+                                                        <tr><td class="nowrap">{{ event.mean_ctdivol|floatformat:2|default_if_none:"-" }}</td></tr>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            {% endif %}
                                         {% endfor %}
                                     {% endif %}
                                 {% endwith %}
