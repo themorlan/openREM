@@ -284,7 +284,24 @@
                                             {% if event.standard_protocols.exists %}
                                                 {% for std_name in event.standard_protocols.all %}
                                                     {% if std_name.irradiation_event_label %}
-                                                        <tr><td class="nowrap">{{ event.mean_ctdivol|floatformat:2|default_if_none:"-" }} / {{ std_name.ctdi_limit|floatformat:2|default_if_none:"-" }}</td></tr>
+                                                        <tr>
+                                                            <td class="nowrap">
+                                                                {% if std_name.ctdi_limit %}
+                                                                    <div style="display: block; padding: 2px; text-align: center;
+                                                                        {% if event.mean_ctdivol >= std_name.ctdi_limit|multiply:3 %}
+                                                                            background-color: #ff9999;
+                                                                        {% elif event.mean_ctdivol >= std_name.ctdi_limit|multiply:2 %}
+                                                                            background-color: #ffc966;
+                                                                        {% elif event.mean_ctdivol >= std_name.ctdi_limit %}
+                                                                            background-color: #ffeb99;
+                                                                        {% endif %}">
+                                                                        {{ event.mean_ctdivol|floatformat:2|default_if_none:"-" }} / {{ std_name.ctdi_limit|floatformat:2|default_if_none:"-" }}
+                                                                    </div>
+                                                                {% else %}
+                                                                    {{ event.mean_ctdivol|floatformat:2|default_if_none:"-" }} / {{ std_name.ctdi_limit|floatformat:2|default_if_none:"-" }}
+                                                                {% endif %}
+                                                            </td>
+                                                        </tr>
                                                     {% endif %}
                                                 {% endfor %}
                                             {% endif %}
