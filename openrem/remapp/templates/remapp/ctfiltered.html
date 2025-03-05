@@ -262,7 +262,7 @@
                                             {% if event.standard_protocols.exists %}
                                                 {% for std_name in event.standard_protocols.all %}
                                                     {% if std_name.irradiation_event_label %}
-                                                        <tr><td class="nowrap">{{ std_name.standard_name|default_if_none:"-" }} (IEL)</td></tr>
+                                                        <tr><td class="nowrap">{{ std_name.standard_name|default_if_none:"-" }}</td></tr>
                                                     {% endif %}
                                                 {% endfor %}
                                             {% endif %}
