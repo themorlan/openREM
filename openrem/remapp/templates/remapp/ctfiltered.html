@@ -200,6 +200,7 @@
             </th>
         {% if showStandardNames %}
             <th>Standard study names</th>
+            <th>CTDIvol (mGy)</th>
         {% endif %}
             <th scope="col">Number of events</th>
             <th scope="col">Total DLP (mGy.cm)</th>
@@ -269,6 +270,23 @@
                                         {% endfor %}
                                     {% endif %}
                                 {% endwith %}
+                            {% endif %}
+                        </table>
+                    </a>
+                </td>
+                <td>
+                    <a href="{% url 'ct_detail_view' pk=exam.id %}">
+                        <table onclick="window.location='{% url 'ct_detail_view' pk=exam.id %}';" aria-describedby="CTDIvol values for events">
+                            {% if exam.ctradiationdose_set.exists %}
+                                {% with dose=exam.ctradiationdose_set.first %}
+                                    {% if dose.ctirradiationeventdata_set.exists %}
+                                        {% for event in dose.ctirradiationeventdata_set.all %}
+                                            <tr><td class="nowrap">{{ event.mean_ctdivol|floatformat:2|default_if_none:"-" }}</td></tr>
+                                        {% endfor %}
+                                    {% endif %}
+                                {% endwith %}
+                            {% else %}
+                                <tr><td class="nowrap">-</td></tr>
                             {% endif %}
                         </table>
                     </a>
