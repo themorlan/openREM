@@ -371,10 +371,8 @@ Standard Name: {std_name}"""
                         message += f"\nSerie mit Überschreitung: {series_name}"
 
                     message += f"""
-CTDIvol max: {max_ctdi:.1f} mGy
-Schwellenwert: {adjusted_ctdi_threshold:.1f} mGy 
-              = {limit_ctdi:.1f} mGy × {multiplier:.1f}
-                (Referenz-CTDI × Multiplikator)
+
+Schwellenwert: {adjusted_ctdi_threshold:.1f} mGy = {limit_ctdi:.1f} mGy × {multiplier:.1f} (Referenz-CTDI × Multiplikator)
 
 Dies ist eine automatische Benachrichtigung basierend auf den Schwellenwerten mit persönlichem Multiplikator."""
 
