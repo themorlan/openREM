@@ -1801,27 +1801,46 @@ def projectionxrayradiationdose(dataset, g, reporttype):
 
             # Dann CTDI-Limit prüfen
             try:
-                std_names = proj.general_study_module_attributes.standard_names.filter(
-                    modality='CT'
-                ).first()
+                # Prüfe sowohl Studien-Level als auch Serien-Level Standard Names
+                std_names_study = g.standard_names.filter(modality='CT').first()
                 
                 # Detailliertes Logging hinzufügen
-                logger.info(f"CT CTDI-Prüfung: max_ctdi={max_ctdi}, std_names existiert: {std_names is not None}")
-                if std_names:
-                    logger.info(f"Standard Name: {std_names.standard_name}, CTDI-Limit: {std_names.ctdi_limit}")
+                logger.info(f"CT CTDI-Prüfung: max_ctdi={max_ctdi}, std_names_study existiert: {std_names_study is not None}")
+                if std_names_study:
+                    logger.info(f"Standard Name (Studie): {std_names_study.standard_name}, CTDI-Limit: {std_names_study.ctdi_limit}")
                 
-                if max_ctdi and std_names and std_names.ctdi_limit and max_ctdi > std_names.ctdi_limit:
-                    logger.info(f"Sende Email wegen Überschreitung: {max_ctdi} > {std_names.ctdi_limit}")
+                # Prüfe, ob ein Standard Name mit CTDI-Limit existiert
+                if max_ctdi and std_names_study and std_names_study.ctdi_limit and max_ctdi > std_names_study.ctdi_limit:
+                    logger.info(f"Sende Email wegen Überschreitung auf Studienebene: {max_ctdi} > {std_names_study.ctdi_limit}")
                     from remapp.tools.send_high_dose_alert_emails import send_ct_high_dose_alert_email
                     send_ct_high_dose_alert_email(
-                        study_pk=proj.general_study_module_attributes.pk,
+                        study_pk=g.pk,
                         max_ctdi=max_ctdi,
-                        limit_ctdi=std_names.ctdi_limit
+                        limit_ctdi=std_names_study.ctdi_limit
                     )
-                elif max_ctdi:
-                    logger.info(f"Keine Email-Benachrichtigung: max_ctdi={max_ctdi}, " 
-                               f"std_names existiert: {std_names is not None}, "
-                               f"ctdi_limit: {std_names.ctdi_limit if std_names else 'N/A'}")
+                else:
+                    # Prüfe auf Serienebene nach Standard Names
+                    for event in proj.ctirradiationeventdata_set.all():
+                        if hasattr(event, 'standard_protocols') and event.standard_protocols.exists():
+                            for std_protocol in event.standard_protocols.all():
+                                if std_protocol.ctdi_limit and event.mean_ctdivol and event.mean_ctdivol > std_protocol.ctdi_limit:
+                                    logger.info(f"Sende Email wegen Überschreitung auf Serienebene: {event.mean_ctdivol} > {std_protocol.ctdi_limit}")
+                                    from remapp.tools.send_high_dose_alert_emails import send_ct_high_dose_alert_email
+                                    send_ct_high_dose_alert_email(
+                                        study_pk=g.pk,
+                                        max_ctdi=event.mean_ctdivol,
+                                        limit_ctdi=std_protocol.ctdi_limit
+                                    )
+                                    # Nur eine E-Mail pro Studie senden
+                                    break
+                            # Wenn bereits eine E-Mail gesendet wurde, breche die Schleife ab
+                            else:
+                                continue
+                            break
+                    else:
+                        logger.info(f"Keine Email-Benachrichtigung: max_ctdi={max_ctdi}, " 
+                                   f"std_names_study existiert: {std_names_study is not None}, "
+                                   f"ctdi_limit: {std_names_study.ctdi_limit if std_names_study else 'N/A'}")
             except (ObjectDoesNotExist, AttributeError) as e:
                 logger.warning(f"Konnte CTDI-Limit nicht prüfen: {str(e)}")
 
