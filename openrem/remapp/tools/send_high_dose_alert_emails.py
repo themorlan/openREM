@@ -320,6 +320,8 @@ def send_ct_high_dose_alert_email(study_pk, max_ctdi, limit_ctdi):
             # Prüfe, ob es sich um eine Überschreitung auf Studien- oder Serienebene handelt
             is_series_level = False
             series_name = ""
+            series_ctdi = max_ctdi
+            series_limit = limit_ctdi
             
             # Prüfe, ob es eine CT-Radiation-Dose gibt
             if hasattr(study, 'ctradiationdose_set') and study.ctradiationdose_set.exists():
@@ -330,9 +332,11 @@ def send_ct_high_dose_alert_email(study_pk, max_ctdi, limit_ctdi):
                     if hasattr(event, 'standard_protocols') and event.standard_protocols.exists():
                         for std_protocol in event.standard_protocols.all():
                             if std_protocol.ctdi_limit and event.mean_ctdivol:
-                                if event.mean_ctdivol == max_ctdi:  # Identifiziere das Event mit dem höchsten CTDI
+                                if event.mean_ctdivol > std_protocol.ctdi_limit:  # Identifiziere die Serie mit Überschreitung
                                     is_series_level = True
                                     series_name = std_protocol.standard_name
+                                    series_ctdi = event.mean_ctdivol
+                                    series_limit = std_protocol.ctdi_limit
                                     # Wenn Irradiation Event Label vorhanden ist, füge es hinzu
                                     if event.irradiation_event_label:
                                         series_name += f" ({event.irradiation_event_label})"
@@ -344,10 +348,10 @@ def send_ct_high_dose_alert_email(study_pk, max_ctdi, limit_ctdi):
                 try:
                     # Individuellen Schwellenwert berechnen
                     multiplier = Decimal(str(user_profile.ct_dose_alert_multiplier))
-                    adjusted_ctdi_threshold = limit_ctdi * multiplier
+                    adjusted_ctdi_threshold = series_limit * multiplier
 
                     logger.info(f"User {user_profile.user.email}: multiplier={multiplier}, "
-                              f"adjusted_threshold={adjusted_ctdi_threshold}, max_ctdi={max_ctdi}")
+                              f"adjusted_threshold={adjusted_ctdi_threshold}, series_ctdi={series_ctdi}")
 
                     # Sende Email ohne weitere Prüfung des max_ctdi
                     logger.info(f"Sende Email an {user_profile.user.email}")
@@ -372,7 +376,9 @@ Standard Name: {std_name}"""
 
                     message += f"""
 
-Schwellenwert: {adjusted_ctdi_threshold:.1f} mGy = {limit_ctdi:.1f} mGy × {multiplier:.1f} (Referenz-CTDI × Multiplikator)
+CTDIvol: {series_ctdi:.1f} mGy
+Referenz-CTDI: {series_limit:.1f} mGy
+Schwellenwert: {adjusted_ctdi_threshold:.1f} mGy = {series_limit:.1f} mGy × {multiplier:.1f} (Referenz-CTDI × Multiplikator)
 
 Dies ist eine automatische Benachrichtigung basierend auf den Schwellenwerten mit persönlichem Multiplikator."""
 
