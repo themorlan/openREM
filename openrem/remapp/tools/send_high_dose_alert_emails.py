@@ -311,33 +311,66 @@ def send_ct_high_dose_alert_email(study_pk, max_ctdi, limit_ctdi):
         if alert_settings.send_high_dose_metric_alert_emails_ct:
             equipment = study.generalequipmentmoduleattr_set.get()
             
-            # Hole alle User Profile mit aktivierten Warnungen - KORRIGIERTE ABFRAGE
+            # Hole alle User Profile mit aktivierten Warnungen
             user_profiles = UserProfile.objects.filter(
                 user__highdosemetricalertrecipients__receive_high_dose_metric_alerts=True
             )
             logger.info(f"Gefundene User Profile mit aktivierten Warnungen: {user_profiles.count()}")
             
+            # Prüfe, ob es sich um eine Überschreitung auf Studien- oder Serienebene handelt
+            is_series_level = False
+            series_name = ""
+            
+            # Prüfe, ob es eine CT-Radiation-Dose gibt
+            if hasattr(study, 'ctradiationdose_set') and study.ctradiationdose_set.exists():
+                ct_dose = study.ctradiationdose_set.first()
+                
+                # Prüfe alle Events auf Serienebene
+                for event in ct_dose.ctirradiationeventdata_set.all():
+                    if hasattr(event, 'standard_protocols') and event.standard_protocols.exists():
+                        for std_protocol in event.standard_protocols.all():
+                            if std_protocol.ctdi_limit and event.mean_ctdivol:
+                                if event.mean_ctdivol == max_ctdi:  # Identifiziere das Event mit dem höchsten CTDI
+                                    is_series_level = True
+                                    series_name = std_protocol.standard_name
+                                    # Wenn Irradiation Event Label vorhanden ist, füge es hinzu
+                                    if event.irradiation_event_label:
+                                        series_name += f" ({event.irradiation_event_label})"
+                                    break
+                        if is_series_level:
+                            break
+            
             for user_profile in user_profiles:
                 try:
                     # Individuellen Schwellenwert berechnen
-                    multiplier = Decimal(str(user_profile.ct_dose_alert_multiplier))  # Konvertiere zu Decimal
+                    multiplier = Decimal(str(user_profile.ct_dose_alert_multiplier))
                     adjusted_ctdi_threshold = limit_ctdi * multiplier
 
                     logger.info(f"User {user_profile.user.email}: multiplier={multiplier}, "
                               f"adjusted_threshold={adjusted_ctdi_threshold}, max_ctdi={max_ctdi}")
 
-                    # Prüfe ob Schwellenwert überschritten wurde
-                    if max_ctdi > adjusted_ctdi_threshold:
-                        logger.info(f"Schwellenwert überschritten für {user_profile.user.email}")
-                        subject = f'CT Hohe Dosis Warnung - {equipment.station_name}'
-                        
-                        message = f"""CT Untersuchung mit erhöhter Dosis:
+                    # Sende Email ohne weitere Prüfung des max_ctdi
+                    logger.info(f"Sende Email an {user_profile.user.email}")
+                    subject = f'CT Hohe Dosis Warnung - {equipment.station_name}'
+                    
+                    # Standardnamen für die Studie ermitteln
+                    std_name = "Nicht zugeordnet"
+                    if study.standard_names.filter(modality='CT').exists():
+                        std_name = study.standard_names.filter(modality='CT').first().standard_name
+                    
+                    message = f"""CT Untersuchung mit erhöhter Dosis:
 
 Untersuchungszeitpunkt: {study.study_date} {study.study_time}
 Studien UID: {study.study_instance_uid}
 Station: {f"{equipment.institution_name} - " if equipment.institution_name else ""}{equipment.station_name}
 
-Standard Name: {study.standard_names.filter(modality='CT').first().standard_name if study.standard_names.filter(modality='CT').exists() else 'Nicht zugeordnet'}
+Standard Name: {std_name}"""
+
+                    # Füge Informationen zur Serienebene hinzu, wenn zutreffend
+                    if is_series_level and series_name:
+                        message += f"\nSerie mit Überschreitung: {series_name}"
+
+                    message += f"""
 CTDIvol max: {max_ctdi:.1f} mGy
 Schwellenwert: {adjusted_ctdi_threshold:.1f} mGy 
               = {limit_ctdi:.1f} mGy × {multiplier:.1f}
@@ -345,27 +378,27 @@ Schwellenwert: {adjusted_ctdi_threshold:.1f} mGy
 
 Dies ist eine automatische Benachrichtigung basierend auf den Schwellenwerten mit persönlichem Multiplikator."""
 
-                        # Füge Patient ID hinzu falls vorhanden
-                        if study.patientmoduleattr_set.exists():
-                            patient = study.patientmoduleattr_set.get()
-                            message += f"\nPatient ID: {patient.patient_id}"
+                    # Füge Patient ID hinzu falls vorhanden
+                    if study.patientmoduleattr_set.exists():
+                        patient = study.patientmoduleattr_set.get()
+                        message += f"\nPatient ID: {patient.patient_id}"
 
-                        # Link zu den Details 
-                        message += f"\n\nDetails unter: {settings.EMAIL_OPENREM_URL}/openrem/ct/{study_pk}/"
+                    # Link zu den Details 
+                    message += f"\n\nDetails unter: {settings.EMAIL_OPENREM_URL}/openrem/ct/{study_pk}/"
 
-                        try:
-                            # Email senden
-                            send_mail(
-                                subject,
-                                message,
-                                settings.EMAIL_DOSE_ALERT_SENDER,
-                                [user_profile.user.email],
-                                fail_silently=False
-                            )
-                            logger.info(f"CT Dosis-Alarm Email erfolgreich gesendet an {user_profile.user.email}")
-                        except Exception as mail_error:
-                            logger.error(f"Fehler beim Email-Versand an {user_profile.user.email}: {str(mail_error)}")
-                            
+                    try:
+                        # Email senden
+                        send_mail(
+                            subject,
+                            message,
+                            settings.EMAIL_DOSE_ALERT_SENDER,
+                            [user_profile.user.email],
+                            fail_silently=False
+                        )
+                        logger.info(f"CT Dosis-Alarm Email erfolgreich gesendet an {user_profile.user.email}")
+                    except Exception as mail_error:
+                        logger.error(f"Fehler beim Email-Versand an {user_profile.user.email}: {str(mail_error)}")
+                        
                 except Exception as e:
                     logger.error(f"Fehler beim Verarbeiten des User Profiles {user_profile.user.email}: {str(e)}")
                     continue
