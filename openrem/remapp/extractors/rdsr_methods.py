@@ -1856,12 +1856,13 @@ def projectionxrayradiationdose(dataset, g, reporttype):
         Procedure: {g.procedure_code_meaning}
     """)
     
-    logger.info("Verfügbare Standard Names für CT:")
-    for std in StandardNames.objects.filter(modality='CT'):
-        logger.info(f"""
-            Name: {std}
-            Study Description: {std.study_description}
-            Requested Procedure: {std.requested_procedure_code_meaning}
-            Procedure: {std.procedure_code_meaning}
-            CTDI Limit: {std.ctdi_limit}
-        """)
+    # Entferne das folgende Logging
+    # logger.info("Verfügbare Standard Names für CT:")
+    # for std in StandardNames.objects.filter(modality='CT'):
+    #     logger.info(f"""
+    #         Name: {std}
+    #         Study Description: {std.study_description}
+    #         Requested Procedure: {std.requested_procedure_code_meaning}
+    #         Procedure: {std.procedure_code_meaning}
+    #         CTDI Limit: {std.ctdi_limit}
+    #     """)
