@@ -1810,8 +1810,10 @@ def projectionxrayradiationdose(dataset, g, reporttype):
                     logger.info(f"Standard Name (Studie): {std_names_study.standard_name}, CTDI-Limit: {std_names_study.ctdi_limit}")
                 
                 # Prüfe, ob ein Standard Name mit CTDI-Limit existiert
-                if max_ctdi and std_names_study and std_names_study.ctdi_limit and max_ctdi > std_names_study.ctdi_limit:
-                    logger.info(f"Sende Email wegen Überschreitung auf Studienebene: {max_ctdi} > {std_names_study.ctdi_limit}")
+                if max_ctdi and std_names_study and std_names_study.ctdi_limit:
+                    # Sende Email unabhängig davon, ob das einfache Limit überschritten wurde
+                    # Die individuelle Prüfung erfolgt in send_ct_high_dose_alert_email
+                    logger.info(f"Prüfe auf CT-Dosis-Überschreitung: max_ctdi={max_ctdi}, limit={std_names_study.ctdi_limit}")
                     from remapp.tools.send_high_dose_alert_emails import send_ct_high_dose_alert_email
                     send_ct_high_dose_alert_email(
                         study_pk=g.pk,
@@ -1823,8 +1825,9 @@ def projectionxrayradiationdose(dataset, g, reporttype):
                     for event in proj.ctirradiationeventdata_set.all():
                         if hasattr(event, 'standard_protocols') and event.standard_protocols.exists():
                             for std_protocol in event.standard_protocols.all():
-                                if std_protocol.ctdi_limit and event.mean_ctdivol and event.mean_ctdivol > std_protocol.ctdi_limit:
-                                    logger.info(f"Sende Email wegen Überschreitung auf Serienebene: {event.mean_ctdivol} > {std_protocol.ctdi_limit}")
+                                if std_protocol.ctdi_limit and event.mean_ctdivol:
+                                    # Sende Email unabhängig davon, ob das einfache Limit überschritten wurde
+                                    logger.info(f"Prüfe auf CT-Dosis-Überschreitung auf Serienebene: mean_ctdivol={event.mean_ctdivol}, limit={std_protocol.ctdi_limit}")
                                     from remapp.tools.send_high_dose_alert_emails import send_ct_high_dose_alert_email
                                     send_ct_high_dose_alert_email(
                                         study_pk=g.pk,
