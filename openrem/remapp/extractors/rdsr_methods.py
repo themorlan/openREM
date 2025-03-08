@@ -1782,71 +1782,58 @@ def projectionxrayradiationdose(dataset, g, reporttype):
                 if cont.ConceptNameCodeSequence[0].CodeMeaning == "CT Acquisition":
                     _ctirradiationeventdata(cont, proj)
 
-      # Nach dem Erstellen aller Events den maximalen CTDI berechnen 
+      # Nach dem Erstellen aller Events prüfen, ob es eine Überschreitung auf Serienebene gibt
     if reporttype == "ct":
         try:
             ctacc = proj.ctaccumulateddosedata_set.get()
-            max_ctdi = proj.ctirradiationeventdata_set.filter(
-                ct_acquisition_type__code_meaning__in=[
-                    'Spiral Acquisition',
-                    'Sequenced Acquisition'
-                ]
-            ).aggregate(Max('mean_ctdivol'))['mean_ctdivol__max']
-            ctacc.maximum_ctdivol = max_ctdi
-            ctacc.save()
-
+            
             # Zuerst Standard Names zuweisen
             from remapp.extractors.extract_common import add_standard_names
             add_standard_names(g)
-
-            # Dann CTDI-Limit prüfen
+            
+            # Prüfe auf Überschreitung auf Serienebene
+            has_series_level_exceedance = False
+            
+            # Prüfe alle Events auf Serienebene
+            for event in proj.ctirradiationeventdata_set.all():
+                if hasattr(event, 'standard_protocols') and event.standard_protocols.exists():
+                    for std_protocol in event.standard_protocols.all():
+                        if std_protocol.ctdi_limit and event.mean_ctdivol:
+                            if event.mean_ctdivol > std_protocol.ctdi_limit:
+                                # Überschreitung gefunden
+                                has_series_level_exceedance = True
+                                break
+                    if has_series_level_exceedance:
+                        break
+            
+            # Setze maximum_ctdivol auf 99999, wenn eine Überschreitung gefunden wurde
+            if has_series_level_exceedance:
+                ctacc.maximum_ctdivol = 99999
+            else:
+                # Ansonsten den tatsächlichen maximalen CTDI speichern
+                max_ctdi = proj.ctirradiationeventdata_set.filter(
+                    ct_acquisition_type__code_meaning__in=[
+                        'Spiral Acquisition',
+                        'Sequenced Acquisition'
+                    ]
+                ).aggregate(Max('mean_ctdivol'))['mean_ctdivol__max']
+                ctacc.maximum_ctdivol = max_ctdi
+            
+            ctacc.save()
+            
+            # Email senden
             try:
-                # Prüfe sowohl Studien-Level als auch Serien-Level Standard Names
                 std_names_study = g.standard_names.filter(modality='CT').first()
-                
-                # Detailliertes Logging hinzufügen
-                logger.info(f"CT CTDI-Prüfung: max_ctdi={max_ctdi}, std_names_study existiert: {std_names_study is not None}")
-                if std_names_study:
-                    logger.info(f"Standard Name (Studie): {std_names_study.standard_name}, CTDI-Limit: {std_names_study.ctdi_limit}")
-                
-                # Prüfe, ob ein Standard Name mit CTDI-Limit existiert
-                if max_ctdi and std_names_study and std_names_study.ctdi_limit:
-                    # Sende Email unabhängig davon, ob das einfache Limit überschritten wurde
-                    # Die individuelle Prüfung erfolgt in send_ct_high_dose_alert_email
-                    logger.info(f"Prüfe auf CT-Dosis-Überschreitung: max_ctdi={max_ctdi}, limit={std_names_study.ctdi_limit}")
+                if std_names_study and std_names_study.ctdi_limit:
                     from remapp.tools.send_high_dose_alert_emails import send_ct_high_dose_alert_email
                     send_ct_high_dose_alert_email(
                         study_pk=g.pk,
-                        max_ctdi=max_ctdi,
+                        max_ctdi=ctacc.maximum_ctdivol if ctacc.maximum_ctdivol != 99999 else 0,
                         limit_ctdi=std_names_study.ctdi_limit
                     )
-                else:
-                    # Prüfe auf Serienebene nach Standard Names
-                    for event in proj.ctirradiationeventdata_set.all():
-                        if hasattr(event, 'standard_protocols') and event.standard_protocols.exists():
-                            for std_protocol in event.standard_protocols.all():
-                                if std_protocol.ctdi_limit and event.mean_ctdivol:
-                                    # Sende Email unabhängig davon, ob das einfache Limit überschritten wurde
-                                    logger.info(f"Prüfe auf CT-Dosis-Überschreitung auf Serienebene: mean_ctdivol={event.mean_ctdivol}, limit={std_protocol.ctdi_limit}")
-                                    from remapp.tools.send_high_dose_alert_emails import send_ct_high_dose_alert_email
-                                    send_ct_high_dose_alert_email(
-                                        study_pk=g.pk,
-                                        max_ctdi=event.mean_ctdivol,
-                                        limit_ctdi=std_protocol.ctdi_limit
-                                    )
-                                    # Nur eine E-Mail pro Studie senden
-                                    break
-                            # Wenn bereits eine E-Mail gesendet wurde, breche die Schleife ab
-                            else:
-                                continue
-                            break
-                    else:
-                        logger.info(f"Keine Email-Benachrichtigung: max_ctdi={max_ctdi}, " 
-                                   f"std_names_study existiert: {std_names_study is not None}, "
-                                   f"ctdi_limit: {std_names_study.ctdi_limit if std_names_study else 'N/A'}")
             except (ObjectDoesNotExist, AttributeError) as e:
                 logger.warning(f"Konnte CTDI-Limit nicht prüfen: {str(e)}")
-
+            
         except ObjectDoesNotExist:
             pass
 

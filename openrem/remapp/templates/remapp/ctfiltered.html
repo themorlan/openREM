@@ -221,7 +221,7 @@
             <tr>
                 <td>
                     <a href="{% url 'ct_detail_view' pk=exam.id %}">
-                        <table onclick="window.location={% url 'ct_detail_view' pk=exam.id %};" aria-describedby="Institution, manufacturer and model">
+                        <table onclick="window.location='{% url 'ct_detail_view' pk=exam.id %}';" aria-describedby="Institution, manufacturer and model">
                             <tr><td class="nowrap">{{ equipment.institution_name }}</td></tr>
                             <tr><td class="nowrap">{{ equipment.manufacturer }}</td></tr>
                             <tr><td class="nowrap">{{ equipment.manufacturer_model_name }}</td></tr>
@@ -235,7 +235,7 @@
                 </td>
                 <td>
                     <a href="{% url 'ct_detail_view' pk=exam.id %}">
-                        <table onclick="window.location={% url 'ct_detail_view' pk=exam.id %};" aria-describedby="Study description, procedure and requested procedure name">
+                        <table onclick="window.location='{% url 'ct_detail_view' pk=exam.id %}';" aria-describedby="Study description, procedure and requested procedure name">
                             <tr><td class="nowrap">{{ exam.study_description }}</td></tr>
                             <tr><td class="nowrap">{{ exam.procedure_code_meaning }}</td></tr>
                             <tr><td class="nowrap">{{ exam.requested_procedure_code_meaning }}</td></tr>
@@ -258,7 +258,7 @@
             {% if showStandardNames %}
                 <td>
                     <a href="{% url 'ct_detail_view' pk=exam.id %}">
-                        <table onclick="window.location={% url 'ct_detail_view' pk=exam.id %};" aria-describedby="Standard study description, procedure and requested procedure names">
+                        <table onclick="window.location='{% url 'ct_detail_view' pk=exam.id %}';" aria-describedby="Standard study description, procedure and requested procedure names">
                             {% for std_name in exam.standard_names.all %}
                                 <tr><td class="nowrap">{{ std_name.standard_name|default_if_none:"-" }}</td></tr>
                             {% endfor %}
@@ -283,7 +283,7 @@
                 </td>
                 <td>
                     <a href="{% url 'ct_detail_view' pk=exam.id %}">
-                        <table onclick="window.location={% url 'ct_detail_view' pk=exam.id %};" aria-describedby="CTDIvol values for events">
+                        <table onclick="window.location='{% url 'ct_detail_view' pk=exam.id %}';" aria-describedby="CTDIvol values for events">
                             {% if exam.ctradiationdose_set.exists %}
                                 {% with dose=exam.ctradiationdose_set.first %}
                                     {% if dose.ctirradiationeventdata_set.exists %}
@@ -323,39 +323,21 @@
                 </td>
             {% endif %}
                 <td>
-                    {% with ctacc=exam.ctradiationdose_set.first.ctaccumulateddosedata_set.first %}
-                        {% if ctacc.maximum_ctdivol %}
-                            {% with std_name=exam.standard_names.first %}
-                                {% if std_name.ctdi_limit and ctacc.maximum_ctdivol >= std_name.ctdi_limit %}
-                                    <a href="#" onclick="openCommentDialog({{ exam.id }}, true); return false;" class="comment-link">
-                                {% else %}
-                                    <a href="#" onclick="openCommentDialog({{ exam.id }}, false); return false;" class="comment-link">
-                                {% endif %}
-                            {% endwith %}
-                        {% else %}
-                            <a href="#" onclick="openCommentDialog({{ exam.id }}, false); return false;" class="comment-link">
-                        {% endif %}
-                    {% endwith %}
-                        <span id="comment-{{ exam.id }}">
-                            {% if exam.comment %}
-                                {{ exam.comment|truncatechars:20 }}
+                    {% if exam.comment %}
+                        <a href="{% url 'ct_detail_view' pk=exam.id %}">
+                            {{ exam.comment|truncatechars:20 }}
+                        </a>
+                    {% else %}
+                        {% with ctacc=exam.ctradiationdose_set.first.ctaccumulateddosedata_set.first %}
+                            {% if ctacc.maximum_ctdivol == 99999 %}
+                                <a href="{% url 'ct_detail_view' pk=exam.id %}">
+                                    <span class="comment-required">Kommentar einfügen!</span>
+                                </a>
                             {% else %}
-                                {% with ctacc=exam.ctradiationdose_set.first.ctaccumulateddosedata_set.first %}
-                                    {% if ctacc.maximum_ctdivol %}
-                                        {% with std_name=exam.standard_names.first %}
-                                            {% if std_name.ctdi_limit and ctacc.maximum_ctdivol >= std_name.ctdi_limit %}
-                                                <span class="comment-required">Kommentar einfügen!</span>
-                                            {% else %}
-                                                -
-                                            {% endif %}
-                                        {% endwith %}
-                                    {% else %}
-                                        -
-                                    {% endif %}
-                                {% endwith %}
+                                <a href="{% url 'ct_detail_view' pk=exam.id %}">-</a>
                             {% endif %}
-                        </span>
-                    </a>
+                        {% endwith %}
+                    {% endif %}
                 </td>
                 {% if admin.admingroup %}
                     <td>
