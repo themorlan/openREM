@@ -323,21 +323,25 @@
                 </td>
             {% endif %}
                 <td>
-                    {% if exam.comment %}
-                        <a href="{% url 'ct_detail_view' pk=exam.id %}">
-                            {{ exam.comment|truncatechars:20 }}
+                    {% with ctacc=exam.ctradiationdose_set.first.ctaccumulateddosedata_set.first %}
+                        {% if ctacc.maximum_ctdivol == 99999 %}
+                            <a href="#" onclick="openCommentDialog({{ exam.id }}, true); return false;" class="comment-link">
+                        {% else %}
+                            <a href="#" onclick="openCommentDialog({{ exam.id }}, false); return false;" class="comment-link">
+                        {% endif %}
+                            <span id="comment-{{ exam.id }}">
+                                {% if exam.comment %}
+                                    {{ exam.comment|truncatechars:20 }}
+                                {% else %}
+                                    {% if ctacc.maximum_ctdivol == 99999 %}
+                                        <span class="comment-required">Kommentar einfügen!</span>
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                {% endif %}
+                            </span>
                         </a>
-                    {% else %}
-                        {% with ctacc=exam.ctradiationdose_set.first.ctaccumulateddosedata_set.first %}
-                            {% if ctacc.maximum_ctdivol == 99999 %}
-                                <a href="{% url 'ct_detail_view' pk=exam.id %}">
-                                    <span class="comment-required">Kommentar einfügen!</span>
-                                </a>
-                            {% else %}
-                                <a href="{% url 'ct_detail_view' pk=exam.id %}">-</a>
-                            {% endif %}
-                        {% endwith %}
-                    {% endif %}
+                    {% endwith %}
                 </td>
                 {% if admin.admingroup %}
                     <td>

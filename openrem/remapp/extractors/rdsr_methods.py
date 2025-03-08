@@ -1793,6 +1793,8 @@ def projectionxrayradiationdose(dataset, g, reporttype):
             
             # Prüfe auf Überschreitung auf Serienebene
             has_series_level_exceedance = False
+            max_ctdi = 0
+            exceeded_event = None
             
             # Prüfe alle Events auf Serienebene
             for event in proj.ctirradiationeventdata_set.all():
@@ -1802,13 +1804,28 @@ def projectionxrayradiationdose(dataset, g, reporttype):
                             if event.mean_ctdivol > std_protocol.ctdi_limit:
                                 # Überschreitung gefunden
                                 has_series_level_exceedance = True
+                                if event.mean_ctdivol > max_ctdi:
+                                    max_ctdi = event.mean_ctdivol
+                                    exceeded_event = event
                                 break
-                    if has_series_level_exceedance:
+                    if has_series_level_exceedance and exceeded_event:
                         break
             
             # Setze maximum_ctdivol auf 99999, wenn eine Überschreitung gefunden wurde
             if has_series_level_exceedance:
                 ctacc.maximum_ctdivol = 99999
+                # Email senden für die Überschreitung
+                try:
+                    if exceeded_event and exceeded_event.standard_protocols.exists():
+                        std_protocol = exceeded_event.standard_protocols.first()
+                        from remapp.tools.send_high_dose_alert_emails import send_ct_high_dose_alert_email
+                        send_ct_high_dose_alert_email(
+                            study_pk=g.pk,
+                            max_ctdi=max_ctdi,
+                            limit_ctdi=std_protocol.ctdi_limit
+                        )
+                except Exception as e:
+                    logger.warning(f"Fehler beim Senden der Email für Serienüberschreitung: {str(e)}")
             else:
                 # Ansonsten den tatsächlichen maximalen CTDI speichern
                 max_ctdi = proj.ctirradiationeventdata_set.filter(
@@ -1818,21 +1835,21 @@ def projectionxrayradiationdose(dataset, g, reporttype):
                     ]
                 ).aggregate(Max('mean_ctdivol'))['mean_ctdivol__max']
                 ctacc.maximum_ctdivol = max_ctdi
+                
+                # Email senden für Studienebene
+                try:
+                    std_names_study = g.standard_names.filter(modality='CT').first()
+                    if max_ctdi and std_names_study and std_names_study.ctdi_limit and max_ctdi > std_names_study.ctdi_limit:
+                        from remapp.tools.send_high_dose_alert_emails import send_ct_high_dose_alert_email
+                        send_ct_high_dose_alert_email(
+                            study_pk=g.pk,
+                            max_ctdi=max_ctdi,
+                            limit_ctdi=std_names_study.ctdi_limit
+                        )
+                except (ObjectDoesNotExist, AttributeError) as e:
+                    logger.warning(f"Konnte CTDI-Limit nicht prüfen: {str(e)}")
             
             ctacc.save()
-            
-            # Email senden
-            try:
-                std_names_study = g.standard_names.filter(modality='CT').first()
-                if std_names_study and std_names_study.ctdi_limit:
-                    from remapp.tools.send_high_dose_alert_emails import send_ct_high_dose_alert_email
-                    send_ct_high_dose_alert_email(
-                        study_pk=g.pk,
-                        max_ctdi=ctacc.maximum_ctdivol if ctacc.maximum_ctdivol != 99999 else 0,
-                        limit_ctdi=std_names_study.ctdi_limit
-                    )
-            except (ObjectDoesNotExist, AttributeError) as e:
-                logger.warning(f"Konnte CTDI-Limit nicht prüfen: {str(e)}")
             
         except ObjectDoesNotExist:
             pass
