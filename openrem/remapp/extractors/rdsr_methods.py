@@ -1801,45 +1801,47 @@ def projectionxrayradiationdose(dataset, g, reporttype):
                 if hasattr(event, 'standard_protocols') and event.standard_protocols.exists():
                     for std_protocol in event.standard_protocols.all():
                         if std_protocol.ctdi_limit and event.mean_ctdivol:
+                            # Speichere das Event mit dem höchsten CTDI-Wert, unabhängig von der Überschreitung
+                            if not exceeded_event or event.mean_ctdivol > max_ctdi:
+                                max_ctdi = event.mean_ctdivol
+                                exceeded_event = event
+                            # Prüfe trotzdem auf Überschreitung für die Markierung in der Datenbank
                             if event.mean_ctdivol > std_protocol.ctdi_limit:
-                                # Überschreitung gefunden
                                 has_series_level_exceedance = True
-                                if event.mean_ctdivol > max_ctdi:
-                                    max_ctdi = event.mean_ctdivol
-                                    exceeded_event = event
-                                break
-                    if has_series_level_exceedance and exceeded_event:
-                        break
+                            break
+                        if exceeded_event:
+                            break
             
             # Setze maximum_ctdivol auf 99999, wenn eine Überschreitung gefunden wurde
             if has_series_level_exceedance:
                 ctacc.maximum_ctdivol = 99999
-                # Email senden für die Überschreitung
+
+            # Email immer senden, wenn ein Event mit Standard-Protokoll gefunden wurde
+            if exceeded_event and exceeded_event.standard_protocols.exists():
                 try:
-                    if exceeded_event.standard_protocols.exists():
-                        std_protocol = exceeded_event.standard_protocols.first()
-                        from remapp.tools.send_high_dose_alert_emails import send_ct_high_dose_alert_email
-                        send_ct_high_dose_alert_email(
-                            study_pk=g.pk,
-                            max_ctdi=max_ctdi,
-                            limit_ctdi=std_protocol.ctdi_limit
-                        )
+                    std_protocol = exceeded_event.standard_protocols.first()
+                    from remapp.tools.send_high_dose_alert_emails import send_ct_high_dose_alert_email
+                    send_ct_high_dose_alert_email(
+                        study_pk=g.pk,
+                        max_ctdi=max_ctdi,
+                        limit_ctdi=std_protocol.ctdi_limit
+                    )
                 except Exception as e:
-                    logger.warning(f"Fehler beim Senden der Email für Serienüberschreitung: {str(e)}")
+                    logger.warning(f"Fehler beim Senden der Email für Serienebene: {str(e)}")
             else:
-                # Ansonsten den tatsächlichen maximalen CTDI speichern
+                # Wenn kein Event mit Standard-Protokoll gefunden wurde, verwende die Studienebene
                 max_ctdi = proj.ctirradiationeventdata_set.filter(
                     ct_acquisition_type__code_meaning__in=[
                         'Spiral Acquisition',
                         'Sequenced Acquisition'
                     ]
                 ).aggregate(Max('mean_ctdivol'))['mean_ctdivol__max']
-                ctacc.maximum_ctdivol = max_ctdi
+                ctacc.maximum_ctdivol = max_ctdi if not has_series_level_exceedance else 99999
                 
-                # Email senden für Studienebene
+                # Email immer senden, unabhängig von der Überschreitung
                 try:
                     std_names_study = g.standard_names.filter(modality='CT').first()
-                    if max_ctdi and std_names_study and std_names_study.ctdi_limit and max_ctdi > std_names_study.ctdi_limit:
+                    if max_ctdi and std_names_study and std_names_study.ctdi_limit:
                         from remapp.tools.send_high_dose_alert_emails import send_ct_high_dose_alert_email
                         send_ct_high_dose_alert_email(
                             study_pk=g.pk,
