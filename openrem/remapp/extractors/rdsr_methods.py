@@ -1816,7 +1816,7 @@ def projectionxrayradiationdose(dataset, g, reporttype):
                 ctacc.maximum_ctdivol = 99999
                 # Email senden für die Überschreitung
                 try:
-                    if exceeded_event and exceeded_event.standard_protocols.exists():
+                    if exceeded_event.standard_protocols.exists():
                         std_protocol = exceeded_event.standard_protocols.first()
                         from remapp.tools.send_high_dose_alert_emails import send_ct_high_dose_alert_email
                         send_ct_high_dose_alert_email(
