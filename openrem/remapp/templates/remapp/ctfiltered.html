@@ -378,6 +378,41 @@
     <script>
         var currentExamId;
         var isOverLimit;
+        
+        // Auto-Refresh alle 5 Minuten (300000 Millisekunden)
+        var refreshTimer;
+        
+        function startAutoRefresh() {
+            refreshTimer = setTimeout(function() {
+                // Lade die Seite neu
+                window.location.reload();
+            }, 300000); // 5 Minuten
+        }
+        
+        function stopAutoRefresh() {
+            clearTimeout(refreshTimer);
+        }
+        
+        // Starte den Auto-Refresh beim Laden der Seite
+        $(document).ready(function() {
+            startAutoRefresh();
+        });
+        
+        // Stoppe den Auto-Refresh, wenn der Benutzer mit der Seite interagiert
+        $(document).on('click', function() {
+            stopAutoRefresh();
+            startAutoRefresh();
+        });
+        
+        // Stoppe den Auto-Refresh, wenn der Kommentar-Dialog geöffnet ist
+        $('#commentDialog').on('show.bs.modal', function() {
+            stopAutoRefresh();
+        });
+        
+        // Starte den Auto-Refresh wieder, wenn der Kommentar-Dialog geschlossen wird
+        $('#commentDialog').on('hidden.bs.modal', function() {
+            startAutoRefresh();
+        });
 
         function openCommentDialog(examId, overLimit) {
             currentExamId = examId;
