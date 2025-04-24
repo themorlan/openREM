@@ -190,7 +190,14 @@
             border-collapse: collapse;
         }
 
-        .table-bordered thead tr th {
+        .table-bordered thead {
+            position: sticky;
+            top: 0;
+            background-color: #f8f9fa;
+            z-index: 1;
+        }
+
+        .table-bordered thead th {
             position: sticky;
             top: 0;
             background-color: #f8f9fa;
