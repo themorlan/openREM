@@ -179,186 +179,200 @@
             100% { opacity: 1; }
         }
 
-        .table-bordered > thead > tr:first-child {
+        .table-container {
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .table-bordered {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table-bordered thead tr th {
             position: sticky;
             top: 0;
             background-color: #f8f9fa;
             z-index: 1;
+            border-bottom: 2px solid #ddd;
         }
     </style>
 
-    <table class="table table-bordered table-hover row-clickable small" aria-describedby="Study summary table">
-        <tr>
-            <th>
-                <table aria-describedby="Institution, make and model">
-                    <tr><th scope="col">Institution</th></tr>
-                    <tr><th scope="col">Make</th></tr>
-                    <tr><th scope="col">Model</th></tr>
-                </table>
-            </th>
-            <th>Date</th>
-            <th>
-                <table aria-describedby="Study description, procedure, requested procedure and accession number">
-                    <tr><th scope="col" class="nowrap">Study description</th></tr>
-                    <tr><th scope="col" class="nowrap">Procedure</th></tr>
-                    <tr><th scope="col" class="nowrap">Requested Procedure</th></tr>
-                    <tr><th scope="col" class="nowrap">Accession number</th></tr>
-                </table>
-            </th>
-            <th scope="col">Number of events</th>
-            <th scope="col">Total DLP (mGy.cm)</th>
-        {% if showStandardNames %}
-            <th>Standard study names</th>
-            <th scope="col">
-                <div style="text-align: center; padding: 2px;">
-                    <strong>CTDIvol / Ref CTDI (mGy)</strong>
-                    <div style="background-color: #ffeb99; margin-top: 3px; padding: 2px;">&gt;DRW</div>
-                    <div style="background-color: #ffc966; padding: 2px;">&gt;100% DRW</div>
-                    <div style="background-color: #ff9999; padding: 2px;">&gt;200% DRW</div>
-                </div>
-            </th>
-        {% endif %}
-            <th scope="col">Kommentar</th>
-            {% if admin.admingroup %}
-                <th>Delete?</th>
-            {% endif %}
-        </tr>
-        {% for exam in study_list %}
-          {% with equipment=exam.generalequipmentmoduleattr_set.get %}
+    <div class="table-container">
+        <table class="table table-bordered table-hover row-clickable small" aria-describedby="Study summary table">
             <tr>
-                <td>
-                    <a href="{% url 'ct_detail_view' pk=exam.id %}">
-                        <table onclick="window.location='{% url 'ct_detail_view' pk=exam.id %}';" aria-describedby="Institution, manufacturer and model">
-                            <tr><td class="nowrap">{{ equipment.institution_name }}</td></tr>
-                            <tr><td class="nowrap">{{ equipment.manufacturer }}</td></tr>
-                            <tr><td class="nowrap">{{ equipment.manufacturer_model_name }}</td></tr>
-                        </table>
-                    </a>
-                </td>
-                <td>
-                    <a href="{% url 'ct_detail_view' pk=exam.id %}">
-                        {{ exam.study_date|date:"Y-m-d" }} {{ exam.study_time|date:"H:i" }}
-                    </a>
-                </td>
-                <td>
-                    <a href="{% url 'ct_detail_view' pk=exam.id %}">
-                        <table onclick="window.location='{% url 'ct_detail_view' pk=exam.id %}';" aria-describedby="Study description, procedure and requested procedure name">
-                            <tr><td class="nowrap">{{ exam.study_description }}</td></tr>
-                            <tr><td class="nowrap">{{ exam.procedure_code_meaning }}</td></tr>
-                            <tr><td class="nowrap">{{ exam.requested_procedure_code_meaning }}</td></tr>
-                            {% if not exam.accession_hashed %}
-                                <tr><td class="nowrap">{{ exam.accession_number }}</td></tr>
-                            {% endif %}
-                        </table>
-                    </a>
-                </td>
-                <td>
-                    <a href="{% url 'ct_detail_view' pk=exam.id %}">
-                        {{ exam.number_of_events }}
-                    </a>
-                </td>
-                <td>
-                    <a href="{% url 'ct_detail_view' pk=exam.id %}">
-                        {{ exam.total_dlp|floatformat:2 }}
-                    </a>
-                </td>
+                <th>
+                    <table aria-describedby="Institution, make and model">
+                        <tr><th scope="col">Institution</th></tr>
+                        <tr><th scope="col">Make</th></tr>
+                        <tr><th scope="col">Model</th></tr>
+                    </table>
+                </th>
+                <th>Date</th>
+                <th>
+                    <table aria-describedby="Study description, procedure, requested procedure and accession number">
+                        <tr><th scope="col" class="nowrap">Study description</th></tr>
+                        <tr><th scope="col" class="nowrap">Procedure</th></tr>
+                        <tr><th scope="col" class="nowrap">Requested Procedure</th></tr>
+                        <tr><th scope="col" class="nowrap">Accession number</th></tr>
+                    </table>
+                </th>
+                <th scope="col">Number of events</th>
+                <th scope="col">Total DLP (mGy.cm)</th>
             {% if showStandardNames %}
-                <td>
-                    <a href="{% url 'ct_detail_view' pk=exam.id %}">
-                        <table onclick="window.location='{% url 'ct_detail_view' pk=exam.id %}';" aria-describedby="Standard study description, procedure and requested procedure names">
-                            {% for std_name in exam.standard_names.all %}
-                                <tr><td class="nowrap">{{ std_name.standard_name|default_if_none:"-" }}</td></tr>
-                            {% endfor %}
-                            
-                            {% if exam.ctradiationdose_set.exists %}
-                                {% with dose=exam.ctradiationdose_set.first %}
-                                    {% if dose.ctirradiationeventdata_set.exists %}
-                                        {% for event in dose.ctirradiationeventdata_set.all %}
-                                            {% if event.standard_protocols.exists %}
-                                                {% for std_name in event.standard_protocols.all %}
-                                                    {% if std_name.irradiation_event_label %}
-                                                        <tr><td class="nowrap">{{ std_name.standard_name|default_if_none:"-" }}</td></tr>
-                                                    {% endif %}
-                                                {% endfor %}
-                                            {% endif %}
-                                        {% endfor %}
-                                    {% endif %}
-                                {% endwith %}
-                            {% endif %}
-                        </table>
-                    </a>
-                </td>
-                <td>
-                    <a href="{% url 'ct_detail_view' pk=exam.id %}">
-                        <table onclick="window.location='{% url 'ct_detail_view' pk=exam.id %}';" aria-describedby="CTDIvol values for events">
-                            {% if exam.ctradiationdose_set.exists %}
-                                {% with dose=exam.ctradiationdose_set.first %}
-                                    {% if dose.ctirradiationeventdata_set.exists %}
-                                        {% for event in dose.ctirradiationeventdata_set.all %}
-                                            {% if event.standard_protocols.exists %}
-                                                {% for std_name in event.standard_protocols.all %}
-                                                    {% if std_name.irradiation_event_label %}
-                                                        <tr>
-                                                            <td class="nowrap">
-                                                                {% if std_name.ctdi_limit %}
-                                                                    <div style="display: block; padding: 2px; text-align: center;
-                                                                        {% if event.mean_ctdivol >= std_name.ctdi_limit|multiply:3 %}
-                                                                            background-color: #ff9999;
-                                                                        {% elif event.mean_ctdivol >= std_name.ctdi_limit|multiply:2 %}
-                                                                            background-color: #ffc966;
-                                                                        {% elif event.mean_ctdivol >= std_name.ctdi_limit %}
-                                                                            background-color: #ffeb99;
-                                                                        {% endif %}">
-                                                                        {{ event.mean_ctdivol|floatformat:2|default_if_none:"-" }} / {{ std_name.ctdi_limit|floatformat:2|default_if_none:"-" }}
-                                                                    </div>
-                                                                {% else %}
-                                                                    {{ event.mean_ctdivol|floatformat:2|default_if_none:"-" }} / {{ std_name.ctdi_limit|floatformat:2|default_if_none:"-" }}
-                                                                {% endif %}
-                                                            </td>
-                                                        </tr>
-                                                    {% endif %}
-                                                {% endfor %}
-                                            {% endif %}
-                                        {% endfor %}
-                                    {% endif %}
-                                {% endwith %}
-                            {% else %}
-                                <tr><td class="nowrap">-</td></tr>
-                            {% endif %}
-                        </table>
-                    </a>
-                </td>
+                <th>Standard study names</th>
+                <th scope="col">
+                    <div style="text-align: center; padding: 2px;">
+                        <strong>CTDIvol / Ref CTDI (mGy)</strong>
+                        <div style="background-color: #ffeb99; margin-top: 3px; padding: 2px;">&gt;DRW</div>
+                        <div style="background-color: #ffc966; padding: 2px;">&gt;100% DRW</div>
+                        <div style="background-color: #ff9999; padding: 2px;">&gt;200% DRW</div>
+                    </div>
+                </th>
             {% endif %}
-                <td>
-                    {% with ctacc=exam.ctradiationdose_set.first.ctaccumulateddosedata_set.first %}
-                        {% if ctacc.maximum_ctdivol == 99999 %}
-                            <a href="#" onclick="openCommentDialog({{ exam.id }}, true); return false;" class="comment-link">
-                        {% else %}
-                            <a href="#" onclick="openCommentDialog({{ exam.id }}, false); return false;" class="comment-link">
-                        {% endif %}
-                            <span id="comment-{{ exam.id }}">
-                                {% if exam.comment %}
-                                    {{ exam.comment|truncatechars:20 }}
-                                {% else %}
-                                    {% if ctacc.maximum_ctdivol == 99999 %}
-                                        <span class="comment-required">Kommentar einfügen!</span>
-                                    {% else %}
-                                        -
-                                    {% endif %}
-                                {% endif %}
-                            </span>
-                        </a>
-                    {% endwith %}
-                </td>
+                <th scope="col">Kommentar</th>
                 {% if admin.admingroup %}
-                    <td>
-                        <a href="{% url 'study_delete' exam.id %}">Delete</a>
-                    </td>
+                    <th>Delete?</th>
                 {% endif %}
             </tr>
-          {% endwith %}
-        {% endfor %}
-    </table>
+            {% for exam in study_list %}
+              {% with equipment=exam.generalequipmentmoduleattr_set.get %}
+                <tr>
+                    <td>
+                        <a href="{% url 'ct_detail_view' pk=exam.id %}">
+                            <table onclick="window.location='{% url 'ct_detail_view' pk=exam.id %}';" aria-describedby="Institution, manufacturer and model">
+                                <tr><td class="nowrap">{{ equipment.institution_name }}</td></tr>
+                                <tr><td class="nowrap">{{ equipment.manufacturer }}</td></tr>
+                                <tr><td class="nowrap">{{ equipment.manufacturer_model_name }}</td></tr>
+                            </table>
+                        </a>
+                    </td>
+                    <td>
+                        <a href="{% url 'ct_detail_view' pk=exam.id %}">
+                            {{ exam.study_date|date:"Y-m-d" }} {{ exam.study_time|date:"H:i" }}
+                        </a>
+                    </td>
+                    <td>
+                        <a href="{% url 'ct_detail_view' pk=exam.id %}">
+                            <table onclick="window.location='{% url 'ct_detail_view' pk=exam.id %}';" aria-describedby="Study description, procedure and requested procedure name">
+                                <tr><td class="nowrap">{{ exam.study_description }}</td></tr>
+                                <tr><td class="nowrap">{{ exam.procedure_code_meaning }}</td></tr>
+                                <tr><td class="nowrap">{{ exam.requested_procedure_code_meaning }}</td></tr>
+                                {% if not exam.accession_hashed %}
+                                    <tr><td class="nowrap">{{ exam.accession_number }}</td></tr>
+                                {% endif %}
+                            </table>
+                        </a>
+                    </td>
+                    <td>
+                        <a href="{% url 'ct_detail_view' pk=exam.id %}">
+                            {{ exam.number_of_events }}
+                        </a>
+                    </td>
+                    <td>
+                        <a href="{% url 'ct_detail_view' pk=exam.id %}">
+                            {{ exam.total_dlp|floatformat:2 }}
+                        </a>
+                    </td>
+                {% if showStandardNames %}
+                    <td>
+                        <a href="{% url 'ct_detail_view' pk=exam.id %}">
+                            <table onclick="window.location='{% url 'ct_detail_view' pk=exam.id %}';" aria-describedby="Standard study description, procedure and requested procedure names">
+                                {% for std_name in exam.standard_names.all %}
+                                    <tr><td class="nowrap">{{ std_name.standard_name|default_if_none:"-" }}</td></tr>
+                                {% endfor %}
+                                
+                                {% if exam.ctradiationdose_set.exists %}
+                                    {% with dose=exam.ctradiationdose_set.first %}
+                                        {% if dose.ctirradiationeventdata_set.exists %}
+                                            {% for event in dose.ctirradiationeventdata_set.all %}
+                                                {% if event.standard_protocols.exists %}
+                                                    {% for std_name in event.standard_protocols.all %}
+                                                        {% if std_name.irradiation_event_label %}
+                                                            <tr><td class="nowrap">{{ std_name.standard_name|default_if_none:"-" }}</td></tr>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                {% endif %}
+                                            {% endfor %}
+                                        {% endif %}
+                                    {% endwith %}
+                                {% endif %}
+                            </table>
+                        </a>
+                    </td>
+                    <td>
+                        <a href="{% url 'ct_detail_view' pk=exam.id %}">
+                            <table onclick="window.location='{% url 'ct_detail_view' pk=exam.id %}';" aria-describedby="CTDIvol values for events">
+                                {% if exam.ctradiationdose_set.exists %}
+                                    {% with dose=exam.ctradiationdose_set.first %}
+                                        {% if dose.ctirradiationeventdata_set.exists %}
+                                            {% for event in dose.ctirradiationeventdata_set.all %}
+                                                {% if event.standard_protocols.exists %}
+                                                    {% for std_name in event.standard_protocols.all %}
+                                                        {% if std_name.irradiation_event_label %}
+                                                            <tr>
+                                                                <td class="nowrap">
+                                                                    {% if std_name.ctdi_limit %}
+                                                                        <div style="display: block; padding: 2px; text-align: center;
+                                                                            {% if event.mean_ctdivol >= std_name.ctdi_limit|multiply:3 %}
+                                                                                background-color: #ff9999;
+                                                                            {% elif event.mean_ctdivol >= std_name.ctdi_limit|multiply:2 %}
+                                                                                background-color: #ffc966;
+                                                                            {% elif event.mean_ctdivol >= std_name.ctdi_limit %}
+                                                                                background-color: #ffeb99;
+                                                                            {% endif %}">
+                                                                            {{ event.mean_ctdivol|floatformat:2|default_if_none:"-" }} / {{ std_name.ctdi_limit|floatformat:2|default_if_none:"-" }}
+                                                                        </div>
+                                                                    {% else %}
+                                                                        {{ event.mean_ctdivol|floatformat:2|default_if_none:"-" }} / {{ std_name.ctdi_limit|floatformat:2|default_if_none:"-" }}
+                                                                    {% endif %}
+                                                                </td>
+                                                            </tr>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                {% endif %}
+                                            {% endfor %}
+                                        {% endif %}
+                                    {% endwith %}
+                                {% else %}
+                                    <tr><td class="nowrap">-</td></tr>
+                                {% endif %}
+                            </table>
+                        </a>
+                    </td>
+                {% endif %}
+                    <td>
+                        {% with ctacc=exam.ctradiationdose_set.first.ctaccumulateddosedata_set.first %}
+                            {% if ctacc.maximum_ctdivol == 99999 %}
+                                <a href="#" onclick="openCommentDialog({{ exam.id }}, true); return false;" class="comment-link">
+                            {% else %}
+                                <a href="#" onclick="openCommentDialog({{ exam.id }}, false); return false;" class="comment-link">
+                            {% endif %}
+                                <span id="comment-{{ exam.id }}">
+                                    {% if exam.comment %}
+                                        {{ exam.comment|truncatechars:20 }}
+                                    {% else %}
+                                        {% if ctacc.maximum_ctdivol == 99999 %}
+                                            <span class="comment-required">Kommentar einfügen!</span>
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    {% endif %}
+                                </span>
+                            </a>
+                        {% endwith %}
+                    </td>
+                    {% if admin.admingroup %}
+                        <td>
+                            <a href="{% url 'study_delete' exam.id %}">Delete</a>
+                        </td>
+                    {% endif %}
+                </tr>
+              {% endwith %}
+            {% endfor %}
+        </table>
+    </div>
 
 
 {% endblock %}
