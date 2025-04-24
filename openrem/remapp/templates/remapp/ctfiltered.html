@@ -178,6 +178,13 @@
             50% { opacity: 0.5; }
             100% { opacity: 1; }
         }
+
+        .table-bordered > thead > tr:first-child {
+            position: sticky;
+            top: 0;
+            background-color: #f8f9fa;
+            z-index: 1;
+        }
     </style>
 
     <table class="table table-bordered table-hover row-clickable small" aria-describedby="Study summary table">
