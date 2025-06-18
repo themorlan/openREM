@@ -62,21 +62,39 @@
     <form action="" method="get" class="form-horizontal" role="form">
         <div class="panel panel-info small">
             <div class="panel-heading">
+                <h3 class="panel-title">Dosisüberschreitungen</h3>
+            </div>
+            <div class="panel-body">
+                <div class="form-group">
+                    <div class="checkbox">
+                        <label>
+                            {{ filter.form.has_dose_exceedance }}
+                            Nur Untersuchungen mit Dosisüberschreitungen anzeigen
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel panel-info small">
+            <div class="panel-heading">
                 <h3 class="panel-title">Exam filter</h3>
             </div>
 
             <div class="panel-body">
                 <em>Date format yyyy-mm-dd</em>
                 {% for field in filter.form.visible_fields %}
-                    <div class="form-group">
-                        <div class="col-xs-4">
-                            <label>{{ field.label_tag }}</label>
+                    {% if field.name != 'has_dose_exceedance' %}
+                        <div class="form-group">
+                            <div class="col-xs-4">
+                                <label>{{ field.label_tag }}</label>
+                            </div>
+                            <div class="col-xs-8">
+                                {{ field.errors }}
+                                {{ field }}
+                            </div>
                         </div>
-                        <div class="col-xs-8">
-                            {{ field.errors }}
-                            {{ field }}
-                        </div>
-                    </div>
+                    {% endif %}
                 {% endfor %}
 
                 {% for field in filter.form.hidden_fields %}

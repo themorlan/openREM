@@ -501,6 +501,18 @@ class CTSummaryListFilter(django_filters.FilterSet):
         choices=EVENT_NUMBER_CHOICES,
         widget=forms.Select,
     )
+    has_dose_exceedance = django_filters.BooleanFilter(
+        method='filter_dose_exceedance',
+        label='Nur Dosisüberschreitungen',
+        widget=forms.CheckboxInput
+    )
+
+    def filter_dose_exceedance(self, queryset, name, value):
+        if value:
+            return queryset.filter(
+                ctradiationdose__ctaccumulateddosedata__maximum_ctdivol=99999
+            )
+        return queryset
 
     class Meta:
         """
@@ -533,6 +545,7 @@ class CTSummaryListFilter(django_filters.FilterSet):
             "num_axial_events",
             "num_spr_events",
             "num_stationary_events",
+            "has_dose_exceedance",
         ]
 
     o = DateTimeOrderingFilter(
